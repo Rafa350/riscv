@@ -1,0 +1,68 @@
+[*]
+[*] GTKWave Analyzer v3.3.68 (w)1999-2016 BSI
+[*] Mon Jan 25 15:16:54 2016
+[*]
+[dumpfile] "C:\Projectes\Projectes\FPGA\cpu01\Verilator\trace.vcd"
+[dumpfile_mtime] "Mon Jan 25 15:13:23 2016"
+[dumpfile_size] 35746
+[savefile] "C:\Projectes\Projectes\FPGA\cpu01\Verilator\trace.gtkw"
+[timestart] 0
+[size] 1600 1138
+[pos] -1 -1
+*-6.000000 162 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.v.
+[treeopen] TOP.v._cpu.
+[sst_width] 286
+[signals_width] 203
+[sst_expanded] 1
+[sst_vpaned_height] 343
+@200
+-Clock/Reset
+@29
+TOP.v._cpu.rst
+@28
+TOP.v._cpu.clk
+@200
+-Program counter
+@22
+TOP.v._cpu.pc_in[11:0]
+@28
+TOP.v._cpu.pc_in_sel
+TOP.v._cpu.pc_le
+@200
+-Rom
+@22
+TOP.v._cpu.rom_addr[11:0]
+TOP.v._cpu.rom_din[15:0]
+@200
+-R -Stack
+@28
+TOP.v._cpu.ctrl.rstk_we
+TOP.v._cpu.ctrl.rstk_me
+TOP.v._cpu.rstk_md
+@200
+-D-Stack
+@22
+TOP.v._cpu.dstk_top[15:0]
+TOP.v._cpu.dstk_next[15:0]
+@28
+TOP.v._cpu.dstk_we
+TOP.v._cpu.dstk_me
+TOP.v._cpu.dstk_md
+@200
+-Control unit
+@28
+TOP.v._cpu.ctrl.is_do
+TOP.v._cpu.ctrl.is_TtoN
+@22
+TOP.v._cpu.imm_data[15:0]
+@200
+-ALU
+@22
+TOP.v._cpu.alu_op[3:0]
+@28
+TOP.v._cpu.dstk_topN_sel[1:0]
+TOP.v._cpu.zero
+[pattern_trace] 1
+[pattern_trace] 0
