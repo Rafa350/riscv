@@ -26,50 +26,50 @@ module cpu
     parameter ROM_DATA_WIDTH = 16,
     parameter ROM_ADDR_WIDTH = 12)
 (
-    input i_clk,
-    input i_rst,
+    input logic i_clk,
+    input logic i_rst,
     
-    input [ROM_DATA_WIDTH-1:0] rom_din,
-    output [ROM_ADDR_WIDTH-1:0] rom_addr,
+    input logic [ROM_DATA_WIDTH-1:0] rom_din,
+    output logic [ROM_ADDR_WIDTH-1:0] rom_addr,
 
-    input [RAM_DATA_WIDTH-1:0] ram_din,
-    output [RAM_DATA_WIDTH-1:0] ram_dout,
-    output [RAM_ADDR_WIDTH-1:0] ram_addr,
-    output ram_we);
+    input logic [RAM_DATA_WIDTH-1:0] ram_din,
+    output logic [RAM_DATA_WIDTH-1:0] ram_dout,
+    output logic [RAM_ADDR_WIDTH-1:0] ram_addr,
+    output logic ram_we);
     
-    wire rst;                               // Reset
-    wire clk;                               // Clock
+    logic rst;                               // Reset
+    logic clk;                               // Clock
     
     // Linies de dades i control del contador de programa
     //
-    wire pc_le;                             // Program counter load enable
-    wire pc_in_sel;                         // Program counter input selection
-    wire [ROM_ADDR_WIDTH-1:0] pc_in;        // Program counter input
-    wire [ROM_ADDR_WIDTH-1:0] imm_addr;     // Immediate address
+    logic pc_le;                             // Program counter load enable
+    logic pc_in_sel;                         // Program counter input selection
+    logic [ROM_ADDR_WIDTH-1:0] pc_in;        // Program counter input
+    logic [ROM_ADDR_WIDTH-1:0] imm_addr;     // Immediate address
     
     // Linies de dades i control de la pila R
     //
-    wire rstk_we;                           // R-Stack write enable
-    wire rstk_me;                           // R-Stack move enable
-    wire rstk_md;                           // R-Stack move direction
-    wire [ROM_ADDR_WIDTH-1:0] rstk_top;     // R-Stack top value
+    logic rstk_we;                           // R-Stack write enable
+    logic rstk_me;                           // R-Stack move enable
+    logic rstk_md;                           // R-Stack move direction
+    logic [ROM_ADDR_WIDTH-1:0] rstk_top;     // R-Stack top value
     
     // Linies de dades i control per la pila D
     //
-    wire dstk_we;                           // D-Stack write enable
-    wire dstk_me;                           // D-Stack move enable
-    wire dstk_md;                           // D-Stack move direction
-    wire [RAM_DATA_WIDTH-1:0] dstk_top;     // D-Stack top value
-    wire [RAM_DATA_WIDTH-1:0] dstk_topN;    // D-Stack new top value
-    wire [RAM_DATA_WIDTH-1:0] dstk_next;    // D-Stack bext value
+    logic dstk_we;                           // D-Stack write enable
+    logic dstk_me;                           // D-Stack move enable
+    logic dstk_md;                           // D-Stack move direction
+    logic [RAM_DATA_WIDTH-1:0] dstk_top;     // D-Stack top value
+    logic [RAM_DATA_WIDTH-1:0] dstk_topN;    // D-Stack new top value
+    logic [RAM_DATA_WIDTH-1:0] dstk_next;    // D-Stack bext value
        
     // Linies de dades i control de la ALU
     //
-    wire [3:0] alu_op;                      // ALU operation code
-    wire [1:0] dstk_topN_sel;               // topN value selection
-    wire zero = |dstk_top;                  // Zero detection
-    wire [RAM_DATA_WIDTH-1:0] alu_out;      // ALU result output
-    wire [RAM_DATA_WIDTH-1:0] imm_data;     // immediate data
+    logic [3:0] alu_op;                      // ALU operation code
+    logic [1:0] dstk_topN_sel;               // topN value selection
+    logic zero;                              // Zero detection
+    logic [RAM_DATA_WIDTH-1:0] alu_out;      // ALU result output
+    logic [RAM_DATA_WIDTH-1:0] imm_data;     // immediate data
     
     // Generator de rellotge
     //
@@ -181,6 +181,7 @@ module cpu
         .alu_op(alu_op),                    // ALU operation selection
         .alu_inB_sel(dstk_topN_sel));       // D-Stack topN selection
     
+    assign zero = |dstk_top;                // Zero detection
     assign ram_addr = dstk_top[RAM_ADDR_WIDTH-1:0];
     assign ram_dout = dstk_next;
     

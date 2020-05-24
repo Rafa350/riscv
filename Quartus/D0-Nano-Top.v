@@ -65,7 +65,7 @@
 `define CALL(a)         (`JSR | ((a) & 16'h1FFF))
 `define RET             (`DO `_RET)
 
-// Instruccions ALU            op-code     mov    dsp      rsp
+// Instruccions ALU            op-code     mov     dsp     rsp
 //                           +-----------+-------+-------+-------+
 `define ADD             (`DO | `OP_TaddN | `M_   | `Ddec | `R_   )
 `define DUP             (`DO | `OP_T     | `TtoN | `Dinc | `R_   )
@@ -94,7 +94,7 @@ module top(
     wire [`ROM_ADDR_WIDTH-1:0] rom_addr;
     reg [`ROM_DATA_WIDTH-1:0] rom_din;
     
-    ram _ram(
+    ram ram0(
         .clk(clk),
         .din(ram_dout),
         .dout(ram_din),
@@ -107,9 +107,9 @@ module top(
         .RAM_ADDR_WIDTH(`RAM_ADDR_WIDTH),
         .ROM_DATA_WIDTH(`ROM_DATA_WIDTH),
         .ROM_ADDR_WIDTH(`ROM_ADDR_WIDTH)) 
-    _cpu(
-        .clkin(clk),
-        .rstin(rst),
+    cpu0(
+        .i_clk(clk),
+        .i_rst(rst),
         .rom_din(rom_din),
         .rom_addr(rom_addr),
         .ram_we(ram_we),

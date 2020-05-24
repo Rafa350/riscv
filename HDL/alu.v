@@ -25,40 +25,40 @@
 #(
     parameter DATA_WIDTH = 16)
 (
-    input [DATA_WIDTH-1:0] i_data0,
-    input [DATA_WIDTH-1:0] i_data1,
-    output [DATA_WIDTH-1:0] o_data,
-    input [3:0] i_op);
+    input logic [DATA_WIDTH-1:0] i_data0,
+    input logic [DATA_WIDTH-1:0] i_data1,
+    output logic [DATA_WIDTH-1:0] o_data,
+    input logic [3:0] i_op);
     
-    wire [DATA_WIDTH-1:0] outAdd;
-    wire [DATA_WIDTH-1:0] outAnd;
-    wire [DATA_WIDTH-1:0] outOr;
-    wire [DATA_WIDTH-1:0] outXor;
+    logic [DATA_WIDTH-1:0] outAdd;
+    logic [DATA_WIDTH-1:0] outAnd;
+    logic [DATA_WIDTH-1:0] outOr;
+    logic [DATA_WIDTH-1:0] outXor;
     
     alu_add #(
         .DATA_WIDTH(DATA_WIDTH)) 
-    alu_add_impl(
+    alu_add_0(
         .i_data0(i_data0), 
         .i_data1(i_data1), 
         .o_data(outAdd));
         
     alu_and #(
         .DATA_WIDTH(DATA_WIDTH)) 
-    alu_and_impl(
+    alu_and_0(
         .i_data0(i_data0), 
         .i_data1(i_data1), 
         .o_data(outAnd));
         
     alu_or #(
         .DATA_WIDTH(DATA_WIDTH)) 
-    alu_or_impl(
+    alu_or_0(
         .i_data0(i_data0), 
         .i_data1(i_data1), 
         .o_data(outOr));
         
     alu_xor #(
         .DATA_WIDTH(DATA_WIDTH)) 
-    alu_xor_impl(
+    alu_xor_0(
         .i_data0(i_data0), 
         .i_data1(i_data1), 
         .o_data(outXor));
