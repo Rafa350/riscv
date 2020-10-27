@@ -1,0 +1,15 @@
+/Quartus/db
+/Quartus/greybox_tmp
+/Quartus/incremental_db
+/Quartus/output_files
+/Quartus/simulation
+/Quartus/dse
+/Quartus/*.qws
+/Verilator/obj_dir
+/Verilator/*.hier
+/Verilator/*.fst
+/Verilator/*.vcd
+/Verilator/*.stackdump
+/Verilator/*.csv
+/Tools/*.o
+/Tools/*.exe
