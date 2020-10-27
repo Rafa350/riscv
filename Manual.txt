@@ -1,0 +1,16 @@
+Registers:
+
+    R0..R7    : General data registers
+    PC        : Program counter
+    ST        : Status
+                C: Carry/Borrow
+                Z: Result Zero
+    
+Instructions:
+
+    LDI       : Load inmediate     LDI value, R(dst)
+    LD        : Load mem           LD  MEM[R(src)], R(dst)
+    
+    ST        : Store mem          ST  R(src), MEM[R(dst)]
+    
+    ALU       : Alu operation      ALU op, R(src1), R(src2), R(dst)
