@@ -4,10 +4,10 @@ module top(
     input wire [3:0] SW,
     output wire [7:0] LED);
     
-    parameter DATA_WIDTH = 16;
-    parameter ADDR_WIDTH = 8;
-    parameter PC_WIDTH = 12;
-    parameter INST_WIDTH = 16;
+    parameter DATA_WIDTH = 32;
+    parameter ADDR_WIDTH = 32;
+    parameter PC_WIDTH   = 32;
+    parameter INST_WIDTH = 32;
     
     logic clk;
     assign clk = ~KEY[0];
@@ -54,9 +54,9 @@ module top(
         .i_rst(rst),
         .o_pc(pgm_addr),
         .i_inst(pgm_inst),
-        .o_we(ram_we),
-        .i_rdata(ram_rdata),
-        .o_wdata(ram_wdata),
-        .o_addr(ram_addr));
+        .o_mem_wr_enable(ram_we),
+        .i_mem_rd_data(ram_rdata),
+        .o_mem_wr_data(ram_wdata),
+        .o_mem_addr(ram_addr));
        
 endmodule

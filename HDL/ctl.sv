@@ -11,18 +11,17 @@
 
 module ctl 
 (
-    input logic[15:0] i_inst,
+    input  logic         i_clk,
+    input  logic         i_rst,
     
-    output logic [2:0] o_reg_waddr,
-    output logic [2:0] o_reg_raddr1,
-    output logic [2:0] o_reg_raddr2,
-    output logic o_reg_we,
+    input  logic  [15:0] i_inst,
     
-    output logic o_mem_we,
-    output logic o_mem_addr,
-    
-    output logic o_lit,
-    output logic [3:0] o_alu_op);
+    output logic [3:0]   o_alu_op,
+    output logic         o_regs_wr_enable,
+    output logic         o_mem_wr_enable,
+    output logic         o_alu_data2_selector,
+    output logic         o_reg_wr_index_selector,
+    output logic         o_regs_rd_data_selector);
     
 
 endmodule
