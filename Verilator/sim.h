@@ -20,8 +20,8 @@ class ROM {
     public:
         ROM();
         ROM(const char *fileName);
-        unsigned get(unsigned addr) const;
-        unsigned getCount() const { return memSize; }
+        unsigned read(unsigned addr) const;
+        unsigned getSize() const { return memSize; }
 };
 
 
@@ -32,9 +32,9 @@ class RAM {
     public:
         RAM();
         RAM(const char *fileName);
-        unsigned get(unsigned addr) const;
-        void set(unsigned addr, unsigned data);
-        unsigned getCount() const { return memSize; }
+        unsigned read(unsigned addr) const;
+        void write(unsigned addr, unsigned data);
+        unsigned getSize() const { return memSize; }
 };
 
 

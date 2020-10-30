@@ -18,7 +18,9 @@ int main(int argc, char **argv, char **env) {
         if (!rom)
             exit(1);
         VL_PRINTF("*** ROM Loaded.\n");
-        VL_PRINTF("    --Load size: %d bytes.\n", rom->getCount());
+        VL_PRINTF("    --Load size: %d bytes.\n", rom->getSize());
+        
+        RAM *ram = new RAM();
         
 #if VM_TRACE			
         Verilated::traceEverOn(true);	
@@ -35,13 +37,20 @@ int main(int argc, char **argv, char **env) {
         VL_PRINTF("*** Start simulation loop.\n");
         const int maxTime = 1000;
         unsigned time;
-        for (time = 0; (time < maxTime) && !Verilated::gotFinish(); time++) {
+        for (time = 0; (time < maxTime) && !Verilated::gotFinish() && top->rom_addr < rom->getSize(); time++) {
             
+            if (time && ((time % 10) == 0))
+                top->clk = !top->clk;
+
             top->rst = time < 15;
-            top->rom_din = rom->get(top->rom_addr);
+            top->rom_rdata = rom->read(top->rom_addr);
+            
+            if (top->ram_we)
+                ram->write(top->ram_addr, top->ram_wdata);
+            top->ram_rdata = ram->read(top->ram_addr);
             
             if (((time % 10) == 0) && (top->clk == 0) && (top->rst == 0))
-                disassembly(top->rom_addr, top->rom_din);
+                disassembly(top->rom_addr, top->rom_rdata);
             
             top->eval();
 #if VM_TRACE
@@ -49,8 +58,6 @@ int main(int argc, char **argv, char **env) {
                 tfp->dump(time);	
 #endif
             
-            if ((time % 10) == 0)
-                top->clk = !top->clk;
         }
         VL_PRINTF("*** End simulation loop.\n");
         VL_PRINTF("    --Total simulation time: %d ticks.\n", time);

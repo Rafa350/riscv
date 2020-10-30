@@ -14,30 +14,39 @@ module top(
 
     logic rst;
     assign rst = ~KEY[1];
+    
+    logic [PC_WIDTH-1:0] pgm_addr;
+    logic [INST_WIDTH-1:0] pgm_inst;    
+
+    logic [DATA_WIDTH-1:0] mem_wdata;
+    logic [DATA_WIDTH-1:0] mem_rdata;
+    logic [ADDR_WIDTH-1:0] mem_addr;
+    
+    assign LED[3:0] = mem_wdata[3:0];
+    assign LED[6:4] = pgm_addr[2:0];
+    assign LED[7]   = mem_we;
 
     // -------------------------------------------------------------------
     // RAM: Memoria ram.
     //
     logic ram_we;
-    ram #(
+    mem #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(DATA_WIDTH))
-    ram0 (
+    mem (
         .i_clk(clk),
-        .i_wdata(ram_wdata),
-        .o_rdata(ram_rdata),
-        .i_we(ram_we),
-        .i_addr(ram_addr));
+        .i_we(mem_we),
+        .i_addr(mem_addr),
+        .i_wdata(mem_wdata),
+        .o_rdata(mem_rdata));
       
     // -------------------------------------------------------------------
     // PGM: Programa.
     //    
-    logic [PC_WIDTH-1:0] pgm_addr;
-    logic [INST_WIDTH-1:0] pgm_inst;    
     pgm #(
         .ADDR_WIDTH(PC_WIDTH),
         .INST_WIDTH(INST_WIDTH))
-    pgm0 (
+    pgm (
         .i_addr(pgm_addr),
         .o_inst(pgm_inst));
 
@@ -49,14 +58,14 @@ module top(
         .ADDR_WIDTH(ADDR_WIDTH),
         .INST_WIDTH(INST_WIDTH),
         .PC_WIDTH(PC_WIDTH)) 
-    cpu0 (
+    cpu (
         .i_clk(clk),
         .i_rst(rst),
         .o_pc(pgm_addr),
         .i_inst(pgm_inst),
-        .o_mem_wr_enable(ram_we),
-        .i_mem_rd_data(ram_rdata),
-        .o_mem_wr_data(ram_wdata),
-        .o_mem_addr(ram_addr));
+        .o_mem_wr_enable(mem_we),  
+        .i_mem_rd_data(mem_rdata),
+        .o_mem_wr_data(mem_wdata),
+        .o_mem_addr(mem_addr));
        
 endmodule

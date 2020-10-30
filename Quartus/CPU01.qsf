@@ -115,11 +115,13 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name NUM_PARALLEL_PROCESSORS 6
+set_global_assignment -name SYSTEMVERILOG_FILE mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/regfile.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/controller.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/mux4.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/mux2.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/regs.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/pgm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ctl.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/alu.sv
 set_global_assignment -name VERILOG_FILE "D0-Nano-Top.v"

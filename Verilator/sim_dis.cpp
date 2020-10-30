@@ -2,152 +2,48 @@
 
 
 void disassembly(unsigned addr, unsigned data) {
+
+    unsigned op = (data >> 26) & 0x0000003F;   
+    unsigned fn = data & 0x0000003F;
+    unsigned rs = (data >> 21) & 0x0000001F;
+    unsigned rt = (data >> 16) & 0x0000001F;
+    unsigned rd = (data >> 11) & 0x0000001F;
+    unsigned imm = data & 0x0000FFFF;
+    unsigned addr26 = data & 0x03FFFFFF;
     
-    // Instruccio LIT
-    //
-    if ((data & 0x8000) == 0x8000)
-        VL_PRINTF("%4.4X LIT    %4.4X d+\n", addr, data & 0x7FFF);
+    VL_PRINTF("%8.8X  %8.8X:  ", addr, data);
     
-    // Instruccio JMP
-    //
-    else if ((data & 0xE000) == 0x0000)
-        VL_PRINTF("%4.4X JMP    %4.4X\n", addr, data & 0x0FFF);
-        
-    // Instruccio BRZ
-    //
-    else if ((data & 0xE000) == 0x2000)
-        VL_PRINTF("%4.4X BRZ    %4.4X\n", addr, data & 0x0FFF);
-        
-    // Instruccio JSR
-    //
-    else if ((data & 0xE000) == 0x4000)
-        VL_PRINTF("%4.4X JSR    %4.4X       PC->R\n", addr, data & 0x0FFF);
-   
-    // Instruccio DO
-    //    
-    else if ((data & 0xE000) == 0x6000) { 
-        VL_PRINTF("%4.4X DO     ", addr);
-        switch (data & 0x0F00) {
-            case 0x0000:
-                VL_PRINTF("T   ");
-                break;
-                
-            case 0x0100:
-                VL_PRINTF("N   ");
-                break;
-                
-            case 0x0200:
-                VL_PRINTF("T+N ");
-                break;
-                
-            case 0x0300:
-                VL_PRINTF("T&N ");
-                break;
-                
-            case 0x0400:
-                VL_PRINTF("T|N ");
-                break;
-                
-            case 0x0500:
-                VL_PRINTF("T^N ");
-                break;
+    switch (op) {
+        case 0b000000: {
+            switch (fn) {
+                case 0b100000:
+                    VL_PRINTF("add   ");
+                    break;
 
-            case 0x0600:
-                VL_PRINTF("~T  ");
-                break;
-                
-            case 0x0700:
-                VL_PRINTF("T=N ");
-                break;
-                
-            case 0x0800:
-                VL_PRINTF("T>N ");
-                break;
-                
-            case 0x0900:
-                VL_PRINTF("N<<T");
-                break;
-                
-            case 0x0A00:
-                VL_PRINTF("A-1 ");
-                break;
-                
-            case 0x0B00:
-                VL_PRINTF("N>>T");
-                break;
-                
-            case 0x0C00:
-                VL_PRINTF("0   ");
-                break;
-                
-            case 0x0D00:
-                VL_PRINTF("0   ");
-                break;
-                
-            case 0x0E00:
-                VL_PRINTF("0   ");
-                break;
-                
-            case 0x0F00:
-                VL_PRINTF("0   ");
-                break;
-        }
-        
-        switch (data & 0x0003) {
-                case 0x0000:
-                    VL_PRINTF("   ");
+                case 0b100001:
+                    VL_PRINTF("addu  ");
                     break;
-                    
-                case 0x0001:
-                    VL_PRINTF(" d+");
-                    break;
-                    
-                case 0x0002:
-                    VL_PRINTF("   ");
-                    break;
-                    
-                case 0x0003:
-                    VL_PRINTF(" d-");
-                    break;
-        }
 
-        switch (data & 0x000C) {
-                case 0x0004:
-                    VL_PRINTF("   ");
+                case 0b100100:
+                    VL_PRINTF("and   ");
                     break;
-                    
-                case 0x0006:
-                    VL_PRINTF(" r+");
-                    break;
-                    
-                case 0x0008:
-                    VL_PRINTF("   ");
-                    break;
-                    
-                case 0x000C:
-                    VL_PRINTF(" r-");
-                    break;
+            }
+            VL_PRINTF("$%d, $%d, $%d", rd, rs, rt);
+            break;
         }
-        
-        if (data & 0x1000)
-            VL_PRINTF(" R->PC");
-        else
-            VL_PRINTF("      ");
-        
-        switch (data & 0x0070) {
-            case 0x0010:
-                VL_PRINTF(" T->N  ");
-                break;
-
-            case 0x0020:
-                VL_PRINTF(" T->R  ");
-                break;
             
-            case 0x0030:
-                VL_PRINTF(" R->[T]");
-                break;
-        }
-        
-        VL_PRINTF("\n");
+        case 0b100011:
+            VL_PRINTF("lw    $%d, %d+($%d)", rt, imm, rs);
+            break;
+
+        case 0b101011:
+            VL_PRINTF("sw    $%d, %d+($%d)", rt, imm, rs);
+            break;
+            
+        case 0b000010:
+            VL_PRINTF("j     %8.8X", addr26);
+            break;
     }
+    
+    VL_PRINTF("\n");
 }

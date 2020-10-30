@@ -27,7 +27,7 @@ endif
 #######################################################################
 # Linking final exe -- presumes have a sim_main.cpp
 
-simx: sim_main.o sim_rom.o sim_dis.o $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a
+simx: sim_main.o sim_rom.o sim_ram.o sim_dis.o $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a
 	$(LINK) $(LDFLAGS) -g $^ $(LOADLIBES) $(LDLIBS) -o $@ $(LIBS) 2>&1 | c++filt
 
 sim_main.o: sim_main.cpp $(VM_PREFIX).h sim.h

@@ -15,7 +15,7 @@
 default: show_config test_default
 
 # This must point to the root of the VERILATOR kit
-VERILATOR_ROOT := /home/rafael/Projectes/Projectes/verilator-3.880
+VERILATOR_ROOT := /home/rafael/Projectes/Projectes/verilator
 export VERILATOR_ROOT
 
 # Pick up PERL and other variable settings

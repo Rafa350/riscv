@@ -1,11 +1,17 @@
+// verilator lint_off IMPORTSTAR 
+
+ 
+import types::*;
+
+
 module alu 
 #(
-    parameter DATA_WIDTH = 16)
+    parameter DATA_WIDTH = 32)
 (
-    input [3:0] i_op,                            // Operation
+    input AluOp i_op,                            // Operation
     
-    input [DATA_WIDTH-1:0] i_data1,              // Operand 1
-    input [DATA_WIDTH-1:0] i_data2,              // Operand 2
+    input [DATA_WIDTH-1:0] i_dataA,              // Operand A
+    input [DATA_WIDTH-1:0] i_dataB,              // Operand B
     input logic i_carry,                         // Carry in
     
     output [DATA_WIDTH-1:0] o_result,            // Result
@@ -15,13 +21,15 @@ module alu
     
     always_comb
         case (i_op) 
-            4'd0   : o_result = i_data1 + i_data2 + i_carry;
-            4'd1   : o_result = i_data1 & i_data2;
-            4'd2   : o_result = i_data1 | i_data2;
-            4'd3   : o_result = i_data1 ^ i_data2;
+            AluOp_ADD : o_result = i_dataA + i_dataB + {{DATA_WIDTH-1{1'b0}}, i_carry};
+            AluOp_SUB : o_result = i_dataA - i_dataB;
+            AluOp_AND : o_result = i_dataA & i_dataB;
+            AluOp_OR  : o_result = i_dataA | i_dataB;
+            AluOp_XOR : o_result = i_dataA ^ i_dataB;
             default: o_result = 0;
         endcase
         
+    assign o_carry = 0;
     assign o_zero = !(|o_result);
     
   endmodule
