@@ -1,26 +1,29 @@
  // verilator lint_off IMPORTSTAR 
  // verilator lint_off UNUSED
- 
+ // verilator lint_off UNDRIVEN 
  
 import types::*;
 
 
 module controller
 (
-    input  logic         i_clk,
-    input  logic         i_rst,
+    input  logic   i_clk,
+    input  logic   i_rst,
     
-    input  InstOp        i_inst_op,
-    input  InstFn        i_inst_fn,
+    input  InstOp  i_inst_op,
+    input  InstFn  i_inst_fn,
     
-    output logic         o_mem_wr_enable,
+    output logic   o_mem_wr_enable,
+    
+    output logic   o_pc_branch,
+    output logic   o_pc_jump,
 
-    output AluOp         o_alu_op,
-    output logic         o_alu_data2_selector,
+    output AluOp   o_alu_op,
+    output logic   o_alu_data2_selector,
 
-    output logic         o_regs_wr_enable,
-    output logic         o_regs_wr_index_selector,
-    output logic         o_regs_wr_data_selector);
+    output logic   o_regs_wr_enable,
+    output logic   o_regs_wr_index_selector,
+    output logic   o_regs_wr_data_selector);
     
     logic is_rtype;
     logic is_ADDI;
@@ -42,18 +45,19 @@ module controller
             case (i_inst_fn)
                 InstFn_ADD: o_alu_op = AluOp_ADD;
                 InstFn_AND: o_alu_op = AluOp_AND;
-                default: o_alu_op = AluOp_Unknown;
+                default:    o_alu_op = AluOp_Unknown;
             endcase
         else
             case (i_inst_op)
-                InstOp_LW: o_alu_op = AluOp_ADD;
-                InstOp_SW: o_alu_op = AluOp_ADD;
-                default: o_alu_op = AluOp_Unknown;
+                InstOp_ADDI: o_alu_op = AluOp_ADD;
+                InstOp_LW:   o_alu_op = AluOp_ADD;
+                InstOp_SW:   o_alu_op = AluOp_ADD;
+                default:     o_alu_op = AluOp_Unknown;
             endcase
     
     assign o_mem_wr_enable = is_SW;
 
-    assign o_regs_wr_enable = is_rtype | is_LW;
+    assign o_regs_wr_enable = is_rtype | is_LW | is_ADDI;
     assign o_regs_wr_index_selector = is_rtype;
     assign o_regs_wr_data_selector = is_LW;
         

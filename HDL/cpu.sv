@@ -1,6 +1,6 @@
 // verilator lint_off PINMISSING 
 // verilator lint_off IMPORTSTAR 
- 
+// verilator lint_off UNUSED
 
 import types::*;
 
@@ -26,6 +26,15 @@ module cpu
     
     logic [PC_WIDTH-1:0] pc_next;           // Contador de programa actualitzat
       
+    logic [INDEX_WIDTH-1:0] inst_rs;
+    logic [INDEX_WIDTH-1:0] inst_rt;
+    logic [INDEX_WIDTH-1:0] inst_rd;
+    logic [4:0] inst_sh;
+    logic [15:0] inst_imm16;
+    logic [25:0] inst_imm26;
+    InstOp inst_op;
+    InstFn inst_fn;
+
     logic regs_wr_index_selector;           // Selector del registre d'escriptura
     logic regs_wr_data_selector;            // Selector del les dades d'esacriptura en el registre
     logic [DATA_WIDTH-1:0] regs_rd_data1;   // Dades de lectura 1
@@ -50,17 +59,15 @@ module cpu
     //    return {in[DATA_WIDTH-1:2], 2'b00};
     //endfunction
                    
-    //logic [INDEX_WIDTH-1:0] inst_rs;
-    
-    //logic [INDEX_WIDTH-1:0] inst_rt;
-    
-    //logic [INDEX_WIDTH-1:0] inst_rd;
-    
-    InstOp inst_op;
+    // Separacio de la inmstruccio en blocs
+    //
+    assign inst_rs = i_inst[25:21];
+    assign inst_rt = i_inst[20:16];
+    assign inst_rd = i_inst[15:11];
+    assign inst_sh = i_inst[10:6];
     assign inst_op = InstOp'(i_inst[31:26]);
-    
-    InstFn inst_fn;
     assign inst_fn = InstFn'(i_inst[5:0]);
+    assign inst_imm16 = i_inst[15:0];
 
     // Control
     controller controller(
@@ -85,9 +92,9 @@ module cpu
         .i_wreg(regs_wr_index),
         .i_wdata(regs_wr_data),
         .i_we(regs_wr_enable),
-        .i_rregA(i_inst[25:21]),
+        .i_rregA(inst_rs),
         .o_rdataA(regs_rd_data1),
-        .i_rregB(i_inst[20:16]),
+        .i_rregB(inst_rt),
         .o_rdataB(regs_rd_data2));
     
     // ALU data2 selector
@@ -96,7 +103,7 @@ module cpu
     alu_data2_mux (
         .i_sel(alu_data2_selector),
         .i_in0(regs_rd_data2),
-        .i_in1(signx(i_inst[(DATA_WIDTH/2)-1:0])),
+        .i_in1(signx(inst_imm16)),
         .o_out(alu_data2));
         
     // Destination register selector
@@ -105,8 +112,8 @@ module cpu
         .WIDTH(INDEX_WIDTH))
     regs_wd_index_mux (
         .i_sel(regs_wr_index_selector),
-        .i_in0(i_inst[20:16]),
-        .i_in1(i_inst[15:11]),
+        .i_in0(inst_rt),
+        .i_in1(inst_rd),
         .o_out(regs_wr_index));
         
     // Destination data selector

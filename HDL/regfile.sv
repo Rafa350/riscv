@@ -38,10 +38,10 @@ module regfile
             for (i = 1; i <= MAX_REG; i++)
                 data[i] <= zero;
         end                
-        else if (i_we & (~|i_wreg))
+        else if (i_we & (i_wreg != 0))
             data[i_wreg] <= i_wdata;
             
-    assign o_rdataA= ~|i_rregA? zero : data[i_rregA];
-    assign o_rdataB= ~|i_rregB? zero : data[i_rregB];
+    assign o_rdataA = (i_rregA == 0) ? zero : data[i_rregA];
+    assign o_rdataB = (i_rregB == 0) ? zero : data[i_rregB];
 
 endmodule

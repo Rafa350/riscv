@@ -15,26 +15,30 @@ extern void disassembly(unsigned addr, unsigned data);
 
 class ROM {
     private:
-        unsigned memSize;
-        unsigned *mem;
+        unsigned size;
+        uint32_t *mem;
     public:
         ROM();
         ROM(const char *fileName);
-        unsigned read(unsigned addr) const;
-        unsigned getSize() const { return memSize; }
+        uint32_t read(uint32_t addr) const;
+        unsigned getSize() const { return size; }
+        void dump(uint32_t addr, unsigned size);
 };
 
 
 class RAM {
     private:
-        unsigned memSize;
-        unsigned *mem;
+        unsigned size;
+        uint32_t *mem;
     public:
         RAM();
         RAM(const char *fileName);
-        unsigned read(unsigned addr) const;
-        void write(unsigned addr, unsigned data);
-        unsigned getSize() const { return memSize; }
+        uint32_t read(uint32_t addr) const;
+        uint8_t read(uint32_t addr, unsigned byte) const;
+        void write(uint32_t addr, uint32_t data);
+        void write(uint32_t addr, uint8_t data, unsigned byte);
+        unsigned getSize() const { return size; }
+        void dump(uint32_t addr, unsigned size);
 };
 
 

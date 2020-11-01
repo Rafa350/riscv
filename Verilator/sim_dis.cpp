@@ -33,11 +33,11 @@ void disassembly(unsigned addr, unsigned data) {
         }
             
         case 0b100011:
-            VL_PRINTF("lw    $%d, %d+($%d)", rt, imm, rs);
+            VL_PRINTF("lw    $%d, %d($%d)", rt, imm, rs);
             break;
 
         case 0b101011:
-            VL_PRINTF("sw    $%d, %d+($%d)", rt, imm, rs);
+            VL_PRINTF("sw    $%d, %d($%d)", rt, imm, rs);
             break;
             
         case 0b000010:

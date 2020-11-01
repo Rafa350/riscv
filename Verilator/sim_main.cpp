@@ -30,7 +30,6 @@ int main(int argc, char **argv, char **env) {
         VL_PRINTF("*** Enabling waves...\n");
         VL_PRINTF("    --Wave file name: %s\n", traceFileName);
 #endif
-
         top->clk = 0;
         top->rst = 0;
 
@@ -61,7 +60,7 @@ int main(int argc, char **argv, char **env) {
         }
         VL_PRINTF("*** End simulation loop.\n");
         VL_PRINTF("    --Total simulation time: %d ticks.\n", time);
-        
+
         top->final();
         
 #if VM_TRACE
@@ -71,9 +70,17 @@ int main(int argc, char **argv, char **env) {
         
         delete top;
         VL_PRINTF("*** Simulation end.\n");
+
+        VL_PRINTF("*** ROM dump start.\n");
+        rom->dump(0, 16);
+        VL_PRINTF("*** ROM dump end.\n");
+        
+        VL_PRINTF("*** RAM dump start.\n");
+        ram->dump(0, 16);
+        VL_PRINTF("*** RAM dump end.\n");
     }
     
-    VL_PRINTF("*** Exit.\n");
+    VL_PRINTF("*** End.\n");
 
     exit(0);    
     
