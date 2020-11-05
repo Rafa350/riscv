@@ -13,17 +13,16 @@ module controller
     input  InstOp  i_inst_op,
     input  InstFn  i_inst_fn,
     
-    output logic   o_mem_wr_enable,
+    output logic   o_MemWrite,
     
-    output logic   o_pc_branch,
-    output logic   o_pc_jump,
+    output logic   o_BranchRequest,
 
-    output AluOp   o_alu_op,
-    output logic   o_alu_data2_selector,
+    output AluOp   o_AluControl,
+    output logic   o_AluSrc,
 
-    output logic   o_regs_wr_enable,
-    output logic   o_regs_wr_index_selector,
-    output logic   o_regs_wr_data_selector);
+    output logic   o_RegWrite,
+    output logic   o_RegDst,
+    output logic   o_MemToReg);
     
     logic is_rtype;
     logic is_ADDI;
@@ -39,26 +38,27 @@ module controller
     
     // Actualitzacio de les senyals de control
     //
-    assign o_alu_data2_selector = is_ADDI | is_LW | is_SW;
+    assign o_AluSrc = is_ADDI | is_LW | is_SW;
     always_comb
         if (is_rtype)
             case (i_inst_fn)
-                InstFn_ADD: o_alu_op = AluOp_ADD;
-                InstFn_AND: o_alu_op = AluOp_AND;
-                default:    o_alu_op = AluOp_Unknown;
+                InstFn_ADD: o_AluControl = AluOp_ADD;
+                InstFn_AND: o_AluControl = AluOp_AND;
+                default:    o_AluControl = AluOp_Unknown;
             endcase
         else
             case (i_inst_op)
-                InstOp_ADDI: o_alu_op = AluOp_ADD;
-                InstOp_LW:   o_alu_op = AluOp_ADD;
-                InstOp_SW:   o_alu_op = AluOp_ADD;
-                default:     o_alu_op = AluOp_Unknown;
+                InstOp_ADDI: o_AluControl = AluOp_ADD;
+                InstOp_LW:   o_AluControl = AluOp_ADD;
+                InstOp_SW:   o_AluControl = AluOp_ADD;
+                default:     o_AluControl = AluOp_Unknown;
             endcase
     
-    assign o_mem_wr_enable = is_SW;
+    assign o_MemWrite = is_SW;
 
-    assign o_regs_wr_enable = is_rtype | is_LW | is_ADDI;
-    assign o_regs_wr_index_selector = is_rtype;
-    assign o_regs_wr_data_selector = is_LW;
+    assign o_RegWrite = is_rtype | is_LW | is_ADDI;
+    assign o_RegDst = is_rtype;
+    assign o_MemToReg = is_LW;
+    assign o_BranchRequest = 0;
         
 endmodule

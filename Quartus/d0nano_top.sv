@@ -1,7 +1,10 @@
+`define PIPELINE
+
+
 module top(
-    input wire CLOCK_50,
-    input wire [1:0] KEY,
-    input wire [3:0] SW,
+    input  wire       CLOCK_50,
+    input  wire [1:0] KEY,
+    input  wire [3:0] SW,
     output wire [7:0] LED);
     
     parameter DATA_WIDTH = 32;
@@ -18,16 +21,16 @@ module top(
     logic [PC_WIDTH-1:0] pgm_addr;
     logic [INST_WIDTH-1:0] pgm_inst;    
 
-    logic [DATA_WIDTH-1:0] mem_wdata;
-    logic [DATA_WIDTH-1:0] mem_rdata;
+    logic [DATA_WIDTH-1:0] mem_wr_data;
+    logic [DATA_WIDTH-1:0] mem_rd_data;
     logic [ADDR_WIDTH-1:0] mem_addr;
+    logic mem_we;
     
-    assign LED[3:0] = mem_wdata[3:0];
-    assign LED[6:4] = pgm_addr[2:0];
-    assign LED[7]   = mem_we;
+    assign LED[5:0] = pgm_inst[31:26];
+    assign LED[7:6] = pgm_addr[1:0];
 
     // -------------------------------------------------------------------
-    // RAM: Memoria ram.
+    // Memoria.
     //
     logic ram_we;
     mem #(
@@ -37,11 +40,11 @@ module top(
         .i_clk(clk),
         .i_we(mem_we),
         .i_addr(mem_addr),
-        .i_wdata(mem_wdata),
-        .o_rdata(mem_rdata));
+        .i_wr_data(mem_wr_data),
+        .o_rd_data(mem_rd_data));
       
     // -------------------------------------------------------------------
-    // PGM: Programa.
+    // Programa.
     //    
     pgm #(
         .ADDR_WIDTH(PC_WIDTH),
@@ -53,19 +56,23 @@ module top(
     // -------------------------------------------------------------------
     // CPU
     //
+`ifdef PIPELINE
+    cpu_pipeline #(
+`else    
     cpu #(
-        .DATA_WIDTH(DATA_WIDTH), 
-        .ADDR_WIDTH(ADDR_WIDTH),
-        .INST_WIDTH(INST_WIDTH),
-        .PC_WIDTH(PC_WIDTH)) 
+`endif    
+        .DATA_DBUS_WIDTH(DATA_WIDTH), 
+        .ADDR_DBUS_WIDTH(ADDR_WIDTH),
+        .DATA_IBUS_WIDTH(INST_WIDTH),
+        .ADDR_IBUS_WIDTH(PC_WIDTH)) 
     cpu (
         .i_clk(clk),
         .i_rst(rst),
-        .o_pc(pgm_addr),
-        .i_inst(pgm_inst),
-        .o_mem_wr_enable(mem_we),  
-        .i_mem_rd_data(mem_rdata),
-        .o_mem_wr_data(mem_wdata),
+        .o_pgm_addr(pgm_addr),
+        .i_pgm_inst(pgm_inst),
+        .o_mem_we(mem_we),  
+        .i_mem_rd_data(mem_rd_data),
+        .o_mem_wr_data(mem_wr_data),
         .o_mem_addr(mem_addr));
        
 endmodule

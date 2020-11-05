@@ -30,26 +30,26 @@ int main(int argc, char **argv, char **env) {
         VL_PRINTF("*** Enabling waves...\n");
         VL_PRINTF("    --Wave file name: %s\n", traceFileName);
 #endif
-        top->clk = 0;
-        top->rst = 0;
+        top->i_clk = 0;
+        top->i_rst = 0;
 
         VL_PRINTF("*** Start simulation loop.\n");
         const int maxTime = 1000;
         unsigned time;
-        for (time = 0; (time < maxTime) && !Verilated::gotFinish() && top->rom_addr < rom->getSize(); time++) {
+        for (time = 0; (time < maxTime) && !Verilated::gotFinish() && top->o_rom_addr < rom->getSize(); time++) {
             
             if (time && ((time % 10) == 0))
-                top->clk = !top->clk;
+                top->i_clk = !top->i_clk;
 
-            top->rst = time < 15;
-            top->rom_rdata = rom->read(top->rom_addr);
+            top->i_rst = time < 15;
+            top->i_rom_rdata = rom->read32(top->o_rom_addr);
             
-            if (top->ram_we)
-                ram->write(top->ram_addr, top->ram_wdata);
-            top->ram_rdata = ram->read(top->ram_addr);
+            if (top->o_ram_we)
+                ram->write32(top->o_ram_addr, top->o_ram_wdata);
+            top->i_ram_rdata = ram->read32(top->o_ram_addr);
             
-            if (((time % 10) == 0) && (top->clk == 0) && (top->rst == 0))
-                disassembly(top->rom_addr, top->rom_rdata);
+            if (((time % 10) == 0) && (top->i_clk == 0) && (top->i_rst == 0))
+                disassembly(top->o_rom_addr >> 2, top->i_rom_rdata);
             
             top->eval();
 #if VM_TRACE

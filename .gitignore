@@ -13,3 +13,4 @@
 /Verilator/*.csv
 /Tools/*.o
 /Tools/*.exe
+/Firmware/*.out

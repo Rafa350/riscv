@@ -11,9 +11,12 @@ module pgm
     
     logic [7:0] data[0:1024];
     
-    //initial
-    //    $readmemh("prg.txt", data);
-
+    /*
+    initial
+        $readmemh("../Firmware/a.txt", data);
+        
+    always o_inst = { data[i_addr], data[i_addr+1], data[i_addr+2], data[i_addr+3]};
+    */
     always_comb
         case (i_addr[31:2]) 
             32'h0  : o_inst = { InstOp_LW,    5'd0, 5'd1, 16'd0             }; // LW  $1, 0($0)

@@ -7,24 +7,25 @@ import types::*;
 
 module cpu
 #(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter INDEX_WIDTH = 5,
-    parameter INST_WIDTH = 32,
-    parameter PC_WIDTH = 32)
+    parameter DATA_DBUS_WIDTH          = 32,
+    parameter ADDR_DBUS_WIDTH          = 32,
+    parameter DATA_IBUS_WIDTH          = 32,
+    parameter ADDR_IBUS_WIDTH          = 32,
+    parameter INDEX_WIDTH              = 5)
 (
-    input logic i_clk,
-    input logic i_rst,
+    input  logic                       i_clk,
+    input  logic                       i_rst,
     
-    input logic [DATA_WIDTH-1:0] i_mem_rd_data,
-    output logic [DATA_WIDTH-1:0] o_mem_wr_data,
-    output logic [ADDR_WIDTH-1:0] o_mem_addr,
-    output logic o_mem_wr_enable,
+    input  logic [DATA_DBUS_WIDTH-1:0] i_mem_rd_data,
+    output logic [DATA_DBUS_WIDTH-1:0] o_mem_wr_data,
+    output logic [ADDR_DBUS_WIDTH-1:0] o_mem_addr,
+    output logic                       o_mem_we,
 
-    input logic [INST_WIDTH-1:0] i_inst,
-    output logic [PC_WIDTH-1:0] o_pc);
+    input  logic [DATA_IBUS_WIDTH-1:0] i_pgm_inst,
+    output logic [ADDR_IBUS_WIDTH-1:0] o_pgm_addr);
     
-    logic [PC_WIDTH-1:0] pc_next;           // Contador de programa actualitzat
+    logic [ADDR_IBUS_WIDTH-1:0] pc_inc4;    // Contador de programa actualitzat
+    logic branch;
       
     logic [INDEX_WIDTH-1:0] inst_rs;
     logic [INDEX_WIDTH-1:0] inst_rt;
@@ -34,25 +35,27 @@ module cpu
     logic [25:0] inst_imm26;
     InstOp inst_op;
     InstFn inst_fn;
+    
+    logic BranchRequest;
 
-    logic regs_wr_index_selector;           // Selector del registre d'escriptura
-    logic regs_wr_data_selector;            // Selector del les dades d'esacriptura en el registre
-    logic [DATA_WIDTH-1:0] regs_rd_data1;   // Dades de lectura 1
-    logic [DATA_WIDTH-1:0] regs_rd_data2;   // Dades de lectura 2
-    logic [DATA_WIDTH-1:0] regs_wr_data;    // Dades d'escriptura   
-    logic [INDEX_WIDTH-1:0] regs_wr_index;  // Index del registre d'escriptura
-    logic regs_wr_enable;                   // Autoritza escriptura del regisres
+    logic regs_wr_index_selector;                // Selector del registre d'escriptura
+    logic regs_wr_data_selector;                 // Selector del les dades d'esacriptura en el registre
+    logic [DATA_DBUS_WIDTH-1:0] regs_rdataA;     // Dades de lectura A
+    logic [DATA_DBUS_WIDTH-1:0] regs_rdataB;     // Dades de lectura B
+    logic [DATA_DBUS_WIDTH-1:0] regs_wdata;      // Dades d'escriptura   
+    logic [INDEX_WIDTH-1:0] regs_wr_index;       // Index del registre d'escriptura
+    logic regs_we;                               // Autoritza escriptura del regisres
     
-    logic mem_wr_enable;                    // Autoritza escritura en memoria
+    logic mem_we;                                // Autoritza escritura en memoria
     
-    AluOp alu_op;                           // Operacio de la ALU
-    logic alu_data2_selector;               // Seleccio de la entrada 2 de la ALU
-    logic [DATA_WIDTH-1:0] alu_data2;       // Dades 2
-    logic [DATA_WIDTH-1:0] alu_result;      // Resultat
+    AluOp alu_op;                                // Operacio de la ALU
+    logic alu_data2_selector;                    // Seleccio de la entrada 2 de la ALU
+    logic [DATA_DBUS_WIDTH-1:0] alu_dataB;       // Dades B
+    logic [DATA_DBUS_WIDTH-1:0] alu_result;      // Resultat
     
     
-    function logic [DATA_WIDTH-1:0] signx(logic [(DATA_WIDTH/2)-1:0] in);   
-        return {{DATA_WIDTH/2{in[15]}}, in};        
+    function logic [DATA_DBUS_WIDTH-1:0] signx(logic [(DATA_DBUS_WIDTH/2)-1:0] in);   
+        return {{DATA_DBUS_WIDTH/2{in[15]}}, in};        
     endfunction
     
     //function logic [DATA_WIDTH-1:0] shift_2left(logic [DATA_WIDTH-1:0] in);
@@ -61,94 +64,95 @@ module cpu
                    
     // Separacio de la inmstruccio en blocs
     //
-    assign inst_rs = i_inst[25:21];
-    assign inst_rt = i_inst[20:16];
-    assign inst_rd = i_inst[15:11];
-    assign inst_sh = i_inst[10:6];
-    assign inst_op = InstOp'(i_inst[31:26]);
-    assign inst_fn = InstFn'(i_inst[5:0]);
-    assign inst_imm16 = i_inst[15:0];
+    assign inst_rs = i_pgm_inst[25:21];
+    assign inst_rt = i_pgm_inst[20:16];
+    assign inst_rd = i_pgm_inst[15:11];
+    assign inst_sh = i_pgm_inst[10:6];
+    assign inst_op = InstOp'(i_pgm_inst[31:26]);
+    assign inst_fn = InstFn'(i_pgm_inst[5:0]);
+    assign inst_imm16 = i_pgm_inst[15:0];
 
     // Control
     controller controller(
-        .i_clk(i_clk),
-        .i_rst(i_rst),
-        .i_inst_op(inst_op),
-        .i_inst_fn(inst_fn),
-        .o_alu_op(alu_op),
-        .o_mem_wr_enable(mem_wr_enable),
-        .o_regs_wr_enable(regs_wr_enable),
-        .o_alu_data2_selector(alu_data2_selector),
-        .o_regs_wr_index_selector(regs_wr_index_selector),
-        .o_regs_wr_data_selector(regs_wr_data_selector));
+        .i_clk           (i_clk),
+        .i_rst           (i_rst),
+        .i_inst_op       (inst_op),
+        .i_inst_fn       (inst_fn),
+        .o_AluControl    (alu_op),
+        .o_MemWrite      (mem_we),
+        .o_RegWrite      (regs_we),
+        .o_AluSrc        (alu_data2_selector),
+        .o_RegDst        (regs_wr_index_selector),
+        .o_MemToReg      (regs_wr_data_selector),
+        .o_BranchRequest (BranchRequest));
         
     // Bloc de registres
     regfile #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .REG_WIDTH(INDEX_WIDTH))
-    regfile (
-        .i_clk(i_clk),
-        .i_rst(i_rst),
-        .i_wreg(regs_wr_index),
-        .i_wdata(regs_wr_data),
-        .i_we(regs_wr_enable),
-        .i_rregA(inst_rs),
-        .o_rdataA(regs_rd_data1),
-        .i_rregB(inst_rt),
-        .o_rdataB(regs_rd_data2));
+        .DATA_WIDTH  (DATA_DBUS_WIDTH),
+        .REG_WIDTH   (INDEX_WIDTH))
+    regs (
+        .i_clk       (i_clk),
+        .i_rst       (i_rst),
+        .i_wr_reg    (regs_wr_index),
+        .i_wr_data   (regs_wdata),
+        .i_we        (regs_we),
+        .i_rd_reg_A  (inst_rs),
+        .o_rd_data_A (regs_rdataA),
+        .i_rd_reg_B  (inst_rt),
+        .o_rd_data_B (regs_rdataB));
     
     // ALU data2 selector
     mux2 #(
-        .WIDTH(DATA_WIDTH))
+        .WIDTH  (DATA_DBUS_WIDTH))
     alu_data2_mux (
-        .i_sel(alu_data2_selector),
-        .i_in0(regs_rd_data2),
-        .i_in1(signx(inst_imm16)),
-        .o_out(alu_data2));
+        .i_sel  (alu_data2_selector),
+        .i_in_0 (regs_rdataB),
+        .i_in_1 (signx(inst_imm16)),
+        .o_out  (alu_dataB));
         
     // Destination register selector
     //
     mux2 #(
-        .WIDTH(INDEX_WIDTH))
+        .WIDTH  (INDEX_WIDTH))
     regs_wd_index_mux (
-        .i_sel(regs_wr_index_selector),
-        .i_in0(inst_rt),
-        .i_in1(inst_rd),
-        .o_out(regs_wr_index));
+        .i_sel  (regs_wr_index_selector),
+        .i_in_0 (inst_rt),
+        .i_in_1 (inst_rd),
+        .o_out  (regs_wr_index));
         
     // Destination data selector
     //
     mux2 #(
-        .WIDTH(DATA_WIDTH))
+        .WIDTH  (DATA_DBUS_WIDTH))
     reg_rd_data_mux (
-        .i_sel(regs_wr_data_selector),
-        .i_in0(alu_result),
-        .i_in1(i_mem_rd_data),
-        .o_out(regs_wr_data));
+        .i_sel  (regs_wr_data_selector),
+        .i_in_0 (alu_result),
+        .i_in_1 (i_mem_rd_data),
+        .o_out  (regs_wdata));
         
     // ALU
     alu #(
-        .DATA_WIDTH(DATA_WIDTH))
+        .WIDTH    (DATA_DBUS_WIDTH))
     alu (
-        .i_op(alu_op),
-        .i_dataA(regs_rd_data1),
-        .i_dataB(alu_data2),
-        .o_result(alu_result));        
+        .i_op     (alu_op),
+        .i_data_A (regs_rdataA),
+        .i_data_B (alu_dataB),
+        .o_result (alu_result));        
 
     // Program counter
-    assign pc_next = o_pc + 1;
+    assign pc_inc4 = o_pgm_addr + 4;
     always_ff @(posedge i_clk) begin
         if (i_rst)
-            o_pc <= 0;
+            o_pgm_addr <= 0;
         else
-            o_pc <= pc_next;
+            o_pgm_addr <= pc_inc4;
     end
     
     // Memoria
     //
     assign o_mem_addr = alu_result;
-    assign o_mem_wr_enable = mem_wr_enable;
-    assign o_mem_wr_data = regs_rd_data2;
+    assign o_mem_we = mem_we;
+    assign o_mem_wr_data = regs_rdataB;
           
 endmodule
 

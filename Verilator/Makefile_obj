@@ -32,3 +32,4 @@ simx: sim_main.o sim_rom.o sim_ram.o sim_dis.o $(VK_GLOBAL_OBJS) $(VM_PREFIX)__A
 
 sim_main.o: sim_main.cpp $(VM_PREFIX).h sim.h
 
+

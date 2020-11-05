@@ -11,21 +11,21 @@ module regfile
     parameter REG_WIDTH = 5)                     // Amplada del nombre de registre
 (
     // Control
-    input logic i_clk,                           // Clock
+    input logic i_clk,                           // Clock. 
     input logic i_rst,                           // Reset
     
     // Port d'escriptura
-    input logic [REG_WIDTH-1:0] i_wreg,          // Write register
-    input logic [DATA_WIDTH-1:0] i_wdata,        // Write data 
-    input logic i_we,                            // Write enable
+    input logic [REG_WIDTH-1:0]  i_wr_reg,       // Identificador del registre del port escriptura
+    input logic [DATA_WIDTH-1:0] i_wr_data,      // Dades d'escriptura
+    input logic                  i_we,           // Habilita l'escriptura
     
     // Port de lectura A
-    input logic [REG_WIDTH-1:0] i_rregA,         // Read register A
-    output logic [DATA_WIDTH-1:0] o_rdataA,      // Read data A
+    input  logic [REG_WIDTH-1:0]  i_rd_reg_A,    // Identificador del registre del port de lectura A
+    output logic [DATA_WIDTH-1:0] o_rd_data_A,   // Dades lleigides del port A
     
     // Port de lectura B
-    input logic [REG_WIDTH-1:0] i_rregB,         // Read register B
-    output logic [DATA_WIDTH-1:0] o_rdataB);     // Read data B
+    input  logic [REG_WIDTH-1:0]  i_rd_reg_B,    // Identificador del regisres del port de lectura B
+    output logic [DATA_WIDTH-1:0] o_rd_data_B);  // Dades lleigides del port B
     
     localparam MAX_REG = (2**REG_WIDTH)-1;
     
@@ -38,10 +38,10 @@ module regfile
             for (i = 1; i <= MAX_REG; i++)
                 data[i] <= zero;
         end                
-        else if (i_we & (i_wreg != 0))
-            data[i_wreg] <= i_wdata;
+        else if (i_we & (i_wr_reg != 0))
+            data[i_wr_reg] <= i_wr_data;
             
-    assign o_rdataA = (i_rregA == 0) ? zero : data[i_rregA];
-    assign o_rdataB = (i_rregB == 0) ? zero : data[i_rregB];
+    assign o_rd_data_A = (i_rd_reg_A == 0) ? zero : data[i_rd_reg_A];
+    assign o_rd_data_B = (i_rd_reg_B == 0) ? zero : data[i_rd_reg_B];
 
 endmodule

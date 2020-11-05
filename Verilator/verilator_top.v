@@ -9,67 +9,49 @@
  *************************************************************************/
 
  
-/* verilator lint_off DECLFILENAME */
-/* verilator lint_off UNUSED */
-/* verilator lint_off PINMISSING */
+// verilator lint_off DECLFILENAME 
+// verilator lint_off UNUSED 
+// verilator lint_off PINMISSING 
 
 `include "types.sv"
  
  
-`define DATA_WIDTH 32
-`define ADDR_WIDTH 32
-`define PC_WIDTH   32
-`define INST_WIDTH 32
+`define DATA_DBUS_WIDTH 32
+`define ADDR_DBUS_WIDTH 32
+`define ADDR_IBUS_WIDTH 32
+`define DATA_IBUS_WIDTH 32
 
-`define SIM_ROM
-`define SIM_RAM
+`define PIPELINE
 
- 
 module top(
-`ifdef SIM_RAM
-    input [`DATA_WIDTH-1:0] ram_rdata,
-    output [`DATA_WIDTH-1:0] ram_wdata,
-    output [`ADDR_WIDTH-1:0] ram_addr,
-    output ram_we,
-`endif
-`ifdef SIM_ROM
-    input [`INST_WIDTH-1:0] rom_rdata,
-    output [`PC_WIDTH-1:0] rom_addr,
-`endif
-    input clk,
-    input rst
-);
+    input                         i_clk,
+    input                         i_rst,
 
-    // Simulacio de la ram
-    //
-`ifndef SIM_RAM    
-    logic [`DATA_WIDTH-1:0] ram_rdata;
-    logic [`DATA_WIDTH-1:0] ram_wdata;
-    logic [`ADDR_WIDTH-1:0] ram_addr;
-    logic ram_we;
-    logic [`DATA_WIDTH-1:0] data[0:15];
-    
-    always_ff @(posedge clk)    
-        if (ram_we)
-            data[ram_addr] <= ram_wdata;
-    assign ram_rdata = data[ram_addr];
-`endif    
-    
-    // CPU
-    //
+    input  [`DATA_DBUS_WIDTH-1:0] i_ram_rdata,
+    output [`DATA_DBUS_WIDTH-1:0] o_ram_wdata,
+    output [`ADDR_DBUS_WIDTH-1:0] o_ram_addr,
+    output                        o_ram_we,
+
+    input  [`DATA_IBUS_WIDTH-1:0] i_rom_rdata,
+    output [`ADDR_IBUS_WIDTH-1:0] o_rom_addr );
+ 
+`ifdef PIPELINE 
+    cpu_pipeline #(
+`else
     cpu #(
-        .DATA_WIDTH(`DATA_WIDTH), 
-        .ADDR_WIDTH(`ADDR_WIDTH),
-        .INST_WIDTH(`INST_WIDTH),
-        .PC_WIDTH(`PC_WIDTH)) 
-    cpu0 (
-        .i_clk(clk),
-        .i_rst(rst),
-        .o_pc(rom_addr),
-        .i_inst(rom_rdata),
-        .o_mem_wr_enable(ram_we),  
-        .i_mem_rd_data(ram_rdata),
-        .o_mem_wr_data(ram_wdata),
-        .o_mem_addr(ram_addr));
+`endif    
+        .DATA_DBUS_WIDTH(`DATA_DBUS_WIDTH), 
+        .ADDR_DBUS_WIDTH(`ADDR_DBUS_WIDTH),
+        .DATA_IBUS_WIDTH(`DATA_IBUS_WIDTH),
+        .ADDR_IBUS_WIDTH(`ADDR_IBUS_WIDTH)) 
+    cpu (
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .o_pgm_addr(o_rom_addr),
+        .i_pgm_inst(i_rom_rdata),
+        .o_mem_we(o_ram_we),  
+        .i_mem_rd_data(i_ram_rdata),
+        .o_mem_wr_data(o_ram_wdata),
+        .o_mem_addr(o_ram_addr));
         
 endmodule
