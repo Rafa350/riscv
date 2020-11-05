@@ -51,33 +51,34 @@ module stageEX
     mux2 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     mux_dataB (
-        .i_sel  (i_AluSrcB),
-        .i_in_0 (i_DataB),
-        .i_in_1 (i_InstIMM),
-        .o_out  (DataB));
+        .i_sel (i_AluSrcB),
+        .i_in0 (i_DataB),
+        .i_in1 (i_InstIMM),
+        .o_out (DataB));
     
     mux2 #(
         .WIDTH  (5))
     mux_reg_dst (
-        .i_sel  (i_RegDst),
-        .i_in_0 (i_InstRT),
-        .i_in_1 (i_InstRD),
-        .o_out  (WriteReg));
+        .i_sel (i_RegDst),
+        .i_in0 (i_InstRT),
+        .i_in1 (i_InstRD),
+        .o_out (WriteReg));
         
     alu #(
         .WIDTH (DATA_DBUS_WIDTH))
     alu (
-        .i_op      (i_AluControl),
-        .i_data_A  (i_DataA),
-        .i_data_B  (DataB),
-        .i_carry   (0),
-        .o_result  (AluOut),
-        .o_zero    (Zero),
-        .o_carry   (Carry));
+        .i_op     (i_AluControl),
+        .i_dataA  (i_DataA),
+        .i_dataB  (DataB),
+        .i_carry  (0),
+        .o_result (AluOut),
+        .o_zero   (Zero),
+        .o_carry  (Carry));
     
     // Evalua la direccio de salt
     //
-    assign BranchAddr = i_PCPlus4 + {i_InstIMM[31:2], 2'b00};
+    always_comb
+        BranchAddr = i_PCPlus4 + {i_InstIMM[31:2], 2'b00};
 
     // Actualitza els registres del pipeline
     //

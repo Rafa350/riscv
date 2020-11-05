@@ -20,37 +20,39 @@ module stageIF
     
     // Sortides del pipeline 
     //
-    output logic [DATA_IBUS_WIDTH-1:0] o_Inst,           // Instruction
-    output logic [ADDR_IBUS_WIDTH-1:0] o_PCPlus4);       // PC+4    
+    output logic [DATA_IBUS_WIDTH-1:0] o_inst,           // Instruction
+    output logic [ADDR_IBUS_WIDTH-1:0] o_pc_plus4);      // PC+4    
     
     // Senals internes
     //
-    logic [DATA_IBUS_WIDTH-1:0] Inst;       // La instruccio actual
-    logic [ADDR_IBUS_WIDTH-1:0] PC;         // El PC actual
-    logic [ADDR_IBUS_WIDTH-1:0] PCPlus4;    // El PC de la seguent instruccio
+    logic [DATA_IBUS_WIDTH-1:0] inst;       // La instruccio actual
+    logic [ADDR_IBUS_WIDTH-1:0] pc;         // El PC actual
+    logic [ADDR_IBUS_WIDTH-1:0] pc_plus4;   // El PC de la seguent instruccio
     
-    // Control d'acces a la memoria de programa
+    // Acces a la memoria de programa
     //
-    assign o_PgmAddr = PC; 
-    assign Inst = i_PgmInst;
+    always_comb begin
+        o_pgm_addr = pc; 
+        inst = i_pgm_inst;
+    end
        
-    // Evalua el contador de programa
+    // Contador de programa
     //
-    assign PCPlus4 = PC + 4;
+    assign pc_plus4 = pc + 4;               
     always_ff @(posedge i_clk) begin
         case ({i_rst, i_BranchEnable})
-            2'b00: PC <= PCPlus4;
-            2'b01: PC <= i_BranchAddr;
-            2'b10: PC <= 0;
-            2'b11: PC <= 0;
+            2'b00: pc <= pc_plus4;
+            2'b01: pc <= i_BranchAddr;
+            2'b10: pc <= 0;
+            2'b11: pc <= 0;
         endcase
     end        
             
-    // Actualitza els registres pipeline de sortida
+    // Registres pipeline de sortida
     //
     always_ff @(posedge i_clk) begin
-        o_PCPlus4 <= PCPlus4;
-        o_Inst    <= Inst;
+        o_pc_plus4 <= pc_plus4;
+        o_inst     <= inst;
     end
 
 endmodule

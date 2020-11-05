@@ -127,6 +127,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/stageIF.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/stageID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/stageEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/stageMEM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/stageWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/cpu_pipeline.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/regfile.sv

@@ -1,5 +1,5 @@
-// verilator lint_off PINMISSING 
 // verilator lint_off IMPORTSTAR 
+// verilator lint_off PINMISSING
 // verilator lint_off UNUSED
 
 import types::*;
@@ -16,8 +16,8 @@ module cpu
     input  logic                       i_clk,
     input  logic                       i_rst,
     
-    input  logic [DATA_DBUS_WIDTH-1:0] i_mem_rd_data,
-    output logic [DATA_DBUS_WIDTH-1:0] o_mem_wr_data,
+    input  logic [DATA_DBUS_WIDTH-1:0] i_mem_rdata,
+    output logic [DATA_DBUS_WIDTH-1:0] o_mem_wdata,
     output logic [ADDR_DBUS_WIDTH-1:0] o_mem_addr,
     output logic                       o_mem_we,
 
@@ -43,7 +43,7 @@ module cpu
     logic [DATA_DBUS_WIDTH-1:0] regs_rdataA;     // Dades de lectura A
     logic [DATA_DBUS_WIDTH-1:0] regs_rdataB;     // Dades de lectura B
     logic [DATA_DBUS_WIDTH-1:0] regs_wdata;      // Dades d'escriptura   
-    logic [INDEX_WIDTH-1:0] regs_wr_index;       // Index del registre d'escriptura
+    logic [INDEX_WIDTH-1:0] regs_waddr;          // Index del registre d'escriptura
     logic regs_we;                               // Autoritza escriptura del regisres
     
     logic mem_we;                                // Autoritza escritura en memoria
@@ -89,36 +89,36 @@ module cpu
     // Bloc de registres
     regfile #(
         .DATA_WIDTH  (DATA_DBUS_WIDTH),
-        .REG_WIDTH   (INDEX_WIDTH))
+        .ADDR_WIDTH  (INDEX_WIDTH))
     regs (
-        .i_clk       (i_clk),
-        .i_rst       (i_rst),
-        .i_wr_reg    (regs_wr_index),
-        .i_wr_data   (regs_wdata),
-        .i_we        (regs_we),
-        .i_rd_reg_A  (inst_rs),
-        .o_rd_data_A (regs_rdataA),
-        .i_rd_reg_B  (inst_rt),
-        .o_rd_data_B (regs_rdataB));
+        .i_clk    (i_clk),
+        .i_rst    (i_rst),
+        .i_waddr  (regs_waddr),
+        .i_wdata  (regs_wdata),
+        .i_we     (regs_we),
+        .i_raddrA (inst_rs),
+        .o_rdataA (regs_rdataA),
+        .i_raddrB (inst_rt),
+        .o_rdataB (regs_rdataB));
     
     // ALU data2 selector
     mux2 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     alu_data2_mux (
-        .i_sel  (alu_data2_selector),
-        .i_in_0 (regs_rdataB),
-        .i_in_1 (signx(inst_imm16)),
-        .o_out  (alu_dataB));
+        .i_sel (alu_data2_selector),
+        .i_in0 (regs_rdataB),
+        .i_in1 (signx(inst_imm16)),
+        .o_out (alu_dataB));
         
     // Destination register selector
     //
     mux2 #(
         .WIDTH  (INDEX_WIDTH))
     regs_wd_index_mux (
-        .i_sel  (regs_wr_index_selector),
-        .i_in_0 (inst_rt),
-        .i_in_1 (inst_rd),
-        .o_out  (regs_wr_index));
+        .i_sel (regs_wr_index_selector),
+        .i_in0 (inst_rt),
+        .i_in1 (inst_rd),
+        .o_out (regs_waddr));
         
     // Destination data selector
     //
@@ -126,8 +126,8 @@ module cpu
         .WIDTH  (DATA_DBUS_WIDTH))
     reg_rd_data_mux (
         .i_sel  (regs_wr_data_selector),
-        .i_in_0 (alu_result),
-        .i_in_1 (i_mem_rd_data),
+        .i_in0  (alu_result),
+        .i_in1  (i_mem_rdata),
         .o_out  (regs_wdata));
         
     // ALU
@@ -135,8 +135,8 @@ module cpu
         .WIDTH    (DATA_DBUS_WIDTH))
     alu (
         .i_op     (alu_op),
-        .i_data_A (regs_rdataA),
-        .i_data_B (alu_dataB),
+        .i_dataA  (regs_rdataA),
+        .i_dataB  (alu_dataB),
         .o_result (alu_result));        
 
     // Program counter
@@ -152,7 +152,7 @@ module cpu
     //
     assign o_mem_addr = alu_result;
     assign o_mem_we = mem_we;
-    assign o_mem_wr_data = regs_rdataB;
+    assign o_mem_wdata = regs_rdataB;
           
 endmodule
 

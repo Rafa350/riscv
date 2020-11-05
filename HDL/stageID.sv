@@ -79,17 +79,17 @@ module stageID
            
     regfile #(
         .DATA_WIDTH (DATA_DBUS_WIDTH),
-        .REG_WIDTH  (5))
+        .ADDR_WIDTH  (5))
     regs (
-        .i_clk       (i_clk),
-        .i_rst       (i_rst),        
-        .i_we        (i_RegWriteEnable),
-        .i_rd_reg_A  (InstRS),
-        .i_rd_reg_B  (InstRT),
-        .i_wr_reg    (i_RegToWrite),
-        .i_wr_data   (i_RegWriteData),
-        .o_rd_data_A (DataA),
-        .o_rd_data_B (DataB));
+        .i_clk     (i_clk),
+        .i_rst     (i_rst),        
+        .i_we      (i_RegWriteEnable),
+        .i_raddrA (InstRS),
+        .i_raddrB (InstRT),
+        .i_waddr  (i_RegToWrite),
+        .i_wdata  (i_RegWriteData),
+        .o_rdataA (DataA),
+        .o_rdataB (DataB));
 
     // Actualitza els registres del pipeline de sortida
     //

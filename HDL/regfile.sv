@@ -7,41 +7,43 @@
 //
 module regfile
 #(
-    parameter DATA_WIDTH = 32,                   // Amplada del bus de dades
-    parameter REG_WIDTH = 5)                     // Amplada del nombre de registre
+    parameter DATA_WIDTH = 32,               // Amplada del bus de dades
+    parameter ADDR_WIDTH = 5)                // Amplada del bus d'adreses
 (
     // Control
-    input logic i_clk,                           // Clock. 
-    input logic i_rst,                           // Reset
+    input logic i_clk,                       // Clock
+    input logic i_rst,                       // Reset
     
     // Port d'escriptura
-    input logic [REG_WIDTH-1:0]  i_wr_reg,       // Identificador del registre del port escriptura
-    input logic [DATA_WIDTH-1:0] i_wr_data,      // Dades d'escriptura
-    input logic                  i_we,           // Habilita l'escriptura
+    input logic [ADDR_WIDTH-1:0] i_waddr,    // Identificador del registre del port escriptura
+    input logic [DATA_WIDTH-1:0] i_wdata,    // Dades d'escriptura
+    input logic                  i_we,       // Habilita l'escriptura
     
     // Port de lectura A
-    input  logic [REG_WIDTH-1:0]  i_rd_reg_A,    // Identificador del registre del port de lectura A
-    output logic [DATA_WIDTH-1:0] o_rd_data_A,   // Dades lleigides del port A
+    input  logic [ADDR_WIDTH-1:0] i_raddrA,  // Identificador del registre del port de lectura A
+    output logic [DATA_WIDTH-1:0] o_rdataA,  // Dades lleigides del port A
     
     // Port de lectura B
-    input  logic [REG_WIDTH-1:0]  i_rd_reg_B,    // Identificador del regisres del port de lectura B
-    output logic [DATA_WIDTH-1:0] o_rd_data_B);  // Dades lleigides del port B
+    input  logic [ADDR_WIDTH-1:0] i_raddrB,  // Identificador del regisres del port de lectura B
+    output logic [DATA_WIDTH-1:0] o_rdataB); // Dades lleigides del port B
     
-    localparam MAX_REG = (2**REG_WIDTH)-1;
+    localparam NUM_REGS = 2**ADDR_WIDTH;
     
-    logic [DATA_WIDTH-1:0] data[1:MAX_REG];
-    logic [DATA_WIDTH-1:0] zero = 0;
+    logic [DATA_WIDTH-1:0] data[1:NUM_REGS-1];
+    logic [DATA_WIDTH-1:0] zero = {DATA_WIDTH{1'b0}};
     
     always_ff @(posedge i_clk)
         if (i_rst) begin
             integer i;
-            for (i = 1; i <= MAX_REG; i++)
+            for (i = 1; i < NUM_REGS; i++)
                 data[i] <= zero;
         end                
-        else if (i_we & (i_wr_reg != 0))
-            data[i_wr_reg] <= i_wr_data;
+        else if (i_we & (i_waddr != 0))
+            data[i_waddr] <= i_wdata;
             
-    assign o_rd_data_A = (i_rd_reg_A == 0) ? zero : data[i_rd_reg_A];
-    assign o_rd_data_B = (i_rd_reg_B == 0) ? zero : data[i_rd_reg_B];
+    always_comb begin            
+        o_rdataA = (i_raddrA == 0) ? zero : data[i_raddrA];
+        o_rdataB = (i_raddrB == 0) ? zero : data[i_raddrB];
+    end
 
 endmodule
