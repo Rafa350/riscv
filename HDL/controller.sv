@@ -15,7 +15,8 @@ module controller
     
     output logic   o_MemWrite,
     
-    output logic   o_BranchRequest,
+    output logic   o_is_branch,
+    output logic   o_is_jump,
 
     output AluOp   o_AluControl,
     output logic   o_AluSrc,
@@ -24,23 +25,27 @@ module controller
     output logic   o_RegDst,
     output logic   o_MemToReg);
     
-    logic is_rtype;
+    logic is_type_R;
     logic is_ADDI;
     logic is_LW;
     logic is_SW;
+    logic is_J;
+    logic is_BEQ;
     
-    // Decodificacio de les instruccions
-    //
-    assign is_rtype = i_inst_op == InstOp_RType;       
-    assign is_ADDI = (i_inst_op == InstOp_ADDI);
-    assign is_LW   = (i_inst_op == InstOp_LW);
-    assign is_SW   = (i_inst_op == InstOp_SW);
+    always_comb begin
     
-    // Actualitzacio de les senyals de control
-    //
-    assign o_AluSrc = is_ADDI | is_LW | is_SW;
-    always_comb
-        if (is_rtype)
+        // Decodificacio de les instruccions
+        //
+        is_type_R = i_inst_op == InstOp_Type_R;       
+        is_ADDI   = i_inst_op == InstOp_ADDI;
+        is_LW     = i_inst_op == InstOp_LW;
+        is_SW     = i_inst_op == InstOp_SW;
+        is_J      = i_inst_op == InstOp_J;
+        is_BEQ    = i_inst_op == InstOp_BEQ;
+    
+        // Evalua el codi d'operacio de la ALU
+        //
+        if (is_type_R)
             case (i_inst_fn)
                 InstFn_ADD: o_AluControl = AluOp_ADD;
                 InstFn_AND: o_AluControl = AluOp_AND;
@@ -54,11 +59,16 @@ module controller
                 default:     o_AluControl = AluOp_Unknown;
             endcase
     
-    assign o_MemWrite = is_SW;
-
-    assign o_RegWrite = is_rtype | is_LW | is_ADDI;
-    assign o_RegDst = is_rtype;
-    assign o_MemToReg = is_LW;
-    assign o_BranchRequest = 0;
+        // Evalua les señals de control
+        //
+        o_AluSrc    = is_ADDI | is_LW | is_SW;
+        o_MemWrite  = is_SW;
+        o_RegWrite  = is_type_R | is_LW | is_ADDI;
+        o_RegDst    = is_type_R;
+        o_MemToReg  = is_LW;
+        o_is_branch = is_BEQ;
+        o_is_jump   = is_J;
+        
+    end
         
 endmodule

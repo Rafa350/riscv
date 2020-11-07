@@ -16,11 +16,10 @@ module stageMEM #(
     
     // Entrades del pipeline
     //
-    input  logic                       i_Zero,
     input  logic [DATA_DBUS_WIDTH-1:0] i_AluOut,
     input  logic [DATA_DBUS_WIDTH-1:0] i_WriteData,
-    input  logic                       i_WriteReg,
-    input  logic                       i_RegWrite,
+    input  logic [4:0]                 i_WriteReg,
+    input  logic                       i_reg_we,
     input  logic                       i_MemToReg,
     input  logic                       i_MemWrite,
     input  logic                       i_BranchRequest,
@@ -29,8 +28,8 @@ module stageMEM #(
     //
     output logic [DATA_DBUS_WIDTH-1:0] o_AluOut,
     output logic [DATA_DBUS_WIDTH-1:0] o_ReadData,
-    output logic                       o_WriteReg,
-    output logic                       o_RegWrite,
+    output logic [4:0]                 o_WriteReg,
+    output logic                       o_reg_we,
     output logic                       o_MemToReg);
 
     always_comb begin
@@ -43,7 +42,7 @@ module stageMEM #(
         o_AluOut   <= i_AluOut;
         o_ReadData <= i_mem_rdata;
         o_WriteReg <= i_WriteReg;
-        o_RegWrite <= i_RegWrite;
+        o_reg_we   <= i_reg_we;
         o_MemToReg <= i_MemToReg;
     end
 

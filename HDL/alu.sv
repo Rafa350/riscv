@@ -10,8 +10,8 @@ module alu
 (
     input  AluOp       i_op,       // Operacio
     
-    input  [WIDTH-1:0] i_dataA,   // Operand A
-    input  [WIDTH-1:0] i_dataB,   // Operand B
+    input  [WIDTH-1:0] i_dataA,    // Operand A
+    input  [WIDTH-1:0] i_dataB,    // Operand B
     input  logic       i_carry,    // Carry
     
     output [WIDTH-1:0] o_result,   // Resultat
@@ -28,11 +28,11 @@ module alu
             AluOp_AND : o_result = i_dataA & i_dataB;
             AluOp_OR  : o_result = i_dataA | i_dataB;
             AluOp_XOR : o_result = i_dataA ^ i_dataB;
-            default: o_result = 0;
+            default   : o_result = 0;
         endcase
         
-        o_carry = 0;
-        o_zero = !(|o_result);
+        o_carry    = 0;
+        o_zero     = !(|o_result);
         o_overflow = o_carry & o_result[WIDTH-1];
     end
     

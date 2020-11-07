@@ -1,88 +1,149 @@
 #include "sim.h"
-
-
-int main(int argc, char **argv, char **env) {
+#include "testbench.h"
+#include "memory.h"
     
-    const char *romFileName = "";
-    const char *traceFileName = "trace.vcd";
+#include <verilated_fst_c.h>
     
-    Verilated::commandArgs(argc, argv);    
-    Verilated::debug(0);
+    
+// Els temps son en ticks de simulacio (simTime). Per que sigui totalment
+// asincron, els temps d'activacio o desactivacio no poden ser multiples 
+// de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps 
+// de simulacio (simTime)
+//
+#define CLOCK_MAX             500  // Nombre de ticks a simular
+#define CLOCK_START             0  // Tick per iniciar clk
+#define CLOCK_TICKS            10  // Tics per cicle clk
 
-    Vtop *top = new Vtop();    
-    if (top) {
-        VL_PRINTF("*** Starting simulation...\n");
-        
-        VL_PRINTF("*** Loading ROM...\n");
-        ROM *rom = new ROM();
-        if (!rom)
-            exit(1);
-        VL_PRINTF("*** ROM Loaded.\n");
-        VL_PRINTF("    --Load size: %d bytes.\n", rom->getSize());
-        
-        RAM *ram = new RAM();
-        
-#if VM_TRACE			
-        Verilated::traceEverOn(true);	
-        VerilatedVcdC* tfp = new VerilatedVcdC;
-        top->trace (tfp, 99);	
-        tfp->open (traceFileName);
-        VL_PRINTF("*** Enabling waves...\n");
-        VL_PRINTF("    --Wave file name: %s\n", traceFileName);
-#endif
-        top->i_clk = 0;
-        top->i_rst = 0;
+#define CLOCK_RST_SET           0  // Tic per iniciar el reset
+#define CLOCK_RST_CLR           7  // Tic per acabar el reset
 
-        VL_PRINTF("*** Start simulation loop.\n");
-        const int maxTime = 1000;
-        unsigned time;
-        for (time = 0; (time < maxTime) && !Verilated::gotFinish() && top->o_rom_addr < rom->getSize(); time++) {
-            
-            if (time && ((time % 10) == 0))
-                top->i_clk = !top->i_clk;
+    
+using namespace Simulation;
 
-            top->i_rst = time < 15;
-            top->i_rom_rdata = rom->read32(top->o_rom_addr);
-            
-            if (top->o_ram_we)
-                ram->write32(top->o_ram_addr, top->o_ram_wdata);
-            top->i_ram_rdata = ram->read32(top->o_ram_addr);
-            
-            if (((time % 10) == 0) && (top->i_clk == 0) && (top->i_rst == 0))
-                disassembly(top->o_rom_addr >> 2, top->i_rom_rdata);
-            
-            top->eval();
-#if VM_TRACE
-            if (tfp) 
-                tfp->dump(time);	
-#endif
-            
+
+class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
+       
+    private:
+        ROM *rom;
+        RAM *ram;
+        
+    public:
+        CPUTestbench(ROM *rom, RAM *ram);
+        void run();
+};
+
+
+/// ----------------------------------------------------------------------
+/// \bried    Contructor de l'objecte
+/// \param    rom: Memoria rom
+/// \param    ram: Memoria ram
+///
+CPUTestbench::CPUTestbench(
+    ROM *rom, 
+    RAM *ram):
+    
+    rom(rom),
+    ram(ram)     {
+   
+}
+
+
+/// ----------------------------------------------------------------------
+/// \brief    Executa la simulacio.
+///
+void CPUTestbench::run() {
+    
+    std::string traceFileName("waves_sc/trace.fst");
+	
+    Vtop *top = getTop();
+    top->i_clk = 0;
+    top->i_rst = 0;
+
+    writeConsole("*** CPU\n");
+    writeConsole("*** Starting simulation...\n");
+
+    openTrace(traceFileName);
+    writeConsole("*** Enabling waves...\n");
+    writeConsole(std::string("    --Wave file name: " + traceFileName + "\n"));
+
+    writeConsole("*** Start simulation loop.\n");
+        
+    unsigned tick;
+    do {        
+        tick = getTickCount();
+        
+        // Genera la senyal 'clk'
+        //
+        if (tick >= CLOCK_START) {
+            if ((tick % 10) == 0)
+                top->i_clk = 0;
+            else if ((tick % 10) == 5) 
+                top->i_clk = 1;
         }
-        VL_PRINTF("*** End simulation loop.\n");
-        VL_PRINTF("    --Total simulation time: %d ticks.\n", time);
 
-        top->final();
+        // Genera la senyal de 'rst'
+        //
+        if (tick == CLOCK_RST_CLR)
+            top->i_rst = 0;
+        else if (tick == CLOCK_RST_SET)
+            top->i_rst = 1;
+		
+		// Acces al programa 
+		//
+		top->i_rom_rdata = rom->read32(top->o_rom_addr);
         
-#if VM_TRACE
-        if (tfp) 
-            tfp->close();
-#endif
+        // Acces a la RAM
+        //
+        top->i_ram_rdata = ram->read32(top->o_ram_addr);
+        if (top->o_ram_we) 
+            ram->write32(top->o_ram_addr, top->o_ram_wdata);
         
-        delete top;
-        VL_PRINTF("*** Simulation end.\n");
+        // Desensambla l'instruccio actual
+        //        
+        if (((tick % 10) == 0) && (top->i_clk == 0) && (top->i_rst == 0))
+            disassembly(top->o_rom_addr >> 2, top->i_rom_rdata);
 
-        VL_PRINTF("*** ROM dump start.\n");
-        rom->dump(0, 16);
-        VL_PRINTF("*** ROM dump end.\n");
-        
-        VL_PRINTF("*** RAM dump start.\n");
-        ram->dump(0, 16);
-        VL_PRINTF("*** RAM dump end.\n");
-    }
+    } while (nextTick() && (tick < CLOCK_MAX));
     
-    VL_PRINTF("*** End.\n");
+    closeTrace();
+    
+    writeConsole("*** End simulation loop.\n");
+    writeConsole("    --Total simulation time: " + std::to_string(getTickCount()) + " ticks.\n");
 
-    exit(0);    
+    writeConsole("*** ROM dump start.\n");
+    rom->dump(0, 16);
+    writeConsole("*** ROM dump end.\n");
+    
+    writeConsole("*** RAM dump start.\n");
+    ram->dump(0, 16);
+    writeConsole("*** RAM dump end.\n");
+	
+    writeConsole("*** Simulation end.\n");
+    writeConsole("*** Exit.\n");
+}
+
+
+/// ----------------------------------------------------------------------
+/// \brief    Entrada a l'aplicacio.
+/// \param    argc: Nombre d'arguments.
+/// \param    argv: Llista d'arguments.
+/// \param    env: Variables del sistema.
+/// \return   0 si tot es correcte.
+///
+int main(
+    int argc, 
+    char **argv, 
+    char **env) {
+        
+	ROM *rom = new ROM();
+    RAM *ram = new RAM();
+
+    CPUTestbench *tb = new CPUTestbench(rom, ram);
+    tb->run();   
+    delete tb;
+    
+    delete rom;
+    delete ram;
     
     return 0;
 }

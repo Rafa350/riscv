@@ -1,4 +1,4 @@
-`define PIPELINE
+//`define PIPELINE
 
 
 module top(
@@ -7,10 +7,10 @@ module top(
     input  wire [3:0] SW,
     output wire [7:0] LED);
     
-    parameter DATA_WIDTH = 32;
-    parameter ADDR_WIDTH = 32;
-    parameter PC_WIDTH   = 32;
-    parameter INST_WIDTH = 32;
+    parameter DATA_DBUS_WIDTH = 32;
+    parameter ADDR_DBUS_WIDTH = 32;
+    parameter DATA_IBUS_WIDTH = 32;
+    parameter ADDR_IBUS_WIDTH = 32;
     
     logic clk;
     assign clk = ~KEY[0];
@@ -18,40 +18,40 @@ module top(
     logic rst;
     assign rst = ~KEY[1];
     
-    logic [PC_WIDTH-1:0] pgm_addr;
-    logic [INST_WIDTH-1:0] pgm_inst;    
+    logic [ADDR_IBUS_WIDTH-1:0] pgm_addr;
+    logic [DATA_IBUS_WIDTH-1:0] pgm_inst;    
 
-    logic [DATA_WIDTH-1:0] mem_wdata;
-    logic [DATA_WIDTH-1:0] mem_rdata;
-    logic [ADDR_WIDTH-1:0] mem_addr;
+    logic [DATA_DBUS_WIDTH-1:0] mem_wdata;
+    logic [DATA_DBUS_WIDTH-1:0] mem_rdata;
+    logic [ADDR_DBUS_WIDTH-1:0] mem_addr;
     logic mem_we;
     
     assign LED[5:0] = pgm_inst[31:26];
     assign LED[7:6] = pgm_addr[1:0];
 
     // -------------------------------------------------------------------
-    // Memoria.
+    // Memoria RAM
     //
     logic ram_we;
     mem #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(DATA_WIDTH))
+        .DATA_WIDTH (DATA_DBUS_WIDTH),
+        .ADDR_WIDTH (DATA_DBUS_WIDTH))
     mem (
-        .i_clk(clk),
-        .i_we(mem_we),
-        .i_addr(mem_addr),
-        .i_wdata(mem_wdata),
-        .o_rdata(mem_rdata));
+        .i_clk   (clk),
+        .i_we    (mem_we),
+        .i_addr  (mem_addr),
+        .i_wdata (mem_wdata),
+        .o_rdata (mem_rdata));
       
     // -------------------------------------------------------------------
-    // Programa.
+    // Memoria de programa
     //    
     pgm #(
-        .ADDR_WIDTH(PC_WIDTH),
-        .INST_WIDTH(INST_WIDTH))
+        .ADDR_WIDTH (ADDR_IBUS_WIDTH),
+        .INST_WIDTH (DATA_IBUS_WIDTH))
     pgm (
-        .i_addr(pgm_addr),
-        .o_inst(pgm_inst));
+        .i_addr (pgm_addr),
+        .o_inst (pgm_inst));
 
     // -------------------------------------------------------------------
     // CPU
@@ -61,10 +61,10 @@ module top(
 `else    
     cpu #(
 `endif    
-        .DATA_DBUS_WIDTH(DATA_WIDTH), 
-        .ADDR_DBUS_WIDTH(ADDR_WIDTH),
-        .DATA_IBUS_WIDTH(INST_WIDTH),
-        .ADDR_IBUS_WIDTH(PC_WIDTH)) 
+        .DATA_DBUS_WIDTH (DATA_DBUS_WIDTH), 
+        .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),
+        .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
+        .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
     cpu (
         .i_clk       (clk),
         .i_rst       (rst),

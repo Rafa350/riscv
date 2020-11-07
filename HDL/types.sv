@@ -3,14 +3,16 @@ package types;
     // ISA Opcodes
     //
     typedef enum logic[5:0] {
-        InstOp_RType = 6'b000000,
-        InstOp_ADDI  = 6'b001001,
-        InstOp_ADDIU = 6'b001000,
-        InstOp_ANDI  = 6'b001100,
-        InstOp_J     = 6'b000010,
-        InstOp_JAL   = 6'b000011,
-        InstOp_LW    = 6'b100011,
-        InstOp_SW    = 6'b101011
+        InstOp_Type_R  = 6'b000000,
+        InstOp_Type_R2 = 6'b011100,
+        InstOp_ADDI    = 6'b001001,
+        InstOp_ADDIU   = 6'b001000,
+        InstOp_ANDI    = 6'b001100,
+        InstOp_BEQ     = 6'b000100,
+        InstOp_J       = 6'b000010,
+        InstOp_JAL     = 6'b000011,
+        InstOp_LW      = 6'b100011,
+        InstOp_SW      = 6'b101011
     } InstOp;
     
     // R-Type function codes
@@ -47,7 +49,7 @@ package types;
         logic [4:0] rd;
         logic [4:0] sh;
         InstFn fn;
-    } RType;
+    } TypeR;
     
     // I-Type instruction format
     //
@@ -56,20 +58,20 @@ package types;
         logic [4:0] rs;
         logic [4:0] rt;
         logic [15:0] imm;
-    } IType;
+    } TypeI;
     
     // J-Type instruction format
     //
     typedef struct packed {
         InstOp op;
         logic [25:0] addr;
-    } JType;
+    } TypeJ;
     
     /*
     typedef union packed {
-        RType r;
-        IType i;
-        JType j;
+        TypeR r;
+        TypeI i;
+        TypeJ j;
         logic [31:0] raw;
     } Instruction;    
     */

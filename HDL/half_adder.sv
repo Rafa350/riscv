@@ -7,6 +7,6 @@ module half_adder
     
     output logic [WIDTH-1:0] o_out);
 
-    assign o_out = a_inA + i_inB;
+    assign o_out = i_inA + i_inB;
     
 endmodule

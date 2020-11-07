@@ -24,6 +24,8 @@ CPPFLAGS += -DVL_THREADED=1
 CPPFLAGS += -W -Werror -Wall
 endif
 
+CPPFLAGS += -I../../../Simulation/Include
+
 #######################################################################
 # Linking final exe -- presumes have a sim_main.cpp
 

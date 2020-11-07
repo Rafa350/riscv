@@ -32,7 +32,7 @@ test_debug:     prep_dbg compile run
 test_valgrind:  prep_vg  compile run
 
 VERILATOR_FLAGS = --cc verilator_top.v --top-module top -y ../HDL -Wall
-VERILATOR_FLAGS += --trace
+VERILATOR_FLAGS += --trace-fst
 
 #show_config: Is the very first time we've executed Verilator after building
 #so we make sure to run with --gdbbt, so if it dumps we'll get a trace.
