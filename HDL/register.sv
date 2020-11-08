@@ -1,25 +1,29 @@
-module register
+module Register
 #(
     parameter WIDTH = 32,
     parameter INIT = 0)
 (
-    input  logic             i_clk,
-    input  logic             i_rst,
+    input  logic             i_Clock,
+    input  logic             i_Reset,
     
-    input  logic             i_we,
+    input  logic             i_WrEnable,
    
-    input  logic [WIDTH-1:0] i_wdata,
-    output logic [WIDTH-1:0] o_rdata);
+    input  logic [WIDTH-1:0] i_WrData,
+    output logic [WIDTH-1:0] o_RdData);
     
+    logic [WIDTH-1:0] Data;
+
     initial
-        o_rdata = INIT;
+        Data = INIT;
       
-    always_ff @(posedge i_clk)
-        case ({i_rst, i_we} )
-            2'b00: o_rdata <= o_rdata;
-            2'b01: o_rdata <= i_wdata;
-            2'b10: o_rdata <= INIT;
-            2'b11: o_rdata <= INIT;
+    always_ff @(posedge i_Clock)
+        case ({i_Reset, i_WrEnable})
+            2'b00: Data <= Data;
+            2'b01: Data <= i_WrData;
+            2'b10: Data <= INIT;
+            2'b11: Data <= INIT;
         endcase
+        
+    assign o_RdData = i_Reset ? INIT : Data;        
     
 endmodule

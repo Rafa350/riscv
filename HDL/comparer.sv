@@ -1,26 +1,26 @@
-module comparer 
+module Comparer 
 #(
     parameter WIDTH          = 32)
 (
-    input  logic [WIDTH-1:0] i_inA,
-    input  logic [WIDTH-1:0] i_inB,
+    input  logic [WIDTH-1:0] i_InputA,
+    input  logic [WIDTH-1:0] i_InputB,
     
-    output logic             o_eq,
-    output logic             o_gz,
-    output logic             o_lz,
-    output logic             o_gez,
-    output logic             o_lez);
+    output logic             o_EQ,
+    output logic             o_GZ,
+    output logic             o_LZ,
+    output logic             o_GEZ,
+    output logic             o_LEZ);
 
-    logic zeroA;
+    logic IsZeroA;
 
-    assign zeroA = i_inA == {WIDTH{1'b0}};
+    assign IsZeroA = ~|i_InputA;
 
     always_comb begin
-        o_eq  = i_inA == i_inB;
-        o_gz  = ~i_inA[WIDTH-1] & ~zeroA;
-        o_lz  = i_inA[WIDTH-1];
-        o_gez = ~i_inA[WIDTH-1];
-        o_lez = i_inA[WIDTH-1] | zeroA;
+        o_EQ  = i_InputA == i_InputB;
+        o_GZ  = ~i_InputA[WIDTH-1] & ~IsZeroA;
+        o_LZ  = i_InputA[WIDTH-1];
+        o_GEZ = ~i_InputA[WIDTH-1];
+        o_LEZ = i_InputA[WIDTH-1] | IsZeroA;
     end
     
 endmodule

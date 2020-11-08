@@ -83,65 +83,65 @@ module cpu
     // Compara els valors del registre per decidir els salta condicionals
     //
     logic cmp_is_eq; // Indica A == B
-    comparer #(
+    Comparer #(
         .WIDTH (DATA_DBUS_WIDTH))
-    Comparer (
-        .i_inA (regs_rdataA),
-        .i_inB (regs_rdataB),
-        .o_eq  (cmp_is_eq));
+    Comp (
+        .i_InputA (regs_rdataA),
+        .i_InputB (regs_rdataB),
+        .o_EQ     (cmp_is_eq));
 
 
     // Bloc de registres
     //
     logic [DATA_DBUS_WIDTH-1:0] regs_rdataA, // Dades de lectura A
                                 regs_rdataB; // Dades de lectura B
-    regfile #(
+    RegBlock #(
         .DATA_WIDTH  (DATA_DBUS_WIDTH),
         .ADDR_WIDTH  (INDEX_WIDTH))
     RegBlock (
-        .i_clk    (i_clk),
-        .i_rst    (i_rst),
-        .i_waddr  (sel2_out),
-        .i_wdata  (sel3_out),
-        .i_we     (ctrl_reg_we),
-        .i_raddrA (inst_rs),
-        .o_rdataA (regs_rdataA),
-        .i_raddrB (inst_rt),
-        .o_rdataB (regs_rdataB));
+        .i_Clock    (i_clk),
+        .i_Reset    (i_rst),
+        .i_WrAddr   (sel2_out),
+        .i_WrData   (sel3_out),
+        .i_WrEnable (ctrl_reg_we),
+        .i_RdAddrA  (inst_rs),
+        .o_RdDataA  (regs_rdataA),
+        .i_RdAddrB  (inst_rt),
+        .o_RdDataB  (regs_rdataB));
 
 
     // Selecciona les dades d'entrada B de la ALU
     //
     logic [DATA_DBUS_WIDTH-1:0] sel1_out;   
-    mux2 #(
+    Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
-    sel1 (
-        .i_sel (ctrl_alu_src_sel),
-        .i_in0 (regs_rdataB),
-        .i_in1 (inst_imm16sx),
-        .o_out (sel1_out));
+    Sel1 (
+        .i_Select (ctrl_alu_src_sel),
+        .i_Input0 (regs_rdataB),
+        .i_Input1 (inst_imm16sx),
+        .o_Output (sel1_out));
 
     // Selecciona el registre RT o RD de la instruccio
     //
     logic [INDEX_WIDTH-1:0] sel2_out;  
-    mux2 #(
+    Mux2To1 #(
         .WIDTH  (INDEX_WIDTH))
-    sel2 (
-        .i_sel (ctrl_reg_dst_sel),
-        .i_in0 (inst_rt),
-        .i_in1 (inst_rd),
-        .o_out (sel2_out));
+    Sel2 (
+        .i_Select (ctrl_reg_dst_sel),
+        .i_Input0 (inst_rt),
+        .i_Input1 (inst_rd),
+        .o_Output (sel2_out));
 
     // Selecciona les dades per escriure en el registre
     //
     logic [DATA_DBUS_WIDTH-1:0] sel3_out;  
-    mux2 #(
+    Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
-    sel3 (
-        .i_sel  (ctrl_mem_to_reg_sel),
-        .i_in0  (alu_result),
-        .i_in1  (i_mem_rdata),
-        .o_out  (sel3_out));
+    Sel3 (
+        .i_Select (ctrl_mem_to_reg_sel),
+        .i_Input0 (alu_result),
+        .i_Input1 (i_mem_rdata),
+        .o_Output (sel3_out));
 
     // ALU
     //
@@ -156,21 +156,21 @@ module cpu
 
     // Evalua pc_inc4
     //
-    half_adder #(
+    HalfAdder #(
         .WIDTH (ADDR_IBUS_WIDTH))
     pc_inc4_adder (
-        .i_inA (pc),
-        .i_inB (4),
-        .o_out (pc_inc4));
+        .i_OperandA (pc),
+        .i_OperandB (4),
+        .o_Result   (pc_inc4));
 
     // Evalua pc_branch
     //
-    half_adder #(
+    HalfAdder #(
         .WIDTH (ADDR_IBUS_WIDTH))
     pc_branch_adder (
-        .i_inA (pc_inc4),
-        .i_inB ({inst_imm16sx[29:0], 2'b00}),
-        .o_out (pc_branch));
+        .i_OperandA (pc_inc4),
+        .i_OperandB ({inst_imm16sx[29:0], 2'b00}),
+        .o_Result   (pc_branch));
 
     // Evalua pc_jump
     //
@@ -178,27 +178,27 @@ module cpu
 
     // Selecciona el nou valor del contador de programa
     //
-    mux4 #(
+    Mux4To1 #(
         .WIDTH (ADDR_IBUS_WIDTH))
     pc_source_mux (
-        .i_sel ({ctrl_is_jump, ctrl_is_branch}),
-        .i_in0 (pc_inc4),
-        .i_in1 (pc_branch),
-        .i_in2 (pc_jump),
-        .i_in3 (pc_inc4),
-        .o_out (pc_next));
+        .i_Select ({ctrl_is_jump, ctrl_is_branch}),
+        .i_Input0 (pc_inc4),
+        .i_Input1 (pc_branch),
+        .i_Input2 (pc_jump),
+        .i_Input3 (pc_inc4),
+        .o_Output (pc_next));
 
     // Registre del contador de programa
     //
-    register #(
+    Register #(
         .WIDTH (ADDR_IBUS_WIDTH),
         .INIT  (0))
     pc_register (
-        .i_clk   (i_clk),
-        .i_rst   (i_rst),
-        .i_we    (1),
-        .i_wdata (pc_next),
-        .o_rdata (pc));
+        .i_Clock    (i_clk),
+        .i_Reset    (i_rst),
+        .i_WrEnable (1),
+        .i_WrData   (pc_next),
+        .o_RdData   (pc));
 
     // Interface amb la emoria RAM
     //
