@@ -28,22 +28,22 @@ module RegBlock
     output logic [DATA_WIDTH-1:0] o_RdDataB); // Dades lleigides del port B
     
     localparam NUM_REGS = 2**ADDR_WIDTH;
+    localparam ZERO = {DATA_WIDTH{1'b0}};
     
     logic [DATA_WIDTH-1:0] Data[1:NUM_REGS-1];
-    logic [DATA_WIDTH-1:0] Zero = {DATA_WIDTH{1'b0}};
     
     always_ff @(posedge i_Clock)
         if (i_Reset) begin
             integer i;
             for (i = 1; i < NUM_REGS; i++)
-                Data[i] <= Zero;
+                Data[i] <= ZERO;
         end                
         else if (i_WrEnable & (|i_WrAddr))
             Data[i_WrAddr] <= i_WrData;
             
     always_comb begin            
-        o_RdDataA = (i_Reset | (~|i_RdAddrA)) ? Zero : Data[i_RdAddrA];
-        o_RdDataB = (i_Reset | (~|i_RdAddrB)) ? Zero : Data[i_RdAddrB];
+        o_RdDataA = (i_Reset | (~|i_RdAddrA)) ? ZERO : Data[i_RdAddrA];
+        o_RdDataB = (i_Reset | (~|i_RdAddrB)) ? ZERO : Data[i_RdAddrB];
     end
 
 endmodule

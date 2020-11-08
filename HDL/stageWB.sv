@@ -2,8 +2,8 @@ module stageWB
 #(
     parameter DATA_DBUS_WIDTH = 32) 
 (
-    input  logic i_clk,
-    input  logic i_rst,
+    input  logic                       i_Clock,
+    input  logic                       i_Reset,
     
     input  logic [DATA_DBUS_WIDTH-1:0] i_AluOut,
     input  logic [DATA_DBUS_WIDTH-1:0] i_ReadData,
@@ -11,12 +11,12 @@ module stageWB
     
     output logic [DATA_DBUS_WIDTH-1:0] o_Result);
 
-    mux2 #(
+    Mux2To1 #(
         .WIDTH(DATA_DBUS_WIDTH))
     mux(
-        .i_sel (i_MemToReg),
-        .i_in0 (i_AluOut),
-        .i_in1 (i_ReadData),
-        .o_out (o_Result));
+        .i_Select (i_MemToReg),
+        .i_Input0 (i_AluOut),
+        .i_Input1 (i_ReadData),
+        .o_Output (o_Result));
 
 endmodule

@@ -18,8 +18,8 @@ module top #(
     parameter DATA_IBUS_WIDTH = `DATA_IBUS_WIDTH,
     parameter ADDR_IBUS_WIDTH = `ADDR_IBUS_WIDTH)
 (
-    input                        i_clk,
-    input                        i_rst,
+    input                        i_Clock,
+    input                        i_Reset,
 
     input  [DATA_DBUS_WIDTH-1:0] i_ram_rdata,
     output [DATA_DBUS_WIDTH-1:0] o_ram_wdata,
@@ -38,14 +38,14 @@ module top #(
         .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),
         .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
         .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
-    cpu (
-        .i_clk       (i_clk),
-        .i_rst       (i_rst),
-        .o_pgm_addr  (o_rom_addr),
-        .i_pgm_inst  (i_rom_rdata),
-        .o_mem_we    (o_ram_we),  
-        .i_mem_rdata (i_ram_rdata),
-        .o_mem_wdata (o_ram_wdata),
-        .o_mem_addr  (o_ram_addr));
+    Cpu (
+        .i_Clock       (i_Clock),
+        .i_Reset       (i_Reset),
+        .o_PgmAddr     (o_rom_addr),
+        .i_PgmInst     (i_rom_rdata),
+        .o_MemWrEnable (o_ram_we),  
+        .i_MemRdData   (i_ram_rdata),
+        .o_MemWrData   (o_ram_wdata),
+        .o_MemAddr     (o_ram_addr));
         
 endmodule

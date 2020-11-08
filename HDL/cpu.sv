@@ -13,16 +13,16 @@ module cpu
     parameter ADDR_IBUS_WIDTH          = 32,
     parameter INDEX_WIDTH              = 5)
 (
-    input  logic                       i_clk,       // Clock
-    input  logic                       i_rst,       // Reset
+    input  logic                       i_Clock,       // Clock
+    input  logic                       i_Reset,       // Reset
 
-    input  logic [DATA_DBUS_WIDTH-1:0] i_mem_rdata, // Dades de lectura de la memoria
-    output logic [DATA_DBUS_WIDTH-1:0] o_mem_wdata, // Dades d'escriptura de la memoria
-    output logic [ADDR_DBUS_WIDTH-1:0] o_mem_addr,  // Adressa de memoria per lectura/escriptura
-    output logic                       o_mem_we,    // Habilita l'escriptura en la memoria
+    input  logic [DATA_DBUS_WIDTH-1:0] i_MemRdData,   // Dades de lectura de la memoria
+    output logic [DATA_DBUS_WIDTH-1:0] o_MemWrData,   // Dades d'escriptura de la memoria
+    output logic [ADDR_DBUS_WIDTH-1:0] o_MemAddr,     // Adressa de memoria per lectura/escriptura
+    output logic                       o_MemWrEnable, // Habilita l'escriptura en la memoria
 
-    input  logic [DATA_IBUS_WIDTH-1:0] i_pgm_inst,  // Instruccio
-    output logic [ADDR_IBUS_WIDTH-1:0] o_pgm_addr); // Addressa de la instruccio
+    input  logic [DATA_IBUS_WIDTH-1:0] i_PgmInst,     // Instruccio
+    output logic [ADDR_IBUS_WIDTH-1:0] o_PgmAddr);    // Addressa de la instruccio
 
     // Control de PC
     //
@@ -45,114 +45,114 @@ module cpu
     InstOp                      inst_op;      // Codi d'operacio
     InstFn                      inst_fn;      // Codi de funcio per intruccions Type-R
     always_comb begin
-        inst_rs      = i_pgm_inst[25:21];
-        inst_rt      = i_pgm_inst[20:16];
-        inst_rd      = i_pgm_inst[15:11];
-        inst_sh      = i_pgm_inst[10:6];
-        inst_op      = InstOp'(i_pgm_inst[31:26]);
-        inst_fn      = InstFn'(i_pgm_inst[5:0]);
-        inst_imm16   = i_pgm_inst[15:0];
+        inst_rs      = i_PgmInst[25:21];
+        inst_rt      = i_PgmInst[20:16];
+        inst_rd      = i_PgmInst[15:11];
+        inst_sh      = i_PgmInst[10:6];
+        inst_op      = InstOp'(i_PgmInst[31:26]);
+        inst_fn      = InstFn'(i_PgmInst[5:0]);
+        inst_imm16   = i_PgmInst[15:0];
         inst_imm16sx = {{16{inst_imm16[15]}}, inst_imm16};
-        inst_imm26   = i_pgm_inst[25:0];
+        inst_imm26   = i_PgmInst[25:0];
     end
 
     // Control del datapath
     //
-    AluOp ctrl_alu_op;         // Operacio de la ALU
-    logic ctrl_reg_we;         // Autoritza escriptura del regisres
-    logic ctrl_mem_we;         // Autoritza escritura en memoria
-    logic ctrl_is_branch;      // Indica salt condicional
-    logic ctrl_is_jump;        // Indica salt
-    logic ctrl_reg_dst_sel;    // Selector del registre d'escriptura
-    logic ctrl_mem_to_reg_sel; // Selector del les dades d'esacriptura en el registre
-    logic ctrl_alu_src_sel;    // Seleccio de la entrada 2 de la ALU
+    AluOp ctrl_alu_op;      // Operacio de la ALU
+    logic Ctrl_RegWrEnable; // Autoritza escriptura del regisres
+    logic Ctrl_MemWrEnable; // Autoritza escritura en memoria
+    logic Ctrl_IsBranch;    // Indica salt condicional
+    logic Ctrl_IsJump;      // Indica salt
+    logic ctrl_reg_dst_sel; // Selector del registre d'escriptura
+    logic Ctrl_MemToReg;    // Selector del les dades d'esacriptura en el registre
+    logic Ctrl_AluSrc;      // Seleccio de la entrada 2 de la ALU
     controller Ctrl (
-        .i_clk        (i_clk),
-        .i_rst        (i_rst),
+        .i_Clock      (i_Clock),
+        .i_Reset      (i_Reset),
         .i_inst_op    (inst_op),
         .i_inst_fn    (inst_fn),
         .o_AluControl (ctrl_alu_op),
-        .o_mem_we     (ctrl_mem_we),
-        .o_reg_we     (ctrl_reg_we),
-        .o_AluSrc     (ctrl_alu_src_sel),
+        .o_mem_we     (Ctrl_MemWrEnable),
+        .o_reg_we     (Ctrl_RegWrEnable),
+        .o_AluSrc     (Ctrl_AluSrc),
         .o_RegDst     (ctrl_reg_dst_sel),
-        .o_MemToReg   (ctrl_mem_to_reg_sel),
-        .o_is_branch  (ctrl_is_branch),
-        .o_is_jump    (ctrl_is_jump)); 
+        .o_MemToReg   (Ctrl_MemToReg),
+        .o_is_branch  (Ctrl_IsBranch),
+        .o_is_jump    (Ctrl_IsJump)); 
 
     // Compara els valors del registre per decidir els salta condicionals
     //
-    logic cmp_is_eq; // Indica A == B
+    logic Comp_EQ; // Indica A == B
     Comparer #(
         .WIDTH (DATA_DBUS_WIDTH))
     Comp (
-        .i_InputA (regs_rdataA),
-        .i_InputB (regs_rdataB),
-        .o_EQ     (cmp_is_eq));
+        .i_InputA (RegBlock_RdDataA),
+        .i_InputB (RegBlock_RdDataB),
+        .o_EQ     (Comp_EQ));
 
 
     // Bloc de registres
     //
-    logic [DATA_DBUS_WIDTH-1:0] regs_rdataA, // Dades de lectura A
-                                regs_rdataB; // Dades de lectura B
+    logic [DATA_DBUS_WIDTH-1:0] RegBlock_RdDataA, // Dades de lectura A
+                                RegBlock_RdDataB; // Dades de lectura B
     RegBlock #(
         .DATA_WIDTH  (DATA_DBUS_WIDTH),
         .ADDR_WIDTH  (INDEX_WIDTH))
     RegBlock (
-        .i_Clock    (i_clk),
-        .i_Reset    (i_rst),
-        .i_WrAddr   (sel2_out),
-        .i_WrData   (sel3_out),
-        .i_WrEnable (ctrl_reg_we),
+        .i_Clock    (i_Clock),
+        .i_Reset    (i_Reset),
+        .i_WrAddr   (Sel2_Output),
+        .i_WrData   (Sel3_Output),
+        .i_WrEnable (Ctrl_RegWrEnable),
         .i_RdAddrA  (inst_rs),
-        .o_RdDataA  (regs_rdataA),
+        .o_RdDataA  (RegBlock_RdDataA),
         .i_RdAddrB  (inst_rt),
-        .o_RdDataB  (regs_rdataB));
+        .o_RdDataB  (RegBlock_RdDataB));
 
 
     // Selecciona les dades d'entrada B de la ALU
     //
-    logic [DATA_DBUS_WIDTH-1:0] sel1_out;   
+    logic [DATA_DBUS_WIDTH-1:0] Sel1_Output;   
     Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     Sel1 (
-        .i_Select (ctrl_alu_src_sel),
-        .i_Input0 (regs_rdataB),
+        .i_Select (Ctrl_AluSrc),
+        .i_Input0 (RegBlock_RdDataB),
         .i_Input1 (inst_imm16sx),
-        .o_Output (sel1_out));
+        .o_Output (Sel1_Output));
 
     // Selecciona el registre RT o RD de la instruccio
     //
-    logic [INDEX_WIDTH-1:0] sel2_out;  
+    logic [INDEX_WIDTH-1:0] Sel2_Output;  
     Mux2To1 #(
         .WIDTH  (INDEX_WIDTH))
     Sel2 (
         .i_Select (ctrl_reg_dst_sel),
         .i_Input0 (inst_rt),
         .i_Input1 (inst_rd),
-        .o_Output (sel2_out));
+        .o_Output (Sel2_Output));
 
     // Selecciona les dades per escriure en el registre
     //
-    logic [DATA_DBUS_WIDTH-1:0] sel3_out;  
+    logic [DATA_DBUS_WIDTH-1:0] Sel3_Output;  
     Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     Sel3 (
-        .i_Select (ctrl_mem_to_reg_sel),
-        .i_Input0 (alu_result),
-        .i_Input1 (i_mem_rdata),
-        .o_Output (sel3_out));
+        .i_Select (Ctrl_MemToReg),
+        .i_Input0 (Alu_Output),
+        .i_Input1 (i_MemRdData),
+        .o_Output (Sel3_Output));
 
     // ALU
     //
-    logic [DATA_DBUS_WIDTH-1:0] alu_result; 
+    logic [DATA_DBUS_WIDTH-1:0] Alu_Output; 
     alu #(
         .WIDTH    (DATA_DBUS_WIDTH))
-    alu (
+    Alu (
         .i_op     (ctrl_alu_op),
-        .i_dataA  (regs_rdataA),
-        .i_dataB  (sel1_out),
-        .o_result (alu_result));
+        .i_dataA  (RegBlock_RdDataA),
+        .i_dataB  (Sel1_Output),
+        .o_result (Alu_Output));
 
     // Evalua pc_inc4
     //
@@ -181,7 +181,7 @@ module cpu
     Mux4To1 #(
         .WIDTH (ADDR_IBUS_WIDTH))
     pc_source_mux (
-        .i_Select ({ctrl_is_jump, ctrl_is_branch}),
+        .i_Select ({Ctrl_IsJump, Ctrl_IsBranch}),
         .i_Input0 (pc_inc4),
         .i_Input1 (pc_branch),
         .i_Input2 (pc_jump),
@@ -194,23 +194,24 @@ module cpu
         .WIDTH (ADDR_IBUS_WIDTH),
         .INIT  (0))
     pc_register (
-        .i_Clock    (i_clk),
-        .i_Reset    (i_rst),
+        .i_Clock    (i_Clock),
+        .i_Reset    (i_Reset),
         .i_WrEnable (1),
         .i_WrData   (pc_next),
         .o_RdData   (pc));
 
-    // Interface amb la emoria RAM
+
+    // Interface amb la memoria RAM
     //
     always_comb begin
-        o_mem_addr  = alu_result;
-        o_mem_we    = ctrl_mem_we;
-        o_mem_wdata = regs_rdataB;
+        o_MemAddr     = Alu_Output;
+        o_MemWrEnable = Ctrl_MemWrEnable;
+        o_MemWrData   = RegBlock_RdDataB;
     end
 
     // Interface amb la memoria de programa
     //
-    assign o_pgm_addr  = pc;
+    assign o_PgmAddr  = pc;
 
 endmodule
 

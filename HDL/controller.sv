@@ -7,8 +7,8 @@ import types::*;
 
 module controller
 (
-    input  logic   i_clk,
-    input  logic   i_rst,
+    input  logic   i_Clock,
+    input  logic   i_Reset,
     
     input  InstOp  i_inst_op,
     input  InstFn  i_inst_fn,

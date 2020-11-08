@@ -56,8 +56,8 @@ void CPUTestbench::run() {
     std::string traceFileName("waves_sc/trace.fst");
 	
     Vtop *top = getTop();
-    top->i_clk = 0;
-    top->i_rst = 0;
+    top->i_Clock = 0;
+    top->i_Reset = 0;
 
     writeConsole("*** CPU\n");
     writeConsole("*** Starting simulation...\n");
@@ -76,17 +76,17 @@ void CPUTestbench::run() {
         //
         if (tick >= CLOCK_START) {
             if ((tick % 10) == 0)
-                top->i_clk = 0;
+                top->i_Clock = 0;
             else if ((tick % 10) == 5) 
-                top->i_clk = 1;
+                top->i_Clock = 1;
         }
 
         // Genera la senyal de 'rst'
         //
         if (tick == CLOCK_RST_CLR)
-            top->i_rst = 0;
+            top->i_Reset = 0;
         else if (tick == CLOCK_RST_SET)
-            top->i_rst = 1;
+            top->i_Reset = 1;
 		
 		// Acces al programa 
 		//
@@ -100,7 +100,7 @@ void CPUTestbench::run() {
         
         // Desensambla l'instruccio actual
         //        
-        if (((tick % 10) == 0) && (top->i_clk == 0) && (top->i_rst == 0))
+        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))
             disassembly(top->o_rom_addr >> 2, top->i_rom_rdata);
 
     } while (nextTick() && (tick < CLOCK_MAX));

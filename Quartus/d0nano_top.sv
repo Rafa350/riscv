@@ -1,4 +1,4 @@
-//`define PIPELINE
+`define PIPELINE
 
 
 module top(
@@ -12,50 +12,51 @@ module top(
     parameter DATA_IBUS_WIDTH = 32;
     parameter ADDR_IBUS_WIDTH = 32;
     
-    logic clk;
-    assign clk = ~KEY[0];
+    logic Clock;
+    assign Clock = ~KEY[0];
 
-    logic rst;
-    assign rst = ~KEY[1];
+    logic Reset;
+    assign Reset = ~KEY[1];
     
-    logic [ADDR_IBUS_WIDTH-1:0] pgm_addr;
-    logic [DATA_IBUS_WIDTH-1:0] pgm_inst;    
+    assign LED[5:0] = Pgm_PgmInst[31:26];
+    assign LED[7:6] = Cpu_PgmAddr[1:0];
 
-    logic [DATA_DBUS_WIDTH-1:0] mem_wdata;
-    logic [DATA_DBUS_WIDTH-1:0] mem_rdata;
-    logic [ADDR_DBUS_WIDTH-1:0] mem_addr;
-    logic mem_we;
-    
-    assign LED[5:0] = pgm_inst[31:26];
-    assign LED[7:6] = pgm_addr[1:0];
 
     // -------------------------------------------------------------------
     // Memoria RAM
     //
-    logic ram_we;
+    logic [DATA_DBUS_WIDTH-1:0] Mem_MemRdData;
     mem #(
         .DATA_WIDTH (DATA_DBUS_WIDTH),
         .ADDR_WIDTH (DATA_DBUS_WIDTH))
     mem (
-        .i_clk   (clk),
-        .i_we    (mem_we),
-        .i_addr  (mem_addr),
-        .i_wdata (mem_wdata),
-        .o_rdata (mem_rdata));
+        .i_clk   (Clock),
+        .i_we    (Cpu_MemWrEnable),
+        .i_addr  (Cpu_MemAddr),
+        .i_wdata (Cpu_MemWrData),
+        .o_rdata (Mem_MemRdData));
+
       
     // -------------------------------------------------------------------
     // Memoria de programa
     //    
+    logic [DATA_IBUS_WIDTH-1:0] Pgm_PgmInst;    
     pgm #(
         .ADDR_WIDTH (ADDR_IBUS_WIDTH),
         .INST_WIDTH (DATA_IBUS_WIDTH))
     pgm (
-        .i_addr (pgm_addr),
-        .o_inst (pgm_inst));
+        .i_addr (Cpu_PgmAddr),
+        .o_inst (Pgm_PgmInst));
+
 
     // -------------------------------------------------------------------
     // CPU
     //
+    logic [DATA_DBUS_WIDTH-1:0] Cpu_MemWrData;
+    logic [ADDR_DBUS_WIDTH-1:0] Cpu_MemAddr;
+    logic                       Cpu_MemWrEnable;
+    logic [ADDR_IBUS_WIDTH-1:0] Cpu_PgmAddr;
+    
 `ifdef PIPELINE
     cpu_pipeline #(
 `else    
@@ -65,14 +66,14 @@ module top(
         .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),
         .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
         .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
-    cpu (
-        .i_clk       (clk),
-        .i_rst       (rst),
-        .o_pgm_addr  (pgm_addr),
-        .i_pgm_inst  (pgm_inst),
-        .o_mem_we    (mem_we),  
-        .i_mem_rdata (mem_rdata),
-        .o_mem_wdata (mem_wdata),
-        .o_mem_addr  (mem_addr));
+    Cpu (
+        .i_Clock       (Clock),
+        .i_Reset       (Reset),
+        .o_PgmAddr     (Cpu_PgmAddr),
+        .i_PgmInst     (Pgm_PgmInst),
+        .o_MemWrEnable (Cpu_MemWrEnable),  
+        .i_MemRdData   (Mem_MemRdData),
+        .o_MemWrData   (Cpu_MemWrData),
+        .o_MemAddr     (Cpu_MemAddr));
        
 endmodule

@@ -8,8 +8,8 @@ module stageEX
 (
     // Senyals de control
     //
-    input  logic                       i_clk,
-    input  logic                       i_rst,
+    input  logic                       i_Clock,
+    input  logic                       i_Reset,
     
     // Entrades del pipeline
     //
@@ -34,7 +34,7 @@ module stageEX
     output logic [DATA_DBUS_WIDTH-1:0] o_AluOut,
     output logic                       o_is_zero,
     output logic                       o_reg_we,
-    output logic                       o_mem_we,
+    output logic                       o_MemWrEnable,
     output logic                       o_MemToReg,
     output logic [4:0]                 o_WriteReg,
     output logic [ADDR_IBUS_WIDTH-1:0] o_pc_branch,
@@ -52,23 +52,23 @@ module stageEX
     
     // Selecciona el valor de la entradas B de la alu
     //
-    mux2 #(
+    Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     mux_dataB (
-        .i_sel (i_AluSrcB),
-        .i_in0 (i_dataB),
-        .i_in1 (i_InstIMM),
-        .o_out (dataB));
+        .i_Select (i_AluSrcB),
+        .i_Input0 (i_dataB),
+        .i_Input1 (i_InstIMM),
+        .o_Output (dataB));
     
     // Selecciona el registre d'escriptura del resultat
     //
-    mux2 #(
-        .WIDTH  (5))
+    Mux2To1 #(
+        .WIDTH (5))
     mux_reg_dst (
-        .i_sel (i_RegDst),
-        .i_in0 (i_InstRT),
-        .i_in1 (i_InstRD),
-        .o_out (WriteReg));
+        .i_Select (i_RegDst),
+        .i_Input0 (i_InstRT),
+        .i_Input1 (i_InstRD),
+        .o_Output (WriteReg));
        
     // Realitzacio dels calcula
     //    
@@ -90,12 +90,12 @@ module stageEX
 
     // Actualitza els registres del pipeline
     //
-    always_ff @(posedge i_clk) begin
+    always_ff @(posedge i_Clock) begin
         o_AluOut     <= AluOut;       
         o_is_zero    <= zero;
         o_WriteData  <= i_dataB;
         o_reg_we     <= i_reg_we;
-        o_mem_we     <= i_mem_we;
+        o_MemWrEnable     <= i_mem_we;
         o_MemToReg   <= i_MemToReg;
         o_WriteReg   <= WriteReg;
         o_is_branch  <= i_is_branch;

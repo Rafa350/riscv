@@ -4,8 +4,8 @@ module stageMEM #(
 (
     // Senyals de control
     //
-    input  logic                       i_clk,
-    input  logic                       i_rst,
+    input  logic                       i_Clock,
+    input  logic                       i_Reset,
     
     // Interface amb la memoria RAM
     //
@@ -38,7 +38,7 @@ module stageMEM #(
         o_mem_wdata = i_WriteData;
     end
     
-    always_ff @(posedge i_clk) begin
+    always_ff @(posedge i_Clock) begin
         o_AluOut   <= i_AluOut;
         o_ReadData <= i_mem_rdata;
         o_WriteReg <= i_WriteReg;
