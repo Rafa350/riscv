@@ -13,7 +13,7 @@ module controller
     input  InstOp  i_inst_op,
     input  InstFn  i_inst_fn,
     
-    output logic   o_MemWrite,
+    output logic   o_mem_we,
     
     output logic   o_is_branch,
     output logic   o_is_jump,
@@ -21,7 +21,7 @@ module controller
     output AluOp   o_AluControl,
     output logic   o_AluSrc,
 
-    output logic   o_RegWrite,
+    output logic   o_reg_we,
     output logic   o_RegDst,
     output logic   o_MemToReg);
     
@@ -62,8 +62,8 @@ module controller
         // Evalua les señals de control
         //
         o_AluSrc    = is_ADDI | is_LW | is_SW;
-        o_MemWrite  = is_SW;
-        o_RegWrite  = is_type_R | is_LW | is_ADDI;
+        o_mem_we    = is_SW;
+        o_reg_we    = is_type_R | is_LW | is_ADDI;
         o_RegDst    = is_type_R;
         o_MemToReg  = is_LW;
         o_is_branch = is_BEQ;

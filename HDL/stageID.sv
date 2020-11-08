@@ -23,19 +23,19 @@ module stageID
     
     // Sortides del pipeline
     //
-    output logic [DATA_DBUS_WIDTH-1:0] o_DataA,          // Bus de dades A
-    output logic [DATA_DBUS_WIDTH-1:0] o_DataB,          // DBus de dades B
+    output logic [DATA_DBUS_WIDTH-1:0] o_dataA,          // Bus de dades A
+    output logic [DATA_DBUS_WIDTH-1:0] o_dataB,          // Bus de dades B
     output logic [REG_WIDTH-1:0]       o_InstRT,         // Parametre RT de la instruccio
     output logic [REG_WIDTH-1:0]       o_InstRD,         // Parametre RD de la instruccio
     output logic [DATA_DBUS_WIDTH-1:0] o_InstIMM,        // Parametre IMM de la instruccio
-    output logic                       o_reg_we,         // Autoritza la escriptura del registre
-    output logic                       o_MemWriteEnable, // Autoritza la escritura en memoria
+    output logic                       o_reg_we,         // Habilita l'escriptura del registre
+    output logic                       o_mem_we,         // Habilita l'escritura en memoria
     output logic                       o_RegDst,         // Destination reg selection
     output logic                       o_MemToReg,
     output AluOp                       o_AluControl,     // Codi de control de la ALU
     output logic                       o_AluSrcB,        // Seleccio del origin de dades de la entrada B de la ALU
-    output logic                       o_Branch,         // Salt condicional
-    output logic                       o_Jump,           // Sal incondicionat
+    output logic                       o_is_branch,      // Salt condicional
+    output logic                       o_is_jump,        // Sal incondicionat
     output logic [ADDR_IBUS_WIDTH-1:0] o_pc_plus4);      // PC de la seguent instruccio
     
     // Senyals internes
@@ -47,7 +47,7 @@ module stageID
     logic                       AluSrcB;
     logic                       RegDst;
     logic                       reg_we;
-    logic                       MemWriteEnable;
+    logic                       mem_we;
     logic                       MemToReg;
     InstOp                      InstOP;
     InstFn                      InstFN;
@@ -55,8 +55,8 @@ module stageID
     logic [REG_WIDTH-1:0]       InstRT;
     logic [REG_WIDTH-1:0]       InstRD;
     logic [DATA_DBUS_WIDTH-1:0] InstIMM;
-    logic                       Branch;
-    logic                       Jump;
+    logic                       is_branch;
+    logic                       is_jump;
        
        
     assign InstOP = InstOp'(i_inst[31:26]);
@@ -67,18 +67,18 @@ module stageID
     assign InstIMM = {{16{i_inst[15]}}, i_inst[15:0]};
     
     controller controller(
-        .i_clk           (i_clk),
-        .i_rst           (i_rst),
-        .i_inst_op       (InstOP),
-        .i_inst_fn       (InstFN),
-        .o_AluControl    (AluControl),
-        .o_AluSrc        (AluSrcB),
-        .o_MemWrite      (MemWriteEnable),
-        .o_RegWrite      (reg_we),
-        .o_RegDst        (RegDst),
-        .o_MemToReg      (MemToReg),      
-        .o_is_branch     (Branch),
-        .o_is_jump       (Jump));
+        .i_clk        (i_clk),
+        .i_rst        (i_rst),
+        .i_inst_op    (InstOP),
+        .i_inst_fn    (InstFN),
+        .o_AluControl (AluControl),
+        .o_AluSrc     (AluSrcB),
+        .o_mem_we     (mem_we),
+        .o_reg_we     (reg_we),
+        .o_RegDst     (RegDst),
+        .o_MemToReg   (MemToReg),      
+        .o_is_branch  (is_branch),
+        .o_is_jump    (is_jump));
            
            
     regfile #(
@@ -99,20 +99,20 @@ module stageID
     // Actualitza els registres del pipeline de sortida
     //
     always_ff @(posedge i_clk) begin
-        o_DataA          <= dataA;
-        o_DataB          <= dataB;
-        o_reg_we         <= reg_we;
-        o_RegDst         <= RegDst;
-        o_MemWriteEnable <= MemWriteEnable;
-        o_MemToReg       <= MemToReg;
-        o_InstRT         <= InstRT;
-        o_InstRD         <= InstRD;
-        o_InstIMM        <= InstIMM;
-        o_AluControl     <= AluControl;
-        o_AluSrcB        <= AluSrcB;
-        o_Branch         <= Branch;
-        o_Jump           <= Jump;
-        o_pc_plus4       <= i_pc_plus4;
+        o_dataA      <= dataA;
+        o_dataB      <= dataB;
+        o_reg_we     <= reg_we;
+        o_RegDst     <= RegDst;
+        o_mem_we     <= mem_we;
+        o_MemToReg   <= MemToReg;
+        o_InstRT     <= InstRT;
+        o_InstRD     <= InstRD;
+        o_InstIMM    <= InstIMM;
+        o_AluControl <= AluControl;
+        o_AluSrcB    <= AluSrcB;
+        o_is_branch  <= is_branch;
+        o_is_jump    <= is_jump;
+        o_pc_plus4   <= i_pc_plus4;
     end
     
 endmodule
