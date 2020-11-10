@@ -9,7 +9,7 @@
 `define ADDR_IBUS_WIDTH 32
 `define DATA_IBUS_WIDTH 32
 
-//`define PIPELINE
+`define PIPELINE
 
 
 module top #(
@@ -30,9 +30,9 @@ module top #(
     output [ADDR_IBUS_WIDTH-1:0] o_rom_addr );
  
 `ifdef PIPELINE 
-    cpu_pipeline #(
+    ProcessorPP #(
 `else
-    cpu #(
+    ProcessorSC #(
 `endif    
         .DATA_DBUS_WIDTH (DATA_DBUS_WIDTH), 
         .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),

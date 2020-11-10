@@ -3,6 +3,16 @@
 #include "memory.h"
     
 #include <verilated_fst_c.h>
+
+
+#define PIPELINE
+
+
+#ifdef PIPELINE
+    #define TRACE_FILE_NAME "waves_pp/trace.fst"
+#else
+    #define TRACE_FILE_NAME "waves_sc/trace.fst"
+#endif
     
     
 // Els temps son en ticks de simulacio (simTime). Per que sigui totalment
@@ -52,8 +62,8 @@ CPUTestbench::CPUTestbench(
 /// \brief    Executa la simulacio.
 ///
 void CPUTestbench::run() {
-    
-    std::string traceFileName("waves_sc/trace.fst");
+
+    std::string traceFileName(TRACE_FILE_NAME);
 	
     Vtop *top = getTop();
     top->i_Clock = 0;

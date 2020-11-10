@@ -2,8 +2,10 @@ module stageWB
 #(
     parameter DATA_DBUS_WIDTH = 32) 
 (
+    // verilator lint_off UNUSED
     input  logic                       i_Clock,
     input  logic                       i_Reset,
+    // verilator lint_on UNUSED
     
     input  logic [DATA_DBUS_WIDTH-1:0] i_AluOut,
     input  logic [DATA_DBUS_WIDTH-1:0] i_ReadData,

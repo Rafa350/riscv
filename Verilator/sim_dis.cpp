@@ -13,37 +13,41 @@ void disassembly(unsigned addr, unsigned data) {
     
     VL_PRINTF("%8.8X  %8.8X:  ", addr, data);
     
-    switch (op) {
-        case 0b000000: {
-            switch (fn) {
-                case 0b100000:
-                    VL_PRINTF("add   ");
-                    break;
+    if (data) {
+        switch (op) {
+            case 0b000000: {
+                switch (fn) {
+                    case 0b100000:
+                        VL_PRINTF("add   ");
+                        break;
 
-                case 0b100001:
-                    VL_PRINTF("addu  ");
-                    break;
+                    case 0b100001:
+                        VL_PRINTF("addu  ");
+                        break;
 
-                case 0b100100:
-                    VL_PRINTF("and   ");
-                    break;
+                    case 0b100100:
+                        VL_PRINTF("and   ");
+                        break;
+                }
+                VL_PRINTF("$%d, $%d, $%d", rd, rs, rt);
+                break;
             }
-            VL_PRINTF("$%d, $%d, $%d", rd, rs, rt);
-            break;
-        }
-            
-        case 0b100011:
-            VL_PRINTF("lw    $%d, %d($%d)", rt, imm, rs);
-            break;
+                
+            case 0b100011:
+                VL_PRINTF("lw    $%d, %d($%d)", rt, imm, rs);
+                break;
 
-        case 0b101011:
-            VL_PRINTF("sw    $%d, %d($%d)", rt, imm, rs);
-            break;
-            
-        case 0b000010:
-            VL_PRINTF("j     %8.8X", addr26);
-            break;
+            case 0b101011:
+                VL_PRINTF("sw    $%d, %d($%d)", rt, imm, rs);
+                break;
+                
+            case 0b000010:
+                VL_PRINTF("j     %8.8X", addr26);
+                break;
+        }
     }
+    else
+        VL_PRINTF("nop");
     
     VL_PRINTF("\n");
 }

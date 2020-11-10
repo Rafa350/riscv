@@ -43,36 +43,36 @@ package types;
     // R-Type inmstruction format
     //
     typedef struct packed {
-        InstOp op;
-        logic [4:0] rs;
-        logic [4:0] rt;
-        logic [4:0] rd;
-        logic [4:0] sh;
-        InstFn fn;
+        InstOp OP;
+        logic [4:0] RS;
+        logic [4:0] RT;
+        logic [4:0] RD;
+        logic [4:0] SH;
+        InstFn FN;
     } TypeR;
     
     // I-Type instruction format
     //
     typedef struct packed {
-        InstOp op;
-        logic [4:0] rs;
-        logic [4:0] rt;
-        logic [15:0] imm;
+        InstOp OP;
+        logic [4:0] RS;
+        logic [4:0] RT;
+        logic [15:0] IMM;
     } TypeI;
     
     // J-Type instruction format
     //
     typedef struct packed {
-        InstOp op;
-        logic [25:0] addr;
+        InstOp OP;
+        logic [25:0] JDST;
     } TypeJ;
     
     /*
     typedef union packed {
-        TypeR r;
-        TypeI i;
-        TypeJ j;
-        logic [31:0] raw;
+        TypeR R;
+        TypeI I;
+        TypeJ J;
+        logic [31:0] Raw;
     } Instruction;    
     */
     
@@ -97,4 +97,5 @@ package types;
         AluOp_XOR,
         AluOp_Unknown
     } AluOp;
+    
 endpackage

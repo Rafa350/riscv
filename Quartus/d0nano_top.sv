@@ -20,6 +20,11 @@ module top(
     
     assign LED[5:0] = Pgm_PgmInst[31:26];
     assign LED[7:6] = Cpu_PgmAddr[1:0];
+    
+    
+    // ------------------------------------------------------------------
+    // Port IO
+    //
 
 
     // -------------------------------------------------------------------
@@ -58,9 +63,9 @@ module top(
     logic [ADDR_IBUS_WIDTH-1:0] Cpu_PgmAddr;
     
 `ifdef PIPELINE
-    cpu_pipeline #(
+    ProcessorPP #(
 `else    
-    cpu #(
+    ProcessorSC #(
 `endif    
         .DATA_DBUS_WIDTH (DATA_DBUS_WIDTH), 
         .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),

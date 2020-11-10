@@ -1,4 +1,4 @@
-module mux8
+module Mux8To1
 #(
     parameter WIDTH = 32)
 (

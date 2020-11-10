@@ -5,54 +5,54 @@
 import types::*;
 
 
-module controller
+module Controller
 (
     input  logic   i_Clock,
     input  logic   i_Reset,
     
-    input  InstOp  i_inst_op,
-    input  InstFn  i_inst_fn,
+    input  InstOp  i_InstOp,
+    input  InstFn  i_InstFn,
     
-    output logic   o_mem_we,
+    output logic   o_MemWrEnable,
     
-    output logic   o_is_branch,
-    output logic   o_is_jump,
+    output logic   o_IsBranch,
+    output logic   o_IsJump,
 
     output AluOp   o_AluControl,
-    output logic   o_AluSrc,
+    output logic   o_AluSrcB,
 
-    output logic   o_reg_we,
+    output logic   o_RegWrEnable,
     output logic   o_RegDst,
     output logic   o_MemToReg);
     
-    logic is_type_R;
-    logic is_ADDI;
-    logic is_LW;
-    logic is_SW;
-    logic is_J;
-    logic is_BEQ;
+    logic IsTypeR;
+    logic IsADDI;
+    logic IsLW;
+    logic IsSW;
+    logic IsJ;
+    logic IsBEQ;
     
     always_comb begin
     
         // Decodificacio de les instruccions
         //
-        is_type_R = i_inst_op == InstOp_Type_R;       
-        is_ADDI   = i_inst_op == InstOp_ADDI;
-        is_LW     = i_inst_op == InstOp_LW;
-        is_SW     = i_inst_op == InstOp_SW;
-        is_J      = i_inst_op == InstOp_J;
-        is_BEQ    = i_inst_op == InstOp_BEQ;
+        IsTypeR = i_InstOp == InstOp_Type_R;       
+        IsADDI  = i_InstOp == InstOp_ADDI;
+        IsLW    = i_InstOp == InstOp_LW;
+        IsSW    = i_InstOp == InstOp_SW;
+        IsJ     = i_InstOp == InstOp_J;
+        IsBEQ   = i_InstOp == InstOp_BEQ;
     
         // Evalua el codi d'operacio de la ALU
         //
-        if (is_type_R)
-            case (i_inst_fn)
+        if (IsTypeR)
+            case (i_InstFn)
                 InstFn_ADD: o_AluControl = AluOp_ADD;
                 InstFn_AND: o_AluControl = AluOp_AND;
                 default:    o_AluControl = AluOp_Unknown;
             endcase
         else
-            case (i_inst_op)
+            case (i_InstOp)
                 InstOp_ADDI: o_AluControl = AluOp_ADD;
                 InstOp_LW:   o_AluControl = AluOp_ADD;
                 InstOp_SW:   o_AluControl = AluOp_ADD;
@@ -61,13 +61,13 @@ module controller
     
         // Evalua les señals de control
         //
-        o_AluSrc    = is_ADDI | is_LW | is_SW;
-        o_mem_we    = is_SW;
-        o_reg_we    = is_type_R | is_LW | is_ADDI;
-        o_RegDst    = is_type_R;
-        o_MemToReg  = is_LW;
-        o_is_branch = is_BEQ;
-        o_is_jump   = is_J;
+        o_AluSrcB     = IsADDI | IsLW | IsSW;
+        o_MemWrEnable = IsSW;
+        o_RegWrEnable = IsTypeR | IsLW | IsADDI;
+        o_RegDst      = IsTypeR;
+        o_MemToReg    = IsLW;
+        o_IsBranch    = IsBEQ;
+        o_IsJump      = IsJ;
         
     end
         

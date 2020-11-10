@@ -5,7 +5,7 @@
 // -El registre 0 sempre val zero
 // -Durant el reset, tots els registres s'asignen al valor zero.
 //
-module RegBlock
+module RegisterFile
 #(
     parameter DATA_WIDTH = 32,               // Amplada del bus de dades
     parameter ADDR_WIDTH = 5)                // Amplada del bus d'adreses

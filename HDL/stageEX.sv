@@ -1,3 +1,4 @@
+// verilator lint_off IMPORTSTAR 
 import types::*;
 
 
@@ -6,101 +7,143 @@ module stageEX
     parameter DATA_DBUS_WIDTH = 32,
     parameter ADDR_IBUS_WIDTH = 32)
 (
-    // Senyals de control
-    //
     input  logic                       i_Clock,
     input  logic                       i_Reset,
     
-    // Entrades del pipeline
-    //
-    input  logic [DATA_DBUS_WIDTH-1:0] i_dataA,
-    input  logic [DATA_DBUS_WIDTH-1:0] i_dataB,
-    input  logic                       i_reg_we,
-    input  logic                       i_mem_we,
+    input  logic [DATA_DBUS_WIDTH-1:0] i_DataA,
+    input  logic [DATA_DBUS_WIDTH-1:0] i_DataB,
+    input  logic                       i_RegWrEnable,
+    input  logic                       i_MemWrEnable,
     input  logic                       i_RegDst,
     input  logic                       i_MemToReg,
     input  AluOp                       i_AluControl,
     input  logic                       i_AluSrcB,
-    input  logic [ADDR_IBUS_WIDTH-1:0] i_pc_plus4,
+    input  logic [4:0]                 i_InstRS,
     input  logic [4:0]                 i_InstRT,
     input  logic [4:0]                 i_InstRD,
     input  logic [DATA_DBUS_WIDTH-1:0] i_InstIMM,
-    input  logic                       i_is_branch,
-    input  logic                       i_is_jump,
+    input  logic [4:0]                 i_MEMFwdWriteReg,
+    input  logic [DATA_DBUS_WIDTH-1:0] i_WBFwdResult,
     
-    // Sortides del pipeline
-    //
     output logic [DATA_DBUS_WIDTH-1:0] o_WriteData,
-    output logic [DATA_DBUS_WIDTH-1:0] o_AluOut,
-    output logic                       o_is_zero,
-    output logic                       o_reg_we,
+    output logic [DATA_DBUS_WIDTH-1:0] o_AluResult,
+    output logic                       o_RegWrEnable,
     output logic                       o_MemWrEnable,
     output logic                       o_MemToReg,
-    output logic [4:0]                 o_WriteReg,
-    output logic [ADDR_IBUS_WIDTH-1:0] o_pc_branch,
-    output logic                       o_is_jump,
-    output logic                       o_is_branch);
-
-    // Senyals internes
-    //
-    logic [DATA_DBUS_WIDTH-1:0] dataB;
-    logic [DATA_DBUS_WIDTH-1:0] AluOut;
-    logic                       zero;
-    logic                       carry;
-    logic [4:0]                 WriteReg;
-    logic [ADDR_IBUS_WIDTH-1:0] pc_branch;
+    output logic [4:0]                 o_WriteReg);
     
+   
+    // -------------------------------------------------------------------
     // Selecciona el valor de la entradas B de la alu
     //
+    logic [DATA_DBUS_WIDTH-1:0] Mux1_Output;
     Mux2To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
-    mux_dataB (
+    Mux1 (
         .i_Select (i_AluSrcB),
-        .i_Input0 (i_dataB),
+        .i_Input0 (i_DataB),
         .i_Input1 (i_InstIMM),
-        .o_Output (dataB));
+        .o_Output (Mux1_Output));
     
+    
+    // -------------------------------------------------------------------
     // Selecciona el registre d'escriptura del resultat
     //
+    logic [4:0] Mux2_Output;
     Mux2To1 #(
         .WIDTH (5))
-    mux_reg_dst (
+    Mux2 (
         .i_Select (i_RegDst),
         .i_Input0 (i_InstRT),
         .i_Input1 (i_InstRD),
-        .o_Output (WriteReg));
-       
-    // Realitzacio dels calcula
-    //    
-    alu #(
-        .WIDTH (DATA_DBUS_WIDTH))
-    alu (
-        .i_op     (i_AluControl),
-        .i_dataA  (i_dataA),
-        .i_dataB  (dataB),
-        .i_carry  (0),
-        .o_result (AluOut),
-        .o_zero   (zero),
-        .o_carry  (carry));
-    
-    // Evalua la direccio de salt
+        .o_Output (Mux2_Output));
+        
+        
+    // -------------------------------------------------------------------
+    // Seleccio de l'entrada A de la ALU directe o forward
     //
-    always_comb
-        pc_branch = i_pc_plus4 + {i_InstIMM[31:2], 2'b00};
+    // verilator lint_off UNUSED
+    logic [DATA_DBUS_WIDTH-1:0] FwdA_Output;
+    // verilator lint_on UNUSED
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
+        .WIDTH (DATA_DBUS_WIDTH))
+    FwdA (
+        .i_Select (FCtrl_DataASelect),
+        .i_Input0 (i_DataA),
+        .i_Input1 (i_WBFwdResult),
+        .i_Input2 (o_AluResult),
+        .o_Output (FwdA_Output)
+    );
+    // verilator lint_on PINMISSING
+       
+       
+    // -------------------------------------------------------------------
+    // Seleccio de l'entrada B de la ALU directe o forward
+    //
+    // verilator lint_off UNUSED
+    logic [DATA_DBUS_WIDTH-1:0] FwdB_Output;
+    // verilator lint_on UNUSED
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
+        .WIDTH (DATA_DBUS_WIDTH))
+    FwdB (
+        .i_Select (FCtrl_DataBSelect),
+        .i_Input0 (Mux1_Output),
+        .i_Input1 (i_WBFwdResult),
+        .i_Input2 (o_AluResult),
+        .o_Output (FwdB_Output)
+    );
+    // verilator lint_on PINMISSING
 
+
+    // -------------------------------------------------------------------
+    // Realitzacio dels calculs en la ALU
+    //    
+    logic [DATA_DBUS_WIDTH-1:0] Alu_Result;
+    // verilator lint_off UNUSED
+    logic                       Alu_Zero;
+    logic                       Alu_Carry;
+    // verilator lint_on UNUSED
+    // verilator lint_off PINMISSING
+    Alu #(
+        .WIDTH (DATA_DBUS_WIDTH))
+    Alu (
+        .i_Op       (i_AluControl),
+        .i_OperandA (i_DataA),
+        .i_OperandB (Mux1_Output),
+        .i_Carry    (0),
+        .o_Result   (Alu_Result),
+        .o_Zero     (Alu_Zero),
+        .o_Carry    (Alu_Carry));
+    // verilator lint_on PINMISSING
+    
+    
+    // -------------------------------------------------------------------
+    // Control de forward
+    //
+    logic [1:0] FCtrl_DataASelect,
+                FCtrl_DataBSelect;
+    ForwardController
+    FCtrl (
+        .i_IDFwdInstRS    (i_InstRS),
+        .i_IDFwdInstRT    (i_InstRT),
+        .i_EXFwdWriteReg  (o_WriteReg),
+        .i_MEMFwdWriteReg (i_MEMFwdWriteReg),
+        .o_DataASelect    (FCtrl_DataASelect),
+        .o_DataBSelect    (FCtrl_DataBSelect));
+    
+
+    // -------------------------------------------------------------------
     // Actualitza els registres del pipeline
     //
     always_ff @(posedge i_Clock) begin
-        o_AluOut     <= AluOut;       
-        o_is_zero    <= zero;
-        o_WriteData  <= i_dataB;
-        o_reg_we     <= i_reg_we;
-        o_MemWrEnable     <= i_mem_we;
-        o_MemToReg   <= i_MemToReg;
-        o_WriteReg   <= WriteReg;
-        o_is_branch  <= i_is_branch;
-        o_is_jump    <= i_is_jump;
-        o_pc_branch  <= pc_branch;
+        o_AluResult   <= i_Reset ? 32'b0 : Alu_Result;       
+        o_WriteData   <= i_Reset ? 32'b0 : i_DataB;
+        o_RegWrEnable <= i_Reset ? 1'b0  : i_RegWrEnable;
+        o_MemWrEnable <= i_Reset ? 1'b0  : i_MemWrEnable;
+        o_MemToReg    <= i_Reset ? 1'b0  : i_MemToReg;
+        o_WriteReg    <= i_Reset ? 5'b0  : Mux2_Output;
     end    
     
 endmodule

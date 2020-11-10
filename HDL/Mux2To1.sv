@@ -1,3 +1,20 @@
+// -----------------------------------------------------------------------
+//
+//       Multiplextor de 2 a 1
+//
+//       Parametres:
+//            WIDTH     : Amplada del canal de dades
+//
+//       Entrades:
+//            i_Select  : Seleccio del canal d'entrada
+//            i_Input0  : Canal d'entrada 0
+//            i_Input1  : Canal d'entrada 1
+//
+//       Sortides:
+//            o_Output  : El valor de l'entrada seleccionada.
+//
+// -----------------------------------------------------------------------
+
 module Mux2To1
 #(
     parameter WIDTH = 32)
