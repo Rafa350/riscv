@@ -1,6 +1,4 @@
- // verilator lint_off IMPORTSTAR 
-import types::*;
-
+import types::AluOp;
 
 module stageID
 #(
@@ -32,8 +30,7 @@ module stageID
     output logic                       o_AluSrcB,     // Seleccio del origin de dades de la entrada B de la ALU
     output logic [ADDR_IBUS_WIDTH-1:0] o_JumpAddr,    // Adressa de salt
     output logic                       o_JumpEnable); // Habilita el salt
-    
-
+       
     // Separacio de la instruccio en blocs
     //
     InstOp                      InstOP;

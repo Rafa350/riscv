@@ -1,7 +1,9 @@
 // verilator lint_off DECLFILENAME 
 
 
+`ifdef VERILATOR
 `include "types.sv"
+`endif
  
  
 `define DATA_DBUS_WIDTH 32

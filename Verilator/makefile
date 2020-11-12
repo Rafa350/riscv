@@ -1,25 +1,25 @@
-#*****************************************************************************
-#
-# DESCRIPTION: Verilator Example: Makefile for inside source directory
-#
-# This calls the object directory makefile.  That allows the objects to
-# be placed in the "current directory" which simplifies the Makefile.
-#
-# Copyright 2003-2015 by Wilson Snyder. This program is free software; you can
-# redistribute it and/or modify it under the terms of either the GNU
-# Lesser General Public License Version 3 or the Perl Artistic License
-# Version 2.0.
-#
-#****************************************************************************/
-
 default: show_config test_default
 
+
 # This must point to the root of the VERILATOR kit
-VERILATOR_ROOT := /home/rafael/Projectes/Projectes/verilator
+ifeq ($(OS),Windows_NT)
+OSNAME         := WINDOWS
+VERILATOR_ROOT := /home/rafael/projectes/Projectes/verilator
+VERILATOR_BIN  := $(VERILATOR_ROOT)/bin
+VERILATOR_INC  := $(VERILATOR_ROOT)/include
+else
+OSNAME         := LINUX
+VERILATOR_ROOT := /home/rafael/Projectes/verilator
+VERILATOR_BIN  := $(VERILATOR_ROOT)/bin
+VERILATOR_INC  := $(VERILATOR_ROOT)/include
+endif
+
+
 export VERILATOR_ROOT
 
+
 # Pick up PERL and other variable settings
-include $(VERILATOR_ROOT)/include/verilated.mk
+include $(VERILATOR_INC)/verilated.mk
 
 DEBUG_QUIET = --debug --debugi 0 --gdbbt --no-dump-tree
 DEBUG_ON = --debug --trace-dups --gdbbt
@@ -31,22 +31,31 @@ test_default:   prep     compile run
 test_debug:     prep_dbg compile run
 test_valgrind:  prep_vg  compile run
 
+VERILATOR       = $(VERILATOR_BIN)/verilator
 VERILATOR_FLAGS = --cc verilator_top.sv --top-module top -y ../HDL -Wall
 VERILATOR_FLAGS += --trace-fst
 
 #show_config: Is the very first time we've executed Verilator after building
 #so we make sure to run with --gdbbt, so if it dumps we'll get a trace.
 show_config:
-	$(PERL) $(VERILATOR_ROOT)/bin/verilator $(DEBUG_QUIET) -V
+	@echo ------------------------------------------------------------
+	@echo OS......: $(OSNAME)
+	@echo ROOT....: $(VERILATOR_ROOT)
+	@echo BIN.....: $(VERILATOR_BIN)
+	@echo INC.....: $(VERILATOR_INC)
+	@echo ------------------------------------------------------------
+	$(PERL) $(VERILATOR) $(DEBUG_QUIET) -V
 
 #prep: Is the very first time we're running a Verilation
 #so we make sure to run with --gdbbt, so if it dumps we'll get a trace.
 prep:
-	$(PERL) $(VERILATOR_ROOT)/bin/verilator $(DEBUG_QUIET) $(VERILATOR_FLAGS)
+	$(PERL) $(VERILATOR) $(DEBUG_QUIET) $(VERILATOR_FLAGS)
+	
 prep_dbg:
-	$(PERL) $(VERILATOR_ROOT)/bin/verilator $(DEBUG_ON)    $(VERILATOR_FLAGS)
+	$(PERL) $(VERILATOR) $(DEBUG_ON)    $(VERILATOR_FLAGS)
+	
 prep_vg:
-	$(PERL) $(VERILATOR_ROOT)/bin/verilator $(VALGRIND_ON) $(VERILATOR_FLAGS)
+	$(PERL) $(VERILATOR) $(VALGRIND_ON) $(VERILATOR_FLAGS)
 
 compile:
 	cd obj_dir ; $(MAKE) -j 3 -f ../Makefile_obj
