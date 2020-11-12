@@ -31,7 +31,7 @@ module RegisterFile
     localparam ZERO = {DATA_WIDTH{1'b0}};
     
     logic [DATA_WIDTH-1:0] Data[1:NUM_REGS-1];
-    
+
     always_ff @(posedge i_Clock)
         if (i_Reset) begin
             integer i;
@@ -40,7 +40,7 @@ module RegisterFile
         end                
         else if (i_WrEnable & (|i_WrAddr))
             Data[i_WrAddr] <= i_WrData;
-            
+    
     always_comb begin            
         o_RdDataA = (i_Reset | (~|i_RdAddrA)) ? ZERO : Data[i_RdAddrA];
         o_RdDataB = (i_Reset | (~|i_RdAddrB)) ? ZERO : Data[i_RdAddrB];

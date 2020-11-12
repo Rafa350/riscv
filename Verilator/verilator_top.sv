@@ -28,7 +28,25 @@ module top #(
 
     input  [DATA_IBUS_WIDTH-1:0] i_rom_rdata,
     output [ADDR_IBUS_WIDTH-1:0] o_rom_addr );
+    
+    RdBusInterface #(
+        .DATA_WIDTH(DATA_DBUS_WIDTH),
+        .ADDR_WIDTH(ADDR_DBUS_WIDTH))
+    PgmBus();
+    
+    RdWrBusInterface #(
+        .DATA_WIDTH(DATA_DBUS_WIDTH),
+        .ADDR_WIDTH(ADDR_DBUS_WIDTH))
+    MemBus();
+    
+    assign MemBus.RdData = i_ram_rdata;
+    assign o_ram_addr    = MemBus.Addr;
+    assign o_ram_wdata   = MemBus.WrData;
+    assign o_ram_we      = MemBus.WrEnable;
  
+    assign PgmBus.RdData = i_rom_rdata;
+    assign o_rom_addr    = PgmBus.Addr;
+
 `ifdef PIPELINE 
     ProcessorPP #(
 `else
@@ -41,11 +59,7 @@ module top #(
     Cpu (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),
-        .o_PgmAddr     (o_rom_addr),
-        .i_PgmInst     (i_rom_rdata),
-        .o_MemWrEnable (o_ram_we),  
-        .i_MemRdData   (i_ram_rdata),
-        .o_MemWrData   (o_ram_wdata),
-        .o_MemAddr     (o_ram_addr));
+        .io_PgmBus     (PgmBus),
+        .io_MemBus     (MemBus));
         
 endmodule

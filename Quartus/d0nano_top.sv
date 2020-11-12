@@ -17,10 +17,19 @@ module top(
 
     logic Reset;
     assign Reset = ~KEY[1];
+       
+    RdWrBusInterface #(
+        .DATA_WIDTH (DATA_DBUS_WIDTH),
+        .ADDR_WIDTH (ADDR_DBUS_WIDTH))
+    MemBus();
     
-    assign LED[5:0] = Pgm_PgmInst[31:26];
-    assign LED[7:6] = Cpu_PgmAddr[1:0];
+    RdBusInterface #(
+        .DATA_WIDTH (DATA_IBUS_WIDTH),
+        .ADDR_WIDTH (ADDR_IBUS_WIDTH))
+    PgmBus();
     
+    assign LED[7:6] = PgmBus.Addr[1:0];
+    assign LED[5:0] = PgmBus.RdData[31:26];
     
     // ------------------------------------------------------------------
     // Port IO
@@ -30,37 +39,27 @@ module top(
     // -------------------------------------------------------------------
     // Memoria RAM
     //
-    logic [DATA_DBUS_WIDTH-1:0] Mem_MemRdData;
     mem #(
         .DATA_WIDTH (DATA_DBUS_WIDTH),
         .ADDR_WIDTH (DATA_DBUS_WIDTH))
     mem (
-        .i_clk   (Clock),
-        .i_we    (Cpu_MemWrEnable),
-        .i_addr  (Cpu_MemAddr),
-        .i_wdata (Cpu_MemWrData),
-        .o_rdata (Mem_MemRdData));
+        .i_Clock   (Clock),
+        .io_MemBus (MemBus));
 
       
     // -------------------------------------------------------------------
     // Memoria de programa
-    //    
-    logic [DATA_IBUS_WIDTH-1:0] Pgm_PgmInst;    
+    //     
     pgm #(
         .ADDR_WIDTH (ADDR_IBUS_WIDTH),
         .INST_WIDTH (DATA_IBUS_WIDTH))
     pgm (
-        .i_addr (Cpu_PgmAddr),
-        .o_inst (Pgm_PgmInst));
+        .io_PgmBus (PgmBus));
 
 
     // -------------------------------------------------------------------
     // CPU
     //
-    logic [DATA_DBUS_WIDTH-1:0] Cpu_MemWrData;
-    logic [ADDR_DBUS_WIDTH-1:0] Cpu_MemAddr;
-    logic                       Cpu_MemWrEnable;
-    logic [ADDR_IBUS_WIDTH-1:0] Cpu_PgmAddr;
     
 `ifdef PIPELINE
     ProcessorPP #(
@@ -72,13 +71,9 @@ module top(
         .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
         .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
     Cpu (
-        .i_Clock       (Clock),
-        .i_Reset       (Reset),
-        .o_PgmAddr     (Cpu_PgmAddr),
-        .i_PgmInst     (Pgm_PgmInst),
-        .o_MemWrEnable (Cpu_MemWrEnable),  
-        .i_MemRdData   (Mem_MemRdData),
-        .o_MemWrData   (Cpu_MemWrData),
-        .o_MemAddr     (Cpu_MemAddr));
+        .i_Clock   (Clock),
+        .i_Reset   (Reset),
+        .io_PgmBus (PgmBus),
+        .io_MemBus (MemBus));
        
 endmodule

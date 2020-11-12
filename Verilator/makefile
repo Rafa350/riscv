@@ -31,7 +31,7 @@ test_default:   prep     compile run
 test_debug:     prep_dbg compile run
 test_valgrind:  prep_vg  compile run
 
-VERILATOR_FLAGS = --cc verilator_top.v --top-module top -y ../HDL -Wall
+VERILATOR_FLAGS = --cc verilator_top.sv --top-module top -y ../HDL -Wall
 VERILATOR_FLAGS += --trace-fst
 
 #show_config: Is the very first time we've executed Verilator after building

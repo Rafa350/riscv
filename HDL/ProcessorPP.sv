@@ -12,16 +12,11 @@ module ProcessorPP
 (
     input  logic                       i_Clock,
     input  logic                       i_Reset,
-    
-    input  logic [DATA_DBUS_WIDTH-1:0] i_MemRdData,
-    output logic [DATA_DBUS_WIDTH-1:0] o_MemWrData,
-    output logic [ADDR_DBUS_WIDTH-1:0] o_MemAddr,
-    output logic                       o_MemWrEnable,
-
-    input  logic [DATA_IBUS_WIDTH-1:0] i_PgmInst,
-    output logic [ADDR_IBUS_WIDTH-1:0] o_PgmAddr);
+       
+    RdWrBusInterface.Master            io_MemBus,                      
+    RdBusInterface.Master              io_PgmBus);
           
-                
+                         
     // Pipeline stage IF
     //
     logic [DATA_IBUS_WIDTH-1:0] IF_Inst;
@@ -31,17 +26,17 @@ module ProcessorPP
         .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
         .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH))
     IF (
-        .i_Clock      (i_Clock),       // Clock
-        .i_Reset      (i_Reset),       // Reset
+        .i_Clock      (i_Clock),          // Clock
+        .i_Reset      (i_Reset),          // Reset
 
-        .i_PgmInst    (i_PgmInst),     // Adressa de programa
-        .o_PgmAddr    (o_PgmAddr),     // Instruccio de programa
+        .i_PgmInst    (io_PgmBus.RdData), // Adressa de programa
+        .o_PgmAddr    (io_PgmBus.Addr),   // Instruccio de programa
 
-        .i_JumpEnable (ID_JumpEnable), // Habilita el salt
-        .i_JumpAddr   (ID_JumpAddr),   // Adressa de salt
+        .i_JumpEnable (ID_JumpEnable),    // Habilita el salt
+        .i_JumpAddr   (ID_JumpAddr),      // Adressa de salt
         
-        .o_PCPlus4    (IF_PCPlus4),    // Adressa de la seguent instrccio
-        .o_Inst       (IF_Inst));      // Instruccio actual
+        .o_PCPlus4    (IF_PCPlus4),       // Adressa de la seguent instrccio
+        .o_Inst       (IF_Inst));         // Instruccio actual
         
         
     // Pipeline stage ID
@@ -143,10 +138,10 @@ module ProcessorPP
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
         
-        .o_mem_addr     (o_MemAddr),
-        .i_mem_rdata    (i_MemRdData),
-        .o_mem_wdata    (o_MemWrData),
-        .o_mem_we       (o_MemWrEnable),
+        .o_mem_addr     (io_MemBus.Addr),
+        .i_mem_rdata    (io_MemBus.RdData),
+        .o_mem_wdata    (io_MemBus.WrData),
+        .o_mem_we       (io_MemBus.WrEnable),
         
         .i_AluResult    (EX_AluResult),
         .i_WriteData    (EX_WriteData),

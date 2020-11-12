@@ -1,6 +1,3 @@
-
-
-
 module stageIF
 #(
     parameter DATA_IBUS_WIDTH          = 32,         // Ampla de dades del bus d'instruccions
@@ -31,7 +28,6 @@ module stageIF
     logic [ADDR_IBUS_WIDTH-1:0] PC,        // El PC
                                 PCPlus4,   // El PC + 4
                                 PCNext;    // El proper PC
-
 
     // Contador de programa
     //

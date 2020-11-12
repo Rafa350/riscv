@@ -48,14 +48,14 @@ module stageID
     logic [25:0]                InstJDST;
        
     always_comb begin
-        InstOP      = InstOp'(i_Inst[31:26]);
-        InstFN      = InstFn'(i_Inst[5:0]);
-        InstRS      = i_Inst[25:21];
-        InstRT      = i_Inst[20:16];
-        InstRD      = i_Inst[15:11];
-        InstSH      = i_Inst[10:6];
-        InstIMM     = {{16{i_Inst[15]}}, i_Inst[15:0]};
-        InstJDST    = i_Inst[25:0];
+        InstOP   = InstOp'(i_Inst[31:26]);
+        InstFN   = InstFn'(i_Inst[5:0]);
+        InstRS   = i_Inst[25:21];
+        InstRT   = i_Inst[20:16];
+        InstRD   = i_Inst[15:11];
+        InstSH   = i_Inst[10:6];
+        InstIMM  = {{16{i_Inst[15]}}, i_Inst[15:0]};
+        InstJDST = i_Inst[25:0];
     end
     
     
