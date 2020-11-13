@@ -2,8 +2,12 @@ module Comparer
 #(
     parameter WIDTH          = 32)
 (
-    input  logic [WIDTH-1:0] i_InputA, // Entrada per comparar A
-    input  logic [WIDTH-1:0] i_InputB, // Entrada per comparar B
+    input  logic [WIDTH-1:0] i_InputA,   // Entrada per comparar A
+    input  logic [WIDTH-1:0] i_InputB,   // Entrada per comparar B
+    
+// verilator lint_off UNUSED     
+    input  logic             i_Unsigned, // Opera sense signe
+// verilator lint_on UNUSED     
     
     output logic             o_EQ,     // A == B
     output logic             o_GT,     // A > B

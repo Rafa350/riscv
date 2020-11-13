@@ -5,43 +5,26 @@
 #include "verilated.h"
 #include "Vtop.h"
 #if VM_TRACE
-#include <verilated_vcd_c.h>
+#include <verilated_fst_c.h>
 #endif
 #include <stdio.h>
 
-
-//#define BIG_ENDIAN     
-
-
-extern void disassembly(unsigned addr, unsigned data);
+#include "simTestbench.h"
+#include "simMemory.h"
 
 
-class ROM {
-    private:
-        unsigned size;
-        uint32_t *mem;
+extern void disassembly(unsigned addr, uint32_t data);
+
+
+class ROM: public Simulation::Memory {
     public:
         ROM();
-        ROM(const char *fileName);
-        uint32_t read32(uint32_t addr) const;
-        unsigned getSize() const { return size; }
-        void dump(uint32_t addr, unsigned size);
 };
 
 
-class RAM {
-    private:
-        unsigned size;
-        uint8_t *mem;
+class RAM: public Simulation::Memory {
     public:
         RAM();
-        RAM(const char *fileName);
-        uint32_t read32(uint32_t addr) const;
-        uint8_t read8(uint32_t addr) const;
-        void write32(uint32_t addr, uint32_t data);
-        void write8(uint32_t addr, uint8_t data);
-        unsigned getSize() const { return size; }
-        void dump(uint32_t addr, unsigned size) const;
 };
 
 

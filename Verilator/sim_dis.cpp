@@ -1,49 +1,108 @@
 #include "sim.h"
 
 
-void disassembly(unsigned addr, unsigned data) {
+#define OP_LOAD     0x03
+#define OP_STORE    0x23
+#define OP_OP       0x33
+#define OP_JAL      0x6F
 
-    unsigned op = (data >> 26) & 0x0000003F;   
-    unsigned fn = data & 0x0000003F;
-    unsigned rs = (data >> 21) & 0x0000001F;
-    unsigned rt = (data >> 16) & 0x0000001F;
-    unsigned rd = (data >> 11) & 0x0000001F;
-    unsigned imm = data & 0x0000FFFF;
-    unsigned addr26 = data & 0x03FFFFFF;
+
+void disassembly(unsigned addr, uint32_t data) {
+
+    unsigned op  = data & 0x7F;   
+    unsigned fn3 = (data >> 12) & 0x07;
+    unsigned fn7 = (data >> 25) & 0x7F;
+    unsigned rs1 = (data >> 15) & 0x1F;
+    unsigned rs2 = (data >> 20) & 0x1F;
+    unsigned rd = (data >> 7) & 0x1F;
     
     VL_PRINTF("%8.8X  %8.8X:  ", addr, data);
     
     if (data) {
         switch (op) {
-            case 0b000000: {
-                switch (fn) {
-                    case 0b100000:
-                        VL_PRINTF("add   ");
+            case OP_OP: {
+                switch (fn3) {
+                    case 0b000:
+                        if (fn7 & 0b0100000)
+                            VL_PRINTF("sub   ");
+                        else
+                            VL_PRINTF("add   ");
                         break;
 
-                    case 0b100001:
+                    case 0b001:
                         VL_PRINTF("addu  ");
                         break;
 
-                    case 0b100100:
+                    case 0b100:
                         VL_PRINTF("and   ");
                         break;
                 }
-                VL_PRINTF("$%d, $%d, $%d", rd, rs, rt);
+                VL_PRINTF("x%d, x%d, x%d", rd, rs1, rs2);
                 break;
             }
                 
-            case 0b100011:
-                VL_PRINTF("lw    $%d, %d($%d)", rt, imm, rs);
-                break;
+            case OP_LOAD: {
+                switch (fn3) {
+                    case 0b000:
+                        VL_PRINTF("lb");
+                        break;
+                        
+                    case 0b001:
+                        VL_PRINTF("lh");
+                        break;
+                        
+                    case 0b010:
+                        VL_PRINTF("lw");
+                        break;
 
-            case 0b101011:
-                VL_PRINTF("sw    $%d, %d($%d)", rt, imm, rs);
+                    case 0b100:
+                        VL_PRINTF("lbu");
+                        break;
+
+                    case 0b101:
+                        VL_PRINTF("lhu");
+                        break;
+                        
+                    default:
+                        VL_PRINTF("[%1.1X]", fn3);
+                        break;
+                }
+                uint32_t offset = (data & 0xFFF00000) >> 20;
+                VL_PRINTF("    x%d, %d(x%d)", rd, offset, rs1);
                 break;
+            }
+
+            case OP_STORE: {
+                switch (fn3) {
+                    case 0b000:
+                        VL_PRINTF("sw");
+                        break;
+                        
+                    case 0b001:
+                        VL_PRINTF("sh");    
+                        
+                        break;
+                        
+                    case 0b010:
+                        VL_PRINTF("sw");
+                        break;
+                }
+                uint32_t offset = 
+                        (((data & 0xFE000000) >> 25) << 5) |
+                        ((data & 0x00000F80) >> 7);
+                VL_PRINTF("    x%d, %d(x%d)", rs2, offset, rs1);
+                break;
+            }
                 
-            case 0b000010:
-                VL_PRINTF("j     %8.8X", addr26);
+            case OP_JAL: {
+                uint32_t offset =
+                    ((data & 0x8000) ? 0xFFF00000 : 0x00000000) | 
+                    (((data >> 21) & 0x000003FF) << 1) | 
+                    (((data >> 20) & 0x00000001) << 11) |
+                    (((data >> 12) & 0x000000FF) << 12);
+                VL_PRINTF("jal   x%d, %8.8X", rd, offset);
                 break;
+            }
         }
     }
     else

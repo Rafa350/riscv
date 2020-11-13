@@ -1,4 +1,4 @@
-`define PIPELINE
+//`define PIPELINE
 
 
 module top(

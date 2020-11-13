@@ -1,19 +1,10 @@
+.global _start
     
-    .align 2
-    .set nomicromips
-    .set noreorder
-    .set noat
-    
-    .text
-    
-    .ent start
-start:
-    lw      $1, 0($0)
-    lw      $2, 4($0)
+_start:
+    lw      x1, 0(x0)
+    lw      x2, 4(x0)
 s1:    
-    add     $3, $1, $2
-    sw      $3, 8($0)
+    add     x3, x1, x2
+    sw      x3, 8(x0)
     j       s1
 
-    .end start
-    

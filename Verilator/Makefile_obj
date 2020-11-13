@@ -24,13 +24,13 @@ CPPFLAGS += -DVL_THREADED=1
 CPPFLAGS += -W -Werror -Wall
 endif
 
-CPPFLAGS += -I../../../Simulation/Include
+CPPFLAGS += -I../../../Simulation/Include -I ../
 
 #######################################################################
 # Linking final exe -- presumes have a sim_main.cpp
 
-simx: sim_main.o sim_rom.o sim_ram.o sim_dis.o $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a
-	$(LINK) $(LDFLAGS) -g $^ $(LOADLIBES) $(LDLIBS) -o $@ $(LIBS) 2>&1 | c++filt
+simx: sim_main.o sim_rom.o sim_ram.o sim_dis.o ../../../Simulation/Source/simMemory.cpp $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a
+	$(LINK) $(LDFLAGS) $(CPPFLAGS) -g $^ $(LOADLIBES) $(LDLIBS) -o $@ $(LIBS) 2>&1 | c++filt
 
 sim_main.o: sim_main.cpp $(VM_PREFIX).h sim.h
 

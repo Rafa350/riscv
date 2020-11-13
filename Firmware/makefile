@@ -1,10 +1,10 @@
-AS = "/cygdrive/c/program files/MIPS-gcc/bin/mips-mti-elf-as.exe"
+AS = riscv64-linux-gnu-as
 AS_FLAGS = -a 
 
-CC = "/cygdrive/c/program files/MIPS-gcc/bin/mips-mti-elf-gcc.exe"
+CC = riscv64-linux-gnu-gcc
 CC_FLAGS = -g -Wall
 
-OC = "/cygdrive/c/program files/MIPS-gcc/bin/mips-mti-elf-objcopy.exe"
+OC = riscv64-linux-gnu-objcopy
 OC_FLAGS = --output-target=verilog --only-section=.text
 
 

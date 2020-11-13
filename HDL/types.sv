@@ -1,82 +1,21 @@
-package types;
-
-    // ISA Opcodes
-    //
-    typedef enum logic[5:0] {
-        InstOp_Type_R  = 6'b000000,
-        InstOp_Type_R2 = 6'b011100,
-        InstOp_ADDI    = 6'b001001,
-        InstOp_ADDIU   = 6'b001000,
-        InstOp_ANDI    = 6'b001100,
-        InstOp_BEQ     = 6'b000100,
-        InstOp_J       = 6'b000010,
-        InstOp_JAL     = 6'b000011,
-        InstOp_LW      = 6'b100011,
-        InstOp_SW      = 6'b101011
-    } InstOp;
+package types; 
     
-    // R-Type function codes
-    //
-    typedef enum logic[5:0] {
-        InstFn_ADD   = 6'b100000,
-        InstFn_ADDU  = 6'b100001,
-        InstFn_AND   = 6'b100100,
-        InstFn_break = 6'b001101,
-        InstFn_DIF   = 6'b011010,
-        InstFn_DIVU  = 6'b011011,
-        InstFn_JR    = 6'b001000,
-        InstFn_JALR  = 6'b001001,
-        InstFn_NOR   = 6'b100111,
-        InstFn_OR    = 6'b100101,
-        InstFn_SLL   = 6'b000000,
-        InstFn_SLT   = 6'b101010,
-        InstFn_SLLV  = 6'b000100,
-        InstFn_SLTU  = 6'b101011,   
-        InstFn_SRA   = 6'b000011,
-        InstFn_SRL   = 6'b000010,
-        InstFn_SRAV  = 6'b000111,
-        InstFn_SRLV  = 6'b000110,
-        InstFn_SUBU  = 6'b100011,
-        InstFn_XOR   = 6'b100110
-    } InstFn;    
-    
-    // R-Type inmstruction format
-    //
-    typedef struct packed {
-        InstOp OP;
-        logic [4:0] RS;
-        logic [4:0] RT;
-        logic [4:0] RD;
-        logic [4:0] SH;
-        InstFn FN;
-    } TypeR;
-    
-    // I-Type instruction format
-    //
-    typedef struct packed {
-        InstOp OP;
-        logic [4:0] RS;
-        logic [4:0] RT;
-        logic [15:0] IMM;
-    } TypeI;
-    
-    // J-Type instruction format
-    //
-    typedef struct packed {
-        InstOp OP;
-        logic [25:0] JDST;
-    } TypeJ;
-    
-    /*
-    typedef union packed {
-        TypeR R;
-        TypeI I;
-        TypeJ J;
-        logic [31:0] Raw;
-    } Instruction;    
-    */
+    typedef enum logic [6:0] {
+        OpCode_LOAD     = 7'h03,
+        OpCode_MISC_MEM = 7'h0f,
+        OpCode_OP_IMM   = 7'h13,
+        OpCode_AUIPC    = 7'h17,
+        OpCode_STORE    = 7'h23,
+        OpCode_OP       = 7'h33,
+        OpCode_LUI      = 7'h37,
+        OpCode_BRANCH   = 7'h63,
+        OpCode_JALR     = 7'h67,
+        OpCode_JAL      = 7'h6f,
+        OpCode_SYSTEM   = 7'h73
+    } RV32I_OpCode;
     
     typedef enum logic[4:0] {
+        AluOp_Unknown = 5'h00,
         AluOp_ADD,
         AluOp_ADDU,
         AluOp_AND,
@@ -88,14 +27,13 @@ package types;
         AluOp_SLLV,
         AluOp_SLT,
         AluOp_SLTU,
-        ApuOp_SRA,
+        AluOp_SRA,
         AluOp_SRAV,
         AluOp_SRL,
         AluOP_SRLV,
         AluOp_SUB,
         AluOp_SUBU,
-        AluOp_XOR,
-        AluOp_Unknown
+        AluOp_XOR
     } AluOp;
     
 endpackage

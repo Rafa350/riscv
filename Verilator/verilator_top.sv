@@ -11,7 +11,7 @@
 `define ADDR_IBUS_WIDTH 32
 `define DATA_IBUS_WIDTH 32
 
-`define PIPELINE
+//`define PIPELINE
 
 
 module top #(

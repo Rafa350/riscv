@@ -1,14 +1,9 @@
 #include "sim.h"
-#include "testbench.h"
-#include "memory.h"
     
-#include <verilated_fst_c.h>
-
-
 #define PIPELINE
 
 
-#ifdef PIPELINE
+#ifdef xPIPELINE
     #define TRACE_FILE_NAME "waves_pp/trace.fst"
 #else
     #define TRACE_FILE_NAME "waves_sc/trace.fst"
@@ -20,7 +15,7 @@
 // de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps 
 // de simulacio (simTime)
 //
-#define CLOCK_MAX             500  // Nombre de ticks a simular
+#define CLOCK_MAX             100  // Nombre de ticks a simular
 #define CLOCK_START             0  // Tick per iniciar clk
 #define CLOCK_TICKS            10  // Tics per cicle clk
 
@@ -111,7 +106,7 @@ void CPUTestbench::run() {
         // Desensambla l'instruccio actual
         //        
         if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))
-            disassembly(top->o_rom_addr >> 2, top->i_rom_rdata);
+            disassembly(top->o_rom_addr, top->i_rom_rdata);
 
     } while (nextTick() && (tick < CLOCK_MAX));
     
@@ -121,11 +116,11 @@ void CPUTestbench::run() {
     writeConsole("    --Total simulation time: " + std::to_string(getTickCount()) + " ticks.\n");
 
     writeConsole("*** ROM dump start.\n");
-    rom->dump(0, 16);
+    rom->dump(0, 32);
     writeConsole("*** ROM dump end.\n");
     
     writeConsole("*** RAM dump start.\n");
-    ram->dump(0, 16);
+    ram->dump(0, 32);
     writeConsole("*** RAM dump end.\n");
 	
     writeConsole("*** Simulation end.\n");
