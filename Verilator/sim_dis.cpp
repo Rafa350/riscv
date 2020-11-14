@@ -4,6 +4,7 @@
 #define OP_LOAD     0x03
 #define OP_STORE    0x23
 #define OP_OP       0x33
+#define OP_IMM      0x13
 #define OP_JAL      0x6F
 
 
@@ -40,6 +41,18 @@ void disassembly(unsigned addr, uint32_t data) {
                 VL_PRINTF("x%d, x%d, x%d", rd, rs1, rs2);
                 break;
             }
+            
+            case OP_IMM: {
+                switch (fn3) {
+                    case 0b000:
+                        VL_PRINTF("addi  ");
+                    break;
+                }
+                uint32_t imm = (data & 0xFFF00000) >> 20;
+                VL_PRINTF("x%d, x%d, %8.8X", rd, rs1, imm);
+                break;
+            }
+
                 
             case OP_LOAD: {
                 switch (fn3) {

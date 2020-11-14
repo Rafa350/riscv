@@ -1,6 +1,6 @@
 module ComparerZero
 #(
-    parameter WIDTH          = 32)
+    parameter WIDTH          = 32)     // Amplada de dades
 (
     input  logic [WIDTH-1:0] i_Input,  // Entrada per comparar
     
@@ -11,7 +11,7 @@ module ComparerZero
     output logic             o_LEZ);   // Input <= 0
 
     logic IsZero;
-    assign IsZero = ~|i_Input;
+    assign IsZero = i_Input == 0;
 
     always_comb begin
         o_EQ  = IsZero;

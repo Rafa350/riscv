@@ -16,38 +16,42 @@ module ProcessorSC
     input  logic                       i_Clock,       // Clock
     input  logic                       i_Reset,       // Reset
 
-    RdWrBusInterface.Master            io_MemBus,                      
-    RdBusInterface.Master              io_PgmBus);
-
+    output logic [ADDR_DBUS_WIDTH-1:0] o_MemAddr,     // Adressa
+    output logic                       o_MemWrEnable, // Habilita la escriptura
+    output logic [DATA_DBUS_WIDTH-1:0] o_MemWrData,   // Dades per escriure
+    input  logic [DATA_DBUS_WIDTH-1:0] i_MemRdData,   // Dades lleigides
+    
+    output logic [ADDR_IBUS_WIDTH-1:0] o_PgmAddr,     // Adressa de la instruccio
+    input  logic [DATA_IBUS_WIDTH-1:0] i_PgmInst);    // Instruccio
+ 
     // Control de PC
     //
     logic [ADDR_IBUS_WIDTH-1:0] PC;       // Valor actual del PC
     logic [ADDR_IBUS_WIDTH-1:0] PCNext;   // Valor per actualitzar PC
     logic [ADDR_IBUS_WIDTH-1:0] PCPlus4;  // Valor incrementat (+4)
-    logic [ADDR_IBUS_WIDTH-1:0] PCBranch; // Valor per bifurcacio
-    logic [ADDR_IBUS_WIDTH-1:0] PCJump;   // Valor per salt
+    logic [ADDR_IBUS_WIDTH-1:0] PCJump;   // Valor de salt
    
 
     // Control del datapath. Genera les senyals de control
     //
-    AluOp Ctrl_AluControl;  // Operacio de la ALU
-    logic Ctrl_RegWrEnable; // Autoritza escriptura del regisres
-    logic Ctrl_MemWrEnable; // Autoritza escritura en memoria
-    logic Ctrl_IsJump;      // Indica salt
-    logic Ctrl_IsBranch;    // Indica bifurcacio
-    logic Ctrl_MemToReg;    // Selector del les dades d'esacriptura en el registre
-    logic Ctrl_OperandBSel; // Seleccio del operand B de la ALU
+    AluOp       Ctrl_AluControl;   // Operacio de la ALU
+    logic       Ctrl_RegWrEnable;  // Autoritza escriptura del regisres
+    logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
+    logic       Ctrl_IsJump;       // Indica salt
+    logic       Ctrl_IsBranch;     // Indica bifurcacio
+    logic [1:0] Ctrl_DataToRegSel; // Selector del les dades d'esacriptura en el registre
+    logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
 
     Controller_RV32I
     Ctrl (
-        .i_Inst        (io_PgmBus.RdData),
-        .o_AluControl  (Ctrl_AluControl),
-        .o_MemWrEnable (Ctrl_MemWrEnable),
-        .o_RegWrEnable (Ctrl_RegWrEnable),
-        .o_AluSrcB     (Ctrl_OperandBSel),
-        .o_MemToReg    (Ctrl_MemToReg),
-        .o_IsBranch    (Ctrl_IsBranch),
-        .o_IsJump      (Ctrl_IsJump));    
+        .i_Inst         (i_PgmInst),
+        .o_AluControl   (Ctrl_AluControl),
+        .o_MemWrEnable  (Ctrl_MemWrEnable),
+        .o_RegWrEnable  (Ctrl_RegWrEnable),
+        .o_OperandBSel  (Ctrl_OperandBSel),
+        .o_DataToRegSel (Ctrl_DataToRegSel),
+        .o_IsBranch     (Ctrl_IsBranch),
+        .o_IsJump       (Ctrl_IsJump));    
 
 
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
@@ -60,7 +64,7 @@ module ProcessorSC
 
     Decoder_RV32I
     Dec (
-        .i_Inst (io_PgmBus.RdData),
+        .i_Inst (i_PgmInst),
         .o_RS1  (Dec_InstRS1),
         .o_RS2  (Dec_InstRS2),
         .o_RD   (Dec_InstRD),
@@ -119,9 +123,9 @@ module ProcessorSC
     Mux4To1 #(
         .WIDTH  (DATA_DBUS_WIDTH))
     Sel3 (
-        .i_Select ({1'b0, Ctrl_MemToReg}),
+        .i_Select (Ctrl_DataToRegSel),
         .i_Input0 (Alu_Result),
-        .i_Input1 (io_MemBus.RdData),
+        .i_Input1 (i_MemRdData),
         .i_Input2 (PCPlus4),
         .i_Input3 (PCPlus4),
         .o_Output (Sel3_Output));
@@ -150,14 +154,14 @@ module ProcessorSC
         .o_Result   (PCPlus4));
 
 
-    // Evalua PCBranch
+    // Evalua PCJump
     //
     HalfAdder #(
         .WIDTH (ADDR_IBUS_WIDTH))
     Adder2 (
         .i_OperandA (PC),
         .i_OperandB (Dec_InstIMM),
-        .o_Result   (PCBranch));
+        .o_Result   (PCJump));
 
 
     // Selecciona el nou valor del contador de programa
@@ -167,7 +171,7 @@ module ProcessorSC
     Sel4 (
         .i_Select (Ctrl_IsJump | (Ctrl_IsBranch & Comp_EQ)),
         .i_Input0 (PCPlus4),
-        .i_Input1 (PCBranch),
+        .i_Input1 (PCJump),
         .o_Output (PCNext));
 
 
@@ -187,15 +191,15 @@ module ProcessorSC
     // Interface amb la memoria RAM
     //
     always_comb begin
-        io_MemBus.Addr     = Alu_Result;
-        io_MemBus.WrEnable = Ctrl_MemWrEnable;
-        io_MemBus.WrData   = RegBlock_RdDataB;
+        o_MemAddr     = Alu_Result;
+        o_MemWrEnable = Ctrl_MemWrEnable;
+        o_MemWrData   = RegBlock_RdDataB;
     end
 
 
     // Interface amb la memoria de programa
     //
-    assign io_PgmBus.Addr  = PC;
+    assign o_PgmAddr  = PC;
 
 endmodule
 

@@ -6,7 +6,7 @@ import types::*;
 
 module Alu 
 #(
-    parameter WIDTH = 32)
+    parameter WIDTH    = 32)       // Amplada de dades
 (
     input  AluOp       i_Op,       // Operacio
     

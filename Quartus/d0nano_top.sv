@@ -2,10 +2,24 @@
 
 
 module top(
-    input  wire       CLOCK_50,
-    input  wire [1:0] KEY,
-    input  wire [3:0] SW,
-    output wire [7:0] LED);
+    input  logic        CLOCK_50,
+    
+    input  logic [1:0]  KEY,
+    input  logic [3:0]  SW,
+
+    output logic [7:0]  LED,
+    
+    input  logic [1:0]  GPIO_0_IN,
+    output  logic [33:0] GPIO_0,
+    
+    input  logic [1:0]  GPIO_1_IN,
+    inout  logic [33:0] GPIO_1,
+    
+    input  logic [1:0]  GPIO_2_IN,
+    inout  logic [12:0] GPIO_2,
+    
+    output logic        I2C_SCLK,
+    inout  logic        I2C_SDAT);
     
     parameter DATA_DBUS_WIDTH = 32;
     parameter ADDR_DBUS_WIDTH = 32;
@@ -13,23 +27,20 @@ module top(
     parameter ADDR_IBUS_WIDTH = 32;
     
     logic Clock;
-    assign Clock = ~KEY[0];
-
     logic Reset;
-    assign Reset = ~KEY[1];
+
+    logic [ADDR_DBUS_WIDTH-1:0] MemAddr;
+    logic                       MemWrEnable;
+    logic [DATA_DBUS_WIDTH-1:0] MemWrData;
+    logic [DATA_DBUS_WIDTH-1:0] MemRdData;
+
+    logic [ADDR_IBUS_WIDTH-1:0] PgmAddr;
+    logic [DATA_IBUS_WIDTH-1:0] PgmInst;
        
-    RdWrBusInterface #(
-        .DATA_WIDTH (DATA_DBUS_WIDTH),
-        .ADDR_WIDTH (ADDR_DBUS_WIDTH))
-    MemBus();
+    assign Clock = ~KEY[0];
+    assign Reset = ~KEY[1];
+    assign LED[7:0] = MemWrData[7:0];
     
-    RdBusInterface #(
-        .DATA_WIDTH (DATA_IBUS_WIDTH),
-        .ADDR_WIDTH (ADDR_IBUS_WIDTH))
-    PgmBus();
-    
-    assign LED[7:6] = PgmBus.Addr[1:0];
-    assign LED[5:0] = PgmBus.RdData[31:26];
     
     // ------------------------------------------------------------------
     // Port IO
@@ -39,22 +50,26 @@ module top(
     // -------------------------------------------------------------------
     // Memoria RAM
     //
-    mem #(
+    Memory #(
         .DATA_WIDTH (DATA_DBUS_WIDTH),
         .ADDR_WIDTH (DATA_DBUS_WIDTH))
     mem (
-        .i_Clock   (Clock),
-        .io_MemBus (MemBus));
+        .i_Clock    (Clock),
+        .i_Addr     (MemAddr),
+        .i_WrEnable (MemWrEnable),
+        .i_WrData   (MemWrData),
+        .o_RdData   (MemRdData));
 
       
     // -------------------------------------------------------------------
     // Memoria de programa
     //     
-    pgm #(
+    Program #(
         .ADDR_WIDTH (ADDR_IBUS_WIDTH),
         .INST_WIDTH (DATA_IBUS_WIDTH))
     pgm (
-        .io_PgmBus (PgmBus));
+        .i_Addr (PgmAddr),
+        .o_Inst (PgmInst));
 
 
     // -------------------------------------------------------------------
@@ -71,9 +86,13 @@ module top(
         .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
         .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
     Cpu (
-        .i_Clock   (Clock),
-        .i_Reset   (Reset),
-        .io_PgmBus (PgmBus),
-        .io_MemBus (MemBus));
+        .i_Clock       (Clock),
+        .i_Reset       (Reset),
+        .o_PgmAddr     (PgmAddr),
+        .i_PgmInst     (PgmInst),
+        .o_MemAddr     (MemAddr),
+        .o_MemWrEnable (MemWrEnable),
+        .o_MemWrData   (MemWrData),
+        .i_MemRdData   (MemRdData));
        
 endmodule

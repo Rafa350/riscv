@@ -10,6 +10,9 @@ OC_FLAGS = --output-target=verilog --only-section=.text
 
 default: demo.txt
 
+clean:
+	rm *.out *.txt
+
 demo.txt: demo.out
 	$(OC) $(OC_FLAGS) $< $@
 
