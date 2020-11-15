@@ -12,9 +12,9 @@ module Memory #(
     
     localparam SIZE = 2**ADDR_WIDTH;
 
-    [DATA_WIDTH-1:0] Data [0:SIZE-1];
+    logic [DATA_WIDTH-1:0] Data [0:SIZE-1];
     
-    always_ff @posedge(i_Clock)
+    always_ff @(posedge i_Clock)
         if (i_WrEnable)
             Data[i_Addr] <= i_WrData;            
             

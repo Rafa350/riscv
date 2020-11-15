@@ -1,26 +1,17 @@
 # Moduls base
 #
-read_verilog -sv ../HDL/Register.sv
-read_verilog -sv ../HDL/Mux2To1.sv
-read_verilog -sv ../HDL/Mux4To1.sv
-read_verilog -sv ../HDL/Mux8To1.sv
-read_verilog -sv ../HDL/HalfAdder.sv
-read_verilog -sv ../HDL/Comparer.sv
-read_verilog -sv ../HDL/ComparerZero.sv
+read_verilog -sv ../HDL/Base/Register.sv
+read_verilog -sv ../HDL/Base/Mux2To1.sv
+read_verilog -sv ../HDL/Base/Mux4To1.sv
+read_verilog -sv ../HDL/Base/Mux8To1.sv
+read_verilog -sv ../HDL/Base/HalfAdder.sv
+read_verilog -sv ../HDL/Base/Comparer.sv
+read_verilog -sv ../HDL/Base/ComparerZero.sv
+read_verilog -sv ../HDL/Base/Memory.sv
 
-# Interfaces
+# Moduls core
 #
-read_verilog -sv ../HDL/RdWrBusInterface.sv
-read_verilog -sv ../HDL/RdBusInterface.sv
-
-
-read_verilog -sv ../HDL/types.sv
-read_verilog -sv ../HDL/stageIF.sv
-#read_verilog -sv ../HDL/stageID.sv
-#read_verilog -sv ../HDL/stageEX.sv
-read_verilog -sv ../HDL/stageMEM.sv
-read_verilog -sv ../HDL/stageWB.sv
-#read_verilog -sv ../HDL/ProcessorPP.sv
+read_verilog -sv ../HDL/ProcessorSC.sv
 read_verilog -I../HDL -sv ../Verilator/verilator_top.sv
 
 #hierarchy -check 

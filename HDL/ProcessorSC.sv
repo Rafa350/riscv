@@ -23,7 +23,7 @@ module ProcessorSC
     
     output logic [ADDR_IBUS_WIDTH-1:0] o_PgmAddr,     // Adressa de la instruccio
     input  logic [DATA_IBUS_WIDTH-1:0] i_PgmInst);    // Instruccio
- 
+    
     // Control de PC
     //
     logic [ADDR_IBUS_WIDTH-1:0] PC;       // Valor actual del PC

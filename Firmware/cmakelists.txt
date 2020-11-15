@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.16.3)
+
+project(simx
+    VERSION 1.0
+    DESCRIPTION "Simulacio CPU-RISC-V"
+    LANGUAGES ASM C CXX
+)
+ 
+add_executable(demo.out
+    demo.S
+)
+
+add_custom_command(
+    TARGET demo.out
+    COMMAND ${CMD_OBJCOPY} 
+    ARGS --output-target=verilog --only-section=.text demo.out demo.txt
+    DEPENDS demo.out
+)    
+
+target_compile_options(demo.out PRIVATE
+    -g -Wall -o demo.out
+)    
+
+target_link_options(demo.out PRIVATE
+    -nostartfiles
+    -nolibc
+    -nostdlib
+)

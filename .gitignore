@@ -10,6 +10,8 @@
 /Verilator/*.vcd
 /Verilator/*.stackdump
 /Verilator/*.csv
+/Verilator/build
 /Tools/*.o
 /Tools/*.exe
 /Firmware/*.out
+/Firmware/build
