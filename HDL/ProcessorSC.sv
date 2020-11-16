@@ -29,7 +29,6 @@ module ProcessorSC
     logic [ADDR_IBUS_WIDTH-1:0] PC;       // Valor actual del PC
     logic [ADDR_IBUS_WIDTH-1:0] PCNext;   // Valor per actualitzar PC
     logic [ADDR_IBUS_WIDTH-1:0] PCPlus4;  // Valor incrementat (+4)
-    logic [ADDR_IBUS_WIDTH-1:0] PCJump;   // Valor de salt
    
 
     // Control del datapath. Genera les senyals de control
@@ -37,21 +36,23 @@ module ProcessorSC
     AluOp       Ctrl_AluControl;   // Operacio de la ALU
     logic       Ctrl_RegWrEnable;  // Autoritza escriptura del regisres
     logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
-    logic       Ctrl_IsJump;       // Indica salt
-    logic       Ctrl_IsBranch;     // Indica bifurcacio
+    logic [1:0] Ctrl_PCNextSel;    // Selector del seguent valor del PC
     logic [1:0] Ctrl_DataToRegSel; // Selector del les dades d'esacriptura en el registre
+    logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
     logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
 
     Controller_RV32I
     Ctrl (
         .i_Inst         (i_PgmInst),
+        .i_IsEQ         (Comp_EQ),
+        .i_IsLT         (Comp_LT),
         .o_AluControl   (Ctrl_AluControl),
         .o_MemWrEnable  (Ctrl_MemWrEnable),
         .o_RegWrEnable  (Ctrl_RegWrEnable),
         .o_OperandBSel  (Ctrl_OperandBSel),
         .o_DataToRegSel (Ctrl_DataToRegSel),
-        .o_IsBranch     (Ctrl_IsBranch),
-        .o_IsJump       (Ctrl_IsJump));    
+        .o_PCNextSel    (Ctrl_PCNextSel));
+    assign Ctrl_OperandASel = 0;
 
 
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
@@ -103,7 +104,17 @@ module ProcessorSC
         .o_RdDataA  (RegBlock_RdDataA),
         .i_RdAddrB  (Dec_InstRS2),
         .o_RdDataB  (RegBlock_RdDataB));
-
+        
+    // Selecciona les dades d'entrada A de la alu
+    //
+    logic [DATA_DBUS_WIDTH-1:0] Sel5_Output;
+    Mux2To1 #(
+        .WIDTH (DATA_DBUS_WIDTH))
+    Sel5 (
+        .i_Select (Ctrl_OperandASel),
+        .i_Input0 (RegBlock_RdDataA),
+        .i_Input1 (PC),
+        .o_Output (Sel5_Output));
 
     // Selecciona les dades d'entrada B de la ALU
     //
@@ -124,10 +135,10 @@ module ProcessorSC
         .WIDTH  (DATA_DBUS_WIDTH))
     Sel3 (
         .i_Select (Ctrl_DataToRegSel),
-        .i_Input0 (Alu_Result),
-        .i_Input1 (i_MemRdData),
-        .i_Input2 (PCPlus4),
-        .i_Input3 (PCPlus4),
+        .i_Input0 (Alu_Result),          // Escriu el resultat de la ALU
+        .i_Input1 (i_MemRdData),         // Escriu el valor lleigit de la memoria
+        .i_Input2 (PCPlus4),             // Escriu el valor de PC+4
+        .i_Input3 (PCPlus4),             // No s'utilitza
         .o_Output (Sel3_Output));
 
 
@@ -138,13 +149,12 @@ module ProcessorSC
         .WIDTH      (DATA_DBUS_WIDTH))
     Alu (
         .i_Op       (Ctrl_AluControl),
-        .i_Carry    (0),
-        .i_OperandA (RegBlock_RdDataA),
+        .i_OperandA (Sel5_Output),
         .i_OperandB (Sel1_Output),
         .o_Result   (Alu_Result));
 
 
-    // Evalua PCPlus4
+    // Evalua PC = PC + 4
     //
     HalfAdder #(
         .WIDTH (ADDR_IBUS_WIDTH))
@@ -154,27 +164,40 @@ module ProcessorSC
         .o_Result   (PCPlus4));
 
 
-    // Evalua PCJump
+    // Evalua PC = PC + offset
     //
+    logic [ADDR_IBUS_WIDTH-1:0] PCPlusOffset;
     HalfAdder #(
         .WIDTH (ADDR_IBUS_WIDTH))
     Adder2 (
         .i_OperandA (PC),
         .i_OperandB (Dec_InstIMM),
-        .o_Result   (PCJump));
+        .o_Result   (PCPlusOffset));
+        
+        
+    // Evalua PC = [rs1] + offset
+    //
+    logic [ADDR_IBUS_WIDTH-1:0] PCPlusOffsetAndRS1;
+    HalfAdder #(
+        .WIDTH (ADDR_IBUS_WIDTH))
+    Adder3 (
+        .i_OperandA (Dec_InstIMM),
+        .i_OperandB (RegBlock_RdDataA),
+        .o_Result   (PCPlusOffsetAndRS1));
 
 
     // Selecciona el nou valor del contador de programa
     //
-    Mux2To1 #(
+    Mux4To1 #(
         .WIDTH (ADDR_IBUS_WIDTH))
     Sel4 (
-        .i_Select (Ctrl_IsJump | (Ctrl_IsBranch & Comp_EQ)),
+        .i_Select (Ctrl_PCNextSel),
         .i_Input0 (PCPlus4),
-        .i_Input1 (PCJump),
+        .i_Input1 (PCPlusOffset),
+        .i_Input2 (PCPlusOffsetAndRS1),
+        .i_Input3 (PCPlus4),
         .o_Output (PCNext));
-
-
+        
     // Registre del contador de programa
     //
     Register #(

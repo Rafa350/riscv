@@ -11,7 +11,7 @@ module Decoder_RV32I (
     output logic [4:0]  o_RS2,  // El registre fomt 2 (rs2)
     output logic [4:0]  o_RD,   // El reguistre de destinacio  (rd)
     
-    output logic [4:0]  o_SH,   // El vaslor de desplaçament de bits (shamt)
+    output logic [4:0]  o_SH,   // El valor de desplaçament de bits (shamt)
     output logic [31:0] o_IMM   // El valor inmediat
 );
 
@@ -20,6 +20,9 @@ module Decoder_RV32I (
     //
     always_comb begin 
         unique case (i_Inst[6:0])
+            OpCode_AUIPC:
+                o_IMM = {i_Inst[31:12], 12'b0};
+                
             OpCode_BRANCH: 
                 o_IMM = {{20{i_Inst[31]}}, i_Inst[7], i_Inst[30:25], i_Inst[11:8], 1'b0};
             
@@ -41,31 +44,13 @@ module Decoder_RV32I (
     
     // Evalua el desplaçament de bits de la instruccio
     //
-    always_comb begin
-        unique case (i_Inst[6:0])
-            OpCode_OP_IMM:
-                case (i_Inst[14:12]) 
-                    3'b001,
-                    3'b100,
-                    3'b101: 
-                        o_SH = i_Inst[24:20];
-                   
-                    default: 
-                        o_SH = 0;
-                endcase
-                
-            default:
-                o_SH = 0;
-        endcase
-    end
+    assign o_SH = i_Inst[24:20];
     
     // Evalua els registres de la instruccio
     //
-    always_comb begin
-        o_RS1 = i_Inst[19:15];
-        o_RS2 = i_Inst[24:20];
-        o_RD  = i_Inst[11:7];        
-    end
+    assign o_RS1 = i_Inst[19:15];
+    assign o_RS2 = i_Inst[24:20];
+    assign o_RD  = i_Inst[11:7];        
 
     // Evalua el codi d'operacio
     //
