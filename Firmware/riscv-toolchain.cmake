@@ -15,7 +15,7 @@ find_program(CMAKE_CXX_COMPILER
 )    
 
 find_program(CMAKE_ASM_COMPILER
-    NAMES ${TOOLCHAIN_PREFIX}gcc
+    NAMES ${TOOLCHAIN_PREFIX}as
     PATH ${TOOLCHAIN_BIN}
 )    
 
@@ -24,12 +24,14 @@ find_program(CMD_OBJCOPY
     PATH ${TOOLCHAIN_BIN}
 )    
 
+find_program(CMD_OBJDUMP
+    NAMES ${TOOLCHAIN_PREFIX}objdump
+    PATH ${TOOLCHAIN_BIN}
+)    
 
-message("--------------------------------------------------")
-message("  RISC-V Toolchain")
-message("    gcc     - " ${CMAKE_C_COMPILER})
-message("    g++     - " ${CMAKE_CXX_COMPILER})
-message("    as      - " ${CMAKE_ASM_COMPILER})
-message("    objcopy - " ${CMD_OBJCOPY})
-message("--------------------------------------------------")
+find_program(CMD_SIZE
+    NAMES ${TOOLCHAIN_PREFIX}size
+    PATH ${TOOLCHAIN_BIN}
+)    
+
 

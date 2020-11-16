@@ -11,6 +11,7 @@
 /Verilator/*.stackdump
 /Verilator/*.csv
 /Verilator/build
+/Yosys/build
 /Tools/*.o
 /Tools/*.exe
 /Firmware/*.out

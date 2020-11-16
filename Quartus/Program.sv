@@ -11,7 +11,7 @@ module Program
     logic [7:0] Data[0:SIZE-1];
     
     initial
-        $readmemh("../Firmware/demo.txt", Data);
+        $readmemh("../Firmware/build/demo.txt", Data);
         
     always_comb begin
         o_Inst = { Data[i_Addr], Data[i_Addr+1], Data[i_Addr+2], Data[i_Addr+3]};

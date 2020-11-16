@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Fri Nov 13 21:26:14 2020
+[*] Mon Nov 16 18:05:25 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\trace.fst"
-[dumpfile_mtime] "Fri Nov 13 20:19:53 2020"
-[dumpfile_size] 3003
+[dumpfile_mtime] "Mon Nov 16 17:55:25 2020"
+[dumpfile_size] 3411
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\trace.gtkw"
-[timestart] 4
+[timestart] 0
 [size] 1920 1017
-[pos] -217 -217
-*-3.937933 54 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-4.518126 18 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.Cpu.
@@ -43,39 +43,37 @@ TOP.top.i_rom_rdata[31:0]
 @22
 TOP.top.Cpu.PC[31:0]
 TOP.top.Cpu.PCNext[31:0]
-TOP.top.Cpu.PCBranch[31:0]
 @200
 -
 -Controller
 @22
 TOP.top.Cpu.Ctrl.i_Inst[31:0]
 @2023
-^2 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\alu_op_filter.txt
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\alu_op_filter.txt
 TOP.top.Cpu.Ctrl.o_AluControl[4:0]
 @28
-TOP.top.Cpu.Ctrl.o_MemToReg
+TOP.top.Cpu.Ctrl.o_DataToRegSel[1:0]
+TOP.top.Cpu.Ctrl.o_PCNextSel[1:0]
 TOP.top.Cpu.Ctrl.o_MemWrEnable
 TOP.top.Cpu.Ctrl.o_RegWrEnable
-TOP.top.Cpu.Ctrl.o_IsJump
 @200
 -
 -Decoder
+@22
+TOP.top.Cpu.Dec.i_Inst[31:0]
 @2022
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\inst_op_filter.txt
+^2 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\inst_op_filter.txt
 TOP.top.Cpu.Dec.o_OP[6:0]
 @22
 TOP.top.Cpu.Dec.o_RS1[4:0]
 TOP.top.Cpu.Dec.o_RS2[4:0]
 TOP.top.Cpu.Dec.o_RD[4:0]
 TOP.top.Cpu.Dec.o_IMM[31:0]
-TOP.top.Cpu.Dec.i_Inst[31:0]
 @200
 -
 -ALU
-@2022
-^2 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\alu_op_filter.txt
-TOP.top.Cpu.Alu.i_Op[4:0]
 @22
+TOP.top.Cpu.Alu.i_Op[4:0]
 TOP.top.Cpu.Alu.i_OperandA[31:0]
 TOP.top.Cpu.Alu.i_OperandB[31:0]
 TOP.top.Cpu.Alu.o_Result[31:0]

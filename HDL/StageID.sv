@@ -1,6 +1,6 @@
 import types::AluOp;
 
-module stageID
+module StageID
 #(
     parameter DATA_DBUS_WIDTH = 32,    // Data bus data width
     parameter DATA_IBUS_WIDTH = 32,    // Instruction bus data width
@@ -11,7 +11,7 @@ module stageID
     input  logic                       i_Reset,       // Reset
     
     input  logic [DATA_IBUS_WIDTH-1:0] i_Inst,        // Instructruccio
-    input  logic [ADDR_IBUS_WIDTH-1:0] i_PCPlus4,     // PC de la seguent instruccio       
+    input  logic [ADDR_IBUS_WIDTH-1:0] i_PC,          // PC de la seguent instruccio       
     input  logic [REG_WIDTH-1:0]       i_RegWrAddr,   // Registre a escriure
     input  logic [DATA_DBUS_WIDTH-1:0] i_RegWrData,   // El resultat a escriure
     input  logic                       i_RegWrEnable, // Autoritzacio d'escriptura del registre
@@ -30,56 +30,59 @@ module stageID
     output logic                       o_AluSrcB,     // Seleccio del origin de dades de la entrada B de la ALU
     output logic [ADDR_IBUS_WIDTH-1:0] o_JumpAddr,    // Adressa de salt
     output logic                       o_JumpEnable); // Habilita el salt
-       
-    // Separacio de la instruccio en blocs
+              
+
+    // Control del datapath. Genera les senyals de control
     //
-    InstOp                      InstOP;
-    InstFn                      InstFN;
-    logic [REG_WIDTH-1:0]       InstRS;
-    logic [REG_WIDTH-1:0]       InstRT;
-    logic [REG_WIDTH-1:0]       InstRD;
-    // verilator lint_off UNUSED
-    logic [4:0]                 InstSH;
-    // verilator lint_on UNUSED
-    logic [DATA_DBUS_WIDTH-1:0] InstIMM;
-    logic [25:0]                InstJDST;
-       
-    always_comb begin
-        InstOP   = InstOp'(i_Inst[31:26]);
-        InstFN   = InstFn'(i_Inst[5:0]);
-        InstRS   = i_Inst[25:21];
-        InstRT   = i_Inst[20:16];
-        InstRD   = i_Inst[15:11];
-        InstSH   = i_Inst[10:6];
-        InstIMM  = {{16{i_Inst[15]}}, i_Inst[15:0]};
-        InstJDST = i_Inst[25:0];
-    end
-    
-    
-    // Control del datapath
+    AluOp       Ctrl_AluControl;   // Operacio de la ALU
+    logic       Ctrl_RegWrEnable;  // Autoritza escriptura del regisres
+    logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
+    logic [1:0] Ctrl_PCNextSel;    // Selector del seguent valor del PC
+    logic [1:0] Ctrl_DataToRegSel; // Selector del les dades d'esacriptura en el registre
+    logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
+    logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
+
+    Controller_RV32I
+    Ctrl (
+        .i_Inst         (i_Inst),
+        .i_IsEQ         (Comp_EQ),
+        .i_IsLT         (Comp_LT),
+        .o_AluControl   (Ctrl_AluControl),
+        .o_MemWrEnable  (Ctrl_MemWrEnable),
+        .o_RegWrEnable  (Ctrl_RegWrEnable),
+        .o_OperandBSel  (Ctrl_OperandBSel),
+        .o_DataToRegSel (Ctrl_DataToRegSel),
+        .o_PCNextSel    (Ctrl_PCNextSel));
+    assign Ctrl_OperandASel = 0;
+        
+
+    // Decodificador d'instruccions. Separa les instruccions en els seus components
     //
-    logic Ctrl_IsBranch;
-    logic Ctrl_IsJump;      
-    logic Ctrl_RegWrEnable;
-    logic Ctrl_MemWrEnable;
-    AluOp Ctrl_AluControl;
-    logic Ctrl_AluSrcB;
-    logic Ctrl_RegDst;
-    logic Ctrl_MemToReg;
+    logic [31:0] Dec_InstIMM;
+    logic [4:0]  Dec_InstSH;
+    logic [4:0]  Dec_InstRS1;
+    logic [4:0]  Dec_InstRS2;
+    logic [4:0]  Dec_InstRD;
+
+    Decoder_RV32I Dec (
+        .i_Inst (i_Inst),
+        .o_RS1  (Dec_InstRS1),
+        .o_RS2  (Dec_InstRS2),
+        .o_RD   (Dec_InstRD),
+        .o_IMM  (Dec_InstIMM),
+        .o_SH   (Dec_InstSH));
     
-    Controller Ctrl(
-        .i_Clock       (i_Clock),
-        .i_Reset       (i_Reset),
-        .i_InstOp      (InstOP),
-        .i_InstFn      (InstFN),
-        .o_AluControl  (Ctrl_AluControl),
-        .o_AluSrcB     (Ctrl_AluSrcB),
-        .o_MemWrEnable (Ctrl_MemWrEnable),
-        .o_RegWrEnable (Ctrl_RegWrEnable),
-        .o_RegDst      (Ctrl_RegDst),
-        .o_MemToReg    (Ctrl_MemToReg),      
-        .o_IsBranch    (Ctrl_IsBranch),
-        .o_IsJump      (Ctrl_IsJump));
+    
+    // Comparador per les instruccions de salt. 
+    //
+    logic Comp_EQ; // Indica A == B
+    logic Comp_LT; // Indica A <= B
+    
+    Comparer Comp(
+        .i_InputA (Resg_DataA),
+        .i_InputB (Regs_DataB),
+        .o_EQ     (Comp_EQ),
+        .o_LT     (Comp_LT));
            
            
     // Bloc de registres
@@ -93,28 +96,14 @@ module stageID
     Regs (
         .i_Clock    (i_Clock),
         .i_Reset    (i_Reset),        
-        .i_WrEnable (i_RegWrEnable),
-        .i_RdAddrA  (InstRS),
-        .i_RdAddrB  (InstRT),
+        .i_WrEnable (Ctrl_RegWrEnable),
+        .i_RdAddrA  (Dec_InstRS1),
+        .i_RdAddrB  (Dec_InstRS2),
         .i_WrAddr   (i_RegWrAddr),
         .i_WrData   (i_RegWrData),
         .o_RdDataA  (Regs_DataA),
         .o_RdDataB  (Regs_DataB));
-        
-        
-    // Obte el indicador d'igualtat pels salts condicionals
-    //
-    logic Comp_EQ;
-    
-    // verilator lint_off PINMISSING
-    Comparer #(
-        .WIDTH (DATA_DBUS_WIDTH))
-    Comp (
-        .i_InputA (Regs_DataA),
-        .i_InputB (Regs_DataB),
-        .o_EQ     (Comp_EQ));
-    // verilator lint_on PINMISSING
-    
+          
     
     // Evalua el salt (Instruccions Jump i Branch)
     //

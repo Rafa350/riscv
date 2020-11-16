@@ -1,12 +1,13 @@
 #include "sim.h"
+
     
-#define PIPELINE
+#define xPIPELINE
 
 
-#ifdef xPIPELINE
-    #define TRACE_FILE_NAME "waves_pp/trace.fst"
+#ifdef PIPELINE
+    #define TRACE_FILE_NAME "../waves_pp/trace.fst"
 #else
-    #define TRACE_FILE_NAME "waves_sc/trace.fst"
+    #define TRACE_FILE_NAME "../waves_sc/trace.fst"
 #endif
     
     
@@ -22,7 +23,7 @@
 #define CLOCK_RST_SET           0  // Tic per iniciar el reset
 #define CLOCK_RST_CLR           7  // Tic per acabar el reset
 
-    
+
 using namespace Simulation;
 
 

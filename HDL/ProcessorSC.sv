@@ -77,6 +77,7 @@ module ProcessorSC
     //
     logic Comp_EQ; // Indica A == B
     logic Comp_LT; // Indica A <= B
+    
     Comparer #(
         .WIDTH (DATA_DBUS_WIDTH))
     Comp (
