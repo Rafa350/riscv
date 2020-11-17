@@ -6,40 +6,38 @@
 `endif
  
  
-`define DATA_DBUS_WIDTH 32
-`define ADDR_DBUS_WIDTH 32
-`define ADDR_IBUS_WIDTH 32
-`define DATA_IBUS_WIDTH 32
+`define DATA_WIDTH 32
+`define ADDR_WIDTH 32
+`define PC_WIDTH   32
+`define REG_WIDTH  5
 
-`define PIPELINE
+//`define PIPELINE
 
 
 module top #(
-    parameter DATA_DBUS_WIDTH = `DATA_DBUS_WIDTH,
-    parameter ADDR_DBUS_WIDTH = `ADDR_DBUS_WIDTH,
-    parameter DATA_IBUS_WIDTH = `DATA_IBUS_WIDTH,
-    parameter ADDR_IBUS_WIDTH = `ADDR_IBUS_WIDTH)
+    parameter DATA_WIDTH = `DATA_WIDTH,
+    parameter ADDR_WIDTH = `ADDR_WIDTH,
+    parameter PC_WIDTH   = `PC_WIDTH)
 (
-    input                        i_Clock,
-    input                        i_Reset,
+    input                   i_Clock,
+    input                   i_Reset,
 
-    input  [DATA_DBUS_WIDTH-1:0] i_ram_rdata,
-    output [DATA_DBUS_WIDTH-1:0] o_ram_wdata,
-    output [ADDR_DBUS_WIDTH-1:0] o_ram_addr,
-    output                       o_ram_we,
+    input  [DATA_WIDTH-1:0] i_ram_rdata,
+    output [DATA_WIDTH-1:0] o_ram_wdata,
+    output [ADDR_WIDTH-1:0] o_ram_addr,
+    output                  o_ram_we,
 
-    input  [DATA_IBUS_WIDTH-1:0] i_rom_rdata,
-    output [ADDR_IBUS_WIDTH-1:0] o_rom_addr );
+    input  [31:0]           i_rom_rdata,
+    output [PC_WIDTH-1:0]   o_rom_addr);
     
 `ifdef PIPELINE 
     ProcessorPP #(
 `else
     ProcessorSC #(
 `endif    
-        .DATA_DBUS_WIDTH (DATA_DBUS_WIDTH), 
-        .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),
-        .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
-        .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
+        .DATA_WIDTH (DATA_WIDTH), 
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH)) 
     Cpu (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),

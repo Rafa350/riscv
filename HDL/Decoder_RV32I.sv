@@ -9,7 +9,7 @@ module Decoder_RV32I (
     output logic [6:0]  o_OP,   // El codi d'operacio
     output logic [4:0]  o_RS1,  // El registre font 1 (rs1)
     output logic [4:0]  o_RS2,  // El registre fomt 2 (rs2)
-    output logic [4:0]  o_RD,   // El reguistre de destinacio  (rd)
+    output logic [4:0]  o_RD,   // El registre de destinacio  (rd)
     
     output logic [4:0]  o_SH,   // El valor de desplaçament de bits (shamt)
     output logic [31:0] o_IMM   // El valor inmediat

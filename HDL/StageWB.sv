@@ -1,24 +1,16 @@
 module StageWB 
 #(
-    parameter DATA_DBUS_WIDTH = 32) 
+    parameter DATA_WIDTH = 32) 
 (
     // verilator lint_off UNUSED
     input  logic                       i_Clock,
     input  logic                       i_Reset,
     // verilator lint_on UNUSED
     
-    input  logic [DATA_DBUS_WIDTH-1:0] i_AluOut,
-    input  logic [DATA_DBUS_WIDTH-1:0] i_ReadData,
-    input  logic [1:0]                 i_DataToRegSel,
+    input  logic [DATA_WIDTH-1:0] i_RegWrData,
     
-    output logic [DATA_DBUS_WIDTH-1:0] o_Result);
+    output logic [DATA_WIDTH-1:0] o_RegWrData);
 
-    Mux2To1 #(
-        .WIDTH(DATA_DBUS_WIDTH))
-    mux(
-        .i_Select (i_DataToRegSel[0]),
-        .i_Input0 (i_AluOut),
-        .i_Input1 (i_ReadData),
-        .o_Output (o_Result));
+    assign o_RegWrData = i_RegWrData;
 
 endmodule

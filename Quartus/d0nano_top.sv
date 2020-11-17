@@ -21,21 +21,21 @@ module top(
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
     
-    parameter DATA_DBUS_WIDTH = 32;
-    parameter ADDR_DBUS_WIDTH = 32;
-    parameter DATA_IBUS_WIDTH = 32;
-    parameter ADDR_IBUS_WIDTH = 32;
+    parameter DATA_WIDTH = 32;
+    parameter ADDR_WIDTH = 32;
+    parameter PC_WIDTH   = 32;
+    parameter REG_WIDTH  = 5;
     
     logic Clock;
     logic Reset;
 
-    logic [ADDR_DBUS_WIDTH-1:0] MemAddr;
-    logic                       MemWrEnable;
-    logic [DATA_DBUS_WIDTH-1:0] MemWrData;
-    logic [DATA_DBUS_WIDTH-1:0] MemRdData;
+    logic [ADDR_WIDTH-1:0] MemAddr;
+    logic                  MemWrEnable;
+    logic [DATA_WIDTH-1:0] MemWrData;
+    logic [DATA_WIDTH-1:0] MemRdData;
 
-    logic [ADDR_IBUS_WIDTH-1:0] PgmAddr;
-    logic [DATA_IBUS_WIDTH-1:0] PgmInst;
+    logic [PC_WIDTH-1:0]   PgmAddr;
+    logic [31:0]           PgmInst;
        
     assign Clock = ~KEY[0];
     assign Reset = ~KEY[1];
@@ -51,8 +51,8 @@ module top(
     // Memoria RAM
     //
     Memory #(
-        .DATA_WIDTH (DATA_DBUS_WIDTH),
-        .ADDR_WIDTH (DATA_DBUS_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH))
     mem (
         .i_Clock    (Clock),
         .i_Addr     (MemAddr),
@@ -65,8 +65,8 @@ module top(
     // Memoria de programa
     //     
     Program #(
-        .ADDR_WIDTH (ADDR_IBUS_WIDTH),
-        .INST_WIDTH (DATA_IBUS_WIDTH))
+        .ADDR_WIDTH (PC_WIDTH),
+        .INST_WIDTH (32))
     pgm (
         .i_Addr (PgmAddr),
         .o_Inst (PgmInst));
@@ -81,10 +81,9 @@ module top(
 `else    
     ProcessorSC #(
 `endif    
-        .DATA_DBUS_WIDTH (DATA_DBUS_WIDTH), 
-        .ADDR_DBUS_WIDTH (ADDR_DBUS_WIDTH),
-        .DATA_IBUS_WIDTH (DATA_IBUS_WIDTH),
-        .ADDR_IBUS_WIDTH (ADDR_IBUS_WIDTH)) 
+        .DATA_WIDTH (DATA_WIDTH), 
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH)) 
     Cpu (
         .i_Clock       (Clock),
         .i_Reset       (Reset),
