@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Mon Nov 16 18:05:25 2020
+[*] Mon Nov 16 23:29:47 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\trace.fst"
-[dumpfile_mtime] "Mon Nov 16 17:55:25 2020"
-[dumpfile_size] 3411
+[dumpfile_mtime] "Mon Nov 16 23:28:10 2020"
+[dumpfile_size] 3409
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\trace.gtkw"
 [timestart] 0
 [size] 1920 1017
 [pos] -1 -1
-*-4.518126 18 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.518126 15 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.Cpu.
@@ -21,6 +21,8 @@
 -SYSTEM
 @28
 TOP.top.i_Reset
+@2028
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\alu_op_filter.txt
 TOP.top.i_Clock
 @200
 -
@@ -48,7 +50,7 @@ TOP.top.Cpu.PCNext[31:0]
 -Controller
 @22
 TOP.top.Cpu.Ctrl.i_Inst[31:0]
-@2023
+@2022
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_sc\alu_op_filter.txt
 TOP.top.Cpu.Ctrl.o_AluControl[4:0]
 @28
@@ -72,8 +74,9 @@ TOP.top.Cpu.Dec.o_IMM[31:0]
 @200
 -
 -ALU
-@22
+@23
 TOP.top.Cpu.Alu.i_Op[4:0]
+@22
 TOP.top.Cpu.Alu.i_OperandA[31:0]
 TOP.top.Cpu.Alu.i_OperandB[31:0]
 TOP.top.Cpu.Alu.o_Result[31:0]

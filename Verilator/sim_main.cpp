@@ -1,7 +1,7 @@
 #include "sim.h"
 
     
-#define xPIPELINE
+#define PIPELINE
 
 
 #ifdef PIPELINE
