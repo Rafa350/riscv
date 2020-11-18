@@ -19,9 +19,11 @@ module StageID
     input  logic [REG_WIDTH-1:0]  i_RegWrAddr,    // Registre a escriure
     input  logic [DATA_WIDTH-1:0] i_RegWrData,    // El resultat a escriure
     input  logic                  i_RegWrEnable,  // Autoritzacio d'escriptura del registre
-    
+       
     // Senyals de sortida per la seguent etapa.
     output logic [6:0]            o_InstOP,       // Codi d'operacio de la instruccio
+    output logic [REG_WIDTH-1:0]  o_InstRS1,      // Registre RS1 de la instruccio
+    output logic [REG_WIDTH-1:0]  o_InstRS2,      // Registre RS2 de la instrruccio
     output logic [DATA_WIDTH-1:0] o_DataA,        // Dades A (rs1)
     output logic [DATA_WIDTH-1:0] o_DataB,        // Dades B (rs2)
     output logic [DATA_WIDTH-1:0] o_MemWrData,    // Dades per d'escriptura en memoria
@@ -190,6 +192,8 @@ module StageID
         
     always_comb begin        
         o_InstOP       = Dec_InstOP;
+        o_InstRS1      = Dec_InstRS1;
+        o_InstRS2      = Dec_InstRS2;
         o_DataA        = Regs_DataA;
         o_DataB        = DataBSelector_Output;
         o_RegWrAddr    = Dec_InstRD;

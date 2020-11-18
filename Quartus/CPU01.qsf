@@ -165,6 +165,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineMEMWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/RegisterFile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ForwardController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Controller_RV32I.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Decoder_RV32I.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/alu.sv

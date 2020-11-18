@@ -77,6 +77,8 @@ module ProcessorPP
                            ID_DataB;
     logic [DATA_WIDTH-1:0] ID_MemWrData;
     logic [6:0]            ID_InstOP;
+    logic [REG_WIDTH-1:0]  ID_InstRS1;
+    logic [REG_WIDTH-1:0]  ID_InstRS2;
     logic [REG_WIDTH-1:0]  ID_RegWrAddr;
     logic                  ID_RegWrEnable;
     logic [1:0]            ID_RegWrDataSel;
@@ -84,6 +86,9 @@ module ProcessorPP
     AluOp                  ID_AluControl;
     logic                  ID_OperandASel;
     logic [PC_WIDTH-1:0]   ID_PCNext;
+    
+    logic [REG_WIDTH-1:0]  ID_RequiredRS1;
+    logic [REG_WIDTH-1:0]  ID_RequiredRS2;
 
     StageID #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -103,7 +108,9 @@ module ProcessorPP
         .o_DataA        (ID_DataA),          // Dades A
         .o_DataB        (ID_DataB),          // Dades B
         .o_MemWrData    (ID_MemWrData),      // Valor per escriure en memoria
-        .o_InstOP       (ID_InstOP),         // Instruccio
+        .o_InstOP       (ID_InstOP),         // Instruccio OP
+        .o_InstRS1      (ID_InstRS1),
+        .o_InstRS2      (ID_InstRS2),
         .o_RegWrAddr    (ID_RegWrAddr),      // Registre per escriure
         .o_RegWrEnable  (ID_RegWrEnable),    // Habilita escriure en el registre
         .o_RegWrDataSel (ID_RegWrDataSel),
@@ -121,6 +128,8 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] IDEX_DataA,
                            IDEX_DataB;
     logic [6:0]            IDEX_InstOP;
+    logic [REG_WIDTH-1:0]  IDEX_InstRS1;
+    logic [REG_WIDTH-1:0]  IDEX_InstRS2;
     logic [REG_WIDTH-1:0]  IDEX_RegWrAddr;
     logic                  IDEX_RegWrEnable;
     logic [1:0]            IDEX_RegWrDataSel;
@@ -138,6 +147,8 @@ module ProcessorPP
         .i_Reset        (i_Reset),
         
         .i_InstOP       (ID_InstOP),
+        .i_InstRS1      (ID_InstRS1),
+        .i_InstRS2      (ID_InstRS2),
         .i_DataA        (ID_DataA),
         .i_DataB        (ID_DataB),
         .i_RegWrAddr    (ID_RegWrAddr),
@@ -149,6 +160,8 @@ module ProcessorPP
         .i_PC           (IF_PC),
         
         .o_InstOP       (IDEX_InstOP),
+        .o_InstRS1      (IDEX_InstRS1),
+        .o_InstRS2      (IDEX_InstRS2),
         .o_DataA        (IDEX_DataA),
         .o_DataB        (IDEX_DataB),
         .o_RegWrAddr    (IDEX_RegWrAddr),
@@ -164,7 +177,31 @@ module ProcessorPP
     // Stage EX
     // ------------------------------------------------------------------------
     
+    logic [DATA_WIDTH-1:0] DataASelector_Output;
+    logic [DATA_WIDTH-1:0] DataBSelector_Output;
     logic [DATA_WIDTH-1:0] EX_Result;
+
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
+        .WIDTH (DATA_WIDTH))
+    DataASelector (
+        .i_Select (0),
+        .i_Input0 (IDEX_DataA),
+        .i_Input1 (EXMEM_Result),
+        .i_Input2 (WB_RegWrData),
+        .o_Output (DataASelector_Output));
+    // verilator lint_on PINMISSING
+
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
+        .WIDTH (DATA_WIDTH))
+    DataBSelector (
+        .i_Select (0),
+        .i_Input0 (IDEX_DataB),
+        .i_Input1 (EXMEM_Result),
+        .i_Input2 (WB_RegWrData),
+        .o_Output (DataBSelector_Output));
+    // verilator lint_on PINMISSING
 
     StageEX #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -175,16 +212,12 @@ module ProcessorPP
         .i_Clock          (i_Clock),
         .i_Reset          (i_Reset),
         
-        .i_DataA          (IDEX_DataA),
-        .i_DataB          (IDEX_DataB),
+        .i_DataA          (DataASelector_Output),
+        .i_DataB          (DataBSelector_Output),
 
         .i_PC             (IDEX_PC),
         .i_AluControl     (IDEX_AluControl),
-        .i_OperandASel    (0),
 
-        .i_MEMFwdWriteReg (MEMWB_RegWrAddr),
-        .i_WBFwdResult    (WB_RegWrData),
-        
         .o_Result         (EX_Result));
         
         
@@ -302,6 +335,23 @@ module ProcessorPP
         .i_RegWrData    (MEMWB_RegWrData),
         
         .o_RegWrData    (WB_RegWrData));
+        
+        
+    // ------------------------------------------------------------------------
+    // Conmtrol del forwading
+    // ------------------------------------------------------------------------
+    
+    // verilator lint_off PINMISSING
+    ForwardController #(
+        .REG_WIDTH (REG_WIDTH))
+    FwdCtrl (
+        .i_RequiredRS1     (IDEX_InstRS1),
+        .i_RequiredRS2     (IDEX_InstRS2),
+        .i_RegEXWrAddr     (EXMEM_RegWrAddr),
+        .i_RegEXWrEnable   (EXMEM_RegWrEnable),
+        .i_RegMEMWrAddr    (MEMWB_RegWrAddr),
+        .i_RegMEMWrEnable  (MEMWB_RegWrEnable));
+    // verilator lint_on PINMISSING
                   
 endmodule
 
