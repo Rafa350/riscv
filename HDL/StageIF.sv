@@ -1,21 +1,20 @@
 module StageIF
 #(
-    parameter PC_WIDTH  = 32)  // Ampla de adressa del bus d'instruccions
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
+    parameter PC_WIDTH   = 32,
+    parameter REG_WIDTH  = 5) 
 (
-    // Senyals de control.
-    input  logic                i_Clock,      // Clock
-    input  logic                i_Reset,      // Reset    
+    input  logic                i_Clock,   // Clock
+    input  logic                i_Reset,   // Reset    
     
-    // Senyals de control de la memoria de programa.
-    input  logic [31:0]         i_PgmInst,    // Instruccio de programa
-    output logic [PC_WIDTH-1:0] o_PgmAddr,    // Adressa de programa
+    input  logic [31:0]         i_PgmInst, // Instruccio de programa
+    output logic [PC_WIDTH-1:0] o_PgmAddr, // Adressa de programa
 
-    // Senyals d'entrada de les etapes posteriors.
-    input  logic [PC_WIDTH-1:0] i_PCNext,     // El nou PC
+    input  logic [PC_WIDTH-1:0] i_PCNext,  // El nou PC
     
-    // Senyals de sortida per la seguent etapa.
-    output logic [31:0] o_Inst,                      // Instruccio    
-    output logic [PC_WIDTH-1:0] o_PC);        // PC
+    output logic [31:0] o_Inst,            // Instruccio    
+    output logic [PC_WIDTH-1:0] o_PC);     // PC
 
 
     // ------------------------------------------------------------------------

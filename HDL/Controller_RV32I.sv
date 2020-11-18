@@ -16,7 +16,7 @@ module Controller_RV32I (
     output logic        o_OperandBSel,   // Selecciona l'operand B de la ALU
 
     output logic        o_RegWrEnable,   // Habilita l'escriptura en els registres
-    output logic [1:0]  o_DataToRegSel); // Selecciona les dades per escriure en el registre
+    output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
 
 
     localparam  wrALU = 2'b00;           // Escriu el valor de la ALU 
@@ -31,7 +31,7 @@ module Controller_RV32I (
     // -----------------------------------------------------------------------
     //
     //                     OperandBSel
-    //                     |     DataToRegSel
+    //                     |     RegWrDataSel
     //                     |     |      RegWrEnable
     //                     |     |      |     MemWrEnable
     //                     |     |      |     |     PCNextSel
@@ -79,13 +79,17 @@ module Controller_RV32I (
     logic [11:0] dp;
     logic branch;
    
+    // Evalua les senyals de control de sortida
+    //
     assign o_AluControl   = AluOp'(dp[4:0]);
     assign o_MemWrEnable  = dp[7];
     assign o_RegWrEnable  = dp[8];
-    assign o_DataToRegSel = dp[10:9];
+    assign o_RegWrDataSel = dp[10:9];
     assign o_OperandBSel  = dp[11];
     assign o_PCNextSel    = branch ? dp[6:5] : pcPP4;
 
+    // Evalua ls condicios de salt per les instruccions Branch y Jump
+    //
     always_comb begin
         unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0], i_IsEQ, i_IsLT})
             /*  BEQ   */ 19'b1100011_000_1100011_1_?: branch = 1;
@@ -100,6 +104,8 @@ module Controller_RV32I (
         endcase
     end
     
+    // Evalua el datapath coresponent a cada instruccio
+    //
     always_comb begin
         unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0]})
             /*  ADD   */ 17'b0000000_000_0110011: dp = DP_ADD;

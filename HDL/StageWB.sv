@@ -1,6 +1,9 @@
 module StageWB 
 #(
-    parameter DATA_WIDTH = 32) 
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
+    parameter PC_WIDTH   = 32,
+    parameter REG_WIDTH  = 5) 
 (
     // verilator lint_off UNUSED
     input  logic                       i_Clock,

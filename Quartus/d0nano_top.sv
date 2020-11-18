@@ -22,8 +22,8 @@ module top(
     inout  logic        I2C_SDAT);
     
     parameter DATA_WIDTH = 32;
-    parameter ADDR_WIDTH = 32;
-    parameter PC_WIDTH   = 32;
+    parameter ADDR_WIDTH = 10;
+    parameter PC_WIDTH   = 10;
     parameter REG_WIDTH  = 5;
     
     logic Clock;
@@ -83,12 +83,15 @@ module top(
 `endif    
         .DATA_WIDTH (DATA_WIDTH), 
         .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH)) 
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH)) 
     Cpu (
         .i_Clock       (Clock),
         .i_Reset       (Reset),
+        
         .o_PgmAddr     (PgmAddr),
         .i_PgmInst     (PgmInst),
+        
         .o_MemAddr     (MemAddr),
         .o_MemWrEnable (MemWrEnable),
         .o_MemWrData   (MemWrData),

@@ -1,22 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Tue Nov 17 23:20:57 2020
+[*] Wed Nov 18 10:50:25 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.fst"
-[dumpfile_mtime] "Tue Nov 17 23:19:27 2020"
-[dumpfile_size] 4811
+[dumpfile_mtime] "Wed Nov 18 10:38:49 2020"
+[dumpfile_size] 4700
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.gtkw"
-[timestart] 4
+[timestart] 0
 [size] 1920 1017
 [pos] -1 -1
-*-3.518126 38 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-5.039879 3 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.Cpu.
-[sst_width] 338
+[sst_width] 273
 [signals_width] 308
 [sst_expanded] 1
-[sst_vpaned_height] 277
+[sst_vpaned_height] 541
 @200
 -System clock
 @28
@@ -40,21 +40,30 @@ TOP.top.o_rom_addr[31:0]
 TOP.top.i_rom_rdata[31:0]
 @200
 -
+-
+-Pipelines
+@2022
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
+TOP.top.Cpu.ID.o_InstOP[6:0]
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
+TOP.top.Cpu.IDEX_InstOP[6:0]
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
+TOP.top.Cpu.EXMEM_InstOP[6:0]
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
+TOP.top.Cpu.MEMWB_InstOP[6:0]
+@200
+-
 -IF stage
-@28
-[color] 1
-TOP.top.Cpu.IF.i_Clock
+@23
+TOP.top.Cpu.IF.o_PC[31:0]
 @200
 -
 -ID stage
-@28
-[color] 1
-TOP.top.Cpu.ID.i_Clock
 @22
 TOP.top.Cpu.ID.i_PC[31:0]
 TOP.top.Cpu.ID.i_Inst[31:0]
 TOP.top.Cpu.ID.i_RegWrAddr[4:0]
-@29
+@28
 TOP.top.Cpu.ID.i_RegWrEnable
 @22
 TOP.top.Cpu.ID.i_RegWrData[31:0]
@@ -69,39 +78,20 @@ TOP.top.Cpu.ID.Dec_InstIMM[31:0]
 @200
 -
 -EX stage
-@28
-[color] 1
-TOP.top.Cpu.EX.i_Clock
-@2022
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.EX.i_InstOP[6:0]
 @22
 TOP.top.Cpu.EX.i_DataA[31:0]
 TOP.top.Cpu.EX.i_DataB[31:0]
-@28
-TOP.top.Cpu.EX.i_MemWrEnable
-@22
-TOP.top.Cpu.EX.i_MemWrData[31:0]
 @200
 -
--MEM inputs
-@28
-[color] 1
-TOP.top.Cpu.MEM.i_Clock
+-MEM
 @22
 TOP.top.Cpu.MEM.i_Result[31:0]
-@2022
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.MEM.i_InstOP[6:0]
-@22
 TOP.top.Cpu.MEM.i_Result[31:0]
 @28
 TOP.top.Cpu.MEM.i_MemWrEnable
 @22
 TOP.top.Cpu.MEM.i_MemRdData[31:0]
-TOP.top.Cpu.MEM.i_RegWrAddr[4:0]
 @28
-TOP.top.Cpu.MEM.i_RegWrEnable
 TOP.top.Cpu.MEM.i_RegWrDataSel[1:0]
 [pattern_trace] 1
 [pattern_trace] 0

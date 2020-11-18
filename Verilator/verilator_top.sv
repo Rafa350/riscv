@@ -7,17 +7,18 @@
  
  
 `define DATA_WIDTH 32
-`define ADDR_WIDTH 32
-`define PC_WIDTH   32
+`define ADDR_WIDTH 10
+`define PC_WIDTH   10
 `define REG_WIDTH  5
 
-//`define PIPELINE
+`define PIPELINE
 
 
 module top #(
     parameter DATA_WIDTH = `DATA_WIDTH,
     parameter ADDR_WIDTH = `ADDR_WIDTH,
-    parameter PC_WIDTH   = `PC_WIDTH)
+    parameter PC_WIDTH   = `PC_WIDTH,
+    parameter REG_WIDTH  = `REG_WIDTH)
 (
     input                   i_Clock,
     input                   i_Reset,
@@ -37,12 +38,15 @@ module top #(
 `endif    
         .DATA_WIDTH (DATA_WIDTH), 
         .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH)) 
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH)) 
     Cpu (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),
+        
         .o_PgmAddr     (o_rom_addr),
         .i_PgmInst     (i_rom_rdata),
+        
         .o_MemAddr     (o_ram_addr),
         .o_MemWrEnable (o_ram_we),
         .o_MemWrData   (o_ram_wdata),

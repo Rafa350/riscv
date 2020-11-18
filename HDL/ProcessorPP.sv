@@ -20,9 +20,11 @@ module ProcessorPP
     output logic [PC_WIDTH-1:0]   o_PgmAddr,     // Adressa de la instruccio
     input  logic [31:0]           i_PgmInst);    // Instruccio
           
-                         
-    // Pipeline stage IF
-    //
+    
+    // ------------------------------------------------------------------------    
+    // Stage IF
+    // ------------------------------------------------------------------------
+    
     logic [31:0]         IF_Inst;
     logic [PC_WIDTH-1:0] IF_PC;
 
@@ -48,9 +50,8 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] ID_DataA,
                            ID_DataB;
     logic [DATA_WIDTH-1:0] ID_MemWrData;
-    logic [PC_WIDTH-1:0]   ID_PC;
     logic [6:0]            ID_InstOP;
-    logic [4:0]            ID_RegWrAddr;
+    logic [REG_WIDTH-1:0]  ID_RegWrAddr;
     logic                  ID_RegWrEnable;
     logic [1:0]            ID_RegWrDataSel;
     logic                  ID_MemWrEnable;
@@ -60,7 +61,9 @@ module ProcessorPP
 
     StageID #(
         .DATA_WIDTH (DATA_WIDTH),
-        .PC_WIDTH   (PC_WIDTH))
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     ID (
         .i_Clock        (i_Clock),           // Clock
         .i_Reset        (i_Reset),           // Reset
@@ -74,7 +77,6 @@ module ProcessorPP
         .o_DataA        (ID_DataA),          // Dades A
         .o_DataB        (ID_DataB),          // Dades B
         .o_MemWrData    (ID_MemWrData),      // Valor per escriure en memoria
-        .o_PC           (ID_PC),             // Adresa de la instruccio
         .o_InstOP       (ID_InstOP),         // Instruccio
         .o_RegWrAddr    (ID_RegWrAddr),      // Registre per escriure
         .o_RegWrEnable  (ID_RegWrEnable),    // Habilita escriure en el registre
@@ -93,18 +95,22 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] IDEX_DataA,
                            IDEX_DataB;
     logic [6:0]            IDEX_InstOP;
-    logic [4:0]            IDEX_RegWrAddr;
+    logic [REG_WIDTH-1:0]  IDEX_RegWrAddr;
     logic                  IDEX_RegWrEnable;
     logic [1:0]            IDEX_RegWrDataSel;
     logic                  IDEX_MemWrEnable;
     logic [DATA_WIDTH-1:0] IDEX_MemWrData;
     AluOp                  IDEX_AluControl;
 
-    PipelineIDEX
+    PipelineIDEX #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     IDEX (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
-        .i_PC           (ID_PC),
+        
         .i_InstOP       (ID_InstOP),
         .i_DataA        (ID_DataA),
         .i_DataB        (ID_DataB),
@@ -114,7 +120,8 @@ module ProcessorPP
         .i_MemWrData    (ID_MemWrData),
         .i_MemWrEnable  (ID_MemWrEnable),
         .i_AluControl   (ID_AluControl),
-        .o_PC           (IDEX_PC),
+        .i_PC           (IF_PC),
+        
         .o_InstOP       (IDEX_InstOP),
         .o_DataA        (IDEX_DataA),
         .o_DataB        (IDEX_DataB),
@@ -123,50 +130,36 @@ module ProcessorPP
         .o_RegWrDataSel (IDEX_RegWrDataSel),
         .o_MemWrData    (IDEX_MemWrData),
         .o_MemWrEnable  (IDEX_MemWrEnable),
-        .o_AluControl   (IDEX_AluControl));
+        .o_AluControl   (IDEX_AluControl),
+        .o_PC           (IDEX_PC));
    
    
     // ------------------------------------------------------------------------
     // Stage EX
     // ------------------------------------------------------------------------
     
-    logic [6:0]            EX_InstOP;
     logic [DATA_WIDTH-1:0] EX_Result;
-    logic [DATA_WIDTH-1:0] EX_MemWrData;
-    logic [4:0]            EX_RegWrAddr;
-    logic                  EX_RegWrEnable;
-    logic [1:0]            EX_RegWrDataSel;
-    logic                  EX_MemWrEnable;
 
     StageEX #(
-        .DATA_WIDTH (DATA_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     EX (
         .i_Clock          (i_Clock),
         .i_Reset          (i_Reset),
         
         .i_DataA          (IDEX_DataA),
         .i_DataB          (IDEX_DataB),
-        .i_MemWrData      (IDEX_MemWrData),
 
         .i_PC             (IDEX_PC),
-        .i_InstOP         (IDEX_InstOP),
         .i_AluControl     (IDEX_AluControl),
         .i_OperandASel    (0),
-        .i_RegWrAddr      (IDEX_RegWrAddr),
-        .i_RegWrEnable    (IDEX_RegWrEnable),
-        .i_RegWrDataSel   (IDEX_RegWrDataSel),        
-        .i_MemWrEnable    (IDEX_MemWrEnable),
 
-        .i_MEMFwdWriteReg (MEM_RegWrAddr),
+        .i_MEMFwdWriteReg (MEMWB_RegWrAddr),
         .i_WBFwdResult    (WB_RegWrData),
         
-        .o_InstOP         (EX_InstOP),
-        .o_Result         (EX_Result),
-        .o_MemWrData      (EX_MemWrData),
-        .o_MemWrEnable    (EX_MemWrEnable),
-        .o_RegWrEnable    (EX_RegWrEnable),
-        .o_RegWrAddr      (EX_RegWrAddr),
-        .o_RegWrDataSel   (EX_RegWrDataSel));
+        .o_Result         (EX_Result));
         
         
     // ------------------------------------------------------------------------
@@ -176,25 +169,31 @@ module ProcessorPP
     logic [6:0]            EXMEM_InstOP;
     logic [DATA_WIDTH-1:0] EXMEM_Result;
     logic [DATA_WIDTH-1:0] EXMEM_MemWrData;
-    logic [4:0]            EXMEM_RegWrAddr;
+    logic [REG_WIDTH-1:0]  EXMEM_RegWrAddr;
     logic                  EXMEM_RegWrEnable;
     logic [1:0]            EXMEM_RegWrDataSel;
     logic                  EXMEM_MemWrEnable;
 
     PipelineEXMEM #(
-        .DATA_WIDTH (DATA_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     EXMEM (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
-        .i_InstOP       (EX_InstOP),
+        
         .i_Result       (EX_Result),
-        .i_MemWrEnable  (EX_MemWrEnable),
-        .i_MemWrData    (EX_MemWrData),
-        .i_RegWrAddr    (EX_RegWrAddr),
-        .i_RegWrEnable  (EX_RegWrEnable),
-        .i_RegWrDataSel (EX_RegWrDataSel),
-        .o_InstOP       (EXMEM_InstOP),
+
+        .i_InstOP       (IDEX_InstOP),
+        .i_MemWrEnable  (IDEX_MemWrEnable),
+        .i_MemWrData    (IDEX_MemWrData),
+        .i_RegWrAddr    (IDEX_RegWrAddr),
+        .i_RegWrEnable  (IDEX_RegWrEnable),
+        .i_RegWrDataSel (IDEX_RegWrDataSel),
+
         .o_Result       (EXMEM_Result),
+        .o_InstOP       (EXMEM_InstOP),
         .o_MemWrEnable  (EXMEM_MemWrEnable),
         .o_MemWrData    (EXMEM_MemWrData),
         .o_RegWrAddr    (EXMEM_RegWrAddr),
@@ -207,30 +206,26 @@ module ProcessorPP
     // ------------------------------------------------------------------------
     
     logic [DATA_WIDTH-1:0] MEM_RegWrData;
-    logic [4:0]            MEM_RegWrAddr;
-    logic                  MEM_RegWrEnable;
 
     StageMEM #(
-        .DATA_WIDTH (DATA_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     MEM (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
         
         .o_MemAddr      (o_MemAddr),
-        .i_MemRdData    (i_MemRdData),
-        .o_MemWrData    (o_MemWrData),
         .o_MemWrEnable  (o_MemWrEnable),
+        .o_MemWrData    (o_MemWrData),
+        .i_MemRdData    (i_MemRdData),
         
-        .i_InstOP       (EXMEM_InstOP),
         .i_Result       (EXMEM_Result),
         .i_MemWrData    (EXMEM_MemWrData),
-        .i_RegWrAddr    (EXMEM_RegWrAddr),
-        .i_RegWrEnable  (EXMEM_RegWrEnable),
         .i_RegWrDataSel (EXMEM_RegWrDataSel),
         .i_MemWrEnable  (EXMEM_MemWrEnable),
         
-        .o_RegWrAddr    (MEM_RegWrAddr),
-        .o_RegWrEnable  (MEM_RegWrEnable),
         .o_RegWrData    (MEM_RegWrData));
         
    
@@ -238,17 +233,26 @@ module ProcessorPP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
     
+    logic [6:0]            MEMWB_InstOP;
     logic [DATA_WIDTH-1:0] MEMWB_RegWrData;
-    logic [4:0]            MEMWB_RegWrAddr;
+    logic [REG_WIDTH-1:0]  MEMWB_RegWrAddr;
     logic                  MEMWB_RegWrEnable;
 
-    PipelineMEMWB
+    PipelineMEMWB #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     MEMWB (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),
-        .i_RegWrAddr   (MEM_RegWrAddr),
-        .i_RegWrEnable (MEM_RegWrEnable),
+        
+        .i_InstOP      (EXMEM_InstOP),
+        .i_RegWrAddr   (EXMEM_RegWrAddr),
+        .i_RegWrEnable (EXMEM_RegWrEnable),
         .i_RegWrData   (MEM_RegWrData),
+        
+        .o_InstOP      (MEMWB_InstOP),
         .o_RegWrAddr   (MEMWB_RegWrAddr),
         .o_RegWrEnable (MEMWB_RegWrEnable),
         .o_RegWrData   (MEMWB_RegWrData));
@@ -261,7 +265,10 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] WB_RegWrData;
 
     StageWB #(
-        .DATA_WIDTH (DATA_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     WB (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),

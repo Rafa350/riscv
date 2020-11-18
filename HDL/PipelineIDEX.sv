@@ -1,7 +1,9 @@
-module PipelineIDEX #(
+module PipelineIDEX 
+#(
     parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
     parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
+    parameter REG_WIDTH  = 5) 
 (
     // Senyals de control
     input  logic                  i_Clock,        // Clock
@@ -33,7 +35,7 @@ module PipelineIDEX #(
     
     
     always_ff @(posedge i_Clock) begin
-        o_PC           <= i_Reset ? 32'b0 : i_PC;
+        o_PC           <= i_Reset ? {PC_WIDTH{1'b0}} : i_PC;
         o_InstOP       <= i_Reset ?  7'b0 : i_InstOP;
         o_DataA        <= i_Reset ? 32'b0 : i_DataA;
         o_DataB        <= i_Reset ? 32'b0 : i_DataB;

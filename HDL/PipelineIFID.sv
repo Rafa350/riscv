@@ -1,5 +1,9 @@
-module PipelineIFID
-    parameter PC_WIDTH = 32)
+module PipelineIFID 
+#(
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
+    parameter PC_WIDTH   = 32,
+    parameter REG_WIDTH  = 5) 
 (
 
     input logic                 i_Clock,

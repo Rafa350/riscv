@@ -1,6 +1,9 @@
-module PipelineEXMEM #(
+module PipelineEXMEM 
+#(
     parameter DATA_WIDTH = 32,
-    parameter REG_WIDTH  = 5)
+    parameter ADDR_WIDTH = 32,
+    parameter PC_WIDTH   = 32,
+    parameter REG_WIDTH  = 5) 
 (
     // Senyals de control
     input  logic                  i_Clock,        // Clock

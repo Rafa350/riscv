@@ -2,9 +2,10 @@ import types::AluOp;
 
 module StageID
 #(
-    parameter DATA_WIDTH = 32,    // Data bus data width
-    parameter PC_WIDTH   = 32,    // Instruction bus address width
-    parameter REG_WIDTH  = 5)     // Register address bus width
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
+    parameter PC_WIDTH   = 32,
+    parameter REG_WIDTH  = 5) 
 (
     // Senyals de control.
     input  logic                  i_Clock,        // Clock
@@ -20,12 +21,11 @@ module StageID
     input  logic                  i_RegWrEnable,  // Autoritzacio d'escriptura del registre
     
     // Senyals de sortida per la seguent etapa.
-    output logic [6:0]                 o_InstOP,       // Codi d'operacio de la instruccio
+    output logic [6:0]            o_InstOP,       // Codi d'operacio de la instruccio
     output logic [DATA_WIDTH-1:0] o_DataA,        // Dades A (rs1)
     output logic [DATA_WIDTH-1:0] o_DataB,        // Dades B (rs2)
     output logic [DATA_WIDTH-1:0] o_MemWrData,    // Dades per d'escriptura en memoria
-    output logic [PC_WIDTH-1:0]   o_PC,           // Adressa de la instruccio       
-    output logic [4:0]            o_RegWrAddr,    // Registre a escriure.
+    output logic [REG_WIDTH-1:0]  o_RegWrAddr,    // Registre a escriure.
     output logic                  o_RegWrEnable,  // Habilita l'escriptura del registre
     output logic                  o_MemWrEnable,  // Habilita l'escritura en memoria
     output logic [1:0]            o_RegWrDataSel, // Seleccio de les dades per escriure en el registre (rd)
@@ -52,11 +52,11 @@ module StageID
         .i_Inst         (i_Inst),             // La instruccio
         .i_IsEQ         (Comp_EQ),            // Indicador r1 == r2
         .i_IsLT         (Comp_LT),            // Indicador r1 < r2
-        .o_AluControl   (Ctrl_AluControl),
         .o_MemWrEnable  (Ctrl_MemWrEnable),
         .o_RegWrEnable  (Ctrl_RegWrEnable),
+        .o_RegWrDataSel (Ctrl_DataToRegSel),
+        .o_AluControl   (Ctrl_AluControl),
         .o_OperandBSel  (Ctrl_DataBSel),
-        .o_DataToRegSel (Ctrl_DataToRegSel),
         .o_PCNextSel    (Ctrl_PCNextSel));
     assign Ctrl_OperandASel = 0;
         
@@ -66,12 +66,12 @@ module StageID
     // Separa les instruccions en els seus components.
     // ------------------------------------------------------------------------
     
-    logic [31:0] Dec_InstIMM;
-    logic [6:0]  Dec_InstOP;
-    logic [4:0]  Dec_InstSH;
-    logic [4:0]  Dec_InstRS1;
-    logic [4:0]  Dec_InstRS2;
-    logic [4:0]  Dec_InstRD;
+    logic [DATA_WIDTH-1:0] Dec_InstIMM;
+    logic [6:0]            Dec_InstOP;
+    logic [REG_WIDTH-1:0]  Dec_InstSH;
+    logic [REG_WIDTH-1:0]  Dec_InstRS1;
+    logic [REG_WIDTH-1:0]  Dec_InstRS2;
+    logic [REG_WIDTH-1:0]  Dec_InstRD;
 
     Decoder_RV32I Dec (
         .i_Inst (i_Inst),
@@ -154,14 +154,13 @@ module StageID
     PCNextSelector (
         .i_Select (Ctrl_PCNextSel),
         .i_Input0 (i_PC + 4),
-        .i_Input1 (i_PC + Dec_InstIMM),
-        .i_Input2 (Regs_DataA + Dec_InstIMM),
+        .i_Input1 (i_PC + Dec_InstIMM[PC_WIDTH-1:0]),
+        .i_Input2 (Regs_DataA[PC_WIDTH-1:0] + Dec_InstIMM[PC_WIDTH-1:0]),
         .o_Output (PCNextSelector_Output));
     // verilator lint_on PINMISSING
           
         
     always_comb begin        
-        o_PC           = i_PC;
         o_InstOP       = Dec_InstOP;
         o_DataA        = Regs_DataA;
         o_DataB        = DataBSelector_Output;
