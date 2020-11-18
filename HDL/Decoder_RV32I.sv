@@ -2,17 +2,20 @@
 import types::*;
 
 
-module Decoder_RV32I (
+module Decoder_RV32I
+#(
+    parameter REG_WIDTH = 5)
+ (
 
-    input  logic [31:0] i_Inst, // La instruccio a decodificar
+    input  logic [31:0]          i_Inst, // La instruccio a decodificar
     
-    output logic [6:0]  o_OP,   // El codi d'operacio
-    output logic [4:0]  o_RS1,  // El registre font 1 (rs1)
-    output logic [4:0]  o_RS2,  // El registre fomt 2 (rs2)
-    output logic [4:0]  o_RD,   // El registre de destinacio  (rd)
+    output logic [6:0]           o_OP,   // El codi d'operacio
+    output logic [REG_WIDTH-1:0] o_RS1,  // El registre font 1 (rs1)
+    output logic [REG_WIDTH-1:0] o_RS2,  // El registre fomt 2 (rs2)
+    output logic [REG_WIDTH-1:0] o_RD,   // El registre de destinacio  (rd)
     
-    output logic [4:0]  o_SH,   // El valor de desplaçament de bits (shamt)
-    output logic [31:0] o_IMM   // El valor inmediat
+    output logic [4:0]           o_SH,   // El valor de desplaçament de bits (shamt)
+    output logic [31:0]          o_IMM   // El valor inmediat
 );
 
 
@@ -48,9 +51,9 @@ module Decoder_RV32I (
     
     // Evalua els registres de la instruccio
     //
-    assign o_RS1 = i_Inst[19:15];
-    assign o_RS2 = i_Inst[24:20];
-    assign o_RD  = i_Inst[11:7];        
+    assign o_RS1 = i_Inst[REG_WIDTH+14:15];
+    assign o_RS2 = i_Inst[REG_WIDTH+19:20];
+    assign o_RD  = i_Inst[REG_WIDTH+6:7];        
 
     // Evalua el codi d'operacio
     //

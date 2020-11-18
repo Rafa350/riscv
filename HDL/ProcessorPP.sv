@@ -25,11 +25,14 @@ module ProcessorPP
     // Stage IF
     // ------------------------------------------------------------------------
     
-    logic [31:0]         IF_Inst;
     logic [PC_WIDTH-1:0] IF_PC;
+    logic [31:0]         IF_Inst;
 
     StageIF #(
-        .PC_WIDTH (PC_WIDTH))
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
     IF (
         .i_Clock   (i_Clock),   // Clock
         .i_Reset   (i_Reset),   // Reset
@@ -41,6 +44,29 @@ module ProcessorPP
 
         .o_Inst    (IF_Inst),   // DATA: Instruccio 
         .o_PC      (IF_PC));    // CTRL: Adressa de la instruccio
+        
+        
+    // ------------------------------------------------------------------------
+    // Pipeline IFID
+    // ------------------------------------------------------------------------
+    
+    logic [PC_WIDTH-1:0] IFID_PC;
+    logic [31:0]         IFID_Inst;
+    
+    PipelineIFID #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .PC_WIDTH   (PC_WIDTH),
+        .REG_WIDTH  (REG_WIDTH))
+    IFID (
+        .i_Clock (i_Clock),
+        .i_Reset (i_Reset),
+        
+        .i_PC    (IF_PC),
+        .i_Inst  (IF_Inst),
+        
+        .o_PC    (IFID_PC),
+        .o_Inst  (IFID_Inst));
         
         
     // ------------------------------------------------------------------------    
@@ -68,8 +94,8 @@ module ProcessorPP
         .i_Clock        (i_Clock),           // Clock
         .i_Reset        (i_Reset),           // Reset
 
-        .i_Inst         (IF_Inst),           // Instruccio 
-        .i_PC           (IF_PC),             // Adressa de la instruccio  
+        .i_Inst         (IFID_Inst),         // Instruccio 
+        .i_PC           (IFID_PC),           // Adressa de la instruccio  
         .i_RegWrAddr    (MEMWB_RegWrAddr),   // Adressa del registre on escriure
         .i_RegWrData    (WB_RegWrData),      // Dades del registre on escriure
         .i_RegWrEnable  (MEMWB_RegWrEnable), // Habilita escriure en el registre

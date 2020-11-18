@@ -28,6 +28,7 @@ add_executable(simx
     ../sim_dis.cpp
     ../sim_ram.cpp
     ../sim_rom.cpp
+    ../sim_dpi.cpp
     ${SIM_PACK_SRC}/simMemory.cpp
 )
 

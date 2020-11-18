@@ -21,10 +21,8 @@ module StageIF
     // Control del PC
     // ------------------------------------------------------------------------
         
+    assign o_PC = i_PCNext;
     assign o_PgmAddr = o_PC; 
     assign o_Inst = i_PgmInst;
-    
-    always_ff @(posedge i_Clock)
-        o_PC <= i_Reset ? 0 : i_PCNext;
-    
+      
 endmodule

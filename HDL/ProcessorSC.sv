@@ -33,7 +33,7 @@ module ProcessorSC
     logic       Ctrl_RegWrEnable;  // Autoritza escriptura del regisres
     logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
     logic [1:0] Ctrl_PCNextSel;    // Selector del seguent valor del PC
-    logic [1:0] Ctrl_DataToRegSel; // Selector del les dades d'esacriptura en el registre
+    logic [1:0] Ctrl_RegWrDataSel; // Selector del les dades d'esacriptura en el registre
     logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
     logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
 
@@ -46,18 +46,18 @@ module ProcessorSC
         .o_MemWrEnable  (Ctrl_MemWrEnable),
         .o_RegWrEnable  (Ctrl_RegWrEnable),
         .o_OperandBSel  (Ctrl_OperandBSel),
-        .o_DataToRegSel (Ctrl_DataToRegSel),
+        .o_RegWrDataSel (Ctrl_RegWrDataSel),
         .o_PCNextSel    (Ctrl_PCNextSel));
     assign Ctrl_OperandASel = 0;
 
 
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
     //
-    logic [31:0] Dec_InstIMM;
-    logic [4:0]  Dec_InstSH;
-    logic [4:0]  Dec_InstRS1;
-    logic [4:0]  Dec_InstRS2;
-    logic [4:0]  Dec_InstRD;
+    logic [31:0]          Dec_InstIMM;
+    logic [REG_WIDTH-1:0] Dec_InstSH;
+    logic [REG_WIDTH-1:0] Dec_InstRS1;
+    logic [REG_WIDTH-1:0] Dec_InstRS2;
+    logic [REG_WIDTH-1:0] Dec_InstRD;
 
     // verilator lint_off PINMISSING
     Decoder_RV32I
@@ -115,7 +115,7 @@ module ProcessorSC
     Sel5 (
         .i_Select (Ctrl_OperandASel),
         .i_Input0 (RegBlock_RdDataA),
-        .i_Input1 (PC),
+        .i_Input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PC}),
         .o_Output (Sel5_Output));
 
     // Selecciona les dades d'entrada B de la ALU
@@ -135,15 +135,16 @@ module ProcessorSC
     //
     logic [DATA_WIDTH-1:0] Sel3_Output;  
     
+    // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH  (DATA_WIDTH))
     Sel3 (
-        .i_Select (Ctrl_DataToRegSel),
-        .i_Input0 (Alu_Result),          // Escriu el resultat de la ALU
-        .i_Input1 (i_MemRdData),         // Escriu el valor lleigit de la memoria
-        .i_Input2 (PCPlus4),             // Escriu el valor de PC+4
-        .i_Input3 (PCPlus4),             // No s'utilitza
+        .i_Select (Ctrl_RegWrDataSel),
+        .i_Input0 (Alu_Result),             // Escriu el resultat de la ALU
+        .i_Input1 (i_MemRdData),            // Escriu el valor lleigit de la memoria
+        .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PCPlus4}), // Escriu el valor de PC+4
         .o_Output (Sel3_Output));
+    // verilator lint_on PINMISSING
 
 
     // ALU
@@ -177,7 +178,7 @@ module ProcessorSC
         .WIDTH (PC_WIDTH))
     Adder2 (
         .i_OperandA (PC),
-        .i_OperandB (Dec_InstIMM),
+        .i_OperandB (Dec_InstIMM[PC_WIDTH-1:0]),
         .o_Result   (PCPlusOffset));
         
         
@@ -188,8 +189,8 @@ module ProcessorSC
     HalfAdder #(
         .WIDTH (PC_WIDTH))
     Adder3 (
-        .i_OperandA (Dec_InstIMM),
-        .i_OperandB (RegBlock_RdDataA),
+        .i_OperandA (Dec_InstIMM[PC_WIDTH-1:0]),
+        .i_OperandB (RegBlock_RdDataA[PC_WIDTH-1:0]),
         .o_Result   (PCPlusOffsetAndRS1));
 
 
@@ -221,7 +222,7 @@ module ProcessorSC
     // Interface amb la memoria RAM
     //
     always_comb begin
-        o_MemAddr     = Alu_Result;
+        o_MemAddr     = Alu_Result[ADDR_WIDTH-1:0];
         o_MemWrEnable = Ctrl_MemWrEnable;
         o_MemWrData   = RegBlock_RdDataB;
     end

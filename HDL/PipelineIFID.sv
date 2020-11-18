@@ -17,8 +17,8 @@ module PipelineIFID
     
     
     always_ff @(posedge i_Clock) begin
-        o_PC   <= i_Reset ? 0 : i_PC;
-        o_Inst <= i_Reset ? 0 : i_Inst;
+        o_PC   <= i_Reset ? -4 : i_PC;
+        o_Inst <= i_Reset ?  0 : i_Inst;
     end;
 
 

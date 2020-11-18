@@ -73,7 +73,9 @@ module StageID
     logic [REG_WIDTH-1:0]  Dec_InstRS2;
     logic [REG_WIDTH-1:0]  Dec_InstRD;
 
-    Decoder_RV32I Dec (
+    Decoder_RV32I #(
+        .REG_WIDTH (REG_WIDTH))
+    Dec (
         .i_Inst (i_Inst),
         .o_OP   (Dec_InstOP),
         .o_RS1  (Dec_InstRS1),
@@ -93,7 +95,9 @@ module StageID
     logic Comp_LT; // Indica A <= B
     
     // verilator lint_off PINMISSING
-    Comparer Comp(
+    Comparer #(
+        .WIDTH (DATA_WIDTH))
+    Comp(
         .i_InputA   (Regs_DataA),
         .i_InputB   (Regs_DataB),
         .i_Unsigned (0),
@@ -146,16 +150,40 @@ module StageID
     // Selector de l'adressa de salt
     // ------------------------------------------------------------------------
     
-    logic [PC_WIDTH-1:0] PCNextSelector_Output;
+    logic [PC_WIDTH-1:0] PCAdder1_Output,
+                         PCAdder2_Output,
+                         PCAdder3_Output,
+                         PCNextSelector_Output;
     
+    HalfAdder #(
+        .WIDTH (PC_WIDTH))
+    PCAdder1 (
+        .i_OperandA (i_PC),
+        .i_OperandB (4),
+        .o_Result   (PCAdder1_Output));
+       
+    HalfAdder #(
+        .WIDTH (PC_WIDTH))
+    PCAdder2 (
+        .i_OperandA (i_PC),
+        .i_OperandB (Dec_InstIMM[PC_WIDTH-1:0]),
+        .o_Result   (PCAdder2_Output));
+
+    HalfAdder #(
+        .WIDTH (PC_WIDTH))
+    PCAdder3 (
+        .i_OperandA (Regs_DataA[PC_WIDTH-1:0]),
+        .i_OperandB (Dec_InstIMM[PC_WIDTH-1:0]),
+        .o_Result   (PCAdder3_Output));
+
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (PC_WIDTH))
     PCNextSelector (
         .i_Select (Ctrl_PCNextSel),
-        .i_Input0 (i_PC + 4),
-        .i_Input1 (i_PC + Dec_InstIMM[PC_WIDTH-1:0]),
-        .i_Input2 (Regs_DataA[PC_WIDTH-1:0] + Dec_InstIMM[PC_WIDTH-1:0]),
+        .i_Input0 (PCAdder1_Output),
+        .i_Input1 (PCAdder2_Output),
+        .i_Input2 (PCAdder3_Output),
         .o_Output (PCNextSelector_Output));
     // verilator lint_on PINMISSING
           

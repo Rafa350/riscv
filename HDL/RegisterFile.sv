@@ -26,12 +26,12 @@ module RegisterFile
     // Port de lectura B
     input  logic [ADDR_WIDTH-1:0] i_RdAddrB,  // Identificador del regisres del port de lectura B
     output logic [DATA_WIDTH-1:0] o_RdDataB); // Dades lleigides del port B
-    
+       
     localparam NUM_REGS = 2**ADDR_WIDTH;
     localparam ZERO = {DATA_WIDTH{1'b0}};
     
     logic [DATA_WIDTH-1:0] Data[1:NUM_REGS-1];
-
+    
     always_ff @(posedge i_Clock)
         if (i_Reset) begin
             integer i;
@@ -44,6 +44,12 @@ module RegisterFile
     always_comb begin            
         o_RdDataA = (i_Reset | (~|i_RdAddrA)) ? ZERO : Data[i_RdAddrA];
         o_RdDataB = (i_Reset | (~|i_RdAddrB)) ? ZERO : Data[i_RdAddrB];
+    end
+    
+    always_ff @(posedge i_Clock) begin
+        integer i;
+        for (i = $left(Data); i <= 3; i++)
+            $display("R[%2.2d]: %4.4X", i , Data[i]);
     end
 
 endmodule
