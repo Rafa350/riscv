@@ -77,7 +77,7 @@ module Controller_RV32I (
 
 
     logic [11:0] dp;
-    logic branch;
+    logic br;
    
     // Evalua les senyals de control de sortida
     //
@@ -86,21 +86,21 @@ module Controller_RV32I (
     assign o_RegWrEnable  = dp[8];
     assign o_RegWrDataSel = dp[10:9];
     assign o_OperandBSel  = dp[11];
-    assign o_PCNextSel    = branch ? dp[6:5] : pcPP4;
+    assign o_PCNextSel    = br ? dp[6:5] : pcPP4;
 
     // Evalua ls condicios de salt per les instruccions Branch y Jump
     //
     always_comb begin
         unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0], i_IsEQ, i_IsLT})
-            /*  BEQ   */ 19'b1100011_000_1100011_1_?: branch = 1;
-            /*  BGE   */ 19'b1100011_101_1100011_?_0: branch = 1;
-            /*  BGEU  */ 19'b1100011_111_1100011_?_0: branch = 1;
-            /*  BLT   */ 19'b1100011_100_1100011_?_1: branch = 1;
-            /*  BLTU  */ 19'b1100011_110_1100011_?_1: branch = 1;
-            /*  BNE   */ 19'b1100011_001_1100011_0_?: branch = 1;
-            /*  JAL   */ 19'b???????_???_1101111_?_?: branch = 1;
-            /*  JALR  */ 19'b???????_000_1100111_?_?: branch = 1;
-            default                                 : branch = 0;
+            /*  BEQ   */ 19'b1100011_000_1100011_1_?: br = 1;
+            /*  BGE   */ 19'b1100011_101_1100011_?_0: br = 1;
+            /*  BGEU  */ 19'b1100011_111_1100011_?_0: br = 1;
+            /*  BLT   */ 19'b1100011_100_1100011_?_1: br = 1;
+            /*  BLTU  */ 19'b1100011_110_1100011_?_1: br = 1;
+            /*  BNE   */ 19'b1100011_001_1100011_0_?: br = 1;
+            /*  JAL   */ 19'b???????_???_1101111_?_?: br = 1;
+            /*  JALR  */ 19'b???????_000_1100111_?_?: br = 1;
+            default                                 : br = 0;
         endcase
     end
     
@@ -144,7 +144,7 @@ module Controller_RV32I (
             /*  XOR   */ 17'b0000000_100_0110011: dp = DP_XOR;
             /*  XORI  */ 17'b???????_100_0010011: dp = DP_XORI;
 
-            default: dp = 0;
+            default                             : dp = 0;
         endcase
     end
 

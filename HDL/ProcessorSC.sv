@@ -54,7 +54,6 @@ module ProcessorSC
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
     //
     logic [31:0]          Dec_InstIMM;
-    logic [REG_WIDTH-1:0] Dec_InstSH;
     logic [REG_WIDTH-1:0] Dec_InstRS1;
     logic [REG_WIDTH-1:0] Dec_InstRS2;
     logic [REG_WIDTH-1:0] Dec_InstRD;
@@ -66,8 +65,7 @@ module ProcessorSC
         .o_RS1  (Dec_InstRS1),
         .o_RS2  (Dec_InstRS2),
         .o_RD   (Dec_InstRD),
-        .o_IMM  (Dec_InstIMM),
-        .o_SH   (Dec_InstSH));
+        .o_IMM  (Dec_InstIMM));
     // verilator lint_on PINMISSING
     
 

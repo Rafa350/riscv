@@ -38,17 +38,17 @@ module RegisterFile
             for (i = 1; i < NUM_REGS; i++)
                 Data[i] <= ZERO;
         end                
-        else if (i_WrEnable & (|i_WrAddr))
+        else if (i_WrEnable & (i_WrAddr != 0))
             Data[i_WrAddr] <= i_WrData;
     
     always_comb begin            
-        o_RdDataA = (i_Reset | (~|i_RdAddrA)) ? ZERO : Data[i_RdAddrA];
-        o_RdDataB = (i_Reset | (~|i_RdAddrB)) ? ZERO : Data[i_RdAddrB];
+        o_RdDataA = (i_Reset | (i_RdAddrA == 0)) ? ZERO : Data[i_RdAddrA];
+        o_RdDataB = (i_Reset | (i_RdAddrB == 0)) ? ZERO : Data[i_RdAddrB];
     end
     
     always_ff @(posedge i_Clock) begin
         integer i;
-        for (i = $left(Data); i <= 3; i++)
+        for (i = $left(Data); i <= 5; i++)
             $display("R[%2.2d]: %4.4X", i , Data[i]);
     end
 
