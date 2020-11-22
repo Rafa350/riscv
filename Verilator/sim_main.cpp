@@ -30,11 +30,10 @@ using namespace Simulation;
 class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
        
     private:
-        ROM *rom;
         RAM *ram;
         
     public:
-        CPUTestbench(ROM *rom, RAM *ram);
+        CPUTestbench(RAM *ram);
         void run();
 };
 
@@ -45,12 +44,9 @@ class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 /// \param    ram: Memoria ram
 ///
 CPUTestbench::CPUTestbench(
-    ROM *rom, 
     RAM *ram):
     
-    rom(rom),
-    ram(ram)     {
-   
+    ram(ram) {
 }
 
 
@@ -94,20 +90,16 @@ void CPUTestbench::run() {
         else if (tick == CLOCK_RST_SET)
             top->i_Reset = 1;
 		
-		// Acces al programa 
-		//
-		top->i_rom_rdata = rom->read32(top->o_rom_addr);
-        
         // Acces a la RAM
         //
-        top->i_ram_rdata = ram->read32(top->o_ram_addr);
-        if (top->o_ram_we) 
-            ram->write32(top->o_ram_addr, top->o_ram_wdata);
+        top->i_MemRdData = ram->read32(top->o_MemAddr);
+        if (top->o_MemWrEnable) 
+            ram->write32(top->o_MemAddr, top->o_MemWrData);
         
         // Desensambla l'instruccio actual
         //        
-        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))
-            disassembly(top->o_rom_addr, top->i_rom_rdata);
+        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0)) 
+            disassembly(top->o_DbgPgmAddr, top->o_DbgPgmInst);
 
     } while (nextTick() && (tick < CLOCK_MAX));
     
@@ -115,11 +107,7 @@ void CPUTestbench::run() {
     
     writeConsole("*** End simulation loop.\n");
     writeConsole("    --Total simulation time: " + std::to_string(getTickCount()) + " ticks.\n");
-
-    writeConsole("*** ROM dump start.\n");
-    rom->dump(0, 32);
-    writeConsole("*** ROM dump end.\n");
-    
+   
     writeConsole("*** RAM dump start.\n");
     ram->dump(0, 32);
     writeConsole("*** RAM dump end.\n");
@@ -141,14 +129,12 @@ int main(
     char **argv, 
     char **env) {
         
-	ROM *rom = new ROM();
     RAM *ram = new RAM();
 
-    CPUTestbench *tb = new CPUTestbench(rom, ram);
+    CPUTestbench *tb = new CPUTestbench(ram);
     tb->run();   
     delete tb;
     
-    delete rom;
     delete ram;
     
     return 0;

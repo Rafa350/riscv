@@ -11,11 +11,11 @@ module Memory
     output logic [DATA_WIDTH-1:0] o_RdData);
     
     mw_ram ram(
-        .clock(i_Clock),
-        .wren(i_WrEnable),
-        .data(i_WrData),
-        .q(o_RdData),
-        .rdaddress(i_Addr),
-        .wraddress(i_Addr));
+        .clock     (i_Clock),
+        .wren      (i_WrEnable),
+        .data      (i_WrData),
+        .q         (o_RdData),
+        .rdaddress (i_Addr),
+        .wraddress (i_Addr));
 
 endmodule

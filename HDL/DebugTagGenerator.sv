@@ -6,7 +6,7 @@ module DebugTagGenerator
     output logic [2:0] o_Tag);
     
     always_ff @(posedge i_Clock)
-        o_Tag <= i_Reset ? 0 : o_Tag + 1;
+        o_Tag <= i_Reset ? 3'b0 : o_Tag + 3'b1;
     
 endmodule
     

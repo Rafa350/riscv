@@ -14,7 +14,7 @@ module Program
         $readmemh("../Firmware/build/demo.txt", Data);
         
     always_comb begin
-        o_Inst = { Data[i_Addr], Data[i_Addr+1], Data[i_Addr+2], Data[i_Addr+3]};
+        o_Inst = {Data[i_Addr], Data[i_Addr+1], Data[i_Addr+2], Data[i_Addr+3]};
     end
 
 endmodule

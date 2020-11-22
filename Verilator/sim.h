@@ -18,12 +18,6 @@
 typedef Vverilator_top Vtop;
 
 
-class ROM: public Simulation::Memory {
-    public:
-        ROM();
-};
-
-
 class RAM: public Simulation::Memory {
     public:
         RAM();

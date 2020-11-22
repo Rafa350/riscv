@@ -1,23 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Fri Nov 20 10:51:39 2020
+[*] Sun Nov 22 18:42:42 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.fst"
-[dumpfile_mtime] "Fri Nov 20 10:48:24 2020"
-[dumpfile_size] 4634
+[dumpfile_mtime] "Sun Nov 22 18:28:27 2020"
+[dumpfile_size] 6206
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.gtkw"
-[timestart] 0
+[timestart] 3
 [size] 1920 1017
 [pos] -1 -1
-*-4.518126 59 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.518126 48 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
-[treeopen] TOP.top.Cpu.
-[treeopen] TOP.top.Cpu.ID.Regs.
+[treeopen] TOP.top.CPU.
+[treeopen] TOP.top.CPU.ID.
 [sst_width] 273
-[signals_width] 375
+[signals_width] 252
 [sst_expanded] 1
-[sst_vpaned_height] 352
+[sst_vpaned_height] 595
 @200
 -System clock
 @28
@@ -28,182 +28,113 @@ TOP.top.i_Clock
 -
 -Data Memory
 @22
-TOP.top.o_ram_addr[9:0]
-TOP.top.i_ram_rdata[31:0]
-TOP.top.o_ram_wdata[31:0]
+TOP.top.o_MemAddr[9:0]
 @28
-TOP.top.o_ram_we
+TOP.top.o_MemWrEnable
+@22
+TOP.top.i_MemRdData[31:0]
+TOP.top.o_MemWrData[31:0]
 @200
 -
 -Program Memory
 @22
-TOP.top.o_rom_addr[9:0]
-TOP.top.i_rom_rdata[31:0]
+TOP.top.ROM.i_Addr[9:0]
+TOP.top.ROM.o_RdData[31:0]
 @200
 -
 -REG file
-@28
-[color] 1
-TOP.top.Cpu.ID.Regs.i_Clock
 @22
-TOP.top.Cpu.ID.Regs.i_RdAddrA[4:0]
-TOP.top.Cpu.ID.Regs.i_RdAddrB[4:0]
-TOP.top.Cpu.ID.Regs.i_WrAddr[4:0]
-TOP.top.Cpu.ID.Regs.i_WrData[31:0]
+TOP.top.CPU.ID.Regs.i_RdAddrA[4:0]
+TOP.top.CPU.ID.Regs.o_RdDataA[31:0]
+TOP.top.CPU.ID.Regs.i_RdAddrB[4:0]
+@23
+TOP.top.CPU.ID.Regs.o_RdDataB[31:0]
+@22
+TOP.top.CPU.ID.Regs.i_WrAddr[4:0]
 @28
-TOP.top.Cpu.ID.Regs.i_WrEnable
+TOP.top.CPU.ID.Regs.i_WrEnable
+@22
+TOP.top.CPU.ID.Regs.i_WrData[31:0]
 @200
 -
 -Formward
 @24
-[color] 2
-TOP.top.Cpu.FwdCtrl.o_RS1Sel[1:0]
-@22
-[color] 2
-TOP.top.Cpu.FwdDataASelector_Output[31:0]
-@24
-[color] 2
-TOP.top.Cpu.FwdCtrl.o_RS2Sel[1:0]
-@22
-[color] 2
-TOP.top.Cpu.FwdDataBSelector_Output[31:0]
-TOP.top.Cpu.FwdCtrl.i_EXMEM_RegWrAddr[4:0]
-@28
-TOP.top.Cpu.FwdCtrl.i_EXMEM_RegWrEnable
-@22
-TOP.top.Cpu.FwdCtrl.i_MEMWB_RegWrAddr[4:0]
-@28
-TOP.top.Cpu.FwdCtrl.RS1InEXMEM
-TOP.top.Cpu.FwdCtrl.RS1InMEMWB
-@29
-TOP.top.Cpu.FwdCtrl.RS2InEXMEM
-@28
-TOP.top.Cpu.FwdCtrl.RS2InMEMWB
+TOP.top.CPU.FwdSwitch.i_DataASelect[1:0]
+TOP.top.CPU.FwdSwitch.i_DataBSelect[1:0]
 @200
 -
--Pipelines
+-IFID pipeline
 @24
 [color] 1
-TOP.top.Cpu.IFID_DbgTag[2:0]
-@2022
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.ID.Dec_InstOP[6:0]
+TOP.top.CPU.IFID.o_DbgTag[2:0]
 @22
-TOP.top.Cpu.ID.Dec_InstRS1[4:0]
-TOP.top.Cpu.ID.Dec_InstRS2[4:0]
-TOP.top.Cpu.ID.Dec_InstRD[4:0]
-TOP.top.Cpu.ID.Dec.o_IMM[31:0]
+TOP.top.CPU.IFID.o_PC[9:0]
+TOP.top.CPU.IFID.o_Inst[31:0]
 @200
 -
+-IDEX pipeline
 @24
 [color] 1
-TOP.top.Cpu.IDEX_DbgTag[2:0]
+TOP.top.CPU.IDEX.o_DbgTag[2:0]
 @22
 [color] 3
-TOP.top.Cpu.IDEX_InstRS1[4:0]
-[color] 3
-TOP.top.Cpu.IDEX_InstRS2[4:0]
-[color] 3
-TOP.top.Cpu.IDEX_DataA[31:0]
-[color] 3
-TOP.top.Cpu.IDEX_DataB[31:0]
+TOP.top.CPU.IDEX.o_InstIMM[31:0]
 @2022
 [color] 3
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.IDEX_InstOP[6:0]
-@28
-[color] 3
-TOP.top.Cpu.IDEX_OperandBSel
+TOP.top.CPU.IDEX.o_InstOP[6:0]
 @22
 [color] 3
-TOP.top.Cpu.IDEX_RegWrAddr[4:0]
-@28
+TOP.top.CPU.IDEX.o_InstRS1[4:0]
 [color] 3
-TOP.top.Cpu.IDEX_RegWrEnable
+TOP.top.CPU.IDEX.o_InstRS2[4:0]
 [color] 3
-TOP.top.Cpu.IDEX_MemWrEnable
+TOP.top.CPU.IDEX.o_DataA[31:0]
+[color] 3
+TOP.top.CPU.IDEX.o_DataB[31:0]
 @200
 -
+-EXMEM pipeline
 @24
 [color] 1
-TOP.top.Cpu.EXMEM_DbgTag[2:0]
+TOP.top.CPU.EXMEM.o_DbgTag[2:0]
 @2022
 [color] 2
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.EXMEM_InstOP[6:0]
+TOP.top.CPU.EXMEM.o_InstOP[6:0]
 @22
 [color] 2
-TOP.top.Cpu.EXMEM_Result[31:0]
+TOP.top.CPU.EXMEM.o_Result[31:0]
 [color] 2
-TOP.top.Cpu.EXMEM_RegWrAddr[4:0]
+TOP.top.CPU.EXMEM.o_MemWrData[31:0]
 @28
 [color] 2
-TOP.top.Cpu.EXMEM_RegWrEnable
+TOP.top.CPU.EXMEM.o_MemWrEnable
 @22
 [color] 2
-TOP.top.Cpu.EXMEM_MemWrData[31:0]
+TOP.top.CPU.EXMEM.o_RegWrAddr[4:0]
 @28
 [color] 2
-TOP.top.Cpu.EXMEM_MemWrEnable
+TOP.top.CPU.EXMEM.o_RegWrDataSel[1:0]
+[color] 2
+TOP.top.CPU.EXMEM.o_RegWrEnable
 @200
 -
+-MEMWB pipeline
 @24
 [color] 1
-TOP.top.Cpu.MEMWB_DbgTag[2:0]
+TOP.top.CPU.MEMWB.o_DbgTag[2:0]
 @2022
 [color] 5
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.Cpu.MEMWB_InstOP[6:0]
-@22
-[color] 5
-TOP.top.Cpu.MEMWB_RegWrAddr[4:0]
+TOP.top.CPU.MEMWB.o_InstOP[6:0]
 @28
 [color] 5
-TOP.top.Cpu.MEMWB_RegWrEnable
-@200
--
--IF stage
+TOP.top.CPU.MEMWB.o_RegWrEnable
 @22
-TOP.top.Cpu.IF.i_PCNext[9:0]
-TOP.top.Cpu.IF.o_PC[9:0]
-TOP.top.Cpu.IF.o_Inst[31:0]
-@200
--
--ID stage
-@22
-TOP.top.Cpu.ID.i_PC[9:0]
-TOP.top.Cpu.ID.i_Inst[31:0]
-TOP.top.Cpu.ID.i_RegWrAddr[4:0]
-TOP.top.Cpu.ID.i_RegWrData[31:0]
-@28
-TOP.top.Cpu.ID.i_RegWrEnable
-@22
-TOP.top.Cpu.ID.o_InstOP[6:0]
-TOP.top.Cpu.ID.o_DataA[31:0]
-TOP.top.Cpu.ID.o_DataB[31:0]
-TOP.top.Cpu.ID.o_RegWrAddr[4:0]
-@28
-TOP.top.Cpu.ID.o_RegWrDataSel[1:0]
-TOP.top.Cpu.ID.o_RegWrEnable
-TOP.top.Cpu.ID.o_MemWrEnable
-@200
--
--EX stage
-@22
-TOP.top.Cpu.EX.i_PC[9:0]
-TOP.top.Cpu.EX.i_DataA[31:0]
-TOP.top.Cpu.EX.i_DataB[31:0]
-TOP.top.Cpu.EX.o_Result[31:0]
-@200
--
--MEM stage
-@22
-TOP.top.Cpu.MEM.i_Result[31:0]
-@28
-TOP.top.Cpu.MEM.i_MemWrEnable
-@22
-TOP.top.Cpu.MEM.i_MemRdData[31:0]
-@28
-TOP.top.Cpu.MEM.i_RegWrDataSel[1:0]
+[color] 5
+TOP.top.CPU.MEMWB.o_RegWrAddr[4:0]
+[color] 5
+TOP.top.CPU.MEMWB.o_RegWrData[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

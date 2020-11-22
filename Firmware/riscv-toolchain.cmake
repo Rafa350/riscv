@@ -1,8 +1,8 @@
 set(CMAKE_SYSTEM_NAME generic)
 set(CMAKE_SYSTEM_PROCESSOR RISCV)
 
-set(TOOLCHAIN_BIN /usr/lib)    
-set(TOOLCHAIN_PREFIX riscv64-linux-gnu-)    
+set(TOOLCHAIN_BIN /opt/riscv32/bin)    
+set(TOOLCHAIN_PREFIX riscv32-unknown-elf-)    
 
 find_program(CMAKE_C_COMPILER
     NAMES ${TOOLCHAIN_PREFIX}gcc

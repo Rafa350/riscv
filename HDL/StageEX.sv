@@ -16,6 +16,7 @@ module StageEX
     input  logic [DATA_WIDTH-1:0] i_DataB,
     input  logic [DATA_WIDTH-1:0] i_InstIMM,    
     input  logic [PC_WIDTH-1:0]   i_PC,         // Adressa de la instruccio
+    input  logic                  i_OperandASel,
     input  logic                  i_OperandBSel,
     input  AluOp                  i_AluControl,
 
@@ -23,6 +24,21 @@ module StageEX
     output logic [DATA_WIDTH-1:0] o_MemWrData);
 
     
+    // -----------------------------------------------------------------------
+    // Selector del operand A per la ALU (RS1 o PC)
+    // -----------------------------------------------------------------------
+    
+    logic [DATA_WIDTH-1:0] OperandASelector_Output;
+
+    Mux2To1 #(
+        .WIDTH (DATA_WIDTH))
+    OperandASelector (
+        .i_Select (i_OperandASel),
+        .i_Input0 (i_DataA),
+        .i_Input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, i_PC}),
+        .o_Output (OperandASelector_Output));
+
+
     // -----------------------------------------------------------------------
     // Selector del operand B per la ALU (RS2 o IMM)
     // -----------------------------------------------------------------------
@@ -46,7 +62,7 @@ module StageEX
         .WIDTH (DATA_WIDTH))
     Alu (
         .i_Op       (i_AluControl),
-        .i_OperandA (i_DataA),
+        .i_OperandA (OperandASelector_Output),
         .i_OperandB (OperandBSelector_Output),
         .o_Result   (o_Result));
         

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16.3)
 project(simx)
 
 
@@ -14,22 +14,38 @@ if (NOT verilator_FOUND)
 endif()
 
 
-# Defineix els directoris del paquet 'Simulation'
+# Defineix els directoris de la llibreria de simulacio
 #
-set(SIM_PACK_ROOT ../../Simulation)
-set(SIM_PACK_INC ${SIM_PACK_ROOT}/Include)
-set(SIM_PACK_SRC ${SIM_PACK_ROOT}/Source)
+set(SIMLIB_ROOT        ${PROJECT_SOURCE_DIR}/../../Simulation)
+set(SIMLIB_INCLUDE_DIR ${SIMLIB_ROOT}/Include)
+set(SIMLIB_SOURCE_DIR  ${SIMLIB_ROOT}/Source)
+
+set(FIRMWARE_DIR       ${PROJECT_SOURCE_DIR}/../Firmware/build)
+
+set(HDL_INCLUDE_DIR    ${PROJECT_SOURCE_DIR}/../HDL)
 
 
-# El executable de la simulacio
+# El executable 
 #
-add_executable(simx 
-    ../sim_main.cpp
-    ../sim_dis.cpp
-    ../sim_ram.cpp
-    ../sim_rom.cpp
-    ../sim_dpi.cpp
-    ${SIM_PACK_SRC}/simMemory.cpp
+add_executable(simx)
+
+
+# Els fitxers extra a copiar
+#
+add_custom_command(
+    TARGET simx
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/demo.txt firmware.txt
+)
+
+
+# Els fitxers font 
+
+target_sources(simx
+    PRIVATE ${PROJECT_SOURCE_DIR}/sim_main.cpp
+    PRIVATE ${PROJECT_SOURCE_DIR}/sim_dis.cpp
+    PRIVATE ${PROJECT_SOURCE_DIR}/sim_ram.cpp
+    PRIVATE ${SIMLIB_SOURCE_DIR}/simMemory.cpp
 )
 
 
@@ -38,7 +54,7 @@ add_executable(simx
 target_include_directories(simx
     PRIVATE .
     PRIVATE ${VERILATOR_ROOT}/include
-    PRIVATE ${SIM_PACK_INC}    
+    PRIVATE ${SIMLIB_INCLUDE_DIR}    
 )
 
 
@@ -47,7 +63,7 @@ target_include_directories(simx
 verilate(simx
     TOP_MODULE top
     TRACE_FST
-    INCLUDE_DIRS ../HDL ../HDL/Base ../HDL/Core
+    INCLUDE_DIRS ${HDL_INCLUDE_DIR} ${HDL_INCLUDE_DIR}/Base
     VERILATOR_ARGS 
     SOURCES verilator_top.sv
 )

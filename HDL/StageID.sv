@@ -31,6 +31,7 @@ module StageID
     output logic                  o_RegWrEnable,  // Habilita l'escriptura del registre
     output logic                  o_MemWrEnable,  // Habilita l'escritura en memoria
     output logic [1:0]            o_RegWrDataSel, // Seleccio de les dades per escriure en el registre (rd)
+    output logic                  o_OperandASel,  // Seleccio del valor A de la ALU
     output logic                  o_OperandBSel,  // Seleccio del valor B de la ALU
     output AluOp                  o_AluControl,   // Codi de control de la ALU
     output logic [PC_WIDTH-1:0]   o_PCNext);      // Nou valor de PC
@@ -46,7 +47,8 @@ module StageID
     logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
     logic [1:0] Ctrl_PCNextSel;    // Selector del seguent valor del PC
     logic [1:0] Ctrl_DataToRegSel; // Selector del les dades d'escriptura en el registre
-    logic       Ctrl_OperandBSel;  // Seleccio del operand B  de la ALU
+    logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
+    logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
 
     Controller_RV32I
     Ctrl (
@@ -57,6 +59,7 @@ module StageID
         .o_RegWrEnable  (Ctrl_RegWrEnable),
         .o_RegWrDataSel (Ctrl_DataToRegSel),
         .o_AluControl   (Ctrl_AluControl),
+        .o_OperandASel  (Ctrl_OperandASel),
         .o_OperandBSel  (Ctrl_OperandBSel),
         .o_PCNextSel    (Ctrl_PCNextSel));
         
@@ -157,6 +160,7 @@ module StageID
         o_RegWrEnable  = Ctrl_RegWrEnable;
         o_RegWrDataSel = Ctrl_DataToRegSel;
         o_MemWrEnable  = Ctrl_MemWrEnable;
+        o_OperandASel  = Ctrl_OperandASel;
         o_OperandBSel  = Ctrl_OperandBSel;
         o_AluControl   = Ctrl_AluControl;
         o_PCNext       = PCAlu_PC;

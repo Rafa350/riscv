@@ -13,6 +13,7 @@ module Controller_RV32I (
     output logic [1:0]  o_PCNextSel,     // Selecciona el seguent valor del PC
 
     output AluOp        o_AluControl,    // Selecciona l'operacio en la ALU
+    output logic        o_OperandASel,
     output logic        o_OperandBSel,   // Selecciona l'operand B de la ALU
 
     output logic        o_RegWrEnable,   // Habilita l'escriptura en els registres
@@ -29,55 +30,56 @@ module Controller_RV32I (
 
 
     // -----------------------------------------------------------------------
-    //
-    //                     OperandBSel
-    //                     |     RegWrDataSel
-    //                     |     |      RegWrEnable
-    //                     |     |      |     MemWrEnable
-    //                     |     |      |     |     PCNextSel
-    //                     |     |      |     |     |     
-    //                     |     |      |     |     |      AluControl
-    //                     |     |      |     |     |      |
-    //                     ----  -----  ----  ----  ----   -------------
-    localparam DP_ADD   = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
-    localparam DP_ADDI  = {1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
-    localparam DP_AND   = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
-    localparam DP_ANDI  = {1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
-    localparam DP_AUIPC = {1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_Unknown};
+    //                     OperandASel
+    //                     |     OperandBSel
+    //                     |     |     RegWrDataSel
+    //                     |     |     |      RegWrEnable
+    //                     |     |     |      |     MemWrEnable
+    //                     |     |     |      |     |     PCNextSel
+    //                     |     |     |      |     |     |     
+    //                     |     |     |      |     |     |      AluControl
+    //                     |     |     |      |     |     |      |
+    //                     ----  ----  -----  ----  ----  ----   -------------
+    localparam DP_ADD   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
+    localparam DP_ADDI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
+    localparam DP_AND   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
+    localparam DP_ANDI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
+    localparam DP_AUIPC = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_ADD    };
    
-    localparam DP_BEQ   = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_BGE   = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_BGEU  = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_BLT   = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_BLTU  = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_BNE   = {1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BEQ   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BGE   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BGEU  = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BLT   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BLTU  = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_BNE   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
 
-    localparam DP_JAL   = {1'b0, wrPC4, 1'b1, 1'b0, pcOFS, AluOp_Unknown};
-    localparam DP_JALR  = {1'b0, wrPC4, 1'b1, 1'b0, pcIND, AluOp_Unknown};
+    localparam DP_JAL   = {1'b0, 1'b0, wrPC4, 1'b1, 1'b0, pcOFS, AluOp_Unknown};
+    localparam DP_JALR  = {1'b0, 1'b0, wrPC4, 1'b1, 1'b0, pcIND, AluOp_Unknown};
 
-    localparam DP_LUI   = {1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_Unknown};
-    localparam DP_LB    = {1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
-    localparam DP_LH    = {1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
-    localparam DP_LW    = {1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
+    localparam DP_LUI   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_Unknown};
+    localparam DP_LB    = {1'b0, 1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
+    localparam DP_LH    = {1'b0, 1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
+    localparam DP_LW    = {1'b0, 1'b1, wrMEM, 1'b1, 1'b0, pcPP4, AluOp_ADD    };
 
-    localparam DP_OR    = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_OR     };
-    localparam DP_ORI   = {1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_OR     };
+    localparam DP_OR    = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_OR     };
+    localparam DP_ORI   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_OR     };
 
-    localparam DP_SB    = {1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
-    localparam DP_SH    = {1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
-    localparam DP_SLT   = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
-    localparam DP_SLTI  = {1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
-    localparam DP_SLTIU = {1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLTU   };
-    localparam DP_SLTU  = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLTU   };
-    localparam DP_SUB   = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SUB    };
-    localparam DP_SW    = {1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
+    localparam DP_SB    = {1'b0, 1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
+    localparam DP_SH    = {1'b0, 1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
+    localparam DP_SLT   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
+    localparam DP_SLTI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
+    localparam DP_SLTIU = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLTU   };
+    localparam DP_SLTU  = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLTU   };
+    localparam DP_SUB   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SUB    };
+    localparam DP_SW    = {1'b0, 1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
 
-    localparam DP_XOR   = {1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_XOR    };
-    localparam DP_XORI  = {1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
+    localparam DP_XOR   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_XOR    };
+    localparam DP_XORI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
 
 
-    logic [11:0] dp;
+    logic [12:0] dp;
     logic br;
+   
    
     // Evalua les senyals de control de sortida
     //
@@ -86,6 +88,7 @@ module Controller_RV32I (
     assign o_RegWrEnable  = dp[8];
     assign o_RegWrDataSel = dp[10:9];
     assign o_OperandBSel  = dp[11];
+    assign o_OperandASel  = dp[12];
     assign o_PCNextSel    = br ? dp[6:5] : pcPP4;
 
     // Evalua ls condicios de salt per les instruccions Branch y Jump
