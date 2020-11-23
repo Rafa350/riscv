@@ -20,10 +20,10 @@ module Controller_RV32I (
     output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
 
 
-    localparam  wrALU = 2'b00;           // Escriu el valor de la ALU 
+    localparam  wrALU = 2'b00;           // Escriu el valor de la ALU
     localparam  wrMEM = 2'b01;           // Escriu el valor de la memoria
     localparam  wrPC4 = 2'b10;           // Escriu el valor de PC+4
-    
+
     localparam  pcPP4 = 2'b00;           // PC = PC + 4
     localparam  pcOFS = 2'b01;           // PC = PC + offset
     localparam  pcIND = 2'b10;           // PC = [RS1] + offset
@@ -36,7 +36,7 @@ module Controller_RV32I (
     //                     |     |     |      RegWrEnable
     //                     |     |     |      |     MemWrEnable
     //                     |     |     |      |     |     PCNextSel
-    //                     |     |     |      |     |     |     
+    //                     |     |     |      |     |     |
     //                     |     |     |      |     |     |      AluControl
     //                     |     |     |      |     |     |      |
     //                     ----  ----  -----  ----  ----  ----   -------------
@@ -45,7 +45,7 @@ module Controller_RV32I (
     localparam DP_AND   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
     localparam DP_ANDI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_AND    };
     localparam DP_AUIPC = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcPP4, AluOp_ADD    };
-   
+
     localparam DP_BEQ   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
     localparam DP_BGE   = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
     localparam DP_BGEU  = {1'b0, 1'b0, wrALU, 1'b0, 1'b0, pcOFS, AluOp_Unknown};
@@ -79,8 +79,8 @@ module Controller_RV32I (
 
     logic [12:0] dp;
     logic br;
-   
-   
+
+
     // Evalua les senyals de control de sortida
     //
     assign o_AluControl   = AluOp'(dp[4:0]);
@@ -91,22 +91,22 @@ module Controller_RV32I (
     assign o_OperandASel  = dp[12];
     assign o_PCNextSel    = br ? dp[6:5] : pcPP4;
 
-    // Evalua ls condicios de salt per les instruccions Branch y Jump
+    // Evalua les condicions de salt per les instruccions Branch y Jump
     //
     always_comb begin
-        unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0], i_IsEQ, i_IsLT})
-            /*  BEQ   */ 19'b1100011_000_1100011_1_?: br = 1;
-            /*  BGE   */ 19'b1100011_101_1100011_?_0: br = 1;
-            /*  BGEU  */ 19'b1100011_111_1100011_?_0: br = 1;
-            /*  BLT   */ 19'b1100011_100_1100011_?_1: br = 1;
-            /*  BLTU  */ 19'b1100011_110_1100011_?_1: br = 1;
-            /*  BNE   */ 19'b1100011_001_1100011_0_?: br = 1;
-            /*  JAL   */ 19'b???????_???_1101111_?_?: br = 1;
-            /*  JALR  */ 19'b???????_000_1100111_?_?: br = 1;
+        unique casez ({i_Inst[14:12], i_Inst[6:0], i_IsEQ, i_IsLT})
+            /*  BEQ   */ 12'b000_1100011_1_?: br = 1;
+            /*  BGE   */ 12'b101_1100011_?_0: br = 1;
+            /*  BGEU  */ 12'b111_1100011_?_0: br = 1;
+            /*  BLT   */ 12'b100_1100011_?_1: br = 1;
+            /*  BLTU  */ 12'b110_1100011_?_1: br = 1;
+            /*  BNE   */ 12'b001_1100011_0_?: br = 1;
+            /*  JAL   */ 12'b???_1101111_?_?: br = 1;
+            /*  JALR  */ 12'b000_1100111_?_?: br = 1;
             default                                 : br = 0;
         endcase
     end
-    
+
     // Evalua el datapath coresponent a cada instruccio
     //
     always_comb begin

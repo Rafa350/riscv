@@ -1,6 +1,6 @@
 module HalfAdder
 #(
-    parameter WIDTH          = 32)       // Amplada de dades
+    parameter WIDTH = 32)                // Amplada de dades
 (
     input  logic [WIDTH-1:0] i_OperandA, // Operand A
     input  logic [WIDTH-1:0] i_OperandB, // Operand B

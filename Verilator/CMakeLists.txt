@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(simx)
+project(cpu-riscv-verilator
+    VERSION 1.0
+    DESCRIPTION "CPU-RISC-V: Verilator"
+    LANGUAGES C CXX)
 
 
 # Localitza Verilator
 #
 set(VERILATOR_ROOT /home/rafael/Projectes/verilator)
 find_package(
-    verilator 
+    verilator
     HINTS $ENV{VERILATOR_ROOT} ${VERILATOR_ROOT}
 )
 if (NOT verilator_FOUND)
@@ -25,7 +28,7 @@ set(FIRMWARE_DIR       ${PROJECT_SOURCE_DIR}/../Firmware/build)
 set(HDL_INCLUDE_DIR    ${PROJECT_SOURCE_DIR}/../HDL)
 
 
-# El executable 
+# El executable
 #
 add_executable(simx)
 
@@ -39,7 +42,7 @@ add_custom_command(
 )
 
 
-# Els fitxers font 
+# Els fitxers font
 
 target_sources(simx
     PRIVATE ${PROJECT_SOURCE_DIR}/sim_main.cpp
@@ -54,7 +57,7 @@ target_sources(simx
 target_include_directories(simx
     PRIVATE .
     PRIVATE ${VERILATOR_ROOT}/include
-    PRIVATE ${SIMLIB_INCLUDE_DIR}    
+    PRIVATE ${SIMLIB_INCLUDE_DIR}
 )
 
 
@@ -64,6 +67,6 @@ verilate(simx
     TOP_MODULE top
     TRACE_FST
     INCLUDE_DIRS ${HDL_INCLUDE_DIR} ${HDL_INCLUDE_DIR}/Base
-    VERILATOR_ARGS 
+    VERILATOR_ARGS
     SOURCES verilator_top.sv
 )

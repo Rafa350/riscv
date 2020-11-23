@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sun Nov 22 18:42:42 2020
+[*] Mon Nov 23 17:33:14 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.fst"
-[dumpfile_mtime] "Sun Nov 22 18:28:27 2020"
-[dumpfile_size] 6206
+[dumpfile_mtime] "Mon Nov 23 17:32:01 2020"
+[dumpfile_size] 5954
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.gtkw"
-[timestart] 3
+[timestart] 0
 [size] 1920 1017
 [pos] -1 -1
-*-4.518126 48 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.518126 139 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.CPU.
@@ -17,7 +17,7 @@
 [sst_width] 273
 [signals_width] 252
 [sst_expanded] 1
-[sst_vpaned_height] 595
+[sst_vpaned_height] 364
 @200
 -System clock
 @28
@@ -47,13 +47,11 @@ TOP.top.ROM.o_RdData[31:0]
 TOP.top.CPU.ID.Regs.i_RdAddrA[4:0]
 TOP.top.CPU.ID.Regs.o_RdDataA[31:0]
 TOP.top.CPU.ID.Regs.i_RdAddrB[4:0]
-@23
 TOP.top.CPU.ID.Regs.o_RdDataB[31:0]
-@22
-TOP.top.CPU.ID.Regs.i_WrAddr[4:0]
 @28
 TOP.top.CPU.ID.Regs.i_WrEnable
 @22
+TOP.top.CPU.ID.Regs.i_WrAddr[4:0]
 TOP.top.CPU.ID.Regs.i_WrData[31:0]
 @200
 -
@@ -61,6 +59,21 @@ TOP.top.CPU.ID.Regs.i_WrData[31:0]
 @24
 TOP.top.CPU.FwdSwitch.i_DataASelect[1:0]
 TOP.top.CPU.FwdSwitch.i_DataBSelect[1:0]
+@200
+-
+-ID stage
+@28
+TOP.top.CPU.ID.Comp_EQ
+TOP.top.CPU.ID.Comp_LT
+@2022
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
+TOP.top.CPU.ID.Dec_InstOP[6:0]
+@29
+TOP.top.CPU.ID.Ctrl.br
+@28
+TOP.top.CPU.ID.Ctrl_PCNextSel[1:0]
+@22
+TOP.top.CPU.ID.o_PCNext[9:0]
 @200
 -
 -IFID pipeline

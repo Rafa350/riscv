@@ -1,16 +1,38 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-message("---------------------")
-message(${CMAKE_CURRENT_SOURCE_DIR})
-message(${CMAKE_CURRENT_BINARY_DIR})
-message("---------------------")
+set(TOOLCHAIN_BIN /opt/riscv32/bin)
+set(TOOLCHAIN_PREFIX riscv32-unknown-elf-)
 
-set(TOOLCHAIN_FILE riscv-toolchain.cmake)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${TOOLCHAIN_FILE})
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR riscv)
+set(CMAKE_CROSSCOMPILING 1)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_BIN}/${TOOLCHAIN_PREFIX}g++)
+set(CMAKE_C_COMPILER ${TOOLCHAIN_BIN}/${TOOLCHAIN_PREFIX}gcc)
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_BIN}/${TOOLCHAIN_PREFIX}as)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 enable_language(ASM C CXX)
 
+find_program(CMD_OBJCOPY
+    ${TOOLCHAIN_PREFIX}objcopy
+    PATH ${TOOLCHAIN_BIN}
+)    
+
+find_program(CMD_OBJDUMP
+    ${TOOLCHAIN_PREFIX}objdump
+    PATH ${TOOLCHAIN_BIN}
+)    
+
+find_program(CMD_SIZE
+    ${TOOLCHAIN_PREFIX}size
+    PATH ${TOOLCHAIN_BIN}
+)    
+
+
 message("------------------------------------------------------------")
-message("  Toochain configuration file: ${TOOLCHAIN_CFG_FILE}")
+message("  Toochain configuration file: ${CMAKE_TOOLCHAIN_FILE}")
 message("------------------------------------------------------------")
 message("  RISC-V Toolchain")
 message("    gcc     - " ${CMAKE_C_COMPILER})

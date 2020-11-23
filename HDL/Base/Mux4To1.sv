@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------
 //
-//       Multiplexor de 2 a 1
+//       Multiplexor de 4 a 1
 //
 //       Parametres:
 //            WIDTH     : Amplada del canal de dades
