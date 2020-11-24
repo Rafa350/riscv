@@ -213,40 +213,34 @@ module ProcessorPP
     
     logic [DATA_WIDTH-1:0] EX_Result;
     logic [DATA_WIDTH-1:0] EX_MemWrData;
-    logic [DATA_WIDTH-1:0] FwdSwitch_DataA;
-    logic [DATA_WIDTH-1:0] FwdSwitch_DataB;
     
-    ForwardSwitch #(
-        .DATA_WIDTH(DATA_WIDTH))
-    FwdSwitch (
-        .i_DataASelect (FwdCtrl_RS1Sel),
-        .i_DataBSelect (FwdCtrl_RS2Sel),
-        .i_DataA       (IDEX_DataA),
-        .i_DataB       (IDEX_DataB),
-        .i_DataT1      (EXMEM_Result),
-        .i_DataT2      (MEMWB_RegWrData),
-        .o_DataA       (FwdSwitch_DataA),
-        .o_DataB       (FwdSwitch_DataB));
-
     StageEX #(
         .DATA_WIDTH (DATA_WIDTH),
         .ADDR_WIDTH (ADDR_WIDTH),
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH))
     EX (
-        .i_Clock          (i_Clock),
-        .i_Reset          (i_Reset),
+        .i_Clock             (i_Clock),
+        .i_Reset             (i_Reset),
         
-        .i_DataA          (FwdSwitch_DataA),
-        .i_DataB          (FwdSwitch_DataB),
-        .i_InstIMM        (IDEX_InstIMM),
-        .i_PC             (IDEX_PC),
-        .i_OperandASel    (IDEX_OperandASel),
-        .i_OperandBSel    (IDEX_OperandBSel),
-        .i_AluControl     (IDEX_AluControl),
+        .i_DataA             (IDEX_DataA),
+        .i_DataB             (IDEX_DataB),
+        .i_InstIMM           (IDEX_InstIMM),
+        .i_InstRS1           (IDEX_InstRS1),
+        .i_InstRS2           (IDEX_InstRS2),
+        .i_PC                (IDEX_PC),
+        .i_OperandASel       (IDEX_OperandASel),
+        .i_OperandBSel       (IDEX_OperandBSel),
+        .i_AluControl        (IDEX_AluControl),
+        .i_EXMEM_RegWrAddr   (EXMEM_RegWrAddr),
+        .i_EXMEM_RegWrEnable (EXMEM_RegWrEnable),
+        .i_EXMEM_Data        (EXMEM_Result),
+        .i_MEMWB_RegWrAddr   (MEMWB_RegWrAddr),
+        .i_MEMWB_RegWrEnable (MEMWB_RegWrEnable),
+        .i_MEMWB_Data        (MEMWB_RegWrData),
 
-        .o_Result         (EX_Result),
-        .o_MemWrData      (EX_MemWrData));
+        .o_Result            (EX_Result),
+        .o_MemWrData         (EX_MemWrData));
         
         
     // ------------------------------------------------------------------------
@@ -367,27 +361,7 @@ module ProcessorPP
     // Stage WB
     // Es teoric, en la practica no te cap implementacio
     // ------------------------------------------------------------------------
-       
-        
-    // ------------------------------------------------------------------------
-    // Control del forwading
-    // Obte la ubicacio dels valors dels registres en el pipeline.
-    // ------------------------------------------------------------------------
 
-    logic [1:0] FwdCtrl_RS1Sel, 
-                FwdCtrl_RS2Sel;
-                    
-    ForwardController #(
-        .REG_WIDTH (REG_WIDTH))
-    FwdCtrl (
-        .i_RequiredRS1    (IDEX_InstRS1),
-        .i_RequiredRS2    (IDEX_InstRS2),
-        .i_T1_RegWrAddr   (EXMEM_RegWrAddr),
-        .i_T1_RegWrEnable (EXMEM_RegWrEnable),
-        .i_T2_RegWrAddr   (MEMWB_RegWrAddr),
-        .i_T2_RegWrEnable (MEMWB_RegWrEnable),
-        .o_RS1Sel         (FwdCtrl_RS1Sel),
-        .o_RS2Sel         (FwdCtrl_RS2Sel));
                   
 endmodule
 
