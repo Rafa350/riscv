@@ -13,7 +13,7 @@ module StageID
 
     // Senyals d'entrada de l'etapa anterior.
     input  logic [31:0]           i_Inst,         // Instruccio
-    input  logic [PC_WIDTH-1:0]   i_PC,           // Adressa de la instruccio       
+    input  logic [PC_WIDTH-1:0]   i_PC,           // Adressa de la instruccio      
     
     // Senyals d'entrada de les etapes posteriors.
     input  logic [REG_WIDTH-1:0]  i_RegWrAddr,    // Registre a escriure
@@ -85,6 +85,35 @@ module StageID
         .o_RD   (Dec_InstRD),
         .o_IMM  (Dec_InstIMM));
     
+    
+    // ------------------------------------------------------------------------
+    // Controlador de forwarding pel comparador
+    // ------------------------------------------------------------------------
+    
+    /*
+    BranchForwardController #(
+        .REG_WIDTH (REG_WIDTH))
+    BranchFwdCtrl(
+        .i_InstRS1           (Dec_InstRS1),
+        .i_InstRS2           (Dec_InstRS2),
+        .i_IDEX_RegWrAddr    (IDEX_RegWrAddr),
+        .i_IDEX_RegWrEnable  (IDEX_RegWrEnable),
+        .i_EXMEM_RegWrAddr   (EXMEM_RegWrAddr),
+        .i_EXMEM_RegWrEnable (EXMEM_RegWrEnable),
+        .i_MEMWB_RegWrAddr   (MEMWB_RegWrAddr),
+        .i_MEMWB_RegWrEnable (MEMWB_RegWrEnable));
+        
+    Mux4To2 #(
+        .WIDTH (DATA_WIDTH))
+    DataASelector (
+    );
+        
+    Mux4To2 #(
+        .WIDTH (DATA_WIDTH))
+    DataBSelector (
+    );
+
+    */
     
     // ------------------------------------------------------------------------
     // Comparador per les instruccions de salt. 

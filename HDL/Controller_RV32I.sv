@@ -66,6 +66,7 @@ module Controller_RV32I (
 
     localparam DP_SB    = {1'b0, 1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
     localparam DP_SH    = {1'b0, 1'b1, wrALU, 1'b0, 1'b1, pcPP4, AluOp_ADD    };
+    localparam DP_SLL   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLL    };
     localparam DP_SLT   = {1'b0, 1'b0, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
     localparam DP_SLTI  = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLT    };
     localparam DP_SLTIU = {1'b0, 1'b1, wrALU, 1'b1, 1'b0, pcPP4, AluOp_SLTU   };
@@ -137,6 +138,7 @@ module Controller_RV32I (
 
             /*  SB    */ 17'b???????_000_0100011: dp = DP_SB;
             /*  SH    */ 17'b???????_001_0100011: dp = DP_SH;
+            /*  SLL   */ 17'b0000000_001_0110011: dp = DP_SLL;
             /*  SLT   */ 17'b0000000_010_0110011: dp = DP_SLT;
             /*  SLTI  */ 17'b???????_010_0010011: dp = DP_SLTI;
             /*  SLTIU */ 17'b???????_011_0010011: dp = DP_SLTIU;

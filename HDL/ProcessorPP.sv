@@ -78,9 +78,6 @@ module ProcessorPP
         .i_DbgTag (DbgTag),
         .o_DbgTag (IFID_DbgTag),
         
-        .i_Stall  (0),
-        .i_Flush  (0),
-        
         .i_PC     (IF_PC),
         .i_Inst   (IF_Inst),
         
@@ -169,12 +166,10 @@ module ProcessorPP
     IDEX (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
+        .i_Flush        (0),
         
         .i_DbgTag       (IFID_DbgTag),
         .o_DbgTag       (IDEX_DbgTag),
-
-        .i_Stall        (0),
-        .i_Flush        (0),
 
         .i_InstOP       (ID_InstOP),
         .i_InstRS1      (ID_InstRS1),
@@ -265,15 +260,13 @@ module ProcessorPP
     EXMEM (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
+        .i_Flush        (0),
         
         .i_DbgTag       (IDEX_DbgTag),
         .o_DbgTag       (EXMEM_DbgTag),
         
         .i_PC           (IDEX_PC),
         .i_Result       (EX_Result),
-
-        .i_Stall        (0),
-        .i_Flush        (0),
 
         .i_InstOP       (IDEX_InstOP),
         .i_MemWrEnable  (IDEX_MemWrEnable),
@@ -339,13 +332,11 @@ module ProcessorPP
     MEMWB (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),
+        .i_Flush        (0),
         
         .i_DbgTag      (EXMEM_DbgTag),
         .o_DbgTag      (MEMWB_DbgTag),
         
-        .i_Stall       (0),
-        .i_Flush       (0),
-
         .i_InstOP      (EXMEM_InstOP),
         .i_RegWrAddr   (EXMEM_RegWrAddr),
         .i_RegWrEnable (EXMEM_RegWrEnable),
@@ -359,7 +350,8 @@ module ProcessorPP
            
     // ------------------------------------------------------------------------
     // Stage WB
-    // Es teoric, en la practica no te cap implementacio
+    // Es teoric, en la practica no te cap implementacio, ja que es la part
+    // d'escriptura en els registres, que es troben en el stage ID.
     // ------------------------------------------------------------------------
 
                   

@@ -6,20 +6,16 @@ module PipelineIFID
     parameter REG_WIDTH  = 5) 
 (
     // Senyals de control
-    input  logic                i_Clock,
-    input  logic                i_Reset,
+    input  logic                i_Clock,  // Clock
+    input  logic                i_Reset,  // Reset
     
     // Senyals de depuracio
-    input  logic [2:0]          i_DbgTag,
+    input  logic [2:0]          i_DbgTag, // Etiqusta de depuracio
     output logic [2:0]          o_DbgTag,                
 
-    // Senyals de control del pipeline  
-    input  logic                i_Flush,
-    input  logic                i_Stall,
-
     // Senyals d'entrada al pipeline  
-    input logic  [PC_WIDTH-1:0] i_PC,
-    input logic  [31:0]         i_Inst,
+    input  logic [PC_WIDTH-1:0] i_PC,     // Contador d eprograma
+    input  logic [31:0]         i_Inst,   // Instruccio
     
     // Senyals de sortiuda del pipeline
     output logic [PC_WIDTH-1:0] o_PC,
@@ -27,7 +23,7 @@ module PipelineIFID
 
 
     always_ff @(posedge i_Clock) begin
-        o_PC     <= i_Reset ?    -4 : i_PC;
+        o_PC     <= i_Reset ? -4    : i_PC;
         o_Inst   <= i_Reset ? 32'b0 : i_Inst;
         
         o_DbgTag <= i_DbgTag;
