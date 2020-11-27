@@ -6,7 +6,7 @@ module Program
     input  logic [ADDR_WIDTH-1:0] i_Addr,
     output logic [INST_WIDTH-1:0] o_Inst);
 
-    localparam SIZE = 24;
+    localparam SIZE = 32;
         
     logic [7:0] Data[0:SIZE-1];
     

@@ -19,8 +19,15 @@ module StageID
     input  logic [REG_WIDTH-1:0]  i_RegWrAddr,    // Registre a escriure
     input  logic [DATA_WIDTH-1:0] i_RegWrData,    // El resultat a escriure
     input  logic                  i_RegWrEnable,  // Autoritzacio d'escriptura del registre
+
+    input  logic                  i_IDEX_RegWrEnable,
+    input  logic [REG_WIDTH-1:0]  i_IDEX_RegWrAddr,
+    input  logic [1:0]            i_IDEX_RegWrDataSel,
+    input  logic [DATA_WIDTH-1:0] i_EX_RegWrData,
+    input  logic                  i_EXMEM_RegWrEnable,
+    input  logic [REG_WIDTH-1:0]  i_EXMEM_RegWrAddr,
+    input  logic [DATA_WIDTH-1:0] i_MEM_RegWrData,
        
-    // Senyals de sortida per la seguent etapa.
     output logic [6:0]            o_InstOP,       // Codi d'operacio de la instruccio
     output logic [REG_WIDTH-1:0]  o_InstRS1,      // Registre RS1 de la instruccio
     output logic [REG_WIDTH-1:0]  o_InstRS2,      // Registre RS2 de la instrruccio
@@ -90,30 +97,46 @@ module StageID
     // Controlador de forwarding pel comparador
     // ------------------------------------------------------------------------
     
-    /*
-    BranchForwardController #(
+    logic [1:0]            IDFwdCtrl_DataASel, 
+                           IDFwdCtrl_DataBSel;
+    logic [DATA_WIDTH-1:0] DataASelector_Output,
+                           DataBSelector_Output;
+    
+    IDForwardController #(
         .REG_WIDTH (REG_WIDTH))
-    BranchFwdCtrl(
+    IDFwdCtrl(
         .i_InstRS1           (Dec_InstRS1),
         .i_InstRS2           (Dec_InstRS2),
-        .i_IDEX_RegWrAddr    (IDEX_RegWrAddr),
-        .i_IDEX_RegWrEnable  (IDEX_RegWrEnable),
-        .i_EXMEM_RegWrAddr   (EXMEM_RegWrAddr),
-        .i_EXMEM_RegWrEnable (EXMEM_RegWrEnable),
-        .i_MEMWB_RegWrAddr   (MEMWB_RegWrAddr),
-        .i_MEMWB_RegWrEnable (MEMWB_RegWrEnable));
-        
-    Mux4To2 #(
+        .i_IDEX_RegWrAddr    (i_IDEX_RegWrAddr),
+        .i_IDEX_RegWrEnable  (i_IDEX_RegWrEnable),
+        .i_IDEX_RegWrDataSel (i_IDEX_RegWrDataSel),
+        .i_EXMEM_RegWrAddr   (i_EXMEM_RegWrAddr),
+        .i_EXMEM_RegWrEnable (i_EXMEM_RegWrEnable),
+        .i_MEMWB_RegWrAddr   (i_RegWrAddr),
+        .i_MEMWB_RegWrEnable (i_RegWrEnable),
+        .o_DataASel          (IDFwdCtrl_DataASel),
+        .o_DataBSel          (IDFwdCtrl_DataBSel));
+    
+    Mux4To1 #(
         .WIDTH (DATA_WIDTH))
     DataASelector (
-    );
+        .i_Select (IDFwdCtrl_DataASel),
+        .i_Input0 (Regs_DataA),
+        .i_Input1 (i_EX_RegWrData),
+        .i_Input2 (i_MEM_RegWrData),
+        .i_Input3 (i_RegWrData),
+        .o_Output (DataASelector_Output));
         
-    Mux4To2 #(
+    Mux4To1 #(
         .WIDTH (DATA_WIDTH))
     DataBSelector (
-    );
+        .i_Select (IDFwdCtrl_DataBSel),
+        .i_Input0 (Regs_DataB),
+        .i_Input1 (i_EX_RegWrData),
+        .i_Input2 (i_MEM_RegWrData),
+        .i_Input3 (i_RegWrData),
+        .o_Output (DataBSelector_Output));
 
-    */
     
     // ------------------------------------------------------------------------
     // Comparador per les instruccions de salt. 
@@ -128,8 +151,8 @@ module StageID
     Comparer #(
         .WIDTH (DATA_WIDTH))
     Comp(
-        .i_InputA   (Regs_DataA),
-        .i_InputB   (Regs_DataB),
+        .i_InputA   (DataASelector_Output),
+        .i_InputB   (DataBSelector_Output),
         .i_Unsigned (0),
         .o_EQ       (Comp_EQ),
         .o_LT       (Comp_LT));
@@ -162,7 +185,7 @@ module StageID
                
         
     // ------------------------------------------------------------------------
-    // Selector de l'adressa de salt
+    // Evaluacio de l'adressa de salt
     // ------------------------------------------------------------------------
     
     logic [PC_WIDTH-1:0] PCAlu_PC;
@@ -195,6 +218,12 @@ module StageID
         o_PCNext       = PCAlu_PC;
     end
     
+    
 endmodule
+
+
+
+
+
 
     

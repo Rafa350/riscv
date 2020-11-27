@@ -1,6 +1,9 @@
 module HazardDetector(
-    output logic [1:0] o_DataASelect,
-    output logic [1:0] o_DataBSelect);
+
+    output logic o_IFID_Stall,
+    output logic o_IDEX_Flush,
+    output logic o_EXMEM_Flush,
+    output logic o_MEMWB_Flush);
 
 
 endmodule

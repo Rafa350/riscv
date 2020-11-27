@@ -48,6 +48,7 @@ target_sources(simx
     PRIVATE ${PROJECT_SOURCE_DIR}/sim_main.cpp
     PRIVATE ${PROJECT_SOURCE_DIR}/sim_dis.cpp
     PRIVATE ${PROJECT_SOURCE_DIR}/sim_ram.cpp
+    PRIVATE ${PROJECT_SOURCE_DIR}/sim_access.cpp
     PRIVATE ${SIMLIB_SOURCE_DIR}/simMemory.cpp
 )
 

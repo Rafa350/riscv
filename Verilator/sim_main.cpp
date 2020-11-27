@@ -16,7 +16,7 @@
 // de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps 
 // de simulacio (simTime)
 //
-#define CLOCK_MAX             400  // Nombre de ticks a simular
+#define CLOCK_MAX             200  // Nombre de ticks a simular
 #define CLOCK_START             0  // Tick per iniciar clk
 #define CLOCK_TICKS            10  // Tics per cicle clk
 
@@ -31,6 +31,9 @@ class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
        
     private:
         RAM *ram;
+        
+    private:
+        void showPipeline();
         
     public:
         CPUTestbench(RAM *ram);
@@ -58,6 +61,7 @@ void CPUTestbench::run() {
     std::string traceFileName(TRACE_FILE_NAME);
 	
     Vtop *top = getTop();
+    
     top->i_Clock = 0;
     top->i_Reset = 0;
 
@@ -98,8 +102,11 @@ void CPUTestbench::run() {
         
         // Desensambla l'instruccio actual
         //        
-        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0)) 
+        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))  {
             disassembly(top->o_DbgPgmAddr, top->o_DbgPgmInst);
+            showPipeline();
+        }
+        
 
     } while (nextTick() && (tick < CLOCK_MAX));
     
@@ -114,6 +121,57 @@ void CPUTestbench::run() {
 	
     writeConsole("*** Simulation end.\n");
     writeConsole("*** Exit.\n");
+}
+
+
+/// ----------------------------------------------------------------------
+/// \brief    Mostra el pipeline
+///
+void CPUTestbench::showPipeline() {
+    
+    char buffer[80];
+    CPUAccess *ca = new CPUAccess(getTop());
+    
+    sprintf(buffer, "               +----------+----------+----------+----------+\n");
+    writeConsole(buffer);
+    sprintf(buffer, "               | IF/ID    | ID/EX    | EX/MEM   | MEM/WB   |\n");
+    writeConsole(buffer);
+
+    sprintf(buffer, "+--------------+----------+----------+----------+----------+\n");
+    writeConsole(buffer);
+    sprintf(buffer, "|           PC | %8.8X |          |          |          |\n", ca->getIFID_PC());
+    writeConsole(buffer);
+    sprintf(buffer, "|         Inst | %8.8X |          |          |          |\n", ca->getIFID_Inst());
+    writeConsole(buffer);
+
+    sprintf(buffer, "+--------------+----------+----------+----------+----------+\n");
+    writeConsole(buffer);
+    sprintf(buffer, "|           OP |          | %2.2X       |          |      |\n", ca->getIDEX_OP());
+    writeConsole(buffer);
+    sprintf(buffer, "|          RS1 |          | %2.2X       |          |      |\n", ca->getIDEX_RS1());
+    writeConsole(buffer);
+    sprintf(buffer, "|          RS2 |          | %2.2X       |          |      |\n", ca->getIDEX_RS2());
+    writeConsole(buffer);
+    sprintf(buffer, "|          IMM |          | %8.8X |          |         |\n", ca->getIDEX_IMM());
+    writeConsole(buffer);
+
+    sprintf(buffer, "+--------------+----------+----------+----------+----------+\n");
+    writeConsole(buffer);
+    sprintf(buffer, "|        DataA |          | %8.8X |          |         |\n", ca->getIDEX_DataA());
+    writeConsole(buffer);
+    sprintf(buffer, "|        DataB |          | %8.8X |          |         |\n", ca->getIDEX_DataB());
+    writeConsole(buffer);
+    sprintf(buffer, "|    RegWrAddr |          | %2.2X       | %2.2X       |      |\n", ca->getIDEX_RegWrAddr(), ca->getEXMEM_RegWrAddr());
+    writeConsole(buffer);
+    sprintf(buffer, "|  RegWrEnable |          | %X        | %X        |      |\n", ca->getIDEX_RegWrEnable(), ca->getEXMEM_RegWrEnable());
+    writeConsole(buffer);
+    sprintf(buffer, "| RegWrDataSel |          | %X        | %X        |      |\n", ca->getIDEX_RegWrDataSel(), ca->getEXMEM_RegWrDataSel());
+    writeConsole(buffer);
+    sprintf(buffer, "+--------------+----------+----------+----------+----------+\n");
+    writeConsole(buffer);
+    
+    
+    delete ca;
 }
 
 

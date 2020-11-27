@@ -21,8 +21,9 @@ module StageIF
     // Control del PC
     // ------------------------------------------------------------------------
         
-    assign o_PC = i_PCNext;
+    assign o_PC      = i_PCNext;
     assign o_PgmAddr = o_PC; 
-    assign o_Inst = i_PgmInst;
+    assign o_Inst    = i_PgmInst;
       
+         
 endmodule
