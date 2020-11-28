@@ -18,7 +18,7 @@ module PipelineIFID
     input  logic [PC_WIDTH-1:0] i_PC,     // Contador d eprograma
     input  logic [31:0]         i_Inst,   // Instruccio
     
-    // Senyals de sortiuda del pipeline
+    // Senyals de sortida del pipeline
     output logic [PC_WIDTH-1:0] o_PC,
     output logic [31:0]         o_Inst);
 

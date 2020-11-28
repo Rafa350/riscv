@@ -1,23 +1,24 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Fri Nov 27 16:56:50 2020
+[*] Sat Nov 28 20:22:24 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.fst"
-[dumpfile_mtime] "Fri Nov 27 16:53:10 2020"
-[dumpfile_size] 6393
+[dumpfile_mtime] "Sat Nov 28 20:22:03 2020"
+[dumpfile_size] 6009
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.gtkw"
 [timestart] 0
 [size] 1920 1017
 [pos] -1 -1
-*-4.930773 78 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.930773 72 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.CPU.
 [treeopen] TOP.top.CPU.EX.
+[treeopen] TOP.top.CPU.ID.
 [sst_width] 273
-[signals_width] 252
+[signals_width] 354
 [sst_expanded] 1
-[sst_vpaned_height] 638
+[sst_vpaned_height] 416
 @200
 -System clock
 @28
@@ -66,17 +67,18 @@ TOP.top.CPU.IFID.o_Inst[31:0]
 -
 -ID stage
 @28
-TOP.top.CPU.ID.IDFwdCtrl_DataASel[1:0]
-@29
-TOP.top.CPU.ID.IDFwdCtrl_DataBSel[1:0]
-@28
 TOP.top.CPU.ID.Comp_EQ
 TOP.top.CPU.ID.Comp_LT
 @2022
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
 TOP.top.CPU.ID.Dec_InstOP[6:0]
+@24
+TOP.top.CPU.ID.FwdCtrl.o_DataASel[1:0]
+TOP.top.CPU.ID.FwdCtrl.o_DataBSel[1:0]
+@22
+TOP.top.CPU.ID.DataASelector_Output[31:0]
+TOP.top.CPU.ID.DataBSelector_Output[31:0]
 @28
-TOP.top.CPU.ID.Ctrl.br
 TOP.top.CPU.ID.Ctrl_PCNextSel[1:0]
 @22
 TOP.top.CPU.ID.o_PCNext[9:0]
@@ -100,14 +102,15 @@ TOP.top.CPU.IDEX.o_InstRS1[4:0]
 TOP.top.CPU.IDEX.o_InstRS2[4:0]
 [color] 3
 TOP.top.CPU.IDEX.o_DataA[31:0]
+@23
 [color] 3
 TOP.top.CPU.IDEX.o_DataB[31:0]
 @200
 -
--EX-stage
-@28
-TOP.top.CPU.EX.EXFwdCtrl_DataBSel[1:0]
-TOP.top.CPU.EX.EXFwdCtrl_DataASel[1:0]
+-EX stage
+@22
+TOP.top.CPU.EX.o_Result[31:0]
+TOP.top.CPU.EX.o_DataB[31:0]
 @200
 -
 -EXMEM pipeline
@@ -121,8 +124,6 @@ TOP.top.CPU.EXMEM.o_InstOP[6:0]
 @22
 [color] 2
 TOP.top.CPU.EXMEM.o_Result[31:0]
-[color] 2
-TOP.top.CPU.EXMEM.o_MemWrData[31:0]
 @28
 [color] 2
 TOP.top.CPU.EXMEM.o_MemWrEnable
@@ -134,6 +135,12 @@ TOP.top.CPU.EXMEM.o_RegWrAddr[4:0]
 TOP.top.CPU.EXMEM.o_RegWrDataSel[1:0]
 [color] 2
 TOP.top.CPU.EXMEM.o_RegWrEnable
+@200
+-
+-MEM stage
+@22
+TOP.top.CPU.MEM.i_Result[31:0]
+TOP.top.CPU.MEM.i_DataB[31:0]
 @200
 -
 -MEMWB pipeline
