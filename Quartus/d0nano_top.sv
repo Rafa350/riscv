@@ -37,8 +37,8 @@ module top(
     logic [PC_WIDTH-1:0]   PgmAddr;
     logic [31:0]           PgmInst;
        
-    assign Clock = ~KEY[0];
-    assign Reset = ~KEY[1];
+    assign Clock = CLOCK_50;
+    assign Reset = ~KEY[0];
 
     assign LED[7:0]      = MemWrData[7:0];
     
