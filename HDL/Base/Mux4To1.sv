@@ -29,7 +29,7 @@ module Mux4To1
     input  logic [WIDTH-1:0] i_Input3,
 
     output logic [WIDTH-1:0] o_Output);
-
+    
     always_comb
         unique case (i_Select)
             2'b00: o_Output = i_Input0;

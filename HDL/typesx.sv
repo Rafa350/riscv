@@ -1,4 +1,4 @@
-package types; 
+package Types; 
     
     typedef enum logic [6:0] {
         OpCode_LOAD     = 7'h03,
@@ -12,7 +12,7 @@ package types;
         OpCode_JALR     = 7'h67,
         OpCode_JAL      = 7'h6f,
         OpCode_SYSTEM   = 7'h73
-    } RV32I_OpCode;
+    } OpCode;
     
     typedef enum logic[4:0] {
         AluOp_Unknown = 5'h00,

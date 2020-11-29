@@ -30,6 +30,7 @@ module RegisterFile
     localparam NUM_REGS = 2**ADDR_WIDTH;
     localparam ZERO = {DATA_WIDTH{1'b0}};
     
+    
     logic [DATA_WIDTH-1:0] Data[1:NUM_REGS-1];
     
     always_ff @(posedge i_Clock)
@@ -51,5 +52,5 @@ module RegisterFile
         for (i = $left(Data); i <= 5; i++)
             $display("R[%2.2d]: %4.4X", i , Data[i]);
     end
-
+    
 endmodule

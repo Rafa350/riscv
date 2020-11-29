@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sat Nov 28 20:22:24 2020
+[*] Sun Nov 29 19:45:38 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.fst"
-[dumpfile_mtime] "Sat Nov 28 20:22:03 2020"
-[dumpfile_size] 6009
+[dumpfile_mtime] "Sun Nov 29 19:43:06 2020"
+[dumpfile_size] 6636
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\trace.gtkw"
 [timestart] 0
 [size] 1920 1017
 [pos] -1 -1
-*-4.930773 72 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.930773 158 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
 [treeopen] TOP.top.CPU.
@@ -18,7 +18,7 @@
 [sst_width] 273
 [signals_width] 354
 [sst_expanded] 1
-[sst_vpaned_height] 416
+[sst_vpaned_height] 638
 @200
 -System clock
 @28
@@ -69,17 +69,14 @@ TOP.top.CPU.IFID.o_Inst[31:0]
 @28
 TOP.top.CPU.ID.Comp_EQ
 TOP.top.CPU.ID.Comp_LT
-@2022
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\CPU\Verilator\waves_pp\inst_op_filter.txt
-TOP.top.CPU.ID.Dec_InstOP[6:0]
 @24
 TOP.top.CPU.ID.FwdCtrl.o_DataASel[1:0]
 TOP.top.CPU.ID.FwdCtrl.o_DataBSel[1:0]
 @22
 TOP.top.CPU.ID.DataASelector_Output[31:0]
 TOP.top.CPU.ID.DataBSelector_Output[31:0]
-@28
-TOP.top.CPU.ID.Ctrl_PCNextSel[1:0]
+@29
+TOP.top.CPU.ID.o_IsLoad
 @22
 TOP.top.CPU.ID.o_PCNext[9:0]
 @200
@@ -97,12 +94,7 @@ TOP.top.CPU.IDEX.o_InstIMM[31:0]
 TOP.top.CPU.IDEX.o_InstOP[6:0]
 @22
 [color] 3
-TOP.top.CPU.IDEX.o_InstRS1[4:0]
-[color] 3
-TOP.top.CPU.IDEX.o_InstRS2[4:0]
-[color] 3
 TOP.top.CPU.IDEX.o_DataA[31:0]
-@23
 [color] 3
 TOP.top.CPU.IDEX.o_DataB[31:0]
 @200

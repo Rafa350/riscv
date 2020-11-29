@@ -12,5 +12,9 @@ L1:
     ADDI    x4, x4, 1
     BNE     x3, x4, L1
 
+    LW      x1, 0(x0)
+    LW      x2, 4(x0)
+    ADD     x3, x1, x2
+
 L2:    
     J       L2

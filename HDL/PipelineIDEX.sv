@@ -17,8 +17,6 @@ module PipelineIDEX
     // Senyals d'entrada al pipeline
     input  logic [PC_WIDTH-1:0]   i_PC,           // PC
     input  logic [6:0]            i_InstOP,       // Instruccio OP
-    input  logic [REG_WIDTH-1:0]  i_InstRS1,      // Instruccio RS1
-    input  logic [REG_WIDTH-1:0]  i_InstRS2,      // Instruccio RS2
     input  logic [DATA_WIDTH-1:0] i_InstIMM,      // Valor inmediat de la instruccio
     input  logic [DATA_WIDTH-1:0] i_DataA,        // Operand A per la ALU
                                   i_DataB,        // Operand B per la ALU
@@ -33,8 +31,6 @@ module PipelineIDEX
     // Senyals de sortida del pipeline
     output logic [PC_WIDTH-1:0]   o_PC,
     output logic [6:0]            o_InstOP,
-    output logic [REG_WIDTH-1:0]  o_InstRS1,      // Instruccio RS1
-    output logic [REG_WIDTH-1:0]  o_InstRS2,      // Instruccio RS2
     output logic [DATA_WIDTH-1:0] o_InstIMM,      // Valor inmediat de la instruccio
     output logic [DATA_WIDTH-1:0] o_DataA,
                                   o_DataB,
@@ -50,8 +46,6 @@ module PipelineIDEX
     always_ff @(posedge i_Clock) begin
         o_PC           <= i_Reset ? {PC_WIDTH{1'b0}}   : i_PC;
         o_InstOP       <= i_Reset ? 7'b0               : i_InstOP;
-        o_InstRS1      <= i_Reset ? {REG_WIDTH{1'b0}}  : i_InstRS1;
-        o_InstRS2      <= i_Reset ? {REG_WIDTH{1'b0}}  : i_InstRS2;
         o_InstIMM      <= i_Reset ? {DATA_WIDTH{1'b0}} : i_InstIMM;
         o_DataA        <= i_Reset ? {DATA_WIDTH{1'b0}} : i_DataA;
         o_DataB        <= i_Reset ? {DATA_WIDTH{1'b0}} : i_DataB;

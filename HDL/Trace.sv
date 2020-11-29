@@ -8,13 +8,38 @@ module Trace
     input logic        i_Clock,
     input logic        i_Reset,
     input logic [31:0] i_Inst);
+    
+    
+    // ------------------------------------------------------------------------
+    // Decodificacio de la instruccio
+    // ------------------------------------------------------------------------
+    
+    logic [6:0]            Dec_OP;
+    logic [REG_WIDTH-1:0]  Dec_RS1,
+                           Dec_RS2,
+                           Dec_RD;
+    logic [DATA_WIDTH-1:0] Dec_IMM;                          
+    
+    // verilator lint_off PINMISSING
+    Decoder_RV32I #(
+        .REG_WIDTH (REG_WIDTH))
+    Dec (
+        .i_Inst (i_Inst),
+        .o_OP   (Dec_OP),
+        .o_RS1  (Dec_RS1),
+        .o_RS2  (Dec_RS2),
+        .o_RD   (Dec_RD),
+        .o_IMM  (Dec_IMM));
+    // verilator lint_on PINMISSING
 
     
     always_ff @(posedge i_Clock) begin
     end
     
     
-    function string getRegName(input logic [REG_WIDTH-1:0] regAddr, input logic abi);
+    function string getRegName(
+        input logic [REG_WIDTH-1:0] regAddr, 
+        input logic abi);
     
         if (abi) 
             unique case (regAddr)

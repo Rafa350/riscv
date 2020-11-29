@@ -20,11 +20,10 @@ module StageID
     input  logic                  i_WB_RegWrEnable,    // Autoritzacio d'escriptura del registre
     input  logic [DATA_WIDTH-1:0] i_WB_RegWrData,      // El resultat a escriure
     output logic [6:0]            o_InstOP,            // Codi d'operacio de la instruccio
-    output logic [REG_WIDTH-1:0]  o_InstRS1,           // Registre RS1 de la instruccio
-    output logic [REG_WIDTH-1:0]  o_InstRS2,           // Registre RS2 de la instrruccio
     output logic [DATA_WIDTH-1:0] o_InstIMM,           // Valor inmediat de la instruccio
     output logic [DATA_WIDTH-1:0] o_DataA,             // Dades A (rs1)
     output logic [DATA_WIDTH-1:0] o_DataB,             // Dades B (rs2)
+    output logic                  o_IsLoad,            // Indica instruccio Load
     output logic [REG_WIDTH-1:0]  o_RegWrAddr,         // Registre a escriure.
     output logic                  o_RegWrEnable,       // Habilita l'escriptura del registre
     output logic                  o_MemWrEnable,       // Habilita l'escritura en memoria
@@ -39,7 +38,35 @@ module StageID
 
 
     // ------------------------------------------------------------------------
-    // Control del datapath.
+    // Decodificador d'instruccions.
+    // Separa les instruccions en els seus components, calculant el valor
+    // IMM de la instruccio en funcio del seu tipus. Tambe indica el tipus
+    // d'instruccio.
+    // ------------------------------------------------------------------------
+
+    logic [6:0]            Dec_OP;
+    logic [REG_WIDTH-1:0]  Dec_RS1;
+    logic [REG_WIDTH-1:0]  Dec_RS2;
+    logic [REG_WIDTH-1:0]  Dec_RD;
+    logic [DATA_WIDTH-1:0] Dec_IMM;
+    logic                  Dec_IsLoad;
+    logic                  Dec_IsALU;
+
+    Decoder_RV32I #(
+        .REG_WIDTH (REG_WIDTH))
+    Dec (
+        .i_Inst   (i_Inst),
+        .o_OP     (Dec_OP),
+        .o_RS1    (Dec_RS1),
+        .o_RS2    (Dec_RS2),
+        .o_RD     (Dec_RD),
+        .o_IMM    (Dec_IMM),
+        .o_IsLoad (Dec_IsLoad),
+        .o_IsALU  (Dec_IsALU));
+
+
+    // ------------------------------------------------------------------------
+    // Controlador del datapath.
     // Genera les senyals de control de les rutes de dades.
     // ------------------------------------------------------------------------
 
@@ -63,29 +90,20 @@ module StageID
         .o_OperandASel  (DpCtrl_OperandASel),
         .o_OperandBSel  (DpCtrl_OperandBSel),
         .o_PCNextSel    (DpCtrl_PCNextSel));
-
-
+        
+        
     // ------------------------------------------------------------------------
-    // Decodificador d'instruccions.
-    // Separa les instruccions en els seus components, calculant el valor
-    // IMM de la instruccio en funcio del seu tipus
+    // Controllador per stalling.
     // ------------------------------------------------------------------------
 
-    logic [6:0]            Dec_InstOP;
-    logic [REG_WIDTH-1:0]  Dec_InstRS1;
-    logic [REG_WIDTH-1:0]  Dec_InstRS2;
-    logic [REG_WIDTH-1:0]  Dec_InstRD;
-    logic [DATA_WIDTH-1:0] Dec_InstIMM;
-
-    Decoder_RV32I #(
-        .REG_WIDTH (REG_WIDTH))
-    Dec (
-        .i_Inst (i_Inst),
-        .o_OP   (Dec_InstOP),
-        .o_RS1  (Dec_InstRS1),
-        .o_RS2  (Dec_InstRS2),
-        .o_RD   (Dec_InstRD),
-        .o_IMM  (Dec_InstIMM));
+    /*StallController
+    StallCtrl (
+        .i_InstRS1     (Dec_RS1),
+        .i_InstRS2     (Dec_RS2),
+        .i_EX_IsLoad   (i_EX_IsLoad),
+        .i_EX_RegAddr  (i_EX_RegWrAddr),
+        .i_MEM_IsLoad  (i_MEM_IsLoad),
+        .i_MEM_RegAddr (i_MEM_RegWrAddr));*/
 
 
     // ------------------------------------------------------------------------
@@ -99,8 +117,8 @@ module StageID
     ForwardController #(
         .REG_WIDTH (REG_WIDTH))
     FwdCtrl(
-        .i_InstRS1         (Dec_InstRS1),
-        .i_InstRS2         (Dec_InstRS2),
+        .i_InstRS1         (Dec_RS1),
+        .i_InstRS2         (Dec_RS2),
         .i_EX_RegWrAddr    (i_EX_RegWrAddr),
         .i_EX_RegWrEnable  (i_EX_RegWrEnable),
         .i_EX_RegWrDataSel (i_EX_RegWrDataSel),
@@ -150,9 +168,9 @@ module StageID
         .i_WrEnable (i_WB_RegWrEnable),
         .i_WrAddr   (i_WB_RegWrAddr),
         .i_WrData   (i_WB_RegWrData),
-        .i_RdAddrA  (Dec_InstRS1),
+        .i_RdAddrA  (Dec_RS1),
         .o_RdDataA  (Regs_DataA),
-        .i_RdAddrB  (Dec_InstRS2),
+        .i_RdAddrB  (Dec_RS2),
         .o_RdDataB  (Regs_DataB));
 
 
@@ -196,19 +214,18 @@ module StageID
     PCAlu (
         .i_Op      (DpCtrl_PCNextSel),
         .i_PC      (i_PC),
-        .i_InstIMM (Dec_InstIMM),
+        .i_InstIMM (Dec_IMM),
         .i_RegData (Regs_DataA),
         .o_PC      (PCAlu_PC));
 
 
     always_comb begin
-        o_InstOP       = Dec_InstOP;
-        o_InstRS1      = Dec_InstRS1;
-        o_InstRS2      = Dec_InstRS2;
-        o_InstIMM      = Dec_InstIMM;
+        o_InstOP       = Dec_OP;
+        o_InstIMM      = Dec_IMM;
         o_DataA        = DataASelector_Output;
         o_DataB        = DataBSelector_Output;
-        o_RegWrAddr    = Dec_InstRD;
+        o_IsLoad       = Dec_IsLoad;
+        o_RegWrAddr    = Dec_RD;
         o_RegWrEnable  = DpCtrl_RegWrEnable;
         o_RegWrDataSel = DpCtrl_DataToRegSel;
         o_MemWrEnable  = DpCtrl_MemWrEnable;

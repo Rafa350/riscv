@@ -92,9 +92,8 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] ID_DataA,
                            ID_DataB;
     logic [6:0]            ID_InstOP;
-    logic [REG_WIDTH-1:0]  ID_InstRS1;
-    logic [REG_WIDTH-1:0]  ID_InstRS2;
     logic [DATA_WIDTH-1:0] ID_InstIMM;
+    logic                  ID_IsLoad;
     logic [REG_WIDTH-1:0]  ID_RegWrAddr;
     logic                  ID_RegWrEnable;
     logic [1:0]            ID_RegWrDataSel;
@@ -130,9 +129,8 @@ module ProcessorPP
         .o_DataA           (ID_DataA),          // Dades A
         .o_DataB           (ID_DataB),          // Dades B
         .o_InstOP          (ID_InstOP),         // Instruccio OP
-        .o_InstRS1         (ID_InstRS1),
-        .o_InstRS2         (ID_InstRS2),
         .o_InstIMM         (ID_InstIMM),
+        .o_IsLoad          (ID_IsLoad),
         .o_RegWrAddr       (ID_RegWrAddr),      // Registre per escriure
         .o_RegWrEnable     (ID_RegWrEnable),    // Habilita escriure en el registre
         .o_RegWrDataSel    (ID_RegWrDataSel),
@@ -151,8 +149,6 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] IDEX_DataA,
                            IDEX_DataB;
     logic [6:0]            IDEX_InstOP;
-    logic [REG_WIDTH-1:0]  IDEX_InstRS1;
-    logic [REG_WIDTH-1:0]  IDEX_InstRS2;
     logic [DATA_WIDTH-1:0] IDEX_InstIMM;
     logic [REG_WIDTH-1:0]  IDEX_RegWrAddr;
     logic                  IDEX_RegWrEnable;
@@ -175,8 +171,6 @@ module ProcessorPP
         .i_DbgTag       (IFID_DbgTag),
         .o_DbgTag       (IDEX_DbgTag),
         .i_InstOP       (ID_InstOP),
-        .i_InstRS1      (ID_InstRS1),
-        .i_InstRS2      (ID_InstRS2),
         .i_InstIMM      (ID_InstIMM),
         .i_DataA        (ID_DataA),
         .i_DataB        (ID_DataB),
@@ -189,8 +183,6 @@ module ProcessorPP
         .i_AluControl   (ID_AluControl),
         .i_PC           (IFID_PC),
         .o_InstOP       (IDEX_InstOP),
-        .o_InstRS1      (IDEX_InstRS1),
-        .o_InstRS2      (IDEX_InstRS2),
         .o_InstIMM      (IDEX_InstIMM),
         .o_DataA        (IDEX_DataA),
         .o_DataB        (IDEX_DataB),
@@ -352,11 +344,11 @@ module ProcessorPP
     endfunction
 
     function logic [REG_WIDTH-1:0] getIDEX_InstRS1; // verilator public
-        return IDEX_InstRS1;
+        return 0; //IDEX_InstRS1;
     endfunction
 
     function logic [REG_WIDTH-1:0] getIDEX_InstRS2; // verilator public
-        return IDEX_InstRS2;
+        return 0; //IDEX_InstRS2;
     endfunction
 
     function logic [DATA_WIDTH-1:0] getIDEX_InstIMM; // verilator public
