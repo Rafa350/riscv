@@ -1,7 +1,3 @@
-// verilator lint_off IMPORTSTAR
-import types::*;
-
-
 module Decoder_RV32I
 #(
     parameter REG_WIDTH = 5)

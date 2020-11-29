@@ -1,7 +1,3 @@
-// verilator lint_off IMPORTSTAR
-import types::*;
-
-
 module ProcessorPP
 #(
     parameter DATA_WIDTH = 32,
@@ -20,9 +16,12 @@ module ProcessorPP
     output logic [PC_WIDTH-1:0]   o_PgmAddr,     // Adressa de la instruccio
     input  logic [31:0]           i_PgmInst);    // Instruccio
 
+    
+    import types::*;
+
 
     // ------------------------------------------------------------------------
-    // Generador de'etiquetes de depuracio.
+    // Debug
     // ------------------------------------------------------------------------
 
     logic [2:0] DbgTag;
@@ -31,6 +30,12 @@ module ProcessorPP
         .i_Clock (i_Clock),
         .i_Reset (i_Reset),
         .o_Tag   (DbgTag));
+        
+    Trace
+    Trace(
+        .i_Clock (i_Clock),
+        .i_Reset (i_Reset),
+        .i_Inst  (i_PgmInst));
 
 
     // ------------------------------------------------------------------------
@@ -56,7 +61,7 @@ module ProcessorPP
 
 
     // ------------------------------------------------------------------------
-    // Pipeline IFID. Conecta les senyals entre IF i ID
+    // Pipeline IFID
     // ------------------------------------------------------------------------
 
     logic [PC_WIDTH-1:0] IFID_PC;
@@ -308,7 +313,7 @@ module ProcessorPP
     MEMWB (
         .i_Clock       (i_Clock),
         .i_Reset       (i_Reset),
-        .i_Flush        (0),
+        .i_Flush       (0),
         .i_DbgTag      (EXMEM_DbgTag),
         .o_DbgTag      (MEMWB_DbgTag),
         .i_InstOP      (EXMEM_InstOP),

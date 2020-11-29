@@ -10,9 +10,7 @@ module ForwardController
     input  logic [REG_WIDTH-1:0] i_MEM_RegWrAddr,
     input  logic                 i_MEM_RegWrEnable,
     input  logic [REG_WIDTH-1:0] i_WB_RegWrAddr,
-    input  logic                 i_WB_RegWrEnable,
-    
-
+    input  logic                 i_WB_RegWrEnable,    
     output logic [1:0]           o_DataASel,          // Seleccio del valor de RS1
     output logic [1:0]           o_DataBSel);         // Seleccio del valor de RS2
 

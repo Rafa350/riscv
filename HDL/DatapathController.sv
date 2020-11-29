@@ -1,8 +1,4 @@
-// verilator lint_off IMPORTSTAR
-import types::*;
-
-
-module Controller_RV32I (
+module DatapathController (
 
     input  logic [31:0] i_Inst,          // La instruccio
     input  logic        i_IsEQ,          // Indica A == B
@@ -12,12 +8,15 @@ module Controller_RV32I (
 
     output logic [1:0]  o_PCNextSel,     // Selecciona el seguent valor del PC
 
-    output AluOp        o_AluControl,    // Selecciona l'operacio en la ALU
+    output types::AluOp o_AluControl,    // Selecciona l'operacio en la ALU
     output logic        o_OperandASel,
     output logic        o_OperandBSel,   // Selecciona l'operand B de la ALU
 
     output logic        o_RegWrEnable,   // Habilita l'escriptura en els registres
     output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
+
+
+    import types::*;
 
 
     localparam  wrALU = 2'b00;           // Escriu el valor de la ALU
@@ -104,7 +103,7 @@ module Controller_RV32I (
             /*  BNE   */ 12'b001_1100011_0_?: br = 1;
             /*  JAL   */ 12'b???_1101111_?_?: br = 1;
             /*  JALR  */ 12'b000_1100111_?_?: br = 1;
-            default                                 : br = 0;
+            default                         : br = 0;
         endcase
     end
 

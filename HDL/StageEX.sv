@@ -1,7 +1,3 @@
-// verilator lint_off IMPORTSTAR
-import types::*;
-
-
 module StageEX
 #(
     parameter DATA_WIDTH = 32,
@@ -15,11 +11,13 @@ module StageEX
     input  logic [PC_WIDTH-1:0]   i_PC,                 // Adressa de la instruccio
     input  logic                  i_OperandASel,        // Seleccio del operand A de la ALU
     input  logic                  i_OperandBSel,        // Seleccio del operand B de la ALU
-    input  AluOp                  i_AluControl,         // Operacio a realitzar emb la ALU
+    input  types::AluOp           i_AluControl,         // Operacio a realitzar emb la ALU
 
     output logic [DATA_WIDTH-1:0] o_Result,             // Resultat de la ALU
     output logic [DATA_WIDTH-1:0] o_DataB);             // Dades B
 
+
+    import types::*;
 
 
     // -----------------------------------------------------------------------

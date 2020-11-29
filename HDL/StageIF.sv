@@ -12,8 +12,7 @@ module StageIF
     output logic [PC_WIDTH-1:0] o_PgmAddr, // Adressa de programa
 
     input  logic [PC_WIDTH-1:0] i_PCNext,  // El nou PC
-
-    output logic [31:0] o_Inst,            // Instruccio
+    output logic [31:0]         o_Inst,    // Instruccio
     output logic [PC_WIDTH-1:0] o_PC);     // PC
 
 
