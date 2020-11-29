@@ -1,7 +1,3 @@
-// verilator lint_off IMPORTSTAR
-import types::*;
-
-
 module ProcessorSC
 #(
     parameter DATA_WIDTH = 32,
@@ -19,6 +15,10 @@ module ProcessorSC
     
     output logic [PC_WIDTH-1:0]   o_PgmAddr,     // Adressa de la instruccio
     input  logic [31:0]           i_PgmInst);    // Instruccio
+    
+    
+    import Types::*;
+    
     
     // Control de PC
     //

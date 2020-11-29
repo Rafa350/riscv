@@ -17,7 +17,7 @@ module ProcessorPP
     input  logic [31:0]           i_PgmInst);    // Instruccio
 
     
-    import types::*;
+    import Types::*;
 
 
     // ------------------------------------------------------------------------

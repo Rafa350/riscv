@@ -8,7 +8,7 @@ module DatapathController (
 
     output logic [1:0]  o_PCNextSel,     // Selecciona el seguent valor del PC
 
-    output types::AluOp o_AluControl,    // Selecciona l'operacio en la ALU
+    output Types::AluOp o_AluControl,    // Selecciona l'operacio en la ALU
     output logic        o_OperandASel,
     output logic        o_OperandBSel,   // Selecciona l'operand B de la ALU
 
@@ -16,7 +16,7 @@ module DatapathController (
     output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
 
 
-    import types::*;
+    import Types::*;
 
 
     localparam  wrALU = 2'b00;           // Escriu el valor de la ALU

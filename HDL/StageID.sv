@@ -30,11 +30,11 @@ module StageID
     output logic [1:0]            o_RegWrDataSel,      // Seleccio de les dades per escriure en el registre (rd)
     output logic                  o_OperandASel,       // Seleccio del valor A de la ALU
     output logic                  o_OperandBSel,       // Seleccio del valor B de la ALU
-    output types::AluOp           o_AluControl,        // Codi de control de la ALU
+    output Types::AluOp           o_AluControl,        // Codi de control de la ALU
     output logic [PC_WIDTH-1:0]   o_PCNext);           // Nou valor de PC
 
 
-    import types::*;
+    import Types::*;
 
 
     // ------------------------------------------------------------------------

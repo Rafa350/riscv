@@ -1,15 +1,19 @@
 module Decoder_RV32I
 #(
-    parameter REG_WIDTH = 5)
+    parameter DATA_WIDTH = 32,
+    parameter REG_WIDTH  = 5)
  (
-    input  logic [31:0]          i_Inst,   // La instruccio a decodificar
-    output logic [6:0]           o_OP,     // El codi d'operacio
-    output logic [REG_WIDTH-1:0] o_RS1,    // El registre font 1 (rs1)
-    output logic [REG_WIDTH-1:0] o_RS2,    // El registre fomt 2 (rs2)
-    output logic [REG_WIDTH-1:0] o_RD,     // El registre de destinacio  (rd)
-    output logic [31:0]          o_IMM,    // El valor inmediat
-    output logic                 o_IsLoad, // Indica que es una instruccio LOAD
-    output logic                 o_IsALU); // Indica que es una instruccio ALU
+    input  logic [31:0]           i_Inst,   // La instruccio a decodificar
+    output logic [6:0]            o_OP,     // El codi d'operacio
+    output logic [REG_WIDTH-1:0]  o_RS1,    // El registre font 1 (rs1)
+    output logic [REG_WIDTH-1:0]  o_RS2,    // El registre fomt 2 (rs2)
+    output logic [REG_WIDTH-1:0]  o_RD,     // El registre de destinacio  (rd)
+    output logic [DATA_WIDTH-1:0] o_IMM,    // El valor inmediat
+    output logic                  o_IsLoad, // Indica que es una instruccio LOAD
+    output logic                  o_IsALU); // Indica que es una instruccio ALU
+    
+    
+    import Types::*;
 
 
     // Evalua el valor inmediat de la instruccio
@@ -17,15 +21,19 @@ module Decoder_RV32I
     always_comb begin
         unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0]})
             /* AUIPC  */ 17'b???????_???_0110111,
-            /* LUI    */ 17'b???????_???_0010111: o_IMM = {i_Inst[31:12], 12'b0};
+            /* LUI    */ 17'b???????_???_0010111: 
+                o_IMM = {i_Inst[31:12], 12'b0};
 
-            /* JAL    */ 17'b???????_???_1101111: o_IMM = {{12{i_Inst[31]}}, i_Inst[19:12], i_Inst[20], i_Inst[30:21], 1'b0};
+            /* JAL    */ 17'b???????_???_1101111: 
+                o_IMM = {{12{i_Inst[31]}}, i_Inst[19:12], i_Inst[20], i_Inst[30:21], 1'b0};
 
-            /* Branch */ 17'b???????_???_1100011: o_IMM = {{20{i_Inst[31]}}, i_Inst[7], i_Inst[30:25], i_Inst[11:8], 1'b0};
+            /* Branch */ 17'b???????_???_1100011: 
+                o_IMM = {{20{i_Inst[31]}}, i_Inst[7], i_Inst[30:25], i_Inst[11:8], 1'b0};
 
             /* SLLI   */ 17'b0000000_001_0010011,
             /* SRLI   */ 17'b0000000_101_0010011,
-            /* SRAI   */ 17'b0100000_101_0010011: o_IMM = {{27{1'b0}}, i_Inst[24:20]}; // Sempre positiu
+            /* SRAI   */ 17'b0100000_101_0010011: 
+                o_IMM = {{27{1'b0}}, i_Inst[24:20]}; // Sempre positiu
 
             /* Load   */ 17'b???????_???_0000011,
             /* ADDI   */ 17'b???????_000_0010011,
@@ -34,12 +42,16 @@ module Decoder_RV32I
             /* XORI   */ 17'b???????_100_0010011,
             /* ORI    */ 17'b???????_110_0010011,
             /* ANDI   */ 17'b???????_111_0010011,
-            /* JALR   */ 17'b???????_000_1100111: o_IMM = {{20{i_Inst[31]}}, i_Inst[31:20]};
+            /* JALR   */ 17'b???????_000_1100111: 
+                o_IMM = {{20{i_Inst[31]}}, i_Inst[31:20]};
 
-            /* Store  */ 17'b???????_???_0100011: o_IMM = {{20{i_Inst[31]}}, i_Inst[31:25], i_Inst[11:7]};
+            /* Store  */ 17'b???????_???_0100011: 
+                o_IMM = {{20{i_Inst[31]}}, i_Inst[31:25], i_Inst[11:7]};
 
-            default                             : o_IMM = 0;
+            default : 
+                o_IMM = 0;
         endcase
+        
     end
 
     // Evalua els registres de la instruccio
@@ -50,8 +62,8 @@ module Decoder_RV32I
     
     // Evalua els indicadors del tipus d'instruccio
     //
-    assign o_IsLoad = i_Inst[6:0] == 7'b0000011;
-    assign o_IsALU  = (i_Inst[6:0] == 7'b0110011) | (i_Inst[6:0] == 7'b0010011);
+    assign o_IsLoad = i_Inst[6:0] == OpCode_LOAD;
+    assign o_IsALU  = i_Inst[6:0] == OpCode_OP | i_Inst[6:0] == OpCode_OP_IMM;
 
     // Evalua el codi d'operacio
     //

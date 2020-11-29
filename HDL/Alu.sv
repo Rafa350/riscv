@@ -1,21 +1,18 @@
-// verilator lint_off IMPORTSTAR 
-
- 
-import types::*;
-
-
 module Alu 
 #(
-    parameter WIDTH    = 32)       // Amplada de dades
+    parameter WIDTH = 32)           // Amplada de dades
 (
-    input  AluOp       i_Op,       // Operacio
+    input  Types::AluOp i_Op,       // Operacio
     
-    input  [WIDTH-1:0] i_OperandA, // Operand A
-    input  [WIDTH-1:0] i_OperandB, // Operand B
+    input  [WIDTH-1:0]  i_OperandA, // Operand A
+    input  [WIDTH-1:0]  i_OperandB, // Operand B
     
-    output [WIDTH-1:0] o_Result    // Resultat
-);    
+    output [WIDTH-1:0]  o_Result);  // Resultat
     
+
+    import Types::*;
+
+
     always_comb begin
         
         case (i_Op) 

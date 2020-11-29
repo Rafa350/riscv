@@ -2,7 +2,7 @@
 
 
 `ifdef VERILATOR
-`include "types.sv"
+`include "Types.sv"
 `endif
 
 

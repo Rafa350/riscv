@@ -276,6 +276,7 @@ set_global_assignment -name VERILOG_FILE mw_ram.v
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorSC.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugTagGenerator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Trace.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorPP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DatapathController.sv
@@ -289,7 +290,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineEXMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineMEMWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/RegisterFile.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Decoder_RV32I.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PCAlu.sv
