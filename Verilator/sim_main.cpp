@@ -16,7 +16,7 @@
 // de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps 
 // de simulacio (simTime)
 //
-#define CLOCK_MAX             200  // Nombre de ticks a simular
+#define CLOCK_MAX             250  // Nombre de ticks a simular
 #define CLOCK_START             0  // Tick per iniciar clk
 #define CLOCK_TICKS            10  // Tics per cicle clk
 

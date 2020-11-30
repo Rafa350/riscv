@@ -13,9 +13,11 @@ module StageID
     input  logic                  i_EX_RegWrEnable,    // Habilita l'escriptura en el registre
     input  logic [1:0]            i_EX_RegWrDataSel,   // Seleccio de dades
     input  logic [DATA_WIDTH-1:0] i_EX_RegWrData,      // Dades a escriure en el registre
+    input  logic                  i_EX_IsLoad,         // Indica si es una instruccio Load
     input  logic [REG_WIDTH-1:0]  i_MEM_RegWrAddr,     // Registre per escriure
     input  logic                  i_MEM_RegWrEnable,   // Habilita l'escriptura
     input  logic [DATA_WIDTH-1:0] i_MEM_RegWrData,     // Dades a escriure
+    input  logic                  i_MEM_IsLoad,        // Indica si es una instauccio Load
     input  logic [REG_WIDTH-1:0]  i_WB_RegWrAddr,      // Registre a escriure
     input  logic                  i_WB_RegWrEnable,    // Autoritzacio d'escriptura del registre
     input  logic [DATA_WIDTH-1:0] i_WB_RegWrData,      // El resultat a escriure
@@ -24,6 +26,7 @@ module StageID
     output logic [DATA_WIDTH-1:0] o_DataA,             // Dades A (rs1)
     output logic [DATA_WIDTH-1:0] o_DataB,             // Dades B (rs2)
     output logic                  o_IsLoad,            // Indica instruccio Load
+    output logic                  o_Bubble,            // Indica si cal generar bombolla
     output logic [REG_WIDTH-1:0]  o_RegWrAddr,         // Registre a escriure.
     output logic                  o_RegWrEnable,       // Habilita l'escriptura del registre
     output logic                  o_MemWrEnable,       // Habilita l'escritura en memoria
@@ -96,14 +99,15 @@ module StageID
     // Controllador per stalling.
     // ------------------------------------------------------------------------
 
-    /*StallController
+    StallController
     StallCtrl (
         .i_InstRS1     (Dec_RS1),
         .i_InstRS2     (Dec_RS2),
         .i_EX_IsLoad   (i_EX_IsLoad),
         .i_EX_RegAddr  (i_EX_RegWrAddr),
         .i_MEM_IsLoad  (i_MEM_IsLoad),
-        .i_MEM_RegAddr (i_MEM_RegWrAddr));*/
+        .i_MEM_RegAddr (i_MEM_RegWrAddr),
+        .o_Bubble      (o_Bubble));
 
 
     // ------------------------------------------------------------------------

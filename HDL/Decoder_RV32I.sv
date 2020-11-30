@@ -62,8 +62,8 @@ module Decoder_RV32I
     
     // Evalua els indicadors del tipus d'instruccio
     //
-    assign o_IsLoad = i_Inst[6:0] == OpCode_LOAD;
-    assign o_IsALU  = i_Inst[6:0] == OpCode_OP | i_Inst[6:0] == OpCode_OP_IMM;
+    assign o_IsLoad = i_Inst[6:0] == OpCode_Load;
+    assign o_IsALU  = (i_Inst[6:0] == OpCode_Op) | (i_Inst[6:0] == OpCode_OpIMM);
 
     // Evalua el codi d'operacio
     //

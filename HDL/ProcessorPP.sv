@@ -76,13 +76,13 @@ module ProcessorPP
     IFID (
         .i_Clock  (i_Clock),
         .i_Reset  (i_Reset),
-        .i_Stall  (0),
+        .i_Stall  (ID_Bubble),
         .i_DbgTag (DbgTag),
         .o_DbgTag (IFID_DbgTag),
         .i_PC     (IF_PC),
         .i_Inst   (IF_Inst),
-        .o_PC    (IFID_PC),
-        .o_Inst  (IFID_Inst));
+        .o_PC     (IFID_PC),
+        .o_Inst   (IFID_Inst));
 
 
     // ------------------------------------------------------------------------
@@ -102,6 +102,7 @@ module ProcessorPP
     logic                  ID_OperandASel;
     logic                  ID_OperandBSel;
     logic [PC_WIDTH-1:0]   ID_PCNext;
+    logic                  ID_Bubble;
 
     logic [REG_WIDTH-1:0]  ID_RequiredRS1;
     logic [REG_WIDTH-1:0]  ID_RequiredRS2;
@@ -120,9 +121,11 @@ module ProcessorPP
         .i_EX_RegWrEnable  (IDEX_RegWrEnable),
         .i_EX_RegWrDataSel (IDEX_RegWrDataSel),
         .i_EX_RegWrData    (EX_Result),
+        .i_EX_IsLoad       (IDEX_IsLoad),       // Indica si hi ha una instruccio Load en EX
         .i_MEM_RegWrAddr   (EXMEM_RegWrAddr),
         .i_MEM_RegWrEnable (EXMEM_RegWrEnable),
         .i_MEM_RegWrData   (EXMEM_Result),      // El valor a escriure en el registre
+        .i_MEM_IsLoad      (EXMEM_IsLoad),      // Indica si hi ha una instruccio Load en MEM
         .i_WB_RegWrAddr    (MEMWB_RegWrAddr),   // Adressa del registre on escriure
         .i_WB_RegWrData    (MEMWB_RegWrData),   // Dades del registre on escriure
         .i_WB_RegWrEnable  (MEMWB_RegWrEnable), // Habilita escriure en el registre
@@ -131,6 +134,7 @@ module ProcessorPP
         .o_InstOP          (ID_InstOP),         // Instruccio OP
         .o_InstIMM         (ID_InstIMM),
         .o_IsLoad          (ID_IsLoad),
+        .o_Bubble          (ID_Bubble),         // Indica si cal generar bombolla
         .o_RegWrAddr       (ID_RegWrAddr),      // Registre per escriure
         .o_RegWrEnable     (ID_RegWrEnable),    // Habilita escriure en el registre
         .o_RegWrDataSel    (ID_RegWrDataSel),
@@ -154,6 +158,7 @@ module ProcessorPP
     logic                  IDEX_RegWrEnable;
     logic [1:0]            IDEX_RegWrDataSel;
     logic                  IDEX_MemWrEnable;
+    logic                  IDEX_IsLoad;
     AluOp                  IDEX_AluControl;
     logic                  IDEX_OperandASel;
     logic                  IDEX_OperandBSel;
@@ -167,7 +172,7 @@ module ProcessorPP
     IDEX (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
-        .i_Flush        (0),
+        .i_Flush        (ID_Bubble),
         .i_DbgTag       (IFID_DbgTag),
         .o_DbgTag       (IDEX_DbgTag),
         .i_InstOP       (ID_InstOP),
@@ -178,6 +183,7 @@ module ProcessorPP
         .i_RegWrEnable  (ID_RegWrEnable),
         .i_RegWrDataSel (ID_RegWrDataSel),
         .i_MemWrEnable  (ID_MemWrEnable),
+        .i_IsLoad       (ID_IsLoad),
         .i_OperandASel  (ID_OperandASel),
         .i_OperandBSel  (ID_OperandBSel),
         .i_AluControl   (ID_AluControl),
@@ -190,6 +196,7 @@ module ProcessorPP
         .o_RegWrEnable  (IDEX_RegWrEnable),
         .o_RegWrDataSel (IDEX_RegWrDataSel),
         .o_MemWrEnable  (IDEX_MemWrEnable),
+        .o_IsLoad       (IDEX_IsLoad),
         .o_AluControl   (IDEX_AluControl),
         .o_OperandASel  (IDEX_OperandASel),
         .o_OperandBSel  (IDEX_OperandBSel),
@@ -232,6 +239,7 @@ module ProcessorPP
     logic                  EXMEM_RegWrEnable;
     logic [1:0]            EXMEM_RegWrDataSel;
     logic                  EXMEM_MemWrEnable;
+    logic                  EXMEM_IsLoad;
     logic [2:0]            EXMEM_DbgTag;
 
     PipelineEXMEM #(
@@ -253,6 +261,7 @@ module ProcessorPP
         .i_RegWrAddr    (IDEX_RegWrAddr),
         .i_RegWrEnable  (IDEX_RegWrEnable),
         .i_RegWrDataSel (IDEX_RegWrDataSel),
+        .i_IsLoad       (IDEX_IsLoad),
         .o_PC           (EXMEM_PC),
         .o_Result       (EXMEM_Result),
         .o_DataB        (EXMEM_DataB),
@@ -260,7 +269,8 @@ module ProcessorPP
         .o_MemWrEnable  (EXMEM_MemWrEnable),
         .o_RegWrAddr    (EXMEM_RegWrAddr),
         .o_RegWrEnable  (EXMEM_RegWrEnable),
-        .o_RegWrDataSel (EXMEM_RegWrDataSel));
+        .o_RegWrDataSel (EXMEM_RegWrDataSel),
+        .o_IsLoad       (EXMEM_IsLoad));
 
 
     // ------------------------------------------------------------------------

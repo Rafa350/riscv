@@ -276,6 +276,7 @@ set_global_assignment -name VERILOG_FILE mw_ram.v
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorSC.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugTagGenerator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StallController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Trace.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorPP.sv

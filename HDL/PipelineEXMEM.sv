@@ -23,6 +23,7 @@ module PipelineEXMEM
     input  logic [REG_WIDTH-1:0]  i_RegWrAddr,
     input  logic                  i_RegWrEnable,  // Autoritza l'escriptura en els registres
     input  logic [1:0]            i_RegWrDataSel, 
+    input  logic                  i_IsLoad,      
 
     // Senyals de sortida del pipeline
     output logic [PC_WIDTH-1:0]   o_PC,
@@ -32,7 +33,8 @@ module PipelineEXMEM
     output logic                  o_MemWrEnable,
     output logic [REG_WIDTH-1:0]  o_RegWrAddr,
     output logic                  o_RegWrEnable,
-    output logic [1:0]            o_RegWrDataSel);
+    output logic [1:0]            o_RegWrDataSel,
+    output logic                  o_IsLoad);
 
 
     always_ff @(posedge i_Clock) begin
@@ -44,6 +46,7 @@ module PipelineEXMEM
         o_RegWrAddr    <= i_Reset ? {REG_WIDTH{1'b0}}  : i_RegWrAddr;
         o_RegWrEnable  <= i_Reset ? 1'b0               : (i_Flush ? 1'b0 : i_RegWrEnable);
         o_RegWrDataSel <= i_Reset ? 2'b0               : i_RegWrDataSel;
+        o_IsLoad       <= i_Reset ? 1'b0               : i_IsLoad;
         o_DbgTag       <= i_Reset ? 3'b0               : i_DbgTag;
     end
 
