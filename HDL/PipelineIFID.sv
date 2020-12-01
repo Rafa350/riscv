@@ -27,7 +27,7 @@ module PipelineIFID
         o_PC     <= i_Reset ? -4    : (i_Stall ? o_PC     : i_PC);
         o_Inst   <= i_Reset ? 32'b0 : (i_Stall ? o_Inst   : i_Inst);
         
-        o_DbgTag <= i_Reset ? 0     : (i_Stall ? o_DbgTag : i_DbgTag);
+        o_DbgTag <= i_Reset ? 3'b0  : (i_Stall ? o_DbgTag : i_DbgTag);
     end
 
 

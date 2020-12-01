@@ -12,7 +12,7 @@ module Comparer
     output logic             o_LT);    // A < B
 
     always_comb begin
-        o_EQ  = i_InputA == i_InputB;
+        o_EQ = i_InputA == i_InputB;
         if (i_Unsigned) begin
             o_GT  = i_InputA > i_InputB;
             o_LT  = i_InputA < i_InputB;

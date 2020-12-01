@@ -35,8 +35,7 @@ module RegisterFile
     
     always_ff @(posedge i_Clock)
         if (i_Reset) begin
-            integer i;
-            for (i = 1; i < NUM_REGS; i++)
+            for (int i = 1; i < NUM_REGS; i++)
                 Data[i] <= ZERO;
         end                
         else if (i_WrEnable & (i_WrAddr != 0))
@@ -46,11 +45,21 @@ module RegisterFile
         o_RdDataA = (i_Reset | (i_RdAddrA == 0)) ? ZERO : Data[i_RdAddrA];
         o_RdDataB = (i_Reset | (i_RdAddrB == 0)) ? ZERO : Data[i_RdAddrB];
     end
+
+
+    // ------------------------------------------------------------------------
+    // Verificacio
+    // ------------------------------------------------------------------------
     
-    always_ff @(posedge i_Clock) begin
-        integer i;
-        for (i = $left(Data); i <= 5; i++)
-            $display("R[%2.2d]: %4.4X", i , Data[i]);
-    end
+`ifdef VERILATOR    
+    import "DPI-C" function void TraceRegister(input int addr, input int inst);
+    
+    always_ff @(posedge i_Clock)
+        if (!i_Reset)
+            for (int i = $left(Data); i <= 5; i++)
+                // verilator lint_off WIDTH
+                TraceRegister(i, Data[i]);
+                // verilator lint_on WIDTH
+`endif
     
 endmodule

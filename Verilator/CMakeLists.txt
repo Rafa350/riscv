@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(cpu-riscv-verilator
-    VERSION 1.0
-    DESCRIPTION "CPU-RISC-V: Verilator"
-    LANGUAGES C CXX)
+
+enable_language(C CXX)
 
 
 # Localitza Verilator
@@ -17,16 +15,30 @@ if (NOT verilator_FOUND)
 endif()
 
 
-# Defineix els directoris de la llibreria de simulacio
+# Defineix els directoris
 #
-set(SIMLIB_ROOT        ${PROJECT_SOURCE_DIR}/../../Simulation)
-set(SIMLIB_INCLUDE_DIR ${SIMLIB_ROOT}/Include)
-set(SIMLIB_SOURCE_DIR  ${SIMLIB_ROOT}/Source)
+set(SIMLIB_DIR         ${PROJECT_DIR}/../Simulation)
+set(SIMLIB_INCLUDE_DIR ${SIMLIB_DIR}/Include)
+set(SIMLIB_SOURCE_DIR  ${SIMLIB_DIR}/Source)
 
-set(FIRMWARE_DIR       ${PROJECT_SOURCE_DIR}/../Firmware/build)
+set(SOURCE_DIR         ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(HDL_INCLUDE_DIR    ${PROJECT_SOURCE_DIR}/../HDL)
+set(FIRMWARE_DIR       ${PROJECT_DIR}/build/Firmware)
 
+set(HDL_INCLUDE_DIR    ${PROJECT_DIR}/HDL)
+
+
+message("*")
+message("* Sub-project 'Verilator' configuration.")
+message("*   Toochain:")
+message("*     gcc     : " ${CMAKE_C_COMPILER})
+message("*     g++     : " ${CMAKE_CXX_COMPILER})
+message("*     as      : " ${CMAKE_ASM_COMPILER})
+message("*")
+message("*   Directories:")
+message("*     Root    : " ${PROJECT_DIR})
+message("*     Current : " ${SOURCE_DIR})
+message("*")
 
 # El executable
 #
@@ -38,17 +50,17 @@ add_executable(simx)
 add_custom_command(
     TARGET simx
     PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/demo.txt firmware.txt
+    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/main.txt firmware.txt
 )
 
 
 # Els fitxers font
 
 target_sources(simx
-    PRIVATE ${PROJECT_SOURCE_DIR}/sim_main.cpp
-    PRIVATE ${PROJECT_SOURCE_DIR}/sim_dis.cpp
-    PRIVATE ${PROJECT_SOURCE_DIR}/sim_ram.cpp
-    PRIVATE ${PROJECT_SOURCE_DIR}/sim_access.cpp
+    PRIVATE ${SOURCE_DIR}/sim_main.cpp
+    PRIVATE ${SOURCE_DIR}/sim_dis.cpp
+    PRIVATE ${SOURCE_DIR}/sim_ram.cpp
+    PRIVATE ${SOURCE_DIR}/sim_access.cpp
     PRIVATE ${SIMLIB_SOURCE_DIR}/simMemory.cpp
 )
 

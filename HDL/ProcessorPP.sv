@@ -30,13 +30,6 @@ module ProcessorPP
         .i_Clock (i_Clock),
         .i_Reset (i_Reset),
         .o_Tag   (DbgTag));
-        
-    Trace
-    Trace(
-        .i_Clock (i_Clock),
-        .i_Reset (i_Reset),
-        .i_Inst  (i_PgmInst));
-
 
     // ------------------------------------------------------------------------
     // Stage IF

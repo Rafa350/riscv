@@ -23,6 +23,20 @@ module StageIF
     assign o_PC      = i_PCNext;
     assign o_PgmAddr = o_PC;
     assign o_Inst    = i_PgmInst;
+    
+    
+    // ------------------------------------------------------------------------
+    // Verificacio
+    // ------------------------------------------------------------------------
+    
+`ifdef VERILATOR    
+    import "DPI-C" function void TraceInstruction(input int addr, input int inst);
 
+    always_ff @(posedge i_Clock)
+        if (!i_Reset)
+            // verilator lint_off WIDTH
+            TraceInstruction(o_PC, o_Inst);
+            // verilator lint_on WIDTH
+`endif
 
 endmodule

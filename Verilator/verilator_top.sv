@@ -96,5 +96,5 @@ module top #(
         .o_MemWrEnable (o_MemWrEnable),
         .o_MemWrData   (o_MemWrData),
         .i_MemRdData   (i_MemRdData));
-
+        
 endmodule

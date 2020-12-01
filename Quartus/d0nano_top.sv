@@ -21,6 +21,7 @@ module top(
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
     
+    
     parameter DATA_WIDTH = 32;
     parameter ADDR_WIDTH = 10;
     parameter PC_WIDTH   = 10;

@@ -1,3 +1,19 @@
+// -----------------------------------------------------------------------
+//
+//       Semi-sumador
+//
+//       Parametres:
+//           WIDTH      : Amplada del canal de dades
+//
+//       Entrada:
+//           i_OperandA : Oparans A
+//           i_OperandB : Operand B
+//
+//       Sortida:
+//           o_Result   : Resultat de la suma
+//
+// -----------------------------------------------------------------------
+
 module HalfAdder
 #(
     parameter WIDTH = 32)                // Amplada de dades

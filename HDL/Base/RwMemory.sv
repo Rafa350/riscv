@@ -1,23 +1,23 @@
 // -----------------------------------------------------------------------
 //
-//     Memoria de lectura/escriptura.
+//       Memoria de lectura/escriptura.
 //
-//     Lectura asincrona i escriptura sincrona.
-//     Un canal per lectura, i un altre per escriptura.
-//     Escriptura i lectura simultanies.
+//       Lectura asincrona i escriptura sincrona.
+//       Un canal per lectura, i un altre per escriptura.
+//       Escriptura i lectura simultanies.
 //
-//     Parametres:
-//         DATA_WIDTH : Amplada del canal de dades
-//         ADDR_WIDTH : Amplada del canal d'adresses
+//       Parametres:
+//           DATA_WIDTH : Amplada del canal de dades
+//           ADDR_WIDTH : Amplada del canal d'adresses
 //
-//     Entrades:
-//         i_Clock    : Rellrotge
-//         i_Addr     : Adressa per escriptura i/o lectura
-//         i_WrEnable : Habilita l'escriptura
-//         i_WrData   : Dades per escriure
+//       Entrades:
+//           i_Clock    : Rellrotge
+//           i_Addr     : Adressa per escriptura i/o lectura
+//           i_WrEnable : Habilita l'escriptura
+//           i_WrData   : Dades per escriure
 //
-//     Sortides:
-//         o_RdData   : Dades lleigides
+//       Sortides:
+//           o_RdData   : Dades lleigides
 //
 // -----------------------------------------------------------------------
 
@@ -42,5 +42,6 @@ module RwMemory
             Data[i_Addr] <= i_WrData;
 
     assign o_RdData = Data[i_Addr];
-
+    
+ 
 endmodule

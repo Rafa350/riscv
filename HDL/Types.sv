@@ -1,15 +1,15 @@
 package Types; 
     
     typedef enum logic [6:0] {
-        OpCode_Load    = 7'h03,
-        OpCode_OpIMM   = 7'h13,
-        OpCode_AUIPC   = 7'h17,
-        OpCode_Store   = 7'h23,
-        OpCode_Op      = 7'h33,
-        OpCode_LUI     = 7'h37,
-        OpCode_Branch  = 7'h63,
-        OpCode_JALR    = 7'h67,
-        OpCode_JAL     = 7'h6f
+        OpCode_Load   = 7'h03,
+        OpCode_OpIMM  = 7'h13,
+        OpCode_AUIPC  = 7'h17,
+        OpCode_Store  = 7'h23,
+        OpCode_Op     = 7'h33,
+        OpCode_LUI    = 7'h37,
+        OpCode_Branch = 7'h63,
+        OpCode_JALR   = 7'h67,
+        OpCode_JAL    = 7'h6f
     } OpCode;
     
     typedef enum logic[4:0] {

@@ -103,7 +103,7 @@ void CPUTestbench::run() {
         // Desensambla l'instruccio actual
         //        
         if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))  {
-            disassembly(top->o_DbgPgmAddr, top->o_DbgPgmInst);
+            //disassembly(top->o_DbgPgmAddr, top->o_DbgPgmInst);
             //showPipeline();
         }
         

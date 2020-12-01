@@ -1,3 +1,20 @@
+// ------------------------------------------------------------------
+//
+//       Memoria de lectura (RO)
+//
+//       Parametres:
+//           DATA_WIDTH : Amplada del bus de dades.
+//           ADDR_WIDTH : Amplada del bus d'adressa.
+//           FILE_NAME  : El fitxer d'inicialitzacio.
+//
+//       Entrada:
+//           i_Addr     : Adresa de lectura.
+//
+//       Sortida:
+//           o_RdData   : Dades lleigides.
+//
+// -----------------------------------------------------------------------
+
 module RoMemory 
 #(
     parameter DATA_WIDTH = 32,

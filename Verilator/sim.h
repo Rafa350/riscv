@@ -52,7 +52,8 @@ class RAM: public Simulation::Memory {
 };
 
 
-extern void disassembly(unsigned addr, uint32_t data);
+void printInstruction(unsigned addr, uint32_t data);
+void printRegister(unsigned addr, uint32_t data);
 
 
 #endif
