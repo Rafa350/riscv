@@ -40,42 +40,28 @@ message("*     Root    : " ${PROJECT_DIR})
 message("*     Current : " ${SOURCE_DIR})
 message("*")
 
-# El executable
-#
+
+# Genera l'executable 
 add_executable(simx)
-
-
-# Els fitxers extra a copiar
-#
-add_custom_command(
-    TARGET simx
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/main.txt firmware.txt
-)
-
-
-# Els fitxers font
-
 target_sources(simx
     PRIVATE ${SOURCE_DIR}/sim_main.cpp
-    PRIVATE ${SOURCE_DIR}/sim_dis.cpp
-    PRIVATE ${SOURCE_DIR}/sim_ram.cpp
-    PRIVATE ${SOURCE_DIR}/sim_access.cpp
-    PRIVATE ${SIMLIB_SOURCE_DIR}/simMemory.cpp
-)
-
-
-# Els directoris a incluir
-#
+            ${SOURCE_DIR}/sim_dis.cpp
+            ${SOURCE_DIR}/sim_ram.cpp
+            ${SOURCE_DIR}/sim_access.cpp
+            ${SIMLIB_SOURCE_DIR}/simMemory.cpp)
 target_include_directories(simx
     PRIVATE .
     PRIVATE ${VERILATOR_ROOT}/include
-    PRIVATE ${SIMLIB_INCLUDE_DIR}
+    PRIVATE ${SIMLIB_INCLUDE_DIR})
+
+# Copia el fitxer del programa
+add_custom_command(
+    TARGET simx
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/main.txt firmware.txt
 )
 
-
-# El hardware a simular
-#
+# Genera els fitxers CPP de la simulacio
 verilate(simx
     TOP_MODULE top
     TRACE_FST

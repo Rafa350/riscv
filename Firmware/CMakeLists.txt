@@ -52,7 +52,7 @@ message("*     Current : " ${SOURCE_DIR})
 message("*")
 
 
-# Genera l'executable en formast elf
+# Genera l'executable en format elf
 add_executable(
     main.elf)
 target_sources(
@@ -62,13 +62,13 @@ target_compile_options(
     main.elf
     PRIVATE -Wall
             -march=rv32i -mabi=ilp32 
-            -static -mcmodel=medany 
+            -static -mcmodel=medany
             -ffreestanding -ffunction-sections -fdata-sections
             -Wl,--gc-sections -Wl,--print-gc-sections)
 target_link_options(
     main.elf
     PRIVATE -T ${SOURCE_DIR}/link.ld      
-            -nostdlib)
+            -nostdlib -e _start)
 
 
 # Obte el llistat desensamblat a partir del fitxer elf
@@ -98,25 +98,8 @@ add_custom_command(
     POST_BUILD
     DEPENDS    main.elf
     COMMAND    ${CMD_OBJCOPY}
-    ARGS       --output-target=verilog --only-section=.text main.elf main.txt)
-
-#
-#add_custom_target(
-#    firmware ALL
-#    DEPENDS demo.txt
-#)
-
-#add_custom_command(
-#    OUTPUT  demo.txt
-#    DEPENDS demo.out
-#    COMMAND ${CMD_OBJCOPY}
-#    ARGS    --output-target=verilog --only-section=.text demo.out demo.txt
-#)
-
-#add_custom_command(
-#    OUTPUT  demo.out
-#    DEPENDS demo.S
-#    COMMAND ${CMAKE_ASM_COMPILER}
-#    ARGS    -a -march=rv32i ${SOURCE_DIR}/demo.S -o demo.out
-#)
+    ARGS       --output-target=verilog 
+               --verilog-data-width=4 
+               --only-section=.text
+               main.elf main.txt)
 

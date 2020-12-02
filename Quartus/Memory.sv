@@ -15,7 +15,7 @@ module Memory
         .wren      (i_WrEnable),
         .data      (i_WrData),
         .q         (o_RdData),
-        .rdaddress (i_Addr),
-        .wraddress (i_Addr));
+        .rdaddress (i_Addr[ADDR_WIDTH-1:2]),
+        .wraddress (i_Addr[ADDR_WIDTH-1:2]));
 
 endmodule

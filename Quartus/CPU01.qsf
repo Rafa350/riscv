@@ -131,7 +131,6 @@ set_location_assignment PIN_R9 -to GPIO_1_IN[1]
 set_location_assignment PIN_T9 -to GPIO_1_IN[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SCLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SDAT
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
 set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF
@@ -270,38 +269,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[0]
 set_global_assignment -name POWER_USE_INPUT_FILES OFF
-set_global_assignment -name SDC_FILE CPU01.sdc
-set_global_assignment -name SYSTEMVERILOG_FILE Program.sv
-set_global_assignment -name SYSTEMVERILOG_FILE Memory.sv
-set_global_assignment -name VERILOG_FILE mw_ram.v
-set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorSC.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugTagGenerator.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StallController.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Types.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Trace.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorPP.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DatapathController.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageIF.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ForwardController.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineIFID.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageID.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineIDEX.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageEX.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineEXMEM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageMEM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineMEMWB.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/RegisterFile.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Decoder_RV32I.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/alu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PCAlu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Register.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux8To1.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/ComparerZero.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Comparer.sv
 set_global_assignment -name TIMING_ANALYZER_DO_REPORT_TIMING ON
 set_global_assignment -name ENABLE_DRC_SETTINGS ON
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
@@ -346,4 +313,37 @@ set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IF
 set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[29]~reg0"
 set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[30]~reg0"
 set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[31]~reg0"
+set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
+set_global_assignment -name QIP_FILE mw_ram.qip
+set_global_assignment -name SDC_FILE CPU01.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE Program.sv
+set_global_assignment -name SYSTEMVERILOG_FILE Memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorSC.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugTagGenerator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StallController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/SyncRam1W2R.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorPP.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DatapathController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageIF.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ForwardController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineIFID.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageID.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineIDEX.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageEX.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineEXMEM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageMEM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PipelineMEMWB.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/RegisterFile.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Decoder_RV32I.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/alu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/PCAlu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Register.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux8To1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/ComparerZero.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Comparer.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -27,15 +27,15 @@ module RegisterFile
     input  logic [ADDR_WIDTH-1:0] i_RdAddrB,  // Identificador del regisres del port de lectura B
     output logic [DATA_WIDTH-1:0] o_RdDataB); // Dades lleigides del port B
        
-    localparam NUM_REGS = 2**ADDR_WIDTH;
+    localparam SIZE = 2**ADDR_WIDTH;
     localparam ZERO = {DATA_WIDTH{1'b0}};
     
     
-    logic [DATA_WIDTH-1:0] Data[1:NUM_REGS-1];
+    logic [DATA_WIDTH-1:0] Data[1:SIZE-1];
     
     always_ff @(posedge i_Clock)
         if (i_Reset) begin
-            for (int i = 1; i < NUM_REGS; i++)
+            for (int i = $left(Data); i <= $right(Data); i++)
                 Data[i] <= ZERO;
         end                
         else if (i_WrEnable & (i_WrAddr != 0))
@@ -45,7 +45,7 @@ module RegisterFile
         o_RdDataA = (i_Reset | (i_RdAddrA == 0)) ? ZERO : Data[i_RdAddrA];
         o_RdDataB = (i_Reset | (i_RdAddrB == 0)) ? ZERO : Data[i_RdAddrB];
     end
-
+ 
 
     // ------------------------------------------------------------------------
     // Verificacio

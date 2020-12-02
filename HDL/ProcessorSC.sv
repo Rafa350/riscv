@@ -37,8 +37,8 @@ module ProcessorSC
     logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
     logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
 
-    Controller_RV32I
-    Ctrl (
+    DatapathController
+    DpCtrl (
         .i_Inst         (i_PgmInst),
         .i_IsEQ         (Comp_EQ),
         .i_IsLT         (Comp_LT),
@@ -208,7 +208,7 @@ module ProcessorSC
     //
     Register #(
         .WIDTH (PC_WIDTH),
-        .INIT  (0))
+        .INIT  ({PC_WIDTH{1'b0}}))
     PCReg (
         .i_Clock    (i_Clock),
         .i_Reset    (i_Reset),

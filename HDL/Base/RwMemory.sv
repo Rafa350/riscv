@@ -5,6 +5,7 @@
 //       Lectura asincrona i escriptura sincrona.
 //       Un canal per lectura, i un altre per escriptura.
 //       Escriptura i lectura simultanies.
+//       Es direcciona en bytes pero retorna word de DATA_WIDTH bits
 //
 //       Parametres:
 //           DATA_WIDTH : Amplada del canal de dades
@@ -33,13 +34,13 @@ module RwMemory
     input  logic [DATA_WIDTH-1:0] i_WrData,   // Dades per escriure
     output logic [DATA_WIDTH-1:0] o_RdData);  // Dades lleigides
 
-    localparam SIZE = 2**ADDR_WIDTH;
+    localparam SIZE = (2**ADDR_WIDTH)>>2;
 
     logic [DATA_WIDTH-1:0] Data [0:SIZE-1];
 
     always_ff @(posedge i_Clock)
         if (i_WrEnable)
-            Data[i_Addr] <= i_WrData;
+            Data[i_Addr[ADDR_WIDTH-1:2]] <= i_WrData;
 
     assign o_RdData = Data[i_Addr];
     

@@ -1,6 +1,7 @@
 // ------------------------------------------------------------------
 //
 //       Memoria de lectura (RO)
+//       Es direcciona en bytes, pero retorna words de DATA_WIDTH bits
 //
 //       Parametres:
 //           DATA_WIDTH : Amplada del bus de dades.
@@ -21,31 +22,17 @@ module RoMemory
     parameter ADDR_WIDTH = 32,
     parameter FILE_NAME  = "data.txt")
 (
-    input  logic [ADDR_WIDTH-1:0] i_Addr,    // Adressa
-    output logic [DATA_WIDTH-1:0] o_RdData); // Dades de lectura
+    input  logic [ADDR_WIDTH-1:0] i_Addr,    // Adressa en bytes
+    output logic [DATA_WIDTH-1:0] o_RdData); // Dades lleigides lectura
     
-    localparam SIZE = 2**ADDR_WIDTH;
-    localparam unsigned WORD_BYTES = (DATA_WIDTH + 7) / 8;
-    
-    logic [7:0] Data[SIZE];
-    
-    if (WORD_BYTES == 1)
-        assign o_RdData = 
-            {Data[{i_Addr[ADDR_WIDTH-1:2], 2'b00}],
-             24'b0};
+    localparam SIZE = (2**ADDR_WIDTH)>>2;
 
-    if (WORD_BYTES == 2) 
-        assign o_RdData = 
-            {Data[{i_Addr[ADDR_WIDTH-1:2], 2'b01}],
-             Data[{i_Addr[ADDR_WIDTH-1:2], 2'b00}],
-             16'b0};
-   
-    if (WORD_BYTES == 4) 
-        assign o_RdData = 
-            {Data[{i_Addr[ADDR_WIDTH-1:2], 2'b11}],
-             Data[{i_Addr[ADDR_WIDTH-1:2], 2'b10}],
-             Data[{i_Addr[ADDR_WIDTH-1:2], 2'b01}],
-             Data[{i_Addr[ADDR_WIDTH-1:2], 2'b00}]};
+    
+    logic [DATA_WIDTH-1:0] Data[SIZE];
+    logic [DATA_WIDTH-1:0] d;
+    
+    assign d = Data[i_Addr[ADDR_WIDTH-1:2]];   
+    assign o_RdData = {d[7:0], d[15:8], d[23:16], d[31:24]};
              
     initial
         $readmemh(FILE_NAME, Data);

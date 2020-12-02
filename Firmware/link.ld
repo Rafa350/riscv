@@ -9,50 +9,43 @@ _min_stack   = 128;
 _stack_len   = LENGTH(stack);
 _stack_start = ORIGIN(stack) + LENGTH(stack);
 
-_entry_point = ORIGIN(rom);
-
-ENTRY(_start)
+ENTRY(_reset_handler)
 
 SECTIONS
 {
-
-    .text ORIGIN(rom) :
+    .text :
     {
         . = ALIGN(4);
         _stext = .;
+        
         *(.text*)
+        *(.text.*)
+        
+        . = ALIGN(4);
         _etext = .;
-
-        *(.rodata*)
     } > rom
 
     .rodata :
     {
         . = ALIGN(4);
-        *(.rodata);
-        *(.rodata.*)
-    } > ram
-    
-    .srodata :
-    {
-        . = ALIGN(4);
+        
         *(.srodata);
         *(.srodata.*)
-    } > ram
-
-    .shbss :
-    {
-        . = ALIGN(4),
-        *(.shbss)
-    } > ram
-
+        *(.rodata);
+        *(.rodata.*)
+    } > rom
+    
     .data :
     {
         . = ALIGN(4);
         sdata = .;
         _sdata = .;
-        *(.data*);
+        
+        *(.sdata);
+        *(.sdata.*)
+        *(.data);
         *(.data.*)
+        
         . = ALIGN(4);
         edata = .;
         _edata = .;
@@ -62,11 +55,14 @@ SECTIONS
     {
         . = ALIGN(4);
         _bss_start = .;
+        
         *(.bss*)
         *(.bss.*)
         *(.sbss)
         *(.sbss.*)
         *(COMMON)
+        
+        . = ALIGN(4);
         _bss_end = .;
     } > ram
 
@@ -79,5 +75,4 @@ SECTIONS
         _stack = .;
     } > stack
 
-    _end = . ;
 }
