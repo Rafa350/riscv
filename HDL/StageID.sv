@@ -31,8 +31,8 @@ module StageID
     output logic                  o_RegWrEnable,       // Habilita l'escriptura del registre
     output logic                  o_MemWrEnable,       // Habilita l'escritura en memoria
     output logic [1:0]            o_RegWrDataSel,      // Seleccio de les dades per escriure en el registre (rd)
-    output logic                  o_OperandASel,       // Seleccio del valor A de la ALU
-    output logic                  o_OperandBSel,       // Seleccio del valor B de la ALU
+    output logic [1:0]            o_OperandASel,       // Seleccio del valor A de la ALU
+    output logic [1:0]            o_OperandBSel,       // Seleccio del valor B de la ALU
     output Types::AluOp           o_AluControl,        // Codi de control de la ALU
     output logic [PC_WIDTH-1:0]   o_PCNext);           // Nou valor de PC
 
@@ -78,8 +78,8 @@ module StageID
     logic       DpCtrl_MemWrEnable;  // Autoritza escritura en memoria
     logic [1:0] DpCtrl_PCNextSel;    // Selector del seguent valor del PC
     logic [1:0] DpCtrl_DataToRegSel; // Selector del les dades d'escriptura en el registre
-    logic       DpCtrl_OperandASel;  // Seleccio del operand A de la ALU
-    logic       DpCtrl_OperandBSel;  // Seleccio del operand B de la ALU
+    logic [1:0] DpCtrl_OperandASel;  // Seleccio del operand A de la ALU
+    logic [1:0] DpCtrl_OperandBSel;  // Seleccio del operand B de la ALU
 
     DatapathController
     DpCtrl (

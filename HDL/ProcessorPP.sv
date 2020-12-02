@@ -92,8 +92,8 @@ module ProcessorPP
     logic [1:0]            ID_RegWrDataSel;
     logic                  ID_MemWrEnable;
     AluOp                  ID_AluControl;
-    logic                  ID_OperandASel;
-    logic                  ID_OperandBSel;
+    logic [1:0]            ID_OperandASel;
+    logic [1:0]            ID_OperandBSel;
     logic [PC_WIDTH-1:0]   ID_PCNext;
     logic                  ID_Bubble;
 
@@ -153,8 +153,8 @@ module ProcessorPP
     logic                  IDEX_MemWrEnable;
     logic                  IDEX_IsLoad;
     AluOp                  IDEX_AluControl;
-    logic                  IDEX_OperandASel;
-    logic                  IDEX_OperandBSel;
+    logic [1:0]            IDEX_OperandASel;
+    logic [1:0]            IDEX_OperandBSel;
     logic [2:0]            IDEX_DbgTag;
 
     PipelineIDEX #(

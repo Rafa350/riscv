@@ -25,8 +25,8 @@ module PipelineIDEX
     input  logic [1:0]            i_RegWrDataSel, // Seleccio de dades per escriure en els registre
     input  logic                  i_MemWrEnable,  // Habilita la escriptura en memoria
     input  logic                  i_IsLoad,       // Indica si es una instruccio Load
-    input  logic                  i_OperandASel,
-    input  logic                  i_OperandBSel,
+    input  logic [1:0]            i_OperandASel,
+    input  logic [1:0]            i_OperandBSel,
     input  logic [4:0]            i_AluControl,   // Control de la ALU
 
     // Senyals de sortida del pipeline
@@ -40,8 +40,8 @@ module PipelineIDEX
     output logic [1:0]            o_RegWrDataSel,
     output logic                  o_MemWrEnable,
     output logic                  o_IsLoad,
-    output logic                  o_OperandASel,
-    output logic                  o_OperandBSel,
+    output logic [1:0]            o_OperandASel,
+    output logic [1:0]            o_OperandBSel,
     output logic [4:0]            o_AluControl);
 
 
@@ -57,8 +57,8 @@ module PipelineIDEX
         o_MemWrEnable  <= i_Reset ? 1'b0               : (i_Flush ? 1'b0 : i_MemWrEnable);
         o_IsLoad       <= i_Reset ? 1'b0               : i_IsLoad;
         o_AluControl   <= i_Reset ? 5'b0               : i_AluControl;
-        o_OperandASel  <= i_Reset ? 1'b0               : i_OperandASel;
-        o_OperandBSel  <= i_Reset ? 1'b0               : i_OperandBSel;
+        o_OperandASel  <= i_Reset ? 2'b0               : i_OperandASel;
+        o_OperandBSel  <= i_Reset ? 2'b0               : i_OperandBSel;
         o_DbgTag       <= i_Reset ? 3'b0               : i_DbgTag;
     end
 

@@ -1,8 +1,8 @@
 MEMORY
 {
     rom      (rx) : ORIGIN = 0x00000000, LENGTH = 0x8000
-    ram     (rwx) : ORIGIN = 0x00100000, LENGTH = 0x0100
-    stack    (rw) : ORIGIN = 0x00100100, LENGTH = 0x0100
+    ram     (rwx) : ORIGIN = 0x00100000, LENGTH = 0x0200
+    stack    (rw) : ORIGIN = 0x00100200, LENGTH = 0x0100
 }
 
 _min_stack   = 128;
