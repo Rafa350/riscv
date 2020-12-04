@@ -133,13 +133,15 @@ module DatapathController (
             /*  BLT   */ 17'b???????_100_1100011: dp = DP_BLT;
             /*  BLTU  */ 17'b???????_110_1100011: dp = DP_BLTU;
             /*  BNE   */ 17'b???????_001_1100011: dp = DP_BNE;
-
+                       
             /*  JAL   */ 17'b???????_???_1101111: dp = DP_JAL;
             /*  JALR  */ 17'b???????_000_1100111: dp = DP_JALR;
 
             /*  LUI   */ 17'b???????_???_0110111: dp = DP_LUI;
             /*  LB    */ 17'b???????_000_0000011: dp = DP_LB;
+            /*  LBU   */
             /*  LH    */ 17'b???????_001_0000011: dp = DP_LH;
+            /*  LHU   */
             /*  LW    */ 17'b???????_010_0000011: dp = DP_LW;
 
             /*  OR    */ 17'b0000000_110_0110011: dp = DP_OR;
@@ -148,10 +150,15 @@ module DatapathController (
             /*  SB    */ 17'b???????_000_0100011: dp = DP_SB;
             /*  SH    */ 17'b???????_001_0100011: dp = DP_SH;
             /*  SLL   */ 17'b0000000_001_0110011: dp = DP_SLL;
+            /*  SLLI  */
             /*  SLT   */ 17'b0000000_010_0110011: dp = DP_SLT;
             /*  SLTI  */ 17'b???????_010_0010011: dp = DP_SLTI;
             /*  SLTIU */ 17'b???????_011_0010011: dp = DP_SLTIU;
             /*  SLTU  */ 17'b0000000_011_0110011: dp = DP_SLTU;
+            /*  SRA   */
+            /*  SRAI  */
+            /*  SRL   */
+            /*  SRLI  */
             /*  SUB   */ 17'b0100000_000_0110011: dp = DP_SUB;
             /*  SW    */ 17'b???????_010_0100011: dp = DP_SW;
 

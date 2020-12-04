@@ -24,12 +24,26 @@ module ProcessorPP
     // Debug
     // ------------------------------------------------------------------------
 
-    logic [2:0] DbgTag;
+    logic [7:0] DbgCtrl_Tag;
 
-    DebugTagGenerator DebugTagGenerator(
-        .i_Clock (i_Clock),
-        .i_Reset (i_Reset),
-        .o_Tag   (DbgTag));
+    DebugController #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .REG_WIDTH  (REG_WIDTH),
+        .PC_WIDTH   (PC_WIDTH))
+    DbgCtrl(
+        .i_Clock         (i_Clock),
+        .i_Reset         (i_Reset),
+        .i_ExTag         (MEMWB_DbgTag),
+        .i_ExPC          (MEMWB_DbgPC),
+        .i_ExInst        (MEMWB_DbgInst),
+        .i_ExRegWrAddr   (MEMWB_RegWrAddr),
+        .i_ExRegWrData   (MEMWB_RegWrData),
+        .i_ExRegWrEnable (MEMWB_RegWrEnable),
+        .i_ExMemWrAddr   (0),
+        .i_ExMemWrData   (0),
+        .i_ExMemWrEnable (0),
+        .o_Tag           (DbgCtrl_Tag));
+
 
     // ------------------------------------------------------------------------
     // Stage IF
@@ -59,7 +73,9 @@ module ProcessorPP
 
     logic [PC_WIDTH-1:0] IFID_PC;
     logic [31:0]         IFID_Inst;
-    logic [2:0]          IFID_DbgTag;
+    logic [7:0]          IFID_DbgTag;
+    logic [PC_WIDTH-1:0] IFID_DbgPC;
+    logic [31:0]         IFID_DbgInst;
 
     PipelineIFID #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -67,15 +83,19 @@ module ProcessorPP
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH))
     IFID (
-        .i_Clock  (i_Clock),
-        .i_Reset  (i_Reset),
-        .i_Stall  (ID_Bubble),
-        .i_DbgTag (DbgTag),
-        .o_DbgTag (IFID_DbgTag),
-        .i_PC     (IF_PC),
-        .i_Inst   (IF_Inst),
-        .o_PC     (IFID_PC),
-        .o_Inst   (IFID_Inst));
+        .i_Clock   (i_Clock),
+        .i_Reset   (i_Reset),
+        .i_Stall   (ID_Bubble),
+        .i_DbgTag  (DbgCtrl_Tag),
+        .i_DbgPC   (IF_PC),
+        .i_DbgInst (IF_Inst),
+        .o_DbgTag  (IFID_DbgTag),
+        .o_DbgPC   (IFID_DbgPC),
+        .o_DbgInst (IFID_DbgInst),
+        .i_PC      (IF_PC),
+        .i_Inst    (IF_Inst),
+        .o_PC      (IFID_PC),
+        .o_Inst    (IFID_Inst));
 
 
     // ------------------------------------------------------------------------
@@ -155,7 +175,9 @@ module ProcessorPP
     AluOp                  IDEX_AluControl;
     logic [1:0]            IDEX_OperandASel;
     logic [1:0]            IDEX_OperandBSel;
-    logic [2:0]            IDEX_DbgTag;
+    logic [7:0]            IDEX_DbgTag;
+    logic [PC_WIDTH-1:0]   IDEX_DbgPC;
+    logic [31:0]           IDEX_DbgInst;
 
     PipelineIDEX #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -167,7 +189,11 @@ module ProcessorPP
         .i_Reset        (i_Reset),
         .i_Flush        (ID_Bubble),
         .i_DbgTag       (IFID_DbgTag),
+        .i_DbgPC        (IFID_DbgPC),
+        .i_DbgInst      (IFID_DbgInst),
         .o_DbgTag       (IDEX_DbgTag),
+        .o_DbgPC        (IDEX_DbgPC),
+        .o_DbgInst      (IDEX_DbgInst),
         .i_InstOP       (ID_InstOP),
         .i_InstIMM      (ID_InstIMM),
         .i_DataA        (ID_DataA),
@@ -233,7 +259,9 @@ module ProcessorPP
     logic [1:0]            EXMEM_RegWrDataSel;
     logic                  EXMEM_MemWrEnable;
     logic                  EXMEM_IsLoad;
-    logic [2:0]            EXMEM_DbgTag;
+    logic [7:0]            EXMEM_DbgTag;
+    logic [PC_WIDTH-1:0]   EXMEM_DbgPC;
+    logic [31:0]           EXMEM_DbgInst;
 
     PipelineEXMEM #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -243,9 +271,13 @@ module ProcessorPP
     EXMEM (
         .i_Clock        (i_Clock),
         .i_Reset        (i_Reset),
-        .i_Flush        (0),
+        .i_Flush        (0),        
         .i_DbgTag       (IDEX_DbgTag),
+        .i_DbgInst      (IDEX_DbgInst),
+        .i_DbgPC        (IDEX_DbgPC),
         .o_DbgTag       (EXMEM_DbgTag),
+        .o_DbgPC        (EXMEM_DbgPC),
+        .o_DbgInst      (EXMEM_DbgInst),        
         .i_PC           (IDEX_PC),
         .i_Result       (EX_Result),
         .i_DataB        (EX_DataB),
@@ -254,7 +286,7 @@ module ProcessorPP
         .i_RegWrAddr    (IDEX_RegWrAddr),
         .i_RegWrEnable  (IDEX_RegWrEnable),
         .i_RegWrDataSel (IDEX_RegWrDataSel),
-        .i_IsLoad       (IDEX_IsLoad),
+        .i_IsLoad       (IDEX_IsLoad),        
         .o_PC           (EXMEM_PC),
         .o_Result       (EXMEM_Result),
         .o_DataB        (EXMEM_DataB),
@@ -298,7 +330,9 @@ module ProcessorPP
     logic [DATA_WIDTH-1:0] MEMWB_RegWrData;
     logic [REG_WIDTH-1:0]  MEMWB_RegWrAddr;
     logic                  MEMWB_RegWrEnable;
-    logic [2:0]            MEMWB_DbgTag;
+    logic [7:0]            MEMWB_DbgTag;
+    logic [PC_WIDTH-1:0]   MEMWB_DbgPC;
+    logic [31:0]           MEMWB_DbgInst;
 
     PipelineMEMWB #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -310,7 +344,11 @@ module ProcessorPP
         .i_Reset       (i_Reset),
         .i_Flush       (0),
         .i_DbgTag      (EXMEM_DbgTag),
+        .i_DbgPC       (EXMEM_DbgPC),
+        .i_DbgInst     (EXMEM_DbgInst),
         .o_DbgTag      (MEMWB_DbgTag),
+        .o_DbgPC       (MEMWB_DbgPC),
+        .o_DbgInst     (MEMWB_DbgInst),
         .i_InstOP      (EXMEM_InstOP),
         .i_RegWrAddr   (EXMEM_RegWrAddr),
         .i_RegWrEnable (EXMEM_RegWrEnable),
@@ -326,70 +364,6 @@ module ProcessorPP
     // Es teoric, en la practica no te cap implementacio, ja que es la part
     // d'escriptura en els registres, que es troben en el stage ID.
     // ------------------------------------------------------------------------
-
-
-    // ------------------------------------------------------------------------
-    // Funcions d'access per depuracio
-    // ------------------------------------------------------------------------
-
-`ifdef VERILATOR
-
-    function logic [PC_WIDTH-1:0] getIFID_PC; // verilator public
-        return IFID_PC;
-    endfunction
-
-    function logic [DATA_WIDTH-1:0] getIFID_Inst; // verilator public
-        return IFID_Inst;
-    endfunction
-
-    function logic [6:0] getIDEX_InstOP; // verilator public
-        return IDEX_InstOP;
-    endfunction
-
-    function logic [REG_WIDTH-1:0] getIDEX_InstRS1; // verilator public
-        return 0; //IDEX_InstRS1;
-    endfunction
-
-    function logic [REG_WIDTH-1:0] getIDEX_InstRS2; // verilator public
-        return 0; //IDEX_InstRS2;
-    endfunction
-
-    function logic [DATA_WIDTH-1:0] getIDEX_InstIMM; // verilator public
-        return IDEX_InstIMM;
-    endfunction
-
-    function logic [DATA_WIDTH-1:0] getIDEX_DataA; // verilator public
-        return IDEX_DataA;
-    endfunction
-
-    function logic [DATA_WIDTH-1:0] getIDEX_DataB; // verilator public
-        return IDEX_DataB;
-    endfunction
-
-    function logic [REG_WIDTH-1:0] getIDEX_RegWrAddr; // verilator public
-        return IDEX_RegWrAddr;
-    endfunction
-
-    function logic getIDEX_RegWrEnable; // verilator public
-        return IDEX_RegWrEnable;
-    endfunction
-
-    function logic [1:0] getIDEX_RegWrDataSel; // verilator public
-        return IDEX_RegWrDataSel;
-    endfunction
-
-    function logic [REG_WIDTH-1:0] getEXMEM_RegWrAddr; // verilator public
-        return EXMEM_RegWrAddr;
-    endfunction
-
-    function logic getEXMEM_RegWrEnable; // verilator public
-        return EXMEM_RegWrEnable;
-    endfunction
-
-    function logic [1:0] getEXMEM_RegWrDataSel; // verilator public
-        return EXMEM_RegWrDataSel;
-    endfunction
-`endif
 
 
 endmodule

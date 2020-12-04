@@ -47,7 +47,6 @@ target_sources(simx
     PRIVATE ${SOURCE_DIR}/sim_main.cpp
             ${SOURCE_DIR}/sim_dis.cpp
             ${SOURCE_DIR}/sim_ram.cpp
-            ${SOURCE_DIR}/sim_access.cpp
             ${SIMLIB_SOURCE_DIR}/simMemory.cpp)
 target_include_directories(simx
     PRIVATE .
@@ -65,7 +64,12 @@ add_custom_command(
 verilate(simx
     TOP_MODULE top
     TRACE_FST
-    INCLUDE_DIRS ${HDL_INCLUDE_DIR} ${HDL_INCLUDE_DIR}/Base
+    INCLUDE_DIRS ${HDL_INCLUDE_DIR} 
+                 ${HDL_INCLUDE_DIR}/Base
+                 ${HDL_INCLUDE_DIR}/Core
+                 ${HDL_INCLUDE_DIR}/Core/ALU
+                 ${HDL_INCLUDE_DIR}/Core/Stage
+                 ${HDL_INCLUDE_DIR}/Core/Pipeline
     VERILATOR_ARGS
     SOURCES verilator_top.sv
 )

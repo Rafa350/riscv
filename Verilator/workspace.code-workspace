@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../verilator"
+		},
+		{
+			"path": "../HDL"
+		}
+	],
+	"remoteAuthority": "wsl+Ubuntu-20.04",
+	"settings": {}
+}

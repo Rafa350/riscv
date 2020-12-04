@@ -1,4 +1,4 @@
-module Alu 
+module IntegerALU 
 #(
     parameter WIDTH = 32)           // Amplada de dades
 (

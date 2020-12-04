@@ -78,6 +78,14 @@ static const char* getRegName(
 }
 
 
+void printMemory(
+    unsigned addr,
+    uint32_t data) {
+    
+    printf("M: %8.8X := %8.8X\n", addr, data);
+}
+
+
 /// ----------------------------------------------------------------------
 /// \brief    Imprimeix informacio d'un registre.
 /// \param    addr: L'adressa del registre.
@@ -89,7 +97,7 @@ void printRegister(
         
     const char *r = getRegName(addr);
 
-    printf("REGS: %s  %8.8X\n", r, data);
+    printf("R: %s := %8.8X\n", r, data);
 }
 
 
@@ -109,7 +117,7 @@ void printInstruction(
     const char *rs2 = getRegName((data >> 20) & 0x1F);
     const char *rd  = getRegName((data >> 7) & 0x1F);
 
-    printf("INST: %8.8X  %8.8X:  ", addr, data);
+    printf("I: %8.8X  %8.8X:  ", addr, data);
 
     switch (op) {
         case OpCode_Op: {

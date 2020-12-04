@@ -3,14 +3,16 @@ module Decoder_RV32I
     parameter DATA_WIDTH = 32,
     parameter REG_WIDTH  = 5)
  (
-    input  logic [31:0]           i_Inst,   // La instruccio a decodificar
-    output logic [6:0]            o_OP,     // El codi d'operacio
-    output logic [REG_WIDTH-1:0]  o_RS1,    // El registre font 1 (rs1)
-    output logic [REG_WIDTH-1:0]  o_RS2,    // El registre fomt 2 (rs2)
-    output logic [REG_WIDTH-1:0]  o_RD,     // El registre de destinacio  (rd)
-    output logic [DATA_WIDTH-1:0] o_IMM,    // El valor inmediat
-    output logic                  o_IsLoad, // Indica que es una instruccio LOAD
-    output logic                  o_IsALU); // Indica que es una instruccio ALU
+    input  logic [31:0]           i_Inst,      // La instruccio a decodificar
+    output logic [6:0]            o_OP,        // El codi d'operacio
+    output logic [REG_WIDTH-1:0]  o_RS1,       // El registre font 1 (rs1)
+    output logic [REG_WIDTH-1:0]  o_RS2,       // El registre fomt 2 (rs2)
+    output logic [REG_WIDTH-1:0]  o_RD,        // El registre de destinacio  (rd)
+    output logic [DATA_WIDTH-1:0] o_IMM,       // El valor inmediat
+    output logic                  o_IsLoad,    // Indica que es una instruccio LOAD
+    output logic                  o_IsALU,     // Indica que es una instruccio ALU
+    output logic                  o_IsECALL,   // Indica instruccio ECALL
+    output logic                  o_IsEBREAK); // Indica instruccio EBREAK
     
     
     import Types::*;
@@ -62,8 +64,10 @@ module Decoder_RV32I
     
     // Evalua els indicadors del tipus d'instruccio
     //
-    assign o_IsLoad = i_Inst[6:0] == OpCode_Load;
-    assign o_IsALU  = (i_Inst[6:0] == OpCode_Op) | (i_Inst[6:0] == OpCode_OpIMM);
+    assign o_IsLoad   = i_Inst[6:0] == OpCode_Load;
+    assign o_IsALU    = (i_Inst[6:0] == OpCode_Op) | (i_Inst[6:0] == OpCode_OpIMM);
+    assign o_IsECALL  = (i_Inst[6:0] == OpCode_System) & (i_Inst[14:12] == 3'b001);
+    assign o_IsEBREAK = (i_Inst[6:0] == OpCode_System) & (i_Inst[14:12] == 3'b000);
 
     // Evalua el codi d'operacio
     //

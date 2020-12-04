@@ -54,18 +54,22 @@ module StageID
     logic [DATA_WIDTH-1:0] Dec_IMM;
     logic                  Dec_IsLoad;
     logic                  Dec_IsALU;
+    logic                  Dec_IsECALL;
+    logic                  Dec_IsEBREAK;
 
     Decoder_RV32I #(
         .REG_WIDTH (REG_WIDTH))
     Dec (
-        .i_Inst   (i_Inst),
-        .o_OP     (Dec_OP),
-        .o_RS1    (Dec_RS1),
-        .o_RS2    (Dec_RS2),
-        .o_RD     (Dec_RD),
-        .o_IMM    (Dec_IMM),
-        .o_IsLoad (Dec_IsLoad),
-        .o_IsALU  (Dec_IsALU));
+        .i_Inst     (i_Inst),
+        .o_OP       (Dec_OP),
+        .o_RS1      (Dec_RS1),
+        .o_RS2      (Dec_RS2),
+        .o_RD       (Dec_RD),
+        .o_IMM      (Dec_IMM),
+        .o_IsLoad   (Dec_IsLoad),
+        .o_IsALU    (Dec_IsALU),
+        .o_IsECALL  (Dec_IsECALL),
+        .o_IsEBREAK (Dec_IsEBREAK));
 
 
     // ------------------------------------------------------------------------

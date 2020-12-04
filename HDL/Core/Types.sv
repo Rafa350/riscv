@@ -9,7 +9,8 @@ package Types;
         OpCode_LUI    = 7'h37,
         OpCode_Branch = 7'h63,
         OpCode_JALR   = 7'h67,
-        OpCode_JAL    = 7'h6f
+        OpCode_JAL    = 7'h6f,
+        OpCode_System = 7'h73
     } OpCode;
     
     typedef enum logic[4:0] {

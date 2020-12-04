@@ -45,21 +45,5 @@ module RegisterFile
         o_RdDataA = (i_Reset | (i_RdAddrA == 0)) ? ZERO : Data[i_RdAddrA];
         o_RdDataB = (i_Reset | (i_RdAddrB == 0)) ? ZERO : Data[i_RdAddrB];
     end
- 
-
-    // ------------------------------------------------------------------------
-    // Verificacio
-    // ------------------------------------------------------------------------
-    
-`ifdef VERILATOR    
-    import "DPI-C" function void TraceRegister(input int addr, input int inst);
-    
-    always_ff @(posedge i_Clock)
-        if (!i_Reset)
-            for (int i = $left(Data); i <= 5; i++)
-                // verilator lint_off WIDTH
-                TraceRegister(i, Data[i]);
-                // verilator lint_on WIDTH
-`endif
     
 endmodule

@@ -29,26 +29,26 @@ module ProcessorSC
 
     // Control del datapath. Genera les senyals de control
     //
-    AluOp       Ctrl_AluControl;   // Operacio de la ALU
-    logic       Ctrl_RegWrEnable;  // Autoritza escriptura del regisres
-    logic       Ctrl_MemWrEnable;  // Autoritza escritura en memoria
-    logic [1:0] Ctrl_PCNextSel;    // Selector del seguent valor del PC
-    logic [1:0] Ctrl_RegWrDataSel; // Selector del les dades d'esacriptura en el registre
-    logic       Ctrl_OperandASel;  // Seleccio del operand A de la ALU
-    logic       Ctrl_OperandBSel;  // Seleccio del operand B de la ALU
+    AluOp       DpCtrl_AluControl;   // Operacio de la ALU
+    logic       DpCtrl_RegWrEnable;  // Autoritza escriptura del regisres
+    logic       DpCtrl_MemWrEnable;  // Autoritza escritura en memoria
+    logic [1:0] DpCtrl_PCNextSel;    // Selector del seguent valor del PC
+    logic [1:0] DpCtrl_RegWrDataSel; // Selector del les dades d'esacriptura en el registre
+    logic [1:0] DpCtrl_OperandASel;  // Seleccio del operand A de la ALU
+    logic [1:0] DpCtrl_OperandBSel;  // Seleccio del operand B de la ALU
 
     DatapathController
     DpCtrl (
         .i_Inst         (i_PgmInst),
         .i_IsEQ         (Comp_EQ),
         .i_IsLT         (Comp_LT),
-        .o_AluControl   (Ctrl_AluControl),
-        .o_MemWrEnable  (Ctrl_MemWrEnable),
-        .o_RegWrEnable  (Ctrl_RegWrEnable),
-        .o_OperandBSel  (Ctrl_OperandBSel),
-        .o_RegWrDataSel (Ctrl_RegWrDataSel),
-        .o_PCNextSel    (Ctrl_PCNextSel));
-    assign Ctrl_OperandASel = 0;
+        .o_AluControl   (DpCtrl_AluControl),
+        .o_MemWrEnable  (DpCtrl_MemWrEnable),
+        .o_RegWrEnable  (DpCtrl_RegWrEnable),
+        .o_OperandASel  (DpCtrl_OperandASel),
+        .o_OperandBSel  (DpCtrl_OperandBSel),
+        .o_RegWrDataSel (DpCtrl_RegWrDataSel),
+        .o_PCNextSel    (DpCtrl_PCNextSel));
 
 
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
@@ -90,6 +90,7 @@ module ProcessorSC
     //
     logic [DATA_WIDTH-1:0] RegBlock_RdDataA, // Dades de lectura A
                            RegBlock_RdDataB; // Dades de lectura B
+                           
     RegisterFile #(
         .DATA_WIDTH  (DATA_WIDTH),
         .ADDR_WIDTH  (REG_WIDTH))
@@ -98,7 +99,7 @@ module ProcessorSC
         .i_Reset    (i_Reset),
         .i_WrAddr   (Dec_InstRD),
         .i_WrData   (Sel3_Output),
-        .i_WrEnable (Ctrl_RegWrEnable),
+        .i_WrEnable (DpCtrl_RegWrEnable),
         .i_RdAddrA  (Dec_InstRS1),
         .o_RdDataA  (RegBlock_RdDataA),
         .i_RdAddrB  (Dec_InstRS2),
@@ -108,25 +109,32 @@ module ProcessorSC
     //
     logic [DATA_WIDTH-1:0] Sel5_Output;
     
-    Mux2To1 #(
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
         .WIDTH (DATA_WIDTH))
     Sel5 (
-        .i_Select (Ctrl_OperandASel),
+        .i_Select (DpCtrl_OperandASel),
         .i_Input0 (RegBlock_RdDataA),
         .i_Input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PC}),
+        .i_Input2 ('d0),
         .o_Output (Sel5_Output));
+    // verilator lint_on PINMISSING
+
 
     // Selecciona les dades d'entrada B de la ALU
     //
     logic [DATA_WIDTH-1:0] Sel1_Output;   
     
-    Mux2To1 #(
+    // verilator lint_off PINMISSING
+    Mux4To1 #(
         .WIDTH (DATA_WIDTH))
     Sel1 (
-        .i_Select (Ctrl_OperandBSel),
+        .i_Select (DpCtrl_OperandBSel),
         .i_Input0 (RegBlock_RdDataB),
         .i_Input1 (Dec_InstIMM),
+        .i_Input2 ('d4),
         .o_Output (Sel1_Output));
+    // verilator lint_on PINMISSING
 
 
     // Selecciona les dades per escriure en el registre
@@ -137,7 +145,7 @@ module ProcessorSC
     Mux4To1 #(
         .WIDTH  (DATA_WIDTH))
     Sel3 (
-        .i_Select (Ctrl_RegWrDataSel),
+        .i_Select (DpCtrl_RegWrDataSel),
         .i_Input0 (Alu_Result),             // Escriu el resultat de la ALU
         .i_Input1 (i_MemRdData),            // Escriu el valor lleigit de la memoria
         .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PCPlus4}), // Escriu el valor de PC+4
@@ -149,10 +157,10 @@ module ProcessorSC
     //
     logic [DATA_WIDTH-1:0] Alu_Result; 
     
-    Alu #(
+    IntegerALU #(
         .WIDTH (DATA_WIDTH))
     Alu (
-        .i_Op       (Ctrl_AluControl),
+        .i_Op       (DpCtrl_AluControl),
         .i_OperandA (Sel5_Output),
         .i_OperandB (Sel1_Output),
         .o_Result   (Alu_Result));
@@ -197,7 +205,7 @@ module ProcessorSC
     Mux4To1 #(
         .WIDTH (PC_WIDTH))
     Sel4 (
-        .i_Select (Ctrl_PCNextSel),
+        .i_Select (DpCtrl_PCNextSel),
         .i_Input0 (PCPlus4),
         .i_Input1 (PCPlusOffset),
         .i_Input2 (PCPlusOffsetAndRS1),
@@ -221,7 +229,7 @@ module ProcessorSC
     //
     always_comb begin
         o_MemAddr     = Alu_Result[ADDR_WIDTH-1:0];
-        o_MemWrEnable = Ctrl_MemWrEnable;
+        o_MemWrEnable = DpCtrl_MemWrEnable;
         o_MemWrData   = RegBlock_RdDataB;
     end
 

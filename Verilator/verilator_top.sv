@@ -11,8 +11,7 @@
 `define PC_WIDTH   10
 `define REG_WIDTH  5
 `define FIRMWARE   "firmware.txt"
-
-`define PIPELINE
+`define PIPELINEx
 
 
 module top #(

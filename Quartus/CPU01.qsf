@@ -320,11 +320,11 @@ set_global_assignment -name SYSTEMVERILOG_FILE Program.sv
 set_global_assignment -name SYSTEMVERILOG_FILE Memory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorSC.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugTagGenerator.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StallController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/SyncRam1W2R.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ProcessorPP.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DebugController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/DatapathController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/StageIF.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/ForwardController.sv
