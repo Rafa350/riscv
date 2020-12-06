@@ -30,24 +30,21 @@ module top(
     logic Clock;
     logic Reset;
 
-    logic [ADDR_WIDTH-1:0] MemAddr;
-    logic                  MemWrEnable;
-    logic [DATA_WIDTH-1:0] MemWrData;
-    logic [DATA_WIDTH-1:0] MemRdData;
-
-    logic [PC_WIDTH-1:0]   PgmAddr;
-    logic [31:0]           PgmInst;
-       
     assign Clock = CLOCK_50;
     assign Reset = ~KEY[0];
 
-    assign LED[7:0]      = MemWrData[7:0];
+
+    DataMemoryBus #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH))
+    DBus();        
     
-    assign GPIO_0[7:0]   = PgmAddr[7:0];
-    assign GPIO_0[15:8]  = MemAddr[7:0];
-    assign GPIO_0[23:16] = MemWrData[7:0];
-    assign GPIO_0[31:24] = PgmInst[7:0];
+    InstMemoryBus #(
+        .PC_WIDTH (PC_WIDTH))
+    IBus();
     
+    assign LED[7:0]      = DBus.WrData[7:0];
+
     
     // ------------------------------------------------------------------------
     // Port IO
@@ -55,30 +52,25 @@ module top(
 
 
     // ------------------------------------------------------------------------
-    // Memoria RAM
+    // Memoria de dades
     // ------------------------------------------------------------------------
     
-    Memory #(
+    DataMemory #(
         .DATA_WIDTH (DATA_WIDTH),
         .ADDR_WIDTH (ADDR_WIDTH))
-    mem (
-        .i_Clock    (Clock),
-        .i_Addr     (MemAddr),
-        .i_WrEnable (MemWrEnable),
-        .i_WrData   (MemWrData),
-        .o_RdData   (MemRdData));
+    DataMem (
+        .i_Clock (Clock),
+        .DBus    (DBus));
 
       
     // ------------------------------------------------------------------------
     // Memoria de programa
     // ------------------------------------------------------------------------
     
-    Program #(
-        .ADDR_WIDTH (PC_WIDTH),
-        .INST_WIDTH (32))
-    pgm (
-        .i_Addr (PgmAddr),
-        .o_Inst (PgmInst));
+    InstMemory #(
+        .PC_WIDTH (PC_WIDTH))
+    InstMem (
+        .IBus (IBus));
 
 
     // ------------------------------------------------------------------------
@@ -95,15 +87,9 @@ module top(
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH)) 
     Cpu (
-        .i_Clock       (Clock),
-        .i_Reset       (Reset),
-        
-        .o_PgmAddr     (PgmAddr),
-        .i_PgmInst     (PgmInst),
-        
-        .o_MemAddr     (MemAddr),
-        .o_MemWrEnable (MemWrEnable),
-        .o_MemWrData   (MemWrData),
-        .i_MemRdData   (MemRdData));
+        .i_Clock (Clock),
+        .i_Reset (Reset),
+        .IBus    (IBus),
+        .DBus    (DBus));
        
 endmodule

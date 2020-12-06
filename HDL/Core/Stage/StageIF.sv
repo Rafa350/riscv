@@ -8,8 +8,7 @@ module StageIF
     input  logic                i_Clock,   // Clock
     input  logic                i_Reset,   // Reset
 
-    input  logic [31:0]         i_PgmInst, // Instruccio de programa
-    output logic [PC_WIDTH-1:0] o_PgmAddr, // Adressa de programa
+    InstMemoryBus.Master        IBus,      // Bus de la memoria d'instruccions
 
     input  logic [PC_WIDTH-1:0] i_PCNext,  // El nou PC
     output logic [31:0]         o_Inst,    // Instruccio
@@ -21,8 +20,8 @@ module StageIF
     // ------------------------------------------------------------------------
 
     assign o_PC      = i_PCNext;
-    assign o_PgmAddr = o_PC;
-    assign o_Inst    = i_PgmInst;
+    assign o_Inst    = IBus.Inst;
+    assign IBus.Addr = o_PC;
     
 
 endmodule

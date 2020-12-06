@@ -60,7 +60,7 @@ module StageEX
     // Realitzacio dels calculs en la ALU
     // -------------------------------------------------------------------
 
-    Alu #(
+    IntegerALU #(
         .WIDTH (DATA_WIDTH))
     Alu (
         .i_Op       (i_AluControl),

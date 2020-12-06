@@ -1,6 +1,7 @@
 module DebugController
 #(
     parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 32,
     parameter REG_WIDTH  = 5,
     parameter PC_WIDTH   = 32)
 (
@@ -13,7 +14,7 @@ module DebugController
     input  logic [REG_WIDTH-1:0]  i_ExRegWrAddr,   // Registre per escriure
     input  logic [DATA_WIDTH-1:0] i_ExRegWrData,   // Dades per escriure en registre
     input  logic                  i_ExRegWrEnable, // Habilita escriptura en el registre
-    input  logic [REG_WIDTH-1:0]  i_ExMemWrAddr,   // Memoria per escriure
+    input  logic [ADDR_WIDTH-1:0] i_ExMemWrAddr,   // Memoria per escriure
     input  logic [DATA_WIDTH-1:0] i_ExMemWrData,   // Dades per escriure en memoria
     input  logic                  i_ExMemWrEnable, // Habilita escriptura en memoria
 
@@ -32,6 +33,7 @@ module DebugController
 
     always_ff @(posedge i_Clock)
         if (!i_Reset & (i_ExTag != 8'h00)) begin
+            $display("T: %d", i_ExTag);
             // verilator lint_off WIDTH
             TraceInstruction(i_ExPC, i_ExInst);
             if ((i_ExRegWrAddr) != 0 & i_ExRegWrEnable)

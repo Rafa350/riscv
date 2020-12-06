@@ -5,16 +5,10 @@ module ProcessorPP
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic                  i_Clock,
-    input  logic                  i_Reset,
-
-    output logic [ADDR_WIDTH-1:0] o_MemAddr,     // Adressa
-    output logic                  o_MemWrEnable, // Habilita la escriptura
-    output logic [DATA_WIDTH-1:0] o_MemWrData,   // Dades per escriure
-    input  logic [DATA_WIDTH-1:0] i_MemRdData,   // Dades lleigides
-
-    output logic [PC_WIDTH-1:0]   o_PgmAddr,     // Adressa de la instruccio
-    input  logic [31:0]           i_PgmInst);    // Instruccio
+    input  logic         i_Clock, // Clock
+    input  logic         i_Reset, // Reset
+    DataMemoryBus.Master DBus,    // Bus de la memoria de dades
+    InstMemoryBus.Master IBus);   // Bus de la memoria d'instruccions
 
     
     import Types::*;
@@ -60,8 +54,7 @@ module ProcessorPP
     IF (
         .i_Clock   (i_Clock),   // Clock
         .i_Reset   (i_Reset),   // Reset
-        .i_PgmInst (i_PgmInst), // Instruccio de programa
-        .o_PgmAddr (o_PgmAddr), // Adressa de programa
+        .IBus      (IBus),      // Bus de la memoria d'instruccio
         .i_PCNext  (ID_PCNext), // Adressa de salt
         .o_Inst    (IF_Inst),   // Instruccio
         .o_PC      (IF_PC));    // Adressa de la instruccio
@@ -310,10 +303,7 @@ module ProcessorPP
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH))
     MEM (
-        .o_MemAddr      (o_MemAddr),
-        .o_MemWrEnable  (o_MemWrEnable),
-        .o_MemWrData    (o_MemWrData),
-        .i_MemRdData    (i_MemRdData),
+        .DBus           (DBus),
         .i_PC           (EXMEM_PC),
         .i_Result       (EXMEM_Result),
         .i_DataB        (EXMEM_DataB),

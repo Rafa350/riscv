@@ -5,30 +5,55 @@ module ProcessorSC
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic                  i_Clock,       // Clock
-    input  logic                  i_Reset,       // Reset
+    input  logic  i_Clock, // Clock
+    input  logic  i_Reset, // Reset
 
-    output logic [ADDR_WIDTH-1:0] o_MemAddr,     // Adressa
-    output logic                  o_MemWrEnable, // Habilita la escriptura
-    output logic [DATA_WIDTH-1:0] o_MemWrData,   // Dades per escriure
-    input  logic [DATA_WIDTH-1:0] i_MemRdData,   // Dades lleigides
-    
-    output logic [PC_WIDTH-1:0]   o_PgmAddr,     // Adressa de la instruccio
-    input  logic [31:0]           i_PgmInst);    // Instruccio
-    
+    DataMemoryBus.Master DBus,    // Bus de dades
+    InstMemoryBus.Master IBus);   // Bus d'instruccions
+ 
     
     import Types::*;
     
     
-    // Control de PC
-    //
+    // ------------------------------------------------------------------------
+    // Program counter (PC)
+    // ------------------------------------------------------------------------
+
     logic [PC_WIDTH-1:0] PC;       // Valor actual del PC
     logic [PC_WIDTH-1:0] PCNext;   // Valor per actualitzar PC
     logic [PC_WIDTH-1:0] PCPlus4;  // Valor incrementat (+4)
+    
+    
+    // ------------------------------------------------------------------------
+    // Depuracio
+    // ------------------------------------------------------------------------
+    
+    logic [7:0] DbgCtrl_Tag;
+    
+    DebugController #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
+        .REG_WIDTH  (REG_WIDTH),
+        .PC_WIDTH   (PC_WIDTH))
+    DbgCtrl (
+        .i_Clock          (i_Clock),
+        .i_Reset          (i_Reset),
+        .i_ExTag          (DbgCtrl_Tag),
+        .i_ExPC           (IBus.Addr),
+        .i_ExInst         (IBus.Inst),
+        .i_ExRegWrAddr    (Dec_InstRD),
+        .i_ExRegWrData    (Sel3_Output),
+        .i_ExRegWrEnable  (DpCtrl_RegWrEnable),
+        .i_ExMemWrAddr    (DBus.Addr),
+        .i_ExMemWrData    (DBus.WrData),
+        .i_ExMemWrEnable  (DpCtrl_MemWrEnable),
+        .o_Tag            (DbgCtrl_Tag));
    
 
+    // ------------------------------------------------------------------------
     // Control del datapath. Genera les senyals de control
-    //
+    // ------------------------------------------------------------------------
+    
     AluOp       DpCtrl_AluControl;   // Operacio de la ALU
     logic       DpCtrl_RegWrEnable;  // Autoritza escriptura del regisres
     logic       DpCtrl_MemWrEnable;  // Autoritza escritura en memoria
@@ -39,7 +64,7 @@ module ProcessorSC
 
     DatapathController
     DpCtrl (
-        .i_Inst         (i_PgmInst),
+        .i_Inst         (IBus.Inst),
         .i_IsEQ         (Comp_EQ),
         .i_IsLT         (Comp_LT),
         .o_AluControl   (DpCtrl_AluControl),
@@ -51,8 +76,10 @@ module ProcessorSC
         .o_PCNextSel    (DpCtrl_PCNextSel));
 
 
+    // ------------------------------------------------------------------------
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
-    //
+    // ------------------------------------------------------------------------
+    
     logic [31:0]          Dec_InstIMM;
     logic [REG_WIDTH-1:0] Dec_InstRS1;
     logic [REG_WIDTH-1:0] Dec_InstRS2;
@@ -61,7 +88,7 @@ module ProcessorSC
     // verilator lint_off PINMISSING
     Decoder_RV32I
     Dec (
-        .i_Inst (i_PgmInst),
+        .i_Inst (IBus.Inst),
         .o_RS1  (Dec_InstRS1),
         .o_RS2  (Dec_InstRS2),
         .o_RD   (Dec_InstRD),
@@ -69,8 +96,10 @@ module ProcessorSC
     // verilator lint_on PINMISSING
     
 
+    // ------------------------------------------------------------------------
     // Compara els valors del registre per decidir els salta condicionals
-    //
+    // ------------------------------------------------------------------------
+    
     logic Comp_EQ; // Indica A == B
     logic Comp_LT; // Indica A <= B
     
@@ -86,8 +115,10 @@ module ProcessorSC
     // verilator lint_on PINMISSING
 
 
+    // ------------------------------------------------------------------------
     // Bloc de registres
-    //
+    // ------------------------------------------------------------------------
+    
     logic [DATA_WIDTH-1:0] RegBlock_RdDataA, // Dades de lectura A
                            RegBlock_RdDataB; // Dades de lectura B
                            
@@ -105,8 +136,11 @@ module ProcessorSC
         .i_RdAddrB  (Dec_InstRS2),
         .o_RdDataB  (RegBlock_RdDataB));
         
+        
+    // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada A de la alu
-    //
+    // ------------------------------------------------------------------------
+    
     logic [DATA_WIDTH-1:0] Sel5_Output;
     
     // verilator lint_off PINMISSING
@@ -121,8 +155,10 @@ module ProcessorSC
     // verilator lint_on PINMISSING
 
 
+    // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada B de la ALU
-    //
+    // ------------------------------------------------------------------------
+    
     logic [DATA_WIDTH-1:0] Sel1_Output;   
     
     // verilator lint_off PINMISSING
@@ -137,8 +173,10 @@ module ProcessorSC
     // verilator lint_on PINMISSING
 
 
+    // ------------------------------------------------------------------------
     // Selecciona les dades per escriure en el registre
-    //
+    // ------------------------------------------------------------------------
+    
     logic [DATA_WIDTH-1:0] Sel3_Output;  
     
     // verilator lint_off PINMISSING
@@ -147,14 +185,16 @@ module ProcessorSC
     Sel3 (
         .i_Select (DpCtrl_RegWrDataSel),
         .i_Input0 (Alu_Result),             // Escriu el resultat de la ALU
-        .i_Input1 (i_MemRdData),            // Escriu el valor lleigit de la memoria
+        .i_Input1 (DBus.RdData),            // Escriu el valor lleigit de la memoria
         .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PCPlus4}), // Escriu el valor de PC+4
         .o_Output (Sel3_Output));
     // verilator lint_on PINMISSING
 
 
+    // ------------------------------------------------------------------------
     // ALU
-    //
+    // ------------------------------------------------------------------------
+    
     logic [DATA_WIDTH-1:0] Alu_Result; 
     
     IntegerALU #(
@@ -228,15 +268,15 @@ module ProcessorSC
     // Interface amb la memoria RAM
     //
     always_comb begin
-        o_MemAddr     = Alu_Result[ADDR_WIDTH-1:0];
-        o_MemWrEnable = DpCtrl_MemWrEnable;
-        o_MemWrData   = RegBlock_RdDataB;
+        DBus.Addr     = Alu_Result[ADDR_WIDTH-1:0];
+        DBus.WrEnable = DpCtrl_MemWrEnable;
+        DBus.WrData   = RegBlock_RdDataB;
     end
 
 
     // Interface amb la memoria de programa
     //
-    assign o_PgmAddr  = PC;
+    assign IBus.Addr = PC;
 
 endmodule
 

@@ -5,28 +5,25 @@ module StageMEM
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic [DATA_WIDTH-1:0] i_MemRdData,
-    output logic [DATA_WIDTH-1:0] o_MemWrData,
-    output logic [ADDR_WIDTH-1:0] o_MemAddr,
-    output logic                  o_MemWrEnable,
+    DataMemoryBus.Master          DBus,           // Bus de la memoria de dades
 
-    input  logic [PC_WIDTH-1:0]   i_PC,
+    input  logic [PC_WIDTH-1:0]   i_PC,          
     input  logic [DATA_WIDTH-1:0] i_Result,
     input  logic [DATA_WIDTH-1:0] i_DataB,
 
-    input  logic                  i_MemWrEnable,
+    input  logic                  i_MemWrEnable,  // Habilita escriptura en memoria
 
-    input  logic [1:0]            i_RegWrDataSel,
-    output logic [DATA_WIDTH-1:0] o_RegWrData);
+    input  logic [1:0]            i_RegWrDataSel, // Seleccio de dades per escriure en el registre
+    output logic [DATA_WIDTH-1:0] o_RegWrData);   // Dades per escriure en el registre
 
 
     // ------------------------------------------------------------------------
     // Interface amb la memoria de dades.
     // ------------------------------------------------------------------------
 
-    assign o_MemAddr     = i_Result[ADDR_WIDTH-1:0];
-    assign o_MemWrEnable = i_MemWrEnable;
-    assign o_MemWrData   = i_DataB;
+    assign DBus.Addr     = i_Result[ADDR_WIDTH-1:0];
+    assign DBus.WrData   = i_DataB;
+    assign DBus.WrEnable = i_MemWrEnable;
 
 
     /// -----------------------------------------------------------------------
@@ -59,7 +56,7 @@ module StageMEM
     RegWrDataSelector (
         .i_Select (i_RegWrDataSel),
         .i_Input0 (i_Result),
-        .i_Input1 (i_MemRdData),
+        .i_Input1 (DBus.RdData),
         .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, Adder_Result}),
         .o_Output (o_RegWrData));
     // verilator lint_on PINMISSING

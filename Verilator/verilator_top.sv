@@ -11,7 +11,7 @@
 `define PC_WIDTH   10
 `define REG_WIDTH  5
 `define FIRMWARE   "firmware.txt"
-`define PIPELINEx
+`define PIPELINE
 
 
 module top #(
@@ -31,25 +31,35 @@ module top #(
 
     output logic [PC_WIDTH-1:0]   o_DbgPgmAddr,
     output logic [31:0]           o_DbgPgmInst);
+    
+    
+    DataMemoryBus #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH))
+    DBus;
+    
+    InstMemoryBus #(
+        .PC_WIDTH (PC_WIDTH))
+    IBus;
+
+    assign o_MemAddr     = DBus.Master.Addr;
+    assign o_MemWrData   = DBus.Master.WrData;
+    assign o_MemWrEnable = DBus.Master.WrEnable;
 
 
-    assign o_DbgPgmAddr = CPU_PgmAddr;
-    assign o_DbgPgmInst = ROM_RdData;
+    assign o_DbgPgmAddr = IBus.Slave.Addr;
+    assign o_DbgPgmInst = IBus.Slave.Inst;
 
 
     // -------------------------------------------------------------------
     // La memoria del programa
     // -------------------------------------------------------------------
 
-    logic [31:0] ROM_RdData;
-
-    RoMemory #(
-        .DATA_WIDTH (32),
-        .ADDR_WIDTH (PC_WIDTH),
+    InstMemory #(
+        .PC_WIDTH (PC_WIDTH),
         .FILE_NAME  (FIRMWARE))
     ROM (
-        .i_Addr   (CPU_PgmAddr),
-        .o_RdData (ROM_RdData));
+        .IBus (IBus));
 
 
     // -------------------------------------------------------------------
@@ -85,15 +95,9 @@ module top #(
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH))
     CPU (
-        .i_Clock       (i_Clock),
-        .i_Reset       (i_Reset),
-
-        .o_PgmAddr     (CPU_PgmAddr),
-        .i_PgmInst     (ROM_RdData),
-
-        .o_MemAddr     (o_MemAddr),
-        .o_MemWrEnable (o_MemWrEnable),
-        .o_MemWrData   (o_MemWrData),
-        .i_MemRdData   (i_MemRdData));
+        .i_Clock   (i_Clock),
+        .i_Reset   (i_Reset),
+        .IBus      (IBus),
+        .DBus      (DBus));
         
 endmodule
