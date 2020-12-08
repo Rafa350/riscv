@@ -117,55 +117,55 @@ module DatapathController (
         endcase
     end
 
-    // Evalua el datapath coresponent a cada instruccio
+    // Evalua el datapath corresponent a cada instruccio
     //
     always_comb begin
         unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0]})
-            /*  ADD   */ 17'b0000000_000_0110011: dp = DP_ADD;
-            /*  ADDI  */ 17'b???????_000_0010011: dp = DP_ADDI;
-            /*  AND   */ 17'b0000000_111_0110011: dp = DP_AND;
-            /*  ANDI  */ 17'b???????_111_0010011: dp = DP_ANDI;
-            /*  AUIPC */ 17'b???????_???_0010111: dp = DP_AUIPC;
+            /*  ADD   */ {10'b0000000_000, OpCode_Op    }: dp = DP_ADD;
+            /*  ADDI  */ {10'b???????_000, OpCode_OpIMM }: dp = DP_ADDI;
+            /*  AND   */ {10'b0000000_111, OpCode_Op    }: dp = DP_AND;
+            /*  ANDI  */ {10'b???????_111, OpCode_OpIMM }: dp = DP_ANDI;
+            /*  AUIPC */ {10'b???????_???, OpCode_AUIPC }: dp = DP_AUIPC;
 
-            /*  BEQ   */ 17'b???????_000_1100011: dp = DP_BEQ;
-            /*  BGE   */ 17'b???????_101_1100011: dp = DP_BGE;
-            /*  BGEU  */ 17'b???????_111_1100011: dp = DP_BGEU;
-            /*  BLT   */ 17'b???????_100_1100011: dp = DP_BLT;
-            /*  BLTU  */ 17'b???????_110_1100011: dp = DP_BLTU;
-            /*  BNE   */ 17'b???????_001_1100011: dp = DP_BNE;
+            /*  BEQ   */ {10'b???????_000, OpCode_Branch}: dp = DP_BEQ;
+            /*  BGE   */ {10'b???????_101, OpCode_Branch}: dp = DP_BGE;
+            /*  BGEU  */ {10'b???????_111, OpCode_Branch}: dp = DP_BGEU;
+            /*  BLT   */ {10'b???????_100, OpCode_Branch}: dp = DP_BLT;
+            /*  BLTU  */ {10'b???????_110, OpCode_Branch}: dp = DP_BLTU;
+            /*  BNE   */ {10'b???????_001, OpCode_Branch}: dp = DP_BNE;
                        
-            /*  JAL   */ 17'b???????_???_1101111: dp = DP_JAL;
-            /*  JALR  */ 17'b???????_000_1100111: dp = DP_JALR;
+            /*  JAL   */ {10'b???????_???, OpCode_JAL   }: dp = DP_JAL;
+            /*  JALR  */ {10'b???????_000, OpCode_JALR  }: dp = DP_JALR;
 
-            /*  LUI   */ 17'b???????_???_0110111: dp = DP_LUI;
-            /*  LB    */ 17'b???????_000_0000011: dp = DP_LB;
+            /*  LUI   */ {10'b???????_???, OpCode_LUI   }: dp = DP_LUI;
+            /*  LB    */ {10'b???????_000, OpCode_Load  }: dp = DP_LB;
             /*  LBU   */
-            /*  LH    */ 17'b???????_001_0000011: dp = DP_LH;
+            /*  LH    */ {10'b???????_001, OpCode_Load  }: dp = DP_LH;
             /*  LHU   */
-            /*  LW    */ 17'b???????_010_0000011: dp = DP_LW;
+            /*  LW    */ {10'b???????_010, OpCode_Load  }: dp = DP_LW;
 
-            /*  OR    */ 17'b0000000_110_0110011: dp = DP_OR;
-            /*  ORI   */ 17'b???????_110_0010011: dp = DP_ORI;
+            /*  OR    */ {10'b0000000_110, OpCode_Op    }: dp = DP_OR;
+            /*  ORI   */ {10'b???????_110, OpCode_OpIMM }: dp = DP_ORI;
 
-            /*  SB    */ 17'b???????_000_0100011: dp = DP_SB;
-            /*  SH    */ 17'b???????_001_0100011: dp = DP_SH;
-            /*  SLL   */ 17'b0000000_001_0110011: dp = DP_SLL;
+            /*  SB    */ {10'b???????_000, OpCode_Store }: dp = DP_SB;
+            /*  SH    */ {10'b???????_001, OpCode_Store }: dp = DP_SH;
+            /*  SLL   */ {10'b0000000_001, OpCode_Op    }: dp = DP_SLL;
             /*  SLLI  */
-            /*  SLT   */ 17'b0000000_010_0110011: dp = DP_SLT;
-            /*  SLTI  */ 17'b???????_010_0010011: dp = DP_SLTI;
-            /*  SLTIU */ 17'b???????_011_0010011: dp = DP_SLTIU;
-            /*  SLTU  */ 17'b0000000_011_0110011: dp = DP_SLTU;
+            /*  SLT   */ {10'b0000000_010, OpCode_Op    }: dp = DP_SLT;
+            /*  SLTI  */ {10'b???????_010, OpCode_OpIMM }: dp = DP_SLTI;
+            /*  SLTIU */ {10'b???????_011, OpCode_OpIMM }: dp = DP_SLTIU;
+            /*  SLTU  */ {10'b0000000_011, OpCode_Op    }: dp = DP_SLTU;
             /*  SRA   */
             /*  SRAI  */
             /*  SRL   */
             /*  SRLI  */
-            /*  SUB   */ 17'b0100000_000_0110011: dp = DP_SUB;
-            /*  SW    */ 17'b???????_010_0100011: dp = DP_SW;
+            /*  SUB   */ {10'b0100000_000, OpCode_Op    }: dp = DP_SUB;
+            /*  SW    */ {10'b???????_010, OpCode_Store }: dp = DP_SW;
 
-            /*  XOR   */ 17'b0000000_100_0110011: dp = DP_XOR;
-            /*  XORI  */ 17'b???????_100_0010011: dp = DP_XORI;
+            /*  XOR   */ {10'b0000000_100, OpCode_Op    }: dp = DP_XOR;
+            /*  XORI  */ {10'b???????_100, OpCode_OpIMM }: dp = DP_XORI;
 
-            default                             : dp = 0;
+            default: dp = 0;
         endcase
     end
 

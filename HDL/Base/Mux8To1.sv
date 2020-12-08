@@ -39,7 +39,7 @@ module Mux8To1
     output logic [WIDTH-1:0] o_Output);
 
     always_comb
-        unique case (i_Select)
+        case (i_Select)
             3'b000: o_Output = i_Input0;
             3'b001: o_Output = i_Input1;
             3'b010: o_Output = i_Input2;

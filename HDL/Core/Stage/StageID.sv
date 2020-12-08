@@ -1,4 +1,5 @@
 module StageID
+    import Types::*;
 #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
@@ -21,7 +22,7 @@ module StageID
     input  logic [REG_WIDTH-1:0]  i_WB_RegWrAddr,      // Registre a escriure
     input  logic                  i_WB_RegWrEnable,    // Autoritzacio d'escriptura del registre
     input  logic [DATA_WIDTH-1:0] i_WB_RegWrData,      // El resultat a escriure
-    output logic [6:0]            o_InstOP,            // Codi d'operacio de la instruccio
+    output Types::OpCode          o_InstOP,            // Codi d'operacio de la instruccio
     output logic [DATA_WIDTH-1:0] o_InstIMM,           // Valor inmediat de la instruccio
     output logic [DATA_WIDTH-1:0] o_DataA,             // Dades A (rs1)
     output logic [DATA_WIDTH-1:0] o_DataB,             // Dades B (rs2)
@@ -37,9 +38,6 @@ module StageID
     output logic [PC_WIDTH-1:0]   o_PCNext);           // Nou valor de PC
 
 
-    import Types::*;
-
-
     // ------------------------------------------------------------------------
     // Decodificador d'instruccions.
     // Separa les instruccions en els seus components, calculant el valor
@@ -47,7 +45,7 @@ module StageID
     // d'instruccio.
     // ------------------------------------------------------------------------
 
-    logic [6:0]            Dec_OP;
+    Types::OpCode          Dec_OP;
     logic [REG_WIDTH-1:0]  Dec_RS1;
     logic [REG_WIDTH-1:0]  Dec_RS2;
     logic [REG_WIDTH-1:0]  Dec_RD;
@@ -154,7 +152,7 @@ module StageID
     Comp(
         .i_InputA   (DataASelector_Output),
         .i_InputB   (DataBSelector_Output),
-        .i_Unsigned (0),
+        .i_Unsigned (1),
         .o_EQ       (Comp_EQ),
         .o_LT       (Comp_LT));
     // verilator lint_on PINMISSING

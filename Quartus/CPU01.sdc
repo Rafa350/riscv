@@ -1,4 +1,4 @@
-## Generated SDC file "CPU01.out.sdc"
+## Generated SDC file "CPU01.sdc"
 
 ## Copyright (C) 2020  Intel Corporation. All rights reserved.
 ## Your use of Intel Corporation's design tools, logic functions 
@@ -20,7 +20,7 @@
 ## PROGRAM "Quartus Prime"
 ## VERSION "Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition"
 
-## DATE    "Mon Nov 30 15:54:05 2020"
+## DATE    "Tue Dec 08 14:49:41 2020"
 
 ##
 ## DEVICE  "EP4CE22F17C6"

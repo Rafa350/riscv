@@ -10,6 +10,7 @@ module Comparer
     output logic             o_EQ,     // A == B
     output logic             o_GT,     // A > B
     output logic             o_LT);    // A < B
+      
 
     always_comb begin
         o_EQ = i_InputA == i_InputB;
@@ -22,8 +23,5 @@ module Comparer
             o_LT  = $signed(i_InputA) < $signed(i_InputB);
         end
     end
-    
-endmodule
 
-    
-    
+endmodule
