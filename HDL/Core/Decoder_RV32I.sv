@@ -34,14 +34,14 @@ module Decoder_RV32I
             {3'b101, OpCode_OpIMM}: // SRLI/SRAI
                 o_IMM = {{27{1'b0}}, i_Inst[24:20]}; // Sempre positiu
 
-            {3'b???, OpCode_Load}, // Load
+            {3'b???, OpCode_Load }, // Load
             {3'b000, OpCode_OpIMM}, // ADDI
             {3'b010, OpCode_OpIMM}, // SLTI
             {3'b011, OpCode_OpIMM}, // SLTIU
             {3'b100, OpCode_OpIMM}, // XORI
             {3'b110, OpCode_OpIMM}, // ORI
             {3'b111, OpCode_OpIMM}, // ANDI
-            {3'b000, OpCode_JALR}: // JALR
+            {3'b000, OpCode_JALR }: // JALR
                 o_IMM = {{20{i_Inst[31]}}, i_Inst[31:20]};
 
             {3'b???, OpCode_Store}: // Store

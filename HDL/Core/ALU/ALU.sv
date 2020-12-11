@@ -1,4 +1,5 @@
-module IntegerALU 
+module ALU 
+    import Types::*;
 #(
     parameter WIDTH = 32)           // Amplada de dades
 (
@@ -10,11 +11,7 @@ module IntegerALU
     output [WIDTH-1:0]  o_Result);  // Resultat
     
 
-    import Types::*;
-
-
-    always_comb begin
-        
+    always_comb begin       
         case (i_Op) 
             AluOp_ADD: 
                 o_Result = i_OperandA + i_OperandB;
