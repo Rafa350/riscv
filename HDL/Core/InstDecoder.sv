@@ -1,4 +1,4 @@
-module Decoder_RV32I
+module InstDecoder
     import Types::*;
 #(
     parameter DATA_WIDTH = 32,

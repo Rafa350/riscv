@@ -29,6 +29,7 @@ module top(
     
     logic Clock;
     logic Reset;
+    logic [7:0] leds;
 
     assign Clock = CLOCK_50;
     assign Reset = ~KEY[0];
@@ -43,12 +44,14 @@ module top(
         .PC_WIDTH (PC_WIDTH))
     IBus();
     
-    assign LED[7:0]      = DBus.WrData[7:0];
-
     
     // ------------------------------------------------------------------------
-    // Port IO
+    // Port IO LEDSA
     // ------------------------------------------------------------------------
+    
+    always_ff @(posedge Clock)
+        if (DBus.WrData & DBus.Addr == 10'h0200)
+            LED <= DBus.WrData[7:0];
 
 
     // ------------------------------------------------------------------------

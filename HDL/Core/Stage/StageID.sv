@@ -39,6 +39,23 @@ module StageID
 
 
     // ------------------------------------------------------------------------
+    // Expansor d'instruccions comprimides. 
+    // Converteix un instruccio comprimida al seu equivalent normal.
+    // ------------------------------------------------------------------------
+    
+//`ifdef RV32_COMPRESS
+    logic [31:0] Exp_Inst;
+    logic        Exp_Compressed;
+
+    InstExpander
+    Exp (
+        .i_Inst       (i_Inst),
+        .o_Inst       (Exp_Inst),
+        .o_Compressed (Exp_Compressed));
+//`endif
+
+
+    // ------------------------------------------------------------------------
     // Decodificador d'instruccions.
     // Separa les instruccions en els seus components, calculant el valor
     // IMM de la instruccio en funcio del seu tipus. Tambe indica el tipus
@@ -55,7 +72,7 @@ module StageID
     logic                  Dec_IsECALL;
     logic                  Dec_IsEBREAK;
 
-    Decoder_RV32I #(
+    InstDecoder #(
         .REG_WIDTH (REG_WIDTH))
     Dec (
         .i_Inst     (i_Inst),

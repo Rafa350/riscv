@@ -1,6 +1,7 @@
+#include <stdint.h>
+
 void main(void) { 
 
-    int* p = 0;
-    for (int i = 0; i < 10; i++) 
-        *p++ = i;
+    for (int i = 0; i < 4; i++)
+        *((uint32_t*)0x200) = i;
 }

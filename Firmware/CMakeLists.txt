@@ -36,6 +36,7 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set_source_files_properties(
     crt0.S PROPERTIES LANGUAGE C)
 
+# Mostra la configuracio actual
 message("*")
 message("* Sub-project 'Firmware' configuration.")
 message("*   Toochain:")

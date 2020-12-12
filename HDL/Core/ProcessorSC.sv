@@ -86,7 +86,7 @@ module ProcessorSC
     logic [REG_WIDTH-1:0] Dec_InstRD;
 
     // verilator lint_off PINMISSING
-    Decoder_RV32I
+    InstDecoder
     Dec (
         .i_Inst (IBus.Inst),
         .o_RS1  (Dec_InstRS1),

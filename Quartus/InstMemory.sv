@@ -4,7 +4,7 @@ module InstMemory
 (   
     InstMemoryBus.Slave IBus);
 
-    localparam SIZE = 38;
+    localparam SIZE = 35;
         
     logic [31:0] Data[0:SIZE-1];
            
