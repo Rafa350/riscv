@@ -12,15 +12,15 @@ interface RBusIf
     logic                  WrEnable;
     
     modport Reader (
-        input  RdAddrA,
-        input  RdAddrB,
-        output RdDataA,
-        output RdDataB);
+        output RdAddrA,
+        output RdAddrB,
+        input  RdDataA,
+        input  RdDataB);
 
     modport Writer (
-        input WrData,
-        input WrAddr,
-        input WrEnable);
+        output WrData,
+        output WrAddr,
+        output WrEnable);
 );
 
 endinterface

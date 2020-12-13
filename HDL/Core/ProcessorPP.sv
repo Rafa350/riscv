@@ -1,4 +1,7 @@
+`include "RV.svh"
+
 module ProcessorPP
+    import Types::*;
 #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
@@ -11,9 +14,6 @@ module ProcessorPP
     InstMemoryBus.Master IBus);   // Bus de la memoria d'instruccions
 
     
-    import Types::*;
-
-
     // ------------------------------------------------------------------------
     // Debug
     // ------------------------------------------------------------------------

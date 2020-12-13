@@ -1,4 +1,7 @@
+`include "RV.svh"
+
 module ProcessorSC
+    import Types::*;
 #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
@@ -11,9 +14,6 @@ module ProcessorSC
     DataMemoryBus.Master DBus,    // Bus de dades
     InstMemoryBus.Master IBus);   // Bus d'instruccions
  
-    
-    import Types::*;
-    
     
     // ------------------------------------------------------------------------
     // Program counter (PC)

@@ -1,4 +1,6 @@
-module DatapathController (
+module DatapathController 
+    import Types::*;
+(
 
     input  logic [31:0] i_Inst,          // La instruccio
     input  logic        i_IsEQ,          // Indica A == B
@@ -15,8 +17,6 @@ module DatapathController (
     output logic        o_RegWrEnable,   // Habilita l'escriptura en els registres
     output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
 
-
-    import Types::*;
 
     localparam  asREG = 2'b00;           // Selecciona el valor del registre
     localparam  asPC  = 2'b01;           // Selecciona el valor del PC

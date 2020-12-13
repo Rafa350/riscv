@@ -1,3 +1,5 @@
+`include "RV.svh"
+
 module StageID
     import Types::*;
 #(
@@ -43,16 +45,24 @@ module StageID
     // Converteix un instruccio comprimida al seu equivalent normal.
     // ------------------------------------------------------------------------
     
-//`ifdef RV32_COMPRESS
     logic [31:0] Exp_Inst;
-    logic        Exp_Compressed;
+    logic        Exp_IsCompressed;
+    logic        Exp_IsIllegal;
+    
+//`define RV32_COMPRESS    
 
+`ifdef RV_EXTENSION_C
     InstExpander
     Exp (
-        .i_Inst       (i_Inst),
-        .o_Inst       (Exp_Inst),
-        .o_Compressed (Exp_Compressed));
-//`endif
+        .i_Inst         (i_Inst),
+        .o_Inst         (Exp_Inst),
+        .o_IsCompressed (Exp_IsCompressed),
+        .o_IsIllegal    (Exp_IsIllegal));
+`else
+      assign Exp_Inst         = i_Inst;        
+      assign Exp_IsCompressed = 1'b0;
+      assign Exp_IsIllegal    = 1'b0;
+`endif
 
 
     // ------------------------------------------------------------------------
@@ -67,6 +77,7 @@ module StageID
     logic [REG_WIDTH-1:0]  Dec_RS2;
     logic [REG_WIDTH-1:0]  Dec_RD;
     logic [DATA_WIDTH-1:0] Dec_IMM;
+    logic                  Dec_IsIllegal;
     logic                  Dec_IsLoad;
     logic                  Dec_IsALU;
     logic                  Dec_IsECALL;
@@ -75,16 +86,17 @@ module StageID
     InstDecoder #(
         .REG_WIDTH (REG_WIDTH))
     Dec (
-        .i_Inst     (i_Inst),
-        .o_OP       (Dec_OP),
-        .o_RS1      (Dec_RS1),
-        .o_RS2      (Dec_RS2),
-        .o_RD       (Dec_RD),
-        .o_IMM      (Dec_IMM),
-        .o_IsLoad   (Dec_IsLoad),
-        .o_IsALU    (Dec_IsALU),
-        .o_IsECALL  (Dec_IsECALL),
-        .o_IsEBREAK (Dec_IsEBREAK));
+        .i_Inst      (Exp_Inst),
+        .o_OP        (Dec_OP),
+        .o_RS1       (Dec_RS1),
+        .o_RS2       (Dec_RS2),
+        .o_RD        (Dec_RD),
+        .o_IMM       (Dec_IMM),
+        .o_IsIllegal (Dec_IsIllegal),
+        .o_IsLoad    (Dec_IsLoad),
+        .o_IsALU     (Dec_IsALU),
+        .o_IsECALL   (Dec_IsECALL),
+        .o_IsEBREAK  (Dec_IsEBREAK));
 
 
     // ------------------------------------------------------------------------
@@ -102,7 +114,7 @@ module StageID
 
     DatapathController
     DpCtrl (
-        .i_Inst         (i_Inst),             // La instruccio
+        .i_Inst         (Exp_Inst),           // La instruccio
         .i_IsEQ         (Comp_EQ),            // Indicador r1 == r2
         .i_IsLT         (Comp_LT),            // Indicador r1 < r2
         .o_MemWrEnable  (DpCtrl_MemWrEnable),
@@ -153,6 +165,34 @@ module StageID
         .o_DataBSel        (FwdCtrl_DataBSel));
 
 
+    // -----------------------------------------------------------------------
+    // Seleccio de les dades del registre o de les etapes posteriors.
+    // -----------------------------------------------------------------------
+
+    logic [DATA_WIDTH-1:0] FwdDataASelector_Output,
+                           FwdDataBSelector_Output;
+
+    Mux4To1 #(
+        .WIDTH (DATA_WIDTH))
+    FwdDataASelector (
+        .i_Select (FwdCtrl_DataASel),
+        .i_Input0 (Regs_DataA),
+        .i_Input1 (i_EX_RegWrData),
+        .i_Input2 (i_MEM_RegWrData),
+        .i_Input3 (i_WB_RegWrData),
+        .o_Output (FwdDataASelector_Output));
+
+    Mux4To1 #(
+        .WIDTH (DATA_WIDTH))
+    FwdDataBSelector (
+        .i_Select (FwdCtrl_DataBSel),
+        .i_Input0 (Regs_DataB),
+        .i_Input1 (i_EX_RegWrData),
+        .i_Input2 (i_MEM_RegWrData),
+        .i_Input3 (i_WB_RegWrData),
+        .o_Output (FwdDataBSelector_Output));
+
+
     // ------------------------------------------------------------------------
     // Comparador per les instruccions de salt.
     // Permet identificas les condicions de salt abans d'executar
@@ -167,8 +207,8 @@ module StageID
     Comparer #(
         .WIDTH (DATA_WIDTH))
     Comp(
-        .i_InputA   (DataASelector_Output),
-        .i_InputB   (DataBSelector_Output),
+        .i_InputA   (FwdDataASelector_Output),
+        .i_InputB   (FwdDataBSelector_Output),
         .i_Unsigned (1),
         .o_EQ       (Comp_EQ),
         .o_LT       (Comp_LT));
@@ -197,34 +237,6 @@ module StageID
         .o_RdDataB  (Regs_DataB));
 
 
-    // -----------------------------------------------------------------------
-    // Seleccio de les dades del registre o de les etapes posteriors.
-    // -----------------------------------------------------------------------
-
-    logic [DATA_WIDTH-1:0] DataASelector_Output,
-                           DataBSelector_Output;
-
-    Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
-    DataASelector (
-        .i_Select (FwdCtrl_DataASel),
-        .i_Input0 (Regs_DataA),
-        .i_Input1 (i_EX_RegWrData),
-        .i_Input2 (i_MEM_RegWrData),
-        .i_Input3 (i_WB_RegWrData),
-        .o_Output (DataASelector_Output));
-
-    Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
-    DataBSelector (
-        .i_Select (FwdCtrl_DataBSel),
-        .i_Input0 (Regs_DataB),
-        .i_Input1 (i_EX_RegWrData),
-        .i_Input2 (i_MEM_RegWrData),
-        .i_Input3 (i_WB_RegWrData),
-        .o_Output (DataBSelector_Output));
-
-
     // ------------------------------------------------------------------------
     // Evaluacio de l'adressa de salt
     // ------------------------------------------------------------------------
@@ -245,8 +257,8 @@ module StageID
     always_comb begin
         o_InstOP       = Dec_OP;
         o_InstIMM      = Dec_IMM;
-        o_DataA        = DataASelector_Output;
-        o_DataB        = DataBSelector_Output;
+        o_DataA        = FwdDataASelector_Output;
+        o_DataB        = FwdDataBSelector_Output;
         o_IsLoad       = Dec_IsLoad;
         o_RegWrAddr    = Dec_RD;
         o_RegWrEnable  = DpCtrl_RegWrEnable;

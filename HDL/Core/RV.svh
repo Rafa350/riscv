@@ -1,0 +1,3 @@
+`define RV_BASE_RV32I
+`define RV_EXTENSION_C
+`define RV_EXTANSION_M
