@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-project(cpu-riscv-yosys
-    VERSION 1.0
-    DESCRIPTION "CPU-RISC-V: Yosys"
-    LANGUAGES NONE
-)
-
 
 # Capeta del s fitxers font
 #

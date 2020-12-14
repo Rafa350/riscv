@@ -6,6 +6,7 @@
 /Verilator/build
 /Yosys/build
 /Firmware/build
+/Simulator/build
 /build
 *.o
 *.out
