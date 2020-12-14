@@ -8,12 +8,19 @@ using namespace std;
 
 int main() {
 
-    cout << "RISCVSim V1.0\n";
+    cout << "RISCV Behavorial simulator V1.0\n";
 
     RISCVTracer *tracer = new RISCVTracer();
-    RISCVSim *sim = new RISCVSim(tracer);
+    if (tracer) {
 
-    delete sim;
+        RISCVSim *sim = new RISCVSim(tracer);
+        if (sim) {
+
+            delete sim;
+        }
+
+        delete tracer;
+    }
 
     return 0;
 }
