@@ -22,6 +22,7 @@ module StageIF
     assign o_PC      = i_PCNext;
     assign o_Inst    = IBus.Inst;
     assign IBus.Addr = o_PC;
-    
+
+    // Mirar d'expandir la instruccio comprimida aqui
 
 endmodule

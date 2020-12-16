@@ -1,15 +1,21 @@
 #pragma once
 
 
+#include "RISCV.h"
 #include <stdint.h>
 
 
-class RISCVTracer {
+namespace RISCV {
 
-    public:
-        RISCVTracer();
+    class Tracer {
 
-        void traceInst(uint32_t addr, uint32_t inst);
-        void traceReg(uint32_t reg, uint32_t data);
-        void traceMem(uint32_t addr, uint32_t data);
-};
+        public:
+            Tracer();
+
+            void traceInst(addr_t addr, inst_t inst);
+            void traceReg(reg_t reg, data_t data);
+            void traceMem(addr_t addr, data_t data);
+            void traceTick(unsigned tick);
+    };
+
+}

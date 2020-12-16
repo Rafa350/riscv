@@ -7,7 +7,7 @@ module StageMEM
 (
     DataMemoryBus.Master          DBus,           // Bus de la memoria de dades
 
-    input  logic [PC_WIDTH-1:0]   i_PC,          
+    input  logic [PC_WIDTH-1:0]   i_PC,
     input  logic [DATA_WIDTH-1:0] i_Result,
     input  logic [DATA_WIDTH-1:0] i_DataB,
 

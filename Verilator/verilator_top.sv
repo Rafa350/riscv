@@ -1,4 +1,4 @@
-// verilator lint_off DECLFILENAME
+`include "RV.svh"
 
 
 `ifdef VERILATOR
@@ -31,13 +31,13 @@ module top #(
 
     output logic [PC_WIDTH-1:0]   o_DbgPgmAddr,
     output logic [31:0]           o_DbgPgmInst);
-    
-    
+
+
     DataMemoryBus #(
         .DATA_WIDTH (DATA_WIDTH),
         .ADDR_WIDTH (ADDR_WIDTH))
     DBus;
-    
+
     InstMemoryBus #(
         .PC_WIDTH (PC_WIDTH))
     IBus;
@@ -99,5 +99,5 @@ module top #(
         .i_Reset   (i_Reset),
         .IBus      (IBus),
         .DBus      (DBus));
-        
+
 endmodule

@@ -1,5 +1,6 @@
 `include "RV.svh"
 
+
 module StageID
     import Types::*;
 #(
@@ -41,15 +42,15 @@ module StageID
 
 
     // ------------------------------------------------------------------------
-    // Expansor d'instruccions comprimides. 
+    // Expansor d'instruccions comprimides.
     // Converteix un instruccio comprimida al seu equivalent normal.
     // ------------------------------------------------------------------------
-    
+
     logic [31:0] Exp_Inst;
     logic        Exp_IsCompressed;
     logic        Exp_IsIllegal;
-    
-//`define RV32_COMPRESS    
+
+//`define RV32_COMPRESS
 
 `ifdef RV_EXTENSION_C
     InstExpander
@@ -59,7 +60,7 @@ module StageID
         .o_IsCompressed (Exp_IsCompressed),
         .o_IsIllegal    (Exp_IsIllegal));
 `else
-      assign Exp_Inst         = i_Inst;        
+      assign Exp_Inst         = i_Inst;
       assign Exp_IsCompressed = 1'b0;
       assign Exp_IsIllegal    = 1'b0;
 `endif
@@ -124,8 +125,8 @@ module StageID
         .o_OperandASel  (DpCtrl_OperandASel),
         .o_OperandBSel  (DpCtrl_OperandBSel),
         .o_PCNextSel    (DpCtrl_PCNextSel));
-        
-        
+
+
     // ------------------------------------------------------------------------
     // Controllador per stalling.
     // ------------------------------------------------------------------------
@@ -272,9 +273,3 @@ module StageID
 
 
 endmodule
-
-
-
-
-
-

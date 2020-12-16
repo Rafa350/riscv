@@ -11,6 +11,13 @@
 #define OpCode_Branch 0x63
 
 
+void TraceTick(
+    int tick) {
+
+    printTick(unsigned(tick));
+}
+
+
 void TraceInstruction(
     int addr,
     int data) {
@@ -28,7 +35,7 @@ void TraceRegister(
 
 
 void TraceMemory(
-    int addr, 
+    int addr,
     int data) {
 }
 
@@ -36,10 +43,10 @@ void TraceMemory(
 /// ----------------------------------------------------------------------
 /// \brief    Obte el nom del registre.
 /// \param    addr: Adressa del registre.
-/// \return   
+/// \return
 static const char* getRegName(
     uint32_t regAddr) {
-        
+
     switch (regAddr) {
         case 0: return "zero";
         case 1: return "ra";
@@ -72,16 +79,23 @@ static const char* getRegName(
         case 28: return "t3";
         case 29: return "t4";
         case 30: return "t5";
-        case 31: return "t6";        
+        case 31: return "t6";
         default: return "X?";
     }
+}
+
+
+void printTick(
+    unsigned tick) {
+
+    printf("T: %d\n", tick);
 }
 
 
 void printMemory(
     unsigned addr,
     uint32_t data) {
-    
+
     printf("M: %8.8X := %8.8X\n", addr, data);
 }
 
@@ -94,7 +108,7 @@ void printMemory(
 void printRegister(
     unsigned addr,
     uint32_t data) {
-        
+
     const char *r = getRegName(addr);
 
     printf("R: %s := %8.8X\n", r, data);
@@ -170,7 +184,7 @@ void printInstruction(
                     printf("addi  ");
                 break;
             }
-            uint32_t imm = 
+            uint32_t imm =
                 ((data >> 20) & 0x00000FFF) |
                 ((data & 0x80000000) ? 0xFFFFF000 : 0);
             printf("%s, %s, %8.8X", rd, rs1, imm);
@@ -204,7 +218,9 @@ void printInstruction(
                     printf("[%1.1X]", fn3);
                     break;
             }
-            uint32_t offset = (data & 0xFFF00000) >> 20;
+            uint32_t offset =
+                ((data >> 20) & 0x00000FFF) |
+                ((data & 0x80000000) ? 0xFFFFF000 : 0);
             printf("    %s, %8.8X(%s)", rd, offset, rs1);
             break;
         }
@@ -225,20 +241,21 @@ void printInstruction(
             }
             uint32_t offset =
                 (((data & 0xFE000000) >> 25) << 5) |
-                ((data & 0x00000F80) >> 7);
+                ((data & 0x00000F80) >> 7) |
+                ((data & 0x80000000) ? 0xFFFFF000 : 0);
             printf("    %s, %8.8X(%s)", rs2, offset, rs1);
             break;
         }
-        
+
         case OpCode_AUIPC: {
-            uint32_t imm = 
+            uint32_t imm =
                 ((data & 0xFFFFF000) >> 12);
             printf("auipc %s, %8.8X", rd, imm);
             break;
         }
 
         case OpCode_LUI: {
-            uint32_t imm = 
+            uint32_t imm =
                 ((data & 0xFFFFF000) >> 12) |
                 ((data & 0x80000000) ? 0xFFFFF000 : 0);
             printf("lui  %s, %8.8X", rd, imm);

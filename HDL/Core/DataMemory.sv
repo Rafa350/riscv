@@ -1,8 +1,8 @@
 module DataMemory
 #(
-    parameter DATA_WIDTH = 32;
+    parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32)
-(   
+(
     input logic         i_Clock,
     DataMemoryBus.Slave bus);
 

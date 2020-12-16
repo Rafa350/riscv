@@ -30,10 +30,11 @@ module DebugController
     import "DPI-C" function void TraceInstruction(input int addr, input int data);
     import "DPI-C" function void TraceRegister(input int addr, input int data);
     import "DPI-C" function void TraceMemory(input int addr, input int data);
+    import "DPI-C" function void TraceTick(input int tick);
 
     always_ff @(posedge i_Clock)
         if (!i_Reset & (i_ExTag != 8'h00)) begin
-            $display("T: %d", i_ExTag);
+            TraceTick(32'(i_ExTag));
             // verilator lint_off WIDTH
             TraceInstruction(i_ExPC, i_ExInst);
             if ((i_ExRegWrAddr) != 0 & i_ExRegWrEnable)

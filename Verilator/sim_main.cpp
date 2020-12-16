@@ -1,6 +1,6 @@
 #include "sim.h"
 
-    
+
 #define PIPELINE
 
 
@@ -9,11 +9,11 @@
 #else
     #define TRACE_FILE_NAME "../waves_sc/trace.fst"
 #endif
-    
-    
+
+
 // Els temps son en ticks de simulacio (simTime). Per que sigui totalment
-// asincron, els temps d'activacio o desactivacio no poden ser multiples 
-// de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps 
+// asincron, els temps d'activacio o desactivacio no poden ser multiples
+// de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps
 // de simulacio (simTime)
 //
 #define CLOCK_MAX            1000  // Nombre de ticks a simular
@@ -28,13 +28,13 @@ using namespace Simulation;
 
 
 class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
-       
+
     private:
         RAM *ram;
-        
+
     private:
         void showPipeline();
-        
+
     public:
         CPUTestbench(RAM *ram);
         void run();
@@ -48,7 +48,7 @@ class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 ///
 CPUTestbench::CPUTestbench(
     RAM *ram):
-    
+
     ram(ram) {
 }
 
@@ -59,9 +59,9 @@ CPUTestbench::CPUTestbench(
 void CPUTestbench::run() {
 
     std::string traceFileName(TRACE_FILE_NAME);
-	
+
     Vtop *top = getTop();
-    
+
     top->i_Clock = 0;
     top->i_Reset = 0;
 
@@ -73,17 +73,17 @@ void CPUTestbench::run() {
     writeConsole(std::string("    --Wave file name: " + traceFileName + "\n"));
 
     writeConsole("*** Start simulation loop.\n");
-        
+
     unsigned tick;
-    do {        
+    do {
         tick = getTickCount();
-        
+
         // Genera la senyal 'clk'
         //
         if (tick >= CLOCK_START) {
             if ((tick % 10) == 0)
                 top->i_Clock = 0;
-            else if ((tick % 10) == 5) 
+            else if ((tick % 10) == 5)
                 top->i_Clock = 1;
         }
 
@@ -93,31 +93,25 @@ void CPUTestbench::run() {
             top->i_Reset = 0;
         else if (tick == CLOCK_RST_SET)
             top->i_Reset = 1;
-		
+
         // Acces a la RAM
         //
         top->i_MemRdData = ram->read32(top->o_MemAddr);
-        if (top->o_MemWrEnable) 
+        if (top->o_MemWrEnable)
             ram->write32(top->o_MemAddr, top->o_MemWrData);
-        
-        // Desensambla l'instruccio actual
-        //        
-        if (((tick % 10) == 0) && (top->i_Clock == 0) && (top->i_Reset == 0))  {
-            //disassembly(top->o_DbgPgmAddr, top->o_DbgPgmInst);
-        }
-        
+
 
     } while (nextTick() && (tick < CLOCK_MAX));
-    
+
     closeTrace();
-    
+
     writeConsole("*** End simulation loop.\n");
     writeConsole("    --Total simulation time: " + std::to_string(getTickCount()) + " ticks.\n");
-   
+
     writeConsole("*** RAM dump start.\n");
     ram->dump(0, 32);
     writeConsole("*** RAM dump end.\n");
-	
+
     writeConsole("*** Simulation end.\n");
     writeConsole("*** Exit.\n");
 }
@@ -131,17 +125,17 @@ void CPUTestbench::run() {
 /// \return   0 si tot es correcte.
 ///
 int main(
-    int argc, 
-    char **argv, 
+    int argc,
+    char **argv,
     char **env) {
-        
+
     RAM *ram = new RAM();
 
     CPUTestbench *tb = new CPUTestbench(ram);
-    tb->run();   
+    tb->run();
     delete tb;
-    
+
     delete ram;
-    
+
     return 0;
 }

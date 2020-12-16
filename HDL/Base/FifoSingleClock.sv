@@ -14,8 +14,8 @@ module FifoSingleClock
     output logic [DATA_WIDTH-1:0] o_RdData,
     input  logic                  i_RdEnable,
     
-    output logic                  o_IsFull,
-    output logic                  o_IsEmpty);
+    output logic                  o_CanWrite,
+    output logic                  o_CanRead);
     
     localparam ADDR_WIDTH = $clog2(QUEUE_LENGTH);
     
@@ -26,14 +26,14 @@ module FifoSingleClock
     logic WrLock;
     logic RdLock;
     
-    assign o_IsFull  = Count == QUEUE_LENGTH;
-    assign o_IsEmpty = Count == 0;
+    assign o_CanWrite = Count != QUEUE_LENGTH;
+    assign o_CanRead  = Count != 0;
 
     always_ff @(posedge i_Clock) begin
     
         // Gestio de l'escriptura
         //
-        unique casez ({i_Reset, i_WrEnable, WrLock, o_IsFull})
+        unique casez ({i_Reset, i_WrEnable, WrLock, o_CanWrite})
             4'b1_???: // Reset
                 begin
                     WrAddr <= 'b0;
@@ -53,7 +53,7 @@ module FifoSingleClock
         
         // Gestio de la lectura
         //
-        unique casez ({i_Reset, i_RdEnable, RdLock, o_IsEmpty})
+        unique casez ({i_Reset, i_RdEnable, RdLock, o_CanWrite})
             4'b1_000: // Reset
                 begin
                     RdAddr <= 0;

@@ -1,4 +1,5 @@
 module StageEX
+    import Types::*;
 #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
@@ -15,9 +16,6 @@ module StageEX
 
     output logic [DATA_WIDTH-1:0] o_Result,             // Resultat de la ALU
     output logic [DATA_WIDTH-1:0] o_DataB);             // Dades B
-
-
-    import Types::*;
 
 
     // -----------------------------------------------------------------------

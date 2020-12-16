@@ -25,6 +25,7 @@ class RAM: public Simulation::Memory {
 };
 
 
+void printTick(unsigned tick);
 void printInstruction(unsigned addr, uint32_t data);
 void printRegister(unsigned addr, uint32_t data);
 
