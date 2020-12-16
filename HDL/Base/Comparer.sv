@@ -13,15 +13,12 @@ module Comparer
       
 
     always_comb begin
-        o_EQ = i_InputA == i_InputB;
-        if (i_Unsigned) begin
+        if (i_Unsigned) 
             o_GT  = i_InputA > i_InputB;
-            o_LT  = i_InputA < i_InputB;
-        end
-        else begin
+        else
             o_GT  = $signed(i_InputA) > $signed(i_InputB);
-            o_LT  = $signed(i_InputA) < $signed(i_InputB);
-        end
+        o_EQ = i_InputA == i_InputB;
+        o_LT = !o_EQ & !o_GT;
     end
 
 endmodule

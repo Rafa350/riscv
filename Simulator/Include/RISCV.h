@@ -4,7 +4,10 @@
 #include <stdint.h>
 
 
-#define RISCV_LITTLE_ENDIAN
+#define RISCV_ENDIAN_LITTLE
+
+#define RISCV_DMEM_BASE        0x100000
+#define RISCV_DRAM_SIZE        1024
 
 
 namespace RISCV {

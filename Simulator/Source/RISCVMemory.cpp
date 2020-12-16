@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 
-#if !defined(RISCV_BIG_ENDIAN) && !defined(RISCV_LITTLE_ENDIAN)
-#error No s'ha especificat l'ordre del bytes. Cal definir RISC_LITTLE_ENDIAN o RISC_BIG_ENDIAN
+#if !defined(RISCV_ENDIAN_BIG) && !defined(RISCV_ENDIAN_LITTLE)
+#error No s'ha especificat l'ordre del bytes. Cal definir RISC_ENDIAN_LITTLE o RISC_ENDIAN_BIG
 #endif
 
 
@@ -62,14 +62,14 @@ data_t Memory::read32(
     if ((addr + 4) > size)
         return 0;
 
-#if defined(RISCV_BIG_ENDIAN)
+#if defined(RISCV_ENDIAN_BIG)
     return
         (data_t(mem[addr + 0]) << 24) |
         (data_t(mem[addr + 1]) << 16) |
         (data_t(mem[addr + 2]) <<  8) |
         (data_t(mem[addr + 3]) <<  0);
 
-#elif defined(RISCV_LITTLE_ENDIAN)
+#elif defined(RISCV_ENDIAN_LITTLE)
     return
         (data_t(mem[addr + 0]) <<  0) |
         (data_t(mem[addr + 1]) <<  8) |
@@ -94,12 +94,12 @@ data_t Memory::read16(
     if (addr + 2 > size)
         return 0;
 
-#if defined(RISCV_BIG_ENDIAN)
+#if defined(RISCV_ENDIAN_BIG)
     return
         (data_t(mem[addr + 2]) << 8) |
         (data_t(mem[addr + 3]) << 0);
 
-#elif defined(RISCV_LITTLE_ENDIAN)
+#elif defined(RISCV_ENDIAN_LITTLE)
     return
         (data_t(mem[addr + 0]) << 0) |
         (data_t(mem[addr + 1]) << 8);
@@ -140,13 +140,13 @@ void Memory::write32(
     if ((addr + 4) > size)
         return;
 
-#if defined(RISCV_BIG_ENDIAN)
+#if defined(RISCV_ENDIAN_BIG)
     mem[addr + 0] = uint8_t(data >> 24);
     mem[addr + 1] = uint8_t(data >> 16);
     mem[addr + 2] = uint8_t(data >>  8);
     mem[addr + 3] = uint8_t(data >>  0);
 
-#elif defined(RISCV_LITTLE_ENDIAN)
+#elif defined(RISCV_ENDIAN_LITTLE)
     mem[addr + 0] = uint8_t(data >>  0);
     mem[addr + 1] = uint8_t(data >>  8);
     mem[addr + 2] = uint8_t(data >> 16);
@@ -172,11 +172,11 @@ void Memory::write16(
     if ((addr + 2) > size)
         return;
 
-#if defined(RISCV_BIG_ENDIAN)
+#if defined(RISCV_ENDIAN_BIG)
     mem[addr + 0] = uint8_t(data >>  8);
     mem[addr + 1] = uint8_t(data >>  0);
 
-#elif defined(RISCV_LITTLE_ENDIAN)
+#elif defined(RISCV_ENDIAN_LITTLE)
     mem[addr + 0] = uint8_t(data >>  0);
     mem[addr + 1] = uint8_t(data >>  8);
 
