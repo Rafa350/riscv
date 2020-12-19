@@ -1,13 +1,15 @@
 #include "sim.h"
+#include "RISCV.h"
+#include "RISCVMemory.h"
 
 
 #define PIPELINE
 
 
 #ifdef PIPELINE
-    #define TRACE_FILE_NAME "../waves_pp/trace.fst"
+    #define TRACE_FILE_NAME "waves_pp/trace.fst"
 #else
-    #define TRACE_FILE_NAME "../waves_sc/trace.fst"
+    #define TRACE_FILE_NAME "waves_sc/trace.fst"
 #endif
 
 
@@ -30,13 +32,10 @@ using namespace Simulation;
 class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 
     private:
-        RAM *ram;
-
-    private:
-        void showPipeline();
+        RISCV::Memory *dataMem;
 
     public:
-        CPUTestbench(RAM *ram);
+        CPUTestbench(RISCV::Memory *dataMem);
         void run();
 };
 
@@ -47,9 +46,9 @@ class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 /// \param    ram: Memoria ram
 ///
 CPUTestbench::CPUTestbench(
-    RAM *ram):
+    RISCV::Memory *dataMem):
 
-    ram(ram) {
+    dataMem(dataMem) {
 }
 
 
@@ -62,58 +61,40 @@ void CPUTestbench::run() {
 
     Vtop *top = getTop();
 
-    top->i_Clock = 0;
-    top->i_Reset = 0;
-
-    writeConsole("*** CPU\n");
-    writeConsole("*** Starting simulation...\n");
+    top->i_clock = 0;
+    top->i_reset = 0;
 
     openTrace(traceFileName);
-    writeConsole("*** Enabling waves...\n");
-    writeConsole(std::string("    --Wave file name: " + traceFileName + "\n"));
-
-    writeConsole("*** Start simulation loop.\n");
 
     unsigned tick;
     do {
         tick = getTickCount();
 
-        // Genera la senyal 'clk'
+        // Genera la senyal 'clock'
         //
         if (tick >= CLOCK_START) {
             if ((tick % 10) == 0)
-                top->i_Clock = 0;
+                top->i_clock = 0;
             else if ((tick % 10) == 5)
-                top->i_Clock = 1;
+                top->i_clock = 1;
         }
 
-        // Genera la senyal de 'rst'
+        // Genera la senyal de 'reset'
         //
         if (tick == CLOCK_RST_CLR)
-            top->i_Reset = 0;
+            top->i_reset = 0;
         else if (tick == CLOCK_RST_SET)
-            top->i_Reset = 1;
+            top->i_reset = 1;
 
-        // Acces a la RAM
+        // Acces a la memoria de dades
         //
-        top->i_MemRdData = ram->read32(top->o_MemAddr);
-        if (top->o_MemWrEnable)
-            ram->write32(top->o_MemAddr, top->o_MemWrData);
-
+        top->i_memRdData = dataMem->read32(top->o_memAddr);
+        if (top->o_memWrEnable)
+            dataMem->write32(top->o_memAddr, top->o_memWrData);
 
     } while (nextTick() && (tick < CLOCK_MAX));
 
     closeTrace();
-
-    writeConsole("*** End simulation loop.\n");
-    writeConsole("    --Total simulation time: " + std::to_string(getTickCount()) + " ticks.\n");
-
-    writeConsole("*** RAM dump start.\n");
-    ram->dump(0, 32);
-    writeConsole("*** RAM dump end.\n");
-
-    writeConsole("*** Simulation end.\n");
-    writeConsole("*** Exit.\n");
 }
 
 
@@ -129,13 +110,23 @@ int main(
     char **argv,
     char **env) {
 
-    RAM *ram = new RAM();
+    printf("RISCV RTL simulator V1.0\n\n");
 
-    CPUTestbench *tb = new CPUTestbench(ram);
-    tb->run();
-    delete tb;
+    RISCV::Memory *dataMem = new RISCV::Memory(nullptr, RISCV_DMEM_BASE, RISCV_DMEM_SIZE);
+    if (dataMem) {
 
-    delete ram;
+        CPUTestbench *tb = new CPUTestbench(dataMem);
+        if (tb) {
+            tb->run();
+            delete tb;
+        }
+
+        printf("Data memory dump\n");
+        dataMem->dump(RISCV_DMEM_BASE, 128);
+        printf("\n");
+
+        delete dataMem;
+    }
 
     return 0;
 }

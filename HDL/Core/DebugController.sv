@@ -1,28 +1,28 @@
 module DebugController
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter REG_WIDTH  = 5,
-    parameter PC_WIDTH   = 32)
+    import Types::*;
 (
-    input  logic                  i_Clock,         // Clock
-    input  logic                  i_Reset,         // Reset
+    // Senyals de control
+    input  logic    i_clock,       // Clock
+    input  logic    i_reset,       // Reset
 
-    input  logic [7:0]            i_ExTag,         // Tag de la instruccio executada
-    input  logic [PC_WIDTH-1:0]   i_ExPC,          // PC de la instruccio executada
-    input  logic [31:0]           i_ExInst,        // Instruccio executada
-    input  logic [REG_WIDTH-1:0]  i_ExRegWrAddr,   // Registre per escriure
-    input  logic [DATA_WIDTH-1:0] i_ExRegWrData,   // Dades per escriure en registre
-    input  logic                  i_ExRegWrEnable, // Habilita escriptura en el registre
-    input  logic [ADDR_WIDTH-1:0] i_ExMemWrAddr,   // Memoria per escriure
-    input  logic [DATA_WIDTH-1:0] i_ExMemWrData,   // Dades per escriure en memoria
-    input  logic                  i_ExMemWrEnable, // Habilita escriptura en memoria
+    // Senyals per la generacio del tick
+    input  logic    i_stall,       // Indica stall
+    output int      o_tick,        // Numero de tick
 
-    output logic [7:0]            o_Tag);          // Etiqueta generada
+    // Senyals d'estat de la ultima instruccio executada
+    input  int      i_tick,        // Numero de tick
+    input  logic    i_ok,          // Instruccio
+    input  InstAddr i_pc,          // Adressa de la instruccio
+    input  Inst     i_inst,        // Instruccio
+    input  RegAddr  i_regWrAddr,   // Registre per escriure
+    input  logic    i_regWrEnable, // Autoritzacio d'escritura en el registre
+    input  Data     i_regWrData,   // Dades per escriure en el registre
+    input  DataAddr i_memWrAddr,   // Adressa de memoria per escriure
+    input  logic    i_memWrEnable, // Autoritzacio d'escriptura en memoria
+    input  Data     i_memWrData);  // Dades per escriure en memoria
 
-
-    always_ff @(posedge i_Clock)
-        o_Tag <= i_Reset ? 8'h01 : o_Tag + 8'h01;
+    always_ff @(posedge i_clock)
+        o_tick <= i_reset ? 0 : (i_stall ? o_tick : o_tick + 1);
 
 
 `ifdef VERILATOR
@@ -32,16 +32,20 @@ module DebugController
     import "DPI-C" function void TraceMemory(input int addr, input int data);
     import "DPI-C" function void TraceTick(input int tick);
 
-    always_ff @(posedge i_Clock)
-        if (!i_Reset & (i_ExTag != 8'h00)) begin
-            TraceTick(32'(i_ExTag));
-            // verilator lint_off WIDTH
-            TraceInstruction(i_ExPC, i_ExInst);
-            if ((i_ExRegWrAddr) != 0 & i_ExRegWrEnable)
-                TraceRegister(i_ExRegWrAddr, i_ExRegWrData);
-            if (i_ExMemWrEnable)
-                TraceMemory(i_ExMemWrAddr, i_ExMemWrData);
-            // verilator lint_on WIDTH
+    always_ff @(posedge i_clock)
+        if (!i_reset & i_ok) begin
+
+            TraceTick(i_tick);
+
+            TraceInstruction(i_pc, i_inst);
+
+            if ((i_regWrAddr != 0) & i_regWrEnable)
+                TraceRegister(i_regWrAddr, i_regWrData);
+
+            if (i_memWrEnable)
+                TraceMemory(i_memWrAddr, i_memWrData);
+
+            $display("");
         end
 
 `endif

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 
 #if !defined(RISCV_ENDIAN_BIG) && !defined(RISCV_ENDIAN_LITTLE)
@@ -57,24 +58,24 @@ Memory::~Memory() {
 data_t Memory::read32(
     addr_t addr) const {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if ((addr + 4) > size)
+    if ((a + 4) > size)
         return 0;
 
 #if defined(RISCV_ENDIAN_BIG)
     return
-        (data_t(mem[addr + 0]) << 24) |
-        (data_t(mem[addr + 1]) << 16) |
-        (data_t(mem[addr + 2]) <<  8) |
-        (data_t(mem[addr + 3]) <<  0);
+        (data_t(mem[a + 0]) << 24) |
+        (data_t(mem[a + 1]) << 16) |
+        (data_t(mem[a + 2]) <<  8) |
+        (data_t(mem[a + 3]) <<  0);
 
 #elif defined(RISCV_ENDIAN_LITTLE)
     return
-        (data_t(mem[addr + 0]) <<  0) |
-        (data_t(mem[addr + 1]) <<  8) |
-        (data_t(mem[addr + 2]) << 16) |
-        (data_t(mem[addr + 3]) << 24);
+        (data_t(mem[a + 0]) <<  0) |
+        (data_t(mem[a + 1]) <<  8) |
+        (data_t(mem[a + 2]) << 16) |
+        (data_t(mem[a + 3]) << 24);
 #else
     #error Undefined ENDIAN type
 #endif
@@ -89,20 +90,20 @@ data_t Memory::read32(
 data_t Memory::read16(
     addr_t addr) const {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if (addr + 2 > size)
+    if (a + 2 > size)
         return 0;
 
 #if defined(RISCV_ENDIAN_BIG)
     return
-        (data_t(mem[addr + 2]) << 8) |
-        (data_t(mem[addr + 3]) << 0);
+        (data_t(mem[a + 2]) << 8) |
+        (data_t(mem[a + 3]) << 0);
 
 #elif defined(RISCV_ENDIAN_LITTLE)
     return
-        (data_t(mem[addr + 0]) << 0) |
-        (data_t(mem[addr + 1]) << 8);
+        (data_t(mem[a + 0]) << 0) |
+        (data_t(mem[a + 1]) << 8);
 #else
     #error Undefined ENDIAN type
 #endif
@@ -117,12 +118,12 @@ data_t Memory::read16(
 data_t Memory::read8(
     addr_t addr) const {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if (addr + 1 > size)
+    if (a + 1 > size)
         return 0;
 
-    return (data_t) mem[addr];
+    return data_t(mem[a]);
 }
 
 
@@ -135,22 +136,22 @@ void Memory::write32(
     addr_t addr,
     data_t data) {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if ((addr + 4) > size)
+    if ((a + 4) > size)
         return;
 
 #if defined(RISCV_ENDIAN_BIG)
-    mem[addr + 0] = uint8_t(data >> 24);
-    mem[addr + 1] = uint8_t(data >> 16);
-    mem[addr + 2] = uint8_t(data >>  8);
-    mem[addr + 3] = uint8_t(data >>  0);
+    mem[a + 0] = uint8_t(data >> 24);
+    mem[a + 1] = uint8_t(data >> 16);
+    mem[a + 2] = uint8_t(data >>  8);
+    mem[a + 3] = uint8_t(data >>  0);
 
 #elif defined(RISCV_ENDIAN_LITTLE)
-    mem[addr + 0] = uint8_t(data >>  0);
-    mem[addr + 1] = uint8_t(data >>  8);
-    mem[addr + 2] = uint8_t(data >> 16);
-    mem[addr + 3] = uint8_t(data >> 24);
+    mem[a + 0] = uint8_t(data >>  0);
+    mem[a + 1] = uint8_t(data >>  8);
+    mem[a + 2] = uint8_t(data >> 16);
+    mem[a + 3] = uint8_t(data >> 24);
 
 #else
 #error UNDEFINED endian TYPE
@@ -167,18 +168,18 @@ void Memory::write16(
     addr_t addr,
     data_t data) {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if ((addr + 2) > size)
+    if ((a + 2) > size)
         return;
 
 #if defined(RISCV_ENDIAN_BIG)
-    mem[addr + 0] = uint8_t(data >>  8);
-    mem[addr + 1] = uint8_t(data >>  0);
+    mem[a + 0] = uint8_t(data >>  8);
+    mem[a + 1] = uint8_t(data >>  0);
 
 #elif defined(RISCV_ENDIAN_LITTLE)
-    mem[addr + 0] = uint8_t(data >>  0);
-    mem[addr + 1] = uint8_t(data >>  8);
+    mem[a + 0] = uint8_t(data >>  0);
+    mem[a + 1] = uint8_t(data >>  8);
 
 #else
 #error UNDEFINED endian TYPE
@@ -195,12 +196,12 @@ void Memory::write8(
     addr_t addr,
     data_t data) {
 
-    addr -= base;
+    addr_t a = addr - base;
 
-    if (addr + 1 > size)
+    if (a + 1 > size)
         return;
 
-    mem[addr] = data;
+    mem[a] = data;
 }
 
 
@@ -213,7 +214,7 @@ void Memory::dump(
     addr_t addr,
     unsigned length) const {
 
-    addr -= base;
+    addr_t a = addr - base;
 
     if (length > size)
         length = size;
@@ -221,9 +222,9 @@ void Memory::dump(
     printf("           0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
 
     while (length) {
-        printf("%8.8X: ", addr);
+        printf("%8.8X: ", a + base);
         for (unsigned col = 16; col && length; col--, length--)
-            printf("%2.2X ", mem[addr++]);
+            printf("%2.2X ", mem[a++]);
         printf("\n");
     }
 
@@ -236,8 +237,7 @@ void Memory::dump(
 /// \param    fileName: El mon del fitxer.
 ///
 void Memory::load(
-    const char *fileName,
-    unsigned length) {
+    const char *fileName) {
 
     FILE *f = fopen(fileName, "rb");
 
@@ -245,7 +245,60 @@ void Memory::load(
         printf("File '%s', not found.\n", fileName);
 
     else {
+        char buffer[10];
+        unsigned index;
+        bool addrMode = false;
+        unsigned state = 0;
+        addr_t addr = 0;
+        while (state != -1) {
+            int ch = fgetc(f);
+            switch (state) {
+                case 0:
+                    if (ch == '@') {
+                        index = 0;
+                        addrMode = true;
+                        state = 1;
+                    }
+                    else if (isxdigit(ch)) {
+                        index = 0;
+                        buffer[index++] = ch;
+                        state = 1;
+                    }
+                    else if (!isspace(ch))
+                        state = -1;
+                    break;
 
+                case 1:
+                    if (isxdigit(ch)) {
+                        if (index < sizeof(buffer) - 1)
+                            buffer[index++] = ch;
+                    }
+                    else {
+                        buffer[index] = '\0';
+                        if (addrMode) {
+                            addr = addr_t(strtoul(buffer, nullptr, 16));
+                            addrMode = false;
+                        }
+                        else {
+                            data_t d1 = data_t(strtoul(buffer, nullptr, 16));
+                            data_t d2 =
+                                ((d1 & 0xFF000000) >> 24) |
+                                ((d1 & 0x00FF0000) >> 8) |
+                                ((d1 & 0x0000FF00) << 8) |
+                                ((d1 & 0x000000FF) << 24);
+                            write32(addr, d2);
+                            addr += 4;
+                        }
+
+                        state = 0;
+                    }
+                    break;
+
+                default:
+                    state = -1;
+                    break;
+            }
+        }
 
         fclose(f);
     }

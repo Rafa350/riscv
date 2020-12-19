@@ -1,24 +1,24 @@
-module Comparer 
+module Comparer
 #(
     parameter WIDTH          = 32)       // Amplada de dades
 (
-    input  logic [WIDTH-1:0] i_InputA,   // Entrada per comparar A
-    input  logic [WIDTH-1:0] i_InputB,   // Entrada per comparar B
-    
-    input  logic             i_Unsigned, // Opera sense signe
-    
-    output logic             o_EQ,     // A == B
-    output logic             o_GT,     // A > B
-    output logic             o_LT);    // A < B
-      
+    input  logic [WIDTH-1:0] i_inputA,   // Entrada per comparar A
+    input  logic [WIDTH-1:0] i_inputB,   // Entrada per comparar B
+
+    input  logic             i_unsigned, // Opera sense signe
+
+    output logic             o_eq,     // A == B
+    output logic             o_gt,     // A > B
+    output logic             o_lt);    // A < B
+
 
     always_comb begin
-        if (i_Unsigned) 
-            o_GT  = i_InputA > i_InputB;
+        if (i_unsigned)
+            o_gt  = i_inputA > i_inputB;
         else
-            o_GT  = $signed(i_InputA) > $signed(i_InputB);
-        o_EQ = i_InputA == i_InputB;
-        o_LT = !o_EQ & !o_GT;
+            o_gt  = $signed(i_inputA) > $signed(i_inputB);
+        o_eq = i_inputA == i_inputB;
+        o_lt = !o_eq & !o_gt;
     end
 
 endmodule

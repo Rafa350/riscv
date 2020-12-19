@@ -1,16 +1,19 @@
 module InstMemory
-#(  
-    parameter PC_WIDTH  = 32,
+    import Types::*;
+#(
     parameter FILE_NAME = "firmware.txt")
 (
-    InstMemoryBus.Slave IBus);
-    
+    InstMemoryBus.slave bus);
+
+    localparam DATA_WIDTH = $size(Inst);
+    localparam ADDR_WIDTH = $size(InstAddr);
+
     RoMemory #(
-        .DATA_WIDTH (32),
-        .ADDR_WIDTH (PC_WIDTH),
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
         .FILE_NAME  (FILE_NAME))
     memory (
-        .i_Addr   (IBus.Addr),
-        .o_RdData (IBus.Inst));
+        .i_addr   (bus.addr),
+        .o_rdData (bus.inst));
 
 endmodule

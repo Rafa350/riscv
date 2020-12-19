@@ -1,6 +1,8 @@
 {
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
-        "*.svh": "verilog"
+        "*.svh": "verilog",
+        "random": "cpp",
+        "atomic": "cpp"
     }
 }

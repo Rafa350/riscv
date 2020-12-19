@@ -1,27 +1,26 @@
 module StageIF
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
+    import Types::*;
 (
-    input  logic                i_Clock,   // Clock
-    input  logic                i_Reset,   // Reset
+    // Senyals de control
+    input  logic         i_clock,  // Clock
+    input  logic         i_reset,  // Reset
 
-    InstMemoryBus.Master        IBus,      // Bus de la memoria d'instruccions
+    // Senyals d'interficie am,b la memoria/cache d'instruccions
+    InstMemoryBus.master instBus,  // Bus de la memoria d'instruccions
 
-    input  logic [PC_WIDTH-1:0] i_PCNext,  // El nou PC
-    output logic [31:0]         o_Inst,    // Instruccio
-    output logic [PC_WIDTH-1:0] o_PC);     // PC
+    // Senyals de control d'execucio
+    input  InstAddr      i_pcNext, // El nou PC
+    output Inst          o_inst,   // Instruccio
+    output InstAddr      o_pc);    // PC
 
 
     // ------------------------------------------------------------------------
     // Control del PC
     // ------------------------------------------------------------------------
 
-    assign o_PC      = i_PCNext;
-    assign o_Inst    = IBus.Inst;
-    assign IBus.Addr = o_PC;
+    assign o_pc         = i_pcNext;
+    assign o_inst       = instBus.inst;
+    assign instBus.addr = o_pc;
 
     // Mirar d'expandir la instruccio comprimida aqui
 

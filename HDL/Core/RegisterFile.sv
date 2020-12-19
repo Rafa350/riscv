@@ -6,44 +6,42 @@
 // -Durant el reset, tots els registres s'asignen al valor zero.
 //
 module RegisterFile
-#(
-    parameter DATA_WIDTH = 32,               // Amplada del bus de dades
-    parameter ADDR_WIDTH = 5)                // Amplada del bus d'adreses
+    import Types::*;
 (
     // Control
-    input logic i_Clock,                     // Clock
-    input logic i_Reset,                     // Reset
-    
+    input  logic   i_clock,                     // Clock
+    input  logic   i_reset,                     // Reset
+
     // Port d'escriptura
-    input logic [ADDR_WIDTH-1:0] i_WrAddr,   // Identificador del registre del port escriptura
-    input logic [DATA_WIDTH-1:0] i_WrData,   // Dades d'escriptura
-    input logic                  i_WrEnable, // Habilita l'escriptura
-    
+    input  RegAddr i_wrAddr,   // Adressa del registre del port escriptura
+    input  Data    i_wrData,   // Dades d'escriptura
+    input  logic   i_wrEnable, // Habilita l'escriptura
+
     // Port de lectura A
-    input  logic [ADDR_WIDTH-1:0] i_RdAddrA, // Identificador del registre del port de lectura A
-    output logic [DATA_WIDTH-1:0] o_RdDataA, // Dades lleigides del port A
-    
+    input  RegAddr i_rdAddrA, // Adressa del registre del port de lectura A
+    output Data    o_rdDataA, // Dades lleigides del port A
+
     // Port de lectura B
-    input  logic [ADDR_WIDTH-1:0] i_RdAddrB,  // Identificador del regisres del port de lectura B
-    output logic [DATA_WIDTH-1:0] o_RdDataB); // Dades lleigides del port B
-       
-    localparam SIZE = 2**ADDR_WIDTH;
-    localparam ZERO = {DATA_WIDTH{1'b0}};
-    
-    
-    logic [DATA_WIDTH-1:0] Data[1:SIZE-1];
-    
-    always_ff @(posedge i_Clock)
-        if (i_Reset) begin
-            for (int i = $left(Data); i <= $right(Data); i++)
-                Data[i] <= ZERO;
-        end                
-        else if (i_WrEnable & (i_WrAddr != 0))
-            Data[i_WrAddr] <= i_WrData;
-    
-    always_comb begin            
-        o_RdDataA = (i_Reset | (i_RdAddrA == 0)) ? ZERO : Data[i_RdAddrA];
-        o_RdDataB = (i_Reset | (i_RdAddrB == 0)) ? ZERO : Data[i_RdAddrB];
+    input  RegAddr i_rdAddrB,  // Adressa del regisres del port de lectura B
+    output Data    o_rdDataB); // Dades lleigides del port B
+
+    localparam SIZE  = 2**$size(RegAddr);
+    localparam ZERO  = {$size(Data){1'b0}};
+
+
+    Data data[1:SIZE-1];
+
+    always_ff @(posedge i_clock)
+        if (i_reset) begin
+            for (int i = $left(data); i <= $right(data); i++)
+                data[i] <= ZERO;
+        end
+        else if (i_wrEnable & (i_wrAddr != 0))
+            data[i_wrAddr] <= i_wrData;
+
+    always_comb begin
+        o_rdDataA = (i_reset | (i_rdAddrA == 0)) ? ZERO : data[i_rdAddrA];
+        o_rdDataB = (i_reset | (i_rdAddrB == 0)) ? ZERO : data[i_rdAddrB];
     end
-    
+
 endmodule

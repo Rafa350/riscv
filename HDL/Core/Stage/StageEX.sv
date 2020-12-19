@@ -6,33 +6,33 @@ module StageEX
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic [DATA_WIDTH-1:0] i_InstIMM,            // Parametre IMM de la instruccio
-    input  logic [DATA_WIDTH-1:0] i_DataA,              // Dades A dels registres
-    input  logic [DATA_WIDTH-1:0] i_DataB,              // Dades B dels registres
-    input  logic [PC_WIDTH-1:0]   i_PC,                 // Adressa de la instruccio
-    input  logic [1:0]            i_OperandASel,        // Seleccio del operand A de la ALU
-    input  logic [1:0]            i_OperandBSel,        // Seleccio del operand B de la ALU
-    input  Types::AluOp           i_AluControl,         // Operacio a realitzar emb la ALU
+    input  Data        i_instIMM,            // Parametre IMM de la instruccio
+    input  Data        i_dataA,              // Dades A dels registres
+    input  Data        i_dataB,              // Dades B dels registres
+    input  InstAddr    i_pc,                 // Adressa de la instruccio
+    input  logic [1:0] i_operandASel,        // Seleccio del operand A de la ALU
+    input  logic [1:0] i_operandBSel,        // Seleccio del operand B de la ALU
+    input  AluOp       i_aluControl,         // Operacio a realitzar emb la ALU
 
-    output logic [DATA_WIDTH-1:0] o_Result,             // Resultat de la ALU
-    output logic [DATA_WIDTH-1:0] o_DataB);             // Dades B
+    output Data        o_result,             // Resultat de la ALU
+    output Data        o_dataB);             // Dades B
 
 
     // -----------------------------------------------------------------------
     // Selector del operand A per la ALU (RS1 o PC)
     // -----------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] OperandASelector_Output;
+    Data operandASelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
-    OperandASelector (
-        .i_Select (i_OperandASel),
-        .i_Input0 (i_DataA),
-        .i_Input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, i_PC}),
-        .i_Input2 ({DATA_WIDTH{1'b0}}),
-        .o_Output (OperandASelector_Output));
+        .WIDTH ($size(Data)))
+    operandASelector (
+        .i_select (i_operandASel),
+        .i_input0 (i_dataA),
+        .i_input1 ({{$size(Data)-$size(InstAddr){1'b0}}, i_pc}),
+        .i_input2 ({DATA_WIDTH{1'b0}}),
+        .o_output (operandASelector_output));
     // verilator lint_on PINMISSING
 
 
@@ -40,17 +40,17 @@ module StageEX
     // Selector del operand B per la ALU (RS2 o IMM)
     // -----------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] OperandBSelector_Output;
+    Data operandBSelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (DATA_WIDTH))
-    OperandBSelector (
-        .i_Select (i_OperandBSel),
-        .i_Input0 (i_DataB),
-        .i_Input1 (i_InstIMM),
-        .i_Input2 (4),
-        .o_Output (OperandBSelector_Output));
+    operandBSelector (
+        .i_select (i_operandBSel),
+        .i_input0 (i_dataB),
+        .i_input1 (i_instIMM),
+        .i_input2 (4),
+        .o_output (operandBSelector_output));
     // verilator lint_on PINMISSING
 
 
@@ -60,12 +60,12 @@ module StageEX
 
     ALU #(
         .WIDTH (DATA_WIDTH))
-    Alu (
-        .i_Op       (i_AluControl),
-        .i_OperandA (OperandASelector_Output),
-        .i_OperandB (OperandBSelector_Output),
-        .o_Result   (o_Result));
+    alu (
+        .i_Op       (i_aluControl),
+        .i_OperandA (operandASelector_output),
+        .i_OperandB (operandBSelector_output),
+        .o_Result   (o_result));
 
-    assign o_DataB = i_DataB;
+    assign o_dataB = i_dataB;
 
 endmodule

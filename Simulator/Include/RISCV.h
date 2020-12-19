@@ -7,7 +7,10 @@
 #define RISCV_ENDIAN_LITTLE
 
 #define RISCV_DMEM_BASE        0x100000
-#define RISCV_DRAM_SIZE        1024
+#define RISCV_DMEM_SIZE        1024
+
+#define RISCV_IMEM_BASE        0x000000
+#define RISCV_IMEM_SIZE        256
 
 
 namespace RISCV {

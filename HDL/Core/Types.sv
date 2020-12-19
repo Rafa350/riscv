@@ -2,27 +2,30 @@
 
 package Types;
 
-    localparam DATA_WIDTH = 32;
-    localparam INST_WIDTH = 32;
+    localparam DATA_WIDTH = `DATA_WIDTH;
+    localparam ADDR_WIDTH = `ADDR_WIDTH;
+    localparam PC_WIDTH   = `PC_WIDTH;
+    localparam REG_WIDTH  = `REG_WIDTH;
 
     typedef logic [DATA_WIDTH-1:0] Data;
-    typedef logic [INST_WIDTH-1:0] Inst;
+    typedef logic [31:0]           Inst;
 
-    typedef logic [31:0] DataAddr;
-    typedef logic [31:0] InstAddr;
-    typedef logic [4:0]  RegAddr;
+    typedef logic [ADDR_WIDTH-1:0] DataAddr;
+    typedef logic [PC_WIDTH-1:0]   InstAddr;
+    typedef logic [REG_WIDTH-1:0]  RegAddr;
 
     typedef enum logic [6:0] {
-        OpCode_Load   = 7'b000_0011,
-        OpCode_Store  = 7'b010_0011,
-        OpCode_Op     = 7'b011_0011,
-        OpCode_OpIMM  = 7'b001_0011,
-        OpCode_Branch = 7'b110_0011,
-        OpCode_System = 7'b111_0011,
-        OpCode_AUIPC  = 7'b001_0111,
-        OpCode_JALR   = 7'b110_0111,
-        OpCode_JAL    = 7'b110_1111,
-        OpCode_LUI    = 7'b011_0111
+        OpCode_Unknown = 7'b000_0000,
+        OpCode_Load    = 7'b000_0011,
+        OpCode_Store   = 7'b010_0011,
+        OpCode_Op      = 7'b011_0011,
+        OpCode_OpIMM   = 7'b001_0011,
+        OpCode_Branch  = 7'b110_0011,
+        OpCode_System  = 7'b111_0011,
+        OpCode_AUIPC   = 7'b001_0111,
+        OpCode_JALR    = 7'b110_0111,
+        OpCode_JAL     = 7'b110_1111,
+        OpCode_LUI     = 7'b011_0111
     } OpCode;
 
     typedef enum logic[4:0] {
@@ -46,38 +49,6 @@ package Types;
         AluOp_SUBU,
         AluOp_XOR
     } AluOp;
-
-    typedef struct packed {
-        logic [6:0] Func7;
-        RegAddr RS2;
-        RegAddr RS1;
-        logic [2:0] Func3;
-        RegAddr RD;
-        OpCode Op;
-    } InstRFormat;
-
-    typedef struct packed {
-        logic [11:0] Imm;
-        RegAddr RS1;
-        logic [2:0] Func3;
-        RegAddr RD;
-        OpCode Op;
-    } InstIFormat;
-
-    typedef struct packed {
-        logic [6:0] Imm7;
-        RegAddr RS2;
-        RegAddr RS1;
-        logic [2:0] Func3;
-        logic [4:0] Imm5;
-        OpCode Op;
-    } InstSFormat;
-
-    typedef struct packed {
-        logic [19:0] Imm20;
-        RegAddr RD;
-        OpCode Op;
-    } InstUFormat;
 
     typedef enum logic [11:0] {
         CSRAddr_USTATUS  = 12'h000,

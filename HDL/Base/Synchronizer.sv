@@ -1,18 +1,18 @@
 module Synchronizer
 #(
-    parameter DATA_WIDTH = 8)
+    parameter WIDTH = 8)
 (
-    input  logic                  i_Clock,
-    input  logic                  i_Reset,
-    input  logic [DATA_WIDTH-1:0] i_Data,
-    output logic [DATA_WIDTH-1:0] o_Data);
+    input  logic             i_clock,
+    input  logic             i_reset,
+    input  logic [WIDTH-1:0] i_data,
+    output logic [WIDTH-1:0] o_data);
 
-    logic [DATA_WIDTH-1:0] Data;
-    
-    always_ff @(posedge i_Clock)
-        if (i_Reset)
-            {o_Data, Data} <= 'b0;
+    logic [WIDTH-1:0] data;
+
+    always_ff @(posedge i_clock)
+        if (i_reset)
+            {o_data, data} <= 'b0;
         else
-            {o_Data, Data} <= {Data, i_Data};
+            {o_data, data} <= {data, i_data};
 
 endmodule

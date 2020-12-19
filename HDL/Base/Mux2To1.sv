@@ -6,12 +6,12 @@
 //            WIDTH     : Amplada del canal de dades
 //
 //       Entrades:
-//            i_Select  : Seleccio del canal d'entrada
-//            i_Input0  : Canal d'entrada 0
-//            i_Input1  : Canal d'entrada 1
+//            i_select  : Seleccio del canal d'entrada
+//            i_input0  : Canal d'entrada 0
+//            i_input1  : Canal d'entrada 1
 //
 //       Sortides:
-//            o_Output  : El valor de l'entrada seleccionada.
+//            o_output  : El valor de l'entrada seleccionada.
 //
 // -----------------------------------------------------------------------
 
@@ -19,13 +19,13 @@ module Mux2To1
 #(
     parameter WIDTH = 32)
 (
-    input  logic             i_Select,
+    input  logic             i_select,
 
-    input  logic [WIDTH-1:0] i_Input0,
-    input  logic [WIDTH-1:0] i_Input1,
+    input  logic [WIDTH-1:0] i_input0,
+    input  logic [WIDTH-1:0] i_input1,
 
-    output logic [WIDTH-1:0] o_Output);
+    output logic [WIDTH-1:0] o_output);
 
-    assign o_Output = i_Select ? i_Input1 : i_Input0;
+    assign o_output = i_select ? i_input1 : i_input0;
 
 endmodule

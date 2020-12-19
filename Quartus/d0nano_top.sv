@@ -1,4 +1,4 @@
-`define PIPELINE
+`include "RV.svh"
 
 
 module top(
@@ -40,10 +40,10 @@ module top(
     inout  logic        I2C_SDAT);
     
     
-    parameter DATA_WIDTH = 32;
-    parameter ADDR_WIDTH = 10;
-    parameter PC_WIDTH   = 10;
-    parameter REG_WIDTH  = 5;
+    parameter DATA_WIDTH = `DATA_WIDTH;
+    parameter ADDR_WIDTH = `ADDR_WIDTH;
+    parameter PC_WIDTH   = `PC_WIDTH;
+    parameter REG_WIDTH  = `REG_WIDTH;
     
     logic Clock;
     logic Reset;
@@ -54,21 +54,21 @@ module top(
 
 
     DataMemoryBus #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH))
-    DBus();        
+        .DATA_WIDTH ($size(Data)),
+        .ADDR_WIDTH ($size(DataAddr)))
+    dataBus();        
     
     InstMemoryBus #(
-        .PC_WIDTH (PC_WIDTH))
-    IBus();
+        .PC_WIDTH ($size(InstAddr)))
+    instBus();
        
     // ------------------------------------------------------------------------
     // Port IO LEDSA
     // ------------------------------------------------------------------------
     
     always_ff @(posedge Clock)
-        if (DBus.WrData & DBus.Addr == 10'h0200)
-            LED <= DBus.WrData[7:0];
+        if (dataBus.wrData & dataBus.addr == 10'h0200)
+            LED <= dataBus.wrData[7:0];
 
 
     // ------------------------------------------------------------------------
@@ -79,8 +79,8 @@ module top(
         .DATA_WIDTH (DATA_WIDTH),
         .ADDR_WIDTH (ADDR_WIDTH))
     DataMem (
-        .i_Clock (Clock),
-        .DBus    (DBus));
+        .i_clock (Clock),
+        .bus     (dataBus));
 
       
     // ------------------------------------------------------------------------
@@ -90,7 +90,7 @@ module top(
     InstMemory #(
         .PC_WIDTH (PC_WIDTH))
     InstMem (
-        .IBus (IBus));
+        .bus (instBus));
 
 
     // ------------------------------------------------------------------------
@@ -107,9 +107,9 @@ module top(
         .PC_WIDTH   (PC_WIDTH),
         .REG_WIDTH  (REG_WIDTH)) 
     Cpu (
-        .i_Clock (Clock),
-        .i_Reset (Reset),
-        .IBus    (IBus),
-        .DBus    (DBus));
+        .i_clock (Clock),
+        .i_reset (Reset),
+        .instBus (instBus),
+        .dataBus (dataBus));
        
 endmodule

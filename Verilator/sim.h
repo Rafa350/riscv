@@ -19,15 +19,6 @@ typedef Vverilator_top Vtop;
 
 class Vverilator_top_ProcessorPP__Aa_Pa;
 
-class RAM: public Simulation::Memory {
-    public:
-        RAM();
-};
-
-
-void printTick(unsigned tick);
-void printInstruction(unsigned addr, uint32_t data);
-void printRegister(unsigned addr, uint32_t data);
 
 
 #endif

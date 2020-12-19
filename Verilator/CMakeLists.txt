@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
-
+project("rv-rtlsim")
 enable_language(C CXX)
 
 
@@ -15,21 +15,26 @@ if (NOT verilator_FOUND)
 endif()
 
 
+set(TARGET_NAME ${PROJECT_NAME})
+
 # Defineix els directoris
 #
-set(SIMLIB_DIR         ${PROJECT_DIR}/../Simulation)
-set(SIMLIB_INCLUDE_DIR ${SIMLIB_DIR}/Include)
-set(SIMLIB_SOURCE_DIR  ${SIMLIB_DIR}/Source)
+set(SIMLIB_DIR            ${PROJECT_DIR}/../Simulation)
+set(SIMLIB_INCLUDE_DIR    ${SIMLIB_DIR}/Include)
+set(SIMLIB_SOURCE_DIR     ${SIMLIB_DIR}/Source)
 
-set(SOURCE_DIR         ${CMAKE_CURRENT_SOURCE_DIR})
+set(SIMULATOR_DIR         ${PROJECT_DIR}/Simulator)
+set(SIMULATOR_INCLUDE_DIR ${SIMULATOR_DIR}/Include)
+set(SIMULATOR_SOURCE_DIR  ${SIMULATOR_DIR}/Source)
 
-set(FIRMWARE_DIR       ${PROJECT_DIR}/build/Firmware)
-
-set(HDL_INCLUDE_DIR    ${PROJECT_DIR}/HDL)
+set(SOURCE_DIR            ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-message("*")
-message("* Sub-project 'Verilator' configuration.")
+set(HDL_INCLUDE_DIR       ${PROJECT_DIR}/HDL)
+
+
+message("* ------------------------------------------------------------------------------------")
+message("* Sub-project '${PROJECT_NAME}' configuration.")
 message("*   Toochain:")
 message("*     gcc     : " ${CMAKE_C_COMPILER})
 message("*     g++     : " ${CMAKE_CXX_COMPILER})
@@ -41,30 +46,27 @@ message("*     Current : " ${SOURCE_DIR})
 message("*")
 
 
-# Genera l'executable 
-add_executable(simx)
-target_sources(simx
-    PRIVATE ${SOURCE_DIR}/sim_main.cpp
-            ${SOURCE_DIR}/sim_dis.cpp
-            ${SOURCE_DIR}/sim_ram.cpp
-            ${SIMLIB_SOURCE_DIR}/simMemory.cpp)
-target_include_directories(simx
+# Genera l'executable
+add_executable(
+    ${TARGET_NAME})
+target_sources(
+    ${TARGET_NAME}
+    PRIVATE ${SOURCE_DIR}/main.cpp
+            ${SIMULATOR_SOURCE_DIR}/RISCVTracer.cpp
+            ${SIMULATOR_SOURCE_DIR}/RISCVTracerDpi.cpp
+            ${SIMULATOR_SOURCE_DIR}/RISCVMemory.cpp)
+target_include_directories(
+    ${TARGET_NAME}
     PRIVATE .
-    PRIVATE ${VERILATOR_ROOT}/include
-    PRIVATE ${SIMLIB_INCLUDE_DIR})
-
-# Copia el fitxer del programa
-add_custom_command(
-    TARGET simx
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${FIRMWARE_DIR}/main.txt firmware.txt
-)
+            ${VERILATOR_ROOT}/include
+            ${SIMLIB_INCLUDE_DIR}
+            ${SIMULATOR_INCLUDE_DIR})
 
 # Genera els fitxers CPP de la simulacio
-verilate(simx
+verilate(${TARGET_NAME}
     TOP_MODULE top
     TRACE_FST
-    INCLUDE_DIRS ${HDL_INCLUDE_DIR} 
+    INCLUDE_DIRS ${HDL_INCLUDE_DIR}
                  ${HDL_INCLUDE_DIR}/Base
                  ${HDL_INCLUDE_DIR}/Core
                  ${HDL_INCLUDE_DIR}/Core/ALU
@@ -73,3 +75,8 @@ verilate(simx
     VERILATOR_ARGS
     SOURCES verilator_top.sv
 )
+
+# Instalacio en la carpeta Run
+install(
+    TARGETS ${TARGET_NAME}
+    DESTINATION ${PROJECT_DIR}/Run)

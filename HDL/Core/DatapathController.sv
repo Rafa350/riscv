@@ -1,27 +1,25 @@
-module DatapathController 
+module DatapathController
     import Types::*;
 (
+    input  Inst        i_inst,          // La instruccio
+    input  logic       i_isEQ,          // Indica A == B
+    input  logic       i_isLT,          // Indica A < B
 
-    input  logic [31:0] i_Inst,          // La instruccio
-    input  logic        i_IsEQ,          // Indica A == B
-    input  logic        i_IsLT,          // Indica A < B
+    output logic       o_memWrEnable,   // Habilita erscriptura en la memoria
 
-    output logic        o_MemWrEnable,   // Habilita erscriptura en la memoria
+    output logic [1:0] o_pcNextSel,     // Selecciona el seguent valor del PC
 
-    output logic [1:0]  o_PCNextSel,     // Selecciona el seguent valor del PC
+    output AluOp       o_aluControl,    // Selecciona l'operacio en la ALU
+    output logic [1:0] o_operandASel,
+    output logic [1:0] o_operandBSel,   // Selecciona l'operand B de la ALU
 
-    output Types::AluOp o_AluControl,    // Selecciona l'operacio en la ALU
-    output logic [1:0]  o_OperandASel,
-    output logic [1:0]  o_OperandBSel,   // Selecciona l'operand B de la ALU
-
-    output logic        o_RegWrEnable,   // Habilita l'escriptura en els registres
-    output logic [1:0]  o_RegWrDataSel); // Selecciona les dades per escriure en el registre
-
+    output logic       o_regWrEnable,   // Habilita l'escriptura en els registres
+    output logic [1:0] o_regWrDataSel); // Selecciona les dades per escriure en el registre
 
     localparam  asREG = 2'b00;           // Selecciona el valor del registre
     localparam  asPC  = 2'b01;           // Selecciona el valor del PC
     localparam  asV0  = 2'b10;           // Selecciona el valor 0
-    
+
     localparam  bsREG = 2'b00;           // Selecciona el valor del registre
     localparam  bsIMM = 2'b01;           // Selecciona el valor IMM
     localparam  bsV4  = 2'b10;           // Selecciona el valor 4
@@ -33,7 +31,7 @@ module DatapathController
     localparam  pcPP4 = 2'b00;           // PC = PC + 4
     localparam  pcOFS = 2'b01;           // PC = PC + offset
     localparam  pcIND = 2'b10;           // PC = [RS1] + offset
-    
+
     localparam  ENA   = 1'b1;
     localparam  DIS   = 1'b0;
 
@@ -93,18 +91,18 @@ module DatapathController
 
     // Evalua les senyals de control de sortida
     //
-    assign o_AluControl   = AluOp'(dp[4:0]);
-    assign o_MemWrEnable  = dp[7];
-    assign o_RegWrEnable  = dp[8];
-    assign o_RegWrDataSel = dp[10:9];
-    assign o_OperandBSel  = dp[12:11];
-    assign o_OperandASel  = dp[14:13];
-    assign o_PCNextSel    = br ? dp[6:5] : pcPP4;
+    assign o_aluControl   = AluOp'(dp[4:0]);
+    assign o_memWrEnable  = dp[7];
+    assign o_regWrEnable  = dp[8];
+    assign o_regWrDataSel = dp[10:9];
+    assign o_operandBSel  = dp[12:11];
+    assign o_operandASel  = dp[14:13];
+    assign o_pcNextSel    = br ? dp[6:5] : pcPP4;
 
     // Evalua les condicions de salt per les instruccions Branch y Jump
     //
     always_comb begin
-        unique casez ({i_Inst[14:12], i_Inst[6:0], i_IsEQ, i_IsLT})
+        unique casez ({i_inst[14:12], i_inst[6:0], i_isEQ, i_isLT})
             /*  BEQ   */ 12'b000_1100011_1_?: br = 1;
             /*  BGE   */ 12'b101_1100011_?_0: br = 1;
             /*  BGEU  */ 12'b111_1100011_?_0: br = 1;
@@ -120,7 +118,7 @@ module DatapathController
     // Evalua el datapath corresponent a cada instruccio
     //
     always_comb begin
-        unique casez ({i_Inst[31:25], i_Inst[14:12], i_Inst[6:0]})
+        unique casez ({i_inst[31:25], i_inst[14:12], i_inst[6:0]})
             /*  ADD   */ {10'b0000000_000, OpCode_Op    }: dp = DP_ADD;
             /*  ADDI  */ {10'b???????_000, OpCode_OpIMM }: dp = DP_ADDI;
             /*  AND   */ {10'b0000000_111, OpCode_Op    }: dp = DP_AND;
@@ -133,7 +131,7 @@ module DatapathController
             /*  BLT   */ {10'b???????_100, OpCode_Branch}: dp = DP_BLT;
             /*  BLTU  */ {10'b???????_110, OpCode_Branch}: dp = DP_BLTU;
             /*  BNE   */ {10'b???????_001, OpCode_Branch}: dp = DP_BNE;
-                       
+
             /*  JAL   */ {10'b???????_???, OpCode_JAL   }: dp = DP_JAL;
             /*  JALR  */ {10'b???????_000, OpCode_JALR  }: dp = DP_JALR;
 

@@ -41,7 +41,7 @@ void Processor::reset() {
 
     // Inicialitza el contador de tics
     //
-    tick = 1;
+    tick = 0;
 }
 
 
@@ -487,11 +487,11 @@ void Processor::executeBranch(
             break;
 
         case 0b100: // BLT
-            br = int(r[rs1]) < int(r[rs2]);
+            br = signed(r[rs1]) < signed(r[rs2]);
             break;
 
         case 0b101: // BGE
-            br = int(r[rs1]) > int(r[rs2]);
+            br = signed(r[rs1]) > signed(r[rs2]);
             break;
 
         case 0b110: // BLTU

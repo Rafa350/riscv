@@ -1,43 +1,39 @@
 module StageMEM
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
+    import Types::*;
 (
-    DataMemoryBus.Master          DBus,           // Bus de la memoria de dades
+    DataMemoryBus.master dataBus,        // Bus de la memoria de dades
 
-    input  logic [PC_WIDTH-1:0]   i_PC,
-    input  logic [DATA_WIDTH-1:0] i_Result,
-    input  logic [DATA_WIDTH-1:0] i_DataB,
+    input  InstAddr      i_pc,
+    input  Data          i_result,
+    input  Data          i_dataB,
 
-    input  logic                  i_MemWrEnable,  // Habilita escriptura en memoria
+    input  logic         i_memWrEnable,  // Habilita escriptura en memoria
 
-    input  logic [1:0]            i_RegWrDataSel, // Seleccio de dades per escriure en el registre
-    output logic [DATA_WIDTH-1:0] o_RegWrData);   // Dades per escriure en el registre
+    input  logic [1:0]   i_regWrDataSel, // Seleccio de dades per escriure en el registre
+    output Data          o_regWrData);   // Dades per escriure en el registre
 
 
     // ------------------------------------------------------------------------
     // Interface amb la memoria de dades.
     // ------------------------------------------------------------------------
 
-    assign DBus.Addr     = i_Result[ADDR_WIDTH-1:0];
-    assign DBus.WrData   = i_DataB;
-    assign DBus.WrEnable = i_MemWrEnable;
+    assign dataBus.addr     = i_result[$size(DataAddr)-1:0];
+    assign dataBus.wrData   = i_dataB;
+    assign dataBus.wrEnable = i_memWrEnable;
 
 
     /// -----------------------------------------------------------------------
     /// Evalua PC + 4
     /// -----------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0] Adder_Result;
+    InstAddr adder_result;
 
     HalfAdder #(
-        .WIDTH (PC_WIDTH))
-    Adder (
-        .i_OperandA (i_PC),
-        .i_OperandB (4),
-        .o_Result   (Adder_Result));
+        .WIDTH ($size(InstAddr)))
+    adder (
+        .i_operandA (i_pc),
+        .i_operandB (4),
+        .o_result   (adder_result));
 
 
     // ------------------------------------------------------------------------
@@ -52,13 +48,13 @@ module StageMEM
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
-    RegWrDataSelector (
-        .i_Select (i_RegWrDataSel),
-        .i_Input0 (i_Result),
-        .i_Input1 (DBus.RdData),
-        .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, Adder_Result}),
-        .o_Output (o_RegWrData));
+        .WIDTH ($size(Data)))
+    regWrDataSelector (
+        .i_select (i_regWrDataSel),
+        .i_input0 (i_result),
+        .i_input1 (dataBus.rdData),
+        .i_input2 ({{$size(Data)-$size(InstAddr){1'b0}}, adder_result}),
+        .o_output (o_regWrData));
     // verilator lint_on PINMISSING
 
 endmodule

@@ -3,24 +3,24 @@ interface RBusIf
     parameter DATA_WIDTH = 32,
     parameter REG_WIDTH  = 5)
 (
-    logic [REG_WIDTH-1:0]  RdAddrA;
-    logic [REG_WIDTH-1:0]  RdAddrB;
-    logic [REG_WIDTH-1:0]  WrAddr;
-    logic [DATA_WIDTH-1:0] RdDataA;
-    logic [DATA_WIDTH-1:0] RdDataB;
-    logic [DATA_WIDTH-1:0] WrData;
-    logic                  WrEnable;
+    logic [REG_WIDTH-1:0]  rdAddrA;
+    logic [REG_WIDTH-1:0]  rdAddrB;
+    logic [REG_WIDTH-1:0]  wrAddr;
+    logic [DATA_WIDTH-1:0] rdDataA;
+    logic [DATA_WIDTH-1:0] rdDataB;
+    logic [DATA_WIDTH-1:0] wrData;
+    logic                  wrEnable;
     
-    modport Reader (
-        output RdAddrA,
-        output RdAddrB,
-        input  RdDataA,
-        input  RdDataB);
+    modport reader (
+        output rdAddrA,
+        output rdAddrB,
+        input  rdDataA,
+        input  rdDataB);
 
-    modport Writer (
-        output WrData,
-        output WrAddr,
-        output WrEnable);
+    modport writer (
+        output wrData,
+        output wrAddr,
+        output wrEnable);
 );
 
 endinterface

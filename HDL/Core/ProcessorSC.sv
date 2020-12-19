@@ -8,11 +8,11 @@ module ProcessorSC
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic  i_Clock, // Clock
-    input  logic  i_Reset, // Reset
+    input  logic         i_clock, // Clock
+    input  logic         i_reset, // Reset
 
-    DataMemoryBus.Master DBus,    // Bus de dades
-    InstMemoryBus.Master IBus);   // Bus d'instruccions
+    DataMemoryBus.master dataBus,    // Bus de dades
+    InstMemoryBus.master instBus);   // Bus d'instruccions
  
     
     // ------------------------------------------------------------------------

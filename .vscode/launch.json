@@ -6,13 +6,32 @@
     "configurations": [
 
         {
-            "name": "(gdb) Launch RISCVSim",
+            "name": "(Debug) rv-bhvsim",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Simulator/RISCVSim",
+            "program": "${workspaceFolder}/build/Simulator/rv-bhvsim",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Run",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+        {
+            "name": "(Debug) rv-rtlsim",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Verilator/rv-rtlsim",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Run",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

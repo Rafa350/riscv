@@ -1,19 +1,17 @@
 module StageWB
-#(
-    parameter DATA_WIDTH = 32,
-    parameter REG_WIDTH  = 5)
+    import Types::*;
 (
-    input  logic [DATA_WIDTH-1:0] i_RegWrData,
-    input  logic [REG_WIDTH-1:0]  i_RegWrAddr,
-    input  logic                  i_RegWrEnable,
+    input  Data    i_regWrData,
+    input  RegAddr i_regWrAddr,
+    input  logic   i_regWrEnable,
 
-    output logic [DATA_WIDTH-1:0] o_RegWrData,
-    output logic [REG_WIDTH-1:0]  o_RegWrAddr,
-    output logic                  o_RegWrEnable);
+    output Data    o_regWrData,
+    output RegAddr o_regWrAddr,
+    output logic   o_regWrEnable);
 
 
-    assign o_RegWrData   = i_RegWrData;
-    assign o_RegWrAddr   = i_RegWrAddr;
-    assign o_RegWrEnable = i_RegWrEnable;
+    assign o_regWrData   = i_regWrData;
+    assign o_regWrAddr   = i_regWrAddr;
+    assign o_regWrEnable = i_regWrEnable;
 
 endmodule

@@ -241,7 +241,7 @@ void Tracer::traceReg(
     if (reg) {
         const char *regName = getRegName(reg);
 
-        printf("R: %s := %8.8X\n", regName, data);
+        printf("R: %s: %8.8X\n", regName, data);
     }
 }
 
@@ -250,6 +250,7 @@ void Tracer::traceMem(
     addr_t addr,
     data_t data) {
 
+        printf("M: %8.8X: %8.8X\n", addr, data);
 }
 
 

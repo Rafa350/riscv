@@ -8,345 +8,311 @@ module ProcessorPP
     parameter PC_WIDTH   = 32,
     parameter REG_WIDTH  = 5)
 (
-    input  logic         i_Clock, // Clock
-    input  logic         i_Reset, // Reset
-    DataMemoryBus.Master DBus,    // Bus de la memoria de dades
-    InstMemoryBus.Master IBus);   // Bus de la memoria d'instruccions
-
-    
-    // ------------------------------------------------------------------------
-    // Debug
-    // ------------------------------------------------------------------------
-
-    logic [7:0] DbgCtrl_Tag;
-
-    DebugController #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .REG_WIDTH  (REG_WIDTH),
-        .PC_WIDTH   (PC_WIDTH))
-    DbgCtrl(
-        .i_Clock         (i_Clock),
-        .i_Reset         (i_Reset),
-        .i_ExTag         (MEMWB_DbgTag),
-        .i_ExPC          (MEMWB_DbgPC),
-        .i_ExInst        (MEMWB_DbgInst),
-        .i_ExRegWrAddr   (MEMWB_RegWrAddr),
-        .i_ExRegWrData   (MEMWB_RegWrData),
-        .i_ExRegWrEnable (MEMWB_RegWrEnable),
-        .i_ExMemWrAddr   (0),
-        .i_ExMemWrData   (0),
-        .i_ExMemWrEnable (0),
-        .o_Tag           (DbgCtrl_Tag));
+    input  logic         i_clock,  // Clock
+    input  logic         i_reset,  // Reset
+    DataMemoryBus.master dataBus,  // Bus de la memoria de dades
+    InstMemoryBus.master instBus); // Bus de la memoria d'instruccions
 
 
     // ------------------------------------------------------------------------
     // Stage IF
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0] IF_PC;
-    logic [31:0]         IF_Inst;
+    Inst     IF_inst;
+    InstAddr IF_pc;
 
-    StageIF #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    IF (
-        .i_Clock   (i_Clock),   // Clock
-        .i_Reset   (i_Reset),   // Reset
-        .IBus      (IBus),      // Bus de la memoria d'instruccio
-        .i_PCNext  (ID_PCNext), // Adressa de salt
-        .o_Inst    (IF_Inst),   // Instruccio
-        .o_PC      (IF_PC));    // Adressa de la instruccio
+    StageIF
+    stageIF (
+        .i_clock  (i_clock),   // Clock
+        .i_reset  (i_reset),   // Reset
+        .instBus  (instBus),   // Bus de la memoria d'instruccio
+        .i_pcNext (ID_pcNext), // Adressa de salt
+        .o_inst   (IF_inst),   // Instruccio
+        .o_pc     (IF_pc));    // Adressa de la instruccio
 
 
     // ------------------------------------------------------------------------
-    // Pipeline IFID
+    // Pipeline IF-ID
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0] IFID_PC;
-    logic [31:0]         IFID_Inst;
-    logic [7:0]          IFID_DbgTag;
-    logic [PC_WIDTH-1:0] IFID_DbgPC;
-    logic [31:0]         IFID_DbgInst;
+    Inst     IFID_inst;
+    InstAddr IFID_pc;
+    TraceIF  IFID_traceIF;
 
-    PipelineIFID #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    IFID (
-        .i_Clock   (i_Clock),
-        .i_Reset   (i_Reset),
-        .i_Stall   (ID_Bubble),
-        .i_DbgTag  (DbgCtrl_Tag),
-        .i_DbgPC   (IF_PC),
-        .i_DbgInst (IF_Inst),
-        .o_DbgTag  (IFID_DbgTag),
-        .o_DbgPC   (IFID_DbgPC),
-        .o_DbgInst (IFID_DbgInst),
-        .i_PC      (IF_PC),
-        .i_Inst    (IF_Inst),
-        .o_PC      (IFID_PC),
-        .o_Inst    (IFID_Inst));
+`ifdef DEBUG
+    int      IFID_dbgTick;
+    logic    IFID_dbgOk;
+    InstAddr IFID_dbgPc;
+    Inst     IFID_dbgInst;
+`endif
+
+    PipelineIFID
+    pipelineIFID (
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .i_stall (ID_bubble),
+        .o_trace (IFID_traceIF),
+        .i_pc    (IF_pc),
+        .i_inst  (IF_inst),
+        .o_pc    (IFID_pc),
+        .o_inst  (IFID_inst)
+
+`ifdef DEBUG
+        ,
+        .i_dbgTick (dbgTick),
+        .i_dbgOk   (1'b0),
+        .i_dbgPc   (IF_pc),
+        .i_dbgInst (IF_inst)
+        .o_dbgTick (IFID_dbgTick),
+        .o_dbgOk   (IFID_dbgOk),
+        .o_dbgPc   (IFID_dbgPc),
+        .o_dbgInst (IFID_dbgInst)
+`endif
+    );
 
 
     // ------------------------------------------------------------------------
     // Stage ID
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] ID_DataA,
-                           ID_DataB;
-    logic [6:0]            ID_InstOP;
-    logic [DATA_WIDTH-1:0] ID_InstIMM;
-    logic                  ID_IsLoad;
-    logic [REG_WIDTH-1:0]  ID_RegWrAddr;
-    logic                  ID_RegWrEnable;
-    logic [1:0]            ID_RegWrDataSel;
-    logic                  ID_MemWrEnable;
-    AluOp                  ID_AluControl;
-    logic [1:0]            ID_OperandASel;
-    logic [1:0]            ID_OperandBSel;
-    logic [PC_WIDTH-1:0]   ID_PCNext;
-    logic                  ID_Bubble;
+    Data        ID_dataA;
+    Data        ID_dataB;
+    Data        ID_instIMM;
+    logic       ID_isLoad;
+    RegAddr     ID_regWrAddr;
+    logic       ID_regWrEnable;
+    logic [1:0] ID_regWrDataSel;
+    logic       ID_memWrEnable;
+    AluOp       ID_aluControl;
+    logic [1:0] ID_operandASel;
+    logic [1:0] ID_operandBSel;
+    InstAddr    ID_pcNext;
+    logic       ID_bubble;
 
-    logic [REG_WIDTH-1:0]  ID_RequiredRS1;
-    logic [REG_WIDTH-1:0]  ID_RequiredRS2;
-
-    StageID #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    ID (
-        .i_Clock           (i_Clock),           // Clock
-        .i_Reset           (i_Reset),           // Reset
-        .i_Inst            (IFID_Inst),         // Instruccio
-        .i_PC              (IFID_PC),           // Adressa de la instruccio
-        .i_EX_RegWrAddr    (IDEX_RegWrAddr),
-        .i_EX_RegWrEnable  (IDEX_RegWrEnable),
-        .i_EX_RegWrDataSel (IDEX_RegWrDataSel),
-        .i_EX_RegWrData    (EX_Result),
-        .i_EX_IsLoad       (IDEX_IsLoad),       // Indica si hi ha una instruccio Load en EX
-        .i_MEM_RegWrAddr   (EXMEM_RegWrAddr),
-        .i_MEM_RegWrEnable (EXMEM_RegWrEnable),
-        .i_MEM_RegWrData   (EXMEM_Result),      // El valor a escriure en el registre
-        .i_MEM_IsLoad      (EXMEM_IsLoad),      // Indica si hi ha una instruccio Load en MEM
-        .i_WB_RegWrAddr    (MEMWB_RegWrAddr),   // Adressa del registre on escriure
-        .i_WB_RegWrData    (MEMWB_RegWrData),   // Dades del registre on escriure
-        .i_WB_RegWrEnable  (MEMWB_RegWrEnable), // Habilita escriure en el registre
-        .o_DataA           (ID_DataA),          // Dades A
-        .o_DataB           (ID_DataB),          // Dades B
-        .o_InstOP          (ID_InstOP),         // Instruccio OP
-        .o_InstIMM         (ID_InstIMM),
-        .o_IsLoad          (ID_IsLoad),
-        .o_Bubble          (ID_Bubble),         // Indica si cal generar bombolla
-        .o_RegWrAddr       (ID_RegWrAddr),      // Registre per escriure
-        .o_RegWrEnable     (ID_RegWrEnable),    // Habilita escriure en el registre
-        .o_RegWrDataSel    (ID_RegWrDataSel),
-        .o_MemWrEnable     (ID_MemWrEnable),    // Habilita escriure en memoria
-        .o_AluControl      (ID_AluControl),
-        .o_OperandASel     (ID_OperandASel),
-        .o_OperandBSel     (ID_OperandBSel),
-        .o_PCNext          (ID_PCNext));        // Adressa de la propera instruccio per salt
+    StageID
+    stageID (
+        .i_clock           (i_clock),           // Clock
+        .i_reset           (i_reset),           // Reset
+        .i_inst            (IFID_inst),         // Instruccio
+        .i_pc              (IFID_pc),           // Adressa de la instruccio
+        .i_EX_RegWrAddr    (IDEX_regWrAddr),
+        .i_EX_RegWrEnable  (IDEX_regWrEnable),
+        .i_EX_RegWrDataSel (IDEX_regWrDataSel),
+        .i_EX_RegWrData    (EX_result),
+        .i_EX_IsLoad       (IDEX_isLoad),       // Indica si hi ha una instruccio Load en EX
+        .i_MEM_RegWrAddr   (EXMEM_regWrAddr),
+        .i_MEM_RegWrEnable (EXMEM_regWrEnable),
+        .i_MEM_RegWrData   (EXMEM_result),      // El valor a escriure en el registre
+        .i_MEM_IsLoad      (EXMEM_isLoad),      // Indica si hi ha una instruccio Load en MEM
+        .i_WB_RegWrAddr    (MEMWB_regWrAddr),   // Adressa del registre on escriure
+        .i_WB_RegWrData    (MEMWB_regWrData),   // Dades del registre on escriure
+        .i_WB_RegWrEnable  (MEMWB_regWrEnable), // Habilita escriure en el registre
+        .o_dataA           (ID_dataA),          // Dades A
+        .o_dataB           (ID_dataB),          // Dades B
+        .o_instIMM         (ID_instIMM),
+        .o_isLoad          (ID_isLoad),
+        .o_bubble          (ID_bubble),         // Indica si cal generar bombolla
+        .o_regWrAddr       (ID_regWrAddr),      // Registre per escriure
+        .o_regWrEnable     (ID_regWrEnable),    // Habilita escriure en el registre
+        .o_regWrDataSel    (ID_regWrDataSel),
+        .o_memWrEnable     (ID_memWrEnable),    // Habilita escriure en memoria
+        .o_aluControl      (ID_aluControl),
+        .o_operandASel     (ID_operandASel),
+        .o_operandBSel     (ID_operandBSel),
+        .o_pcNext          (ID_pcNext));         // Adressa de la propera instruccio per salt
 
 
     // ------------------------------------------------------------------------
     // Pipeline ID-EX
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0]   IDEX_PC;
-    logic [DATA_WIDTH-1:0] IDEX_DataA,
-                           IDEX_DataB;
-    logic [6:0]            IDEX_InstOP;
-    logic [DATA_WIDTH-1:0] IDEX_InstIMM;
-    logic [REG_WIDTH-1:0]  IDEX_RegWrAddr;
-    logic                  IDEX_RegWrEnable;
-    logic [1:0]            IDEX_RegWrDataSel;
-    logic                  IDEX_MemWrEnable;
-    logic                  IDEX_IsLoad;
-    AluOp                  IDEX_AluControl;
-    logic [1:0]            IDEX_OperandASel;
-    logic [1:0]            IDEX_OperandBSel;
-    logic [7:0]            IDEX_DbgTag;
-    logic [PC_WIDTH-1:0]   IDEX_DbgPC;
-    logic [31:0]           IDEX_DbgInst;
+    InstAddr    IDEX_pc;
+    Data        IDEX_dataA;
+    Data        IDEX_dataB;
+    Data        IDEX_instIMM;
+    RegAddr     IDEX_regWrAddr;
+    logic       IDEX_regWrEnable;
+    logic [1:0] IDEX_regWrDataSel;
+    logic       IDEX_memWrEnable;
+    logic       IDEX_isLoad;
+    AluOp       IDEX_aluControl;
+    logic [1:0] IDEX_operandASel;
+    logic [1:0] IDEX_operandBSel;
 
-    PipelineIDEX #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    IDEX (
-        .i_Clock        (i_Clock),
-        .i_Reset        (i_Reset),
-        .i_Flush        (ID_Bubble),
-        .i_DbgTag       (IFID_DbgTag),
-        .i_DbgPC        (IFID_DbgPC),
-        .i_DbgInst      (IFID_DbgInst),
-        .o_DbgTag       (IDEX_DbgTag),
-        .o_DbgPC        (IDEX_DbgPC),
-        .o_DbgInst      (IDEX_DbgInst),
-        .i_InstOP       (ID_InstOP),
-        .i_InstIMM      (ID_InstIMM),
-        .i_DataA        (ID_DataA),
-        .i_DataB        (ID_DataB),
-        .i_RegWrAddr    (ID_RegWrAddr),
-        .i_RegWrEnable  (ID_RegWrEnable),
-        .i_RegWrDataSel (ID_RegWrDataSel),
-        .i_MemWrEnable  (ID_MemWrEnable),
-        .i_IsLoad       (ID_IsLoad),
-        .i_OperandASel  (ID_OperandASel),
-        .i_OperandBSel  (ID_OperandBSel),
-        .i_AluControl   (ID_AluControl),
-        .i_PC           (IFID_PC),
-        .o_InstOP       (IDEX_InstOP),
-        .o_InstIMM      (IDEX_InstIMM),
-        .o_DataA        (IDEX_DataA),
-        .o_DataB        (IDEX_DataB),
-        .o_RegWrAddr    (IDEX_RegWrAddr),
-        .o_RegWrEnable  (IDEX_RegWrEnable),
-        .o_RegWrDataSel (IDEX_RegWrDataSel),
-        .o_MemWrEnable  (IDEX_MemWrEnable),
-        .o_IsLoad       (IDEX_IsLoad),
-        .o_AluControl   (IDEX_AluControl),
-        .o_OperandASel  (IDEX_OperandASel),
-        .o_OperandBSel  (IDEX_OperandBSel),
-        .o_PC           (IDEX_PC));
+`ifdef DEBUG
+    int      IDEX_dbgTick;
+    logic    IDEX_dbgOk;
+    InstAddr IDEX_dbgPc;
+    Inst     IDEX_dbgInst;
+    RegAddr  IDEX_dbgRegWrAddr;
+    logic    IDEX_dbgRegWrEnable;
+`endif
+
+    PipelineIDEX
+    pipelineIDEX (
+        .i_clock        (i_clock),
+        .i_reset        (i_reset),
+        .i_flush        (ID_bubble),
+        .i_instIMM      (ID_instIMM),
+        .i_dataA        (ID_dataA),
+        .i_dataB        (ID_dataB),
+        .i_regWrAddr    (ID_regWrAddr),
+        .i_regWrEnable  (ID_regWrEnable),
+        .i_regWrDataSel (ID_regWrDataSel),
+        .i_memWrEnable  (ID_memWrEnable),
+        .i_isLoad       (ID_isLoad),
+        .i_operandASel  (ID_operandASel),
+        .i_operandBSel  (ID_operandBSel),
+        .i_aluControl   (ID_aluControl),
+        .i_pc           (IFID_pc),
+        .o_instIMM      (IDEX_instIMM),
+        .o_dataA        (IDEX_dataA),
+        .o_dataB        (IDEX_dataB),
+        .o_regWrAddr    (IDEX_regWrAddr),
+        .o_regWrEnable  (IDEX_regWrEnable),
+        .o_regWrDataSel (IDEX_regWrDataSel),
+        .o_memWrEnable  (IDEX_memWrEnable),
+        .o_isLoad       (IDEX_isLoad),
+        .o_aluControl   (IDEX_aluControl),
+        .o_operandASel  (IDEX_operandASel),
+        .o_operandBSel  (IDEX_operandBSel),
+        .o_pc           (IDEX_pc)
+
+`ifdef DEBUG
+        ,
+        .i_dbgTick        (IFID_dbgTick),
+        .i_dbgOk          (IFID_dbgOk),
+        .i_dbgPc          (IFID_dbgPc),
+        .i_dbgInst        (IFID_dbgInst),
+        .i_dbgRegWrAddr   (ID_regWrAddr),
+        .i_dbgRegWrEnable (ID_regWrEnable),
+        .o_dbgTick        (IDEX_dbgTick),
+        .o_dbgOk          (IDEX_dbgOk),
+        .o_dbgPc          (IDEX_dbgPc),
+        .o_dbgInst        (IDEX_dbgInst)
+        .0_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
+        .0_dbgRegWrEnable (IDEX_dbgRegWrEnable)
+`endif
+    );
 
 
     // ------------------------------------------------------------------------
     // Stage EX
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] EX_Result;
-    logic [DATA_WIDTH-1:0] EX_DataB;
+    Data EX_result;
+    Data EX_dataB;
 
-    StageEX #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    EX (
-        .i_DataA              (IDEX_DataA),
-        .i_DataB              (IDEX_DataB),
-        .i_InstIMM            (IDEX_InstIMM),
-        .i_PC                 (IDEX_PC),
-        .i_OperandASel        (IDEX_OperandASel),
-        .i_OperandBSel        (IDEX_OperandBSel),
-        .i_AluControl         (IDEX_AluControl),
-        .o_Result             (EX_Result),
-        .o_DataB              (EX_DataB));
-
+    StageEX
+    stageEX (
+        .i_dataA       (IDEX_dataA),
+        .i_dataB       (IDEX_dataB),
+        .i_instIMM     (IDEX_instIMM),
+        .i_pc          (IDEX_pc),
+        .i_operandASel (IDEX_operandASel),
+        .i_operandBSel (IDEX_operandBSel),
+        .i_aluControl  (IDEX_aluControl),
+        .o_result      (EX_result),
+        .o_dataB       (EX_dataB));
 
     // ------------------------------------------------------------------------
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0]   EXMEM_PC;
-    logic [6:0]            EXMEM_InstOP;
-    logic [DATA_WIDTH-1:0] EXMEM_Result;
-    logic [DATA_WIDTH-1:0] EXMEM_DataB;
-    logic [REG_WIDTH-1:0]  EXMEM_RegWrAddr;
-    logic                  EXMEM_RegWrEnable;
-    logic [1:0]            EXMEM_RegWrDataSel;
-    logic                  EXMEM_MemWrEnable;
-    logic                  EXMEM_IsLoad;
-    logic [7:0]            EXMEM_DbgTag;
-    logic [PC_WIDTH-1:0]   EXMEM_DbgPC;
-    logic [31:0]           EXMEM_DbgInst;
+    logic [PC_WIDTH-1:0]   EXMEM_pc;
+    logic [DATA_WIDTH-1:0] EXMEM_result;
+    logic [DATA_WIDTH-1:0] EXMEM_dataB;
+    logic [REG_WIDTH-1:0]  EXMEM_regWrAddr;
+    logic                  EXMEM_regWrEnable;
+    logic [1:0]            EXMEM_regWrDataSel;
+    logic                  EXMEM_memWrEnable;
+    logic                  EXMEM_isLoad;
 
-    PipelineEXMEM #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    EXMEM (
-        .i_Clock        (i_Clock),
-        .i_Reset        (i_Reset),
-        .i_Flush        (0),        
-        .i_DbgTag       (IDEX_DbgTag),
-        .i_DbgInst      (IDEX_DbgInst),
-        .i_DbgPC        (IDEX_DbgPC),
-        .o_DbgTag       (EXMEM_DbgTag),
-        .o_DbgPC        (EXMEM_DbgPC),
-        .o_DbgInst      (EXMEM_DbgInst),        
-        .i_PC           (IDEX_PC),
-        .i_Result       (EX_Result),
-        .i_DataB        (EX_DataB),
-        .i_InstOP       (IDEX_InstOP),
-        .i_MemWrEnable  (IDEX_MemWrEnable),
-        .i_RegWrAddr    (IDEX_RegWrAddr),
-        .i_RegWrEnable  (IDEX_RegWrEnable),
-        .i_RegWrDataSel (IDEX_RegWrDataSel),
-        .i_IsLoad       (IDEX_IsLoad),        
-        .o_PC           (EXMEM_PC),
-        .o_Result       (EXMEM_Result),
-        .o_DataB        (EXMEM_DataB),
-        .o_InstOP       (EXMEM_InstOP),
-        .o_MemWrEnable  (EXMEM_MemWrEnable),
-        .o_RegWrAddr    (EXMEM_RegWrAddr),
-        .o_RegWrEnable  (EXMEM_RegWrEnable),
-        .o_RegWrDataSel (EXMEM_RegWrDataSel),
-        .o_IsLoad       (EXMEM_IsLoad));
+`ifdef DEBUG
+    int      EXMEM_dbgTick;
+    logic    EXMEM_dbgOk;
+    InstAddr EXMEM_dbgPc;
+    Inst     EXMEM_dbgInst;
+    RegAddr  EXMEM_dbgRegWrAddr;
+    logic    EXMEM_dbgRegWrEnable;
+`endif
+
+    PipelineEXMEM
+    pipelineEXMEM (
+        .i_clock        (i_clock),
+        .i_reset        (i_reset),
+        .i_flush        (0),
+        .i_pc           (IDEX_pc),
+        .i_result       (EX_result),
+        .i_dataB        (EX_dataB),
+        .i_memWrEnable  (IDEX_memWrEnable),
+        .i_regWrAddr    (IDEX_regWrAddr),
+        .i_regWrEnable  (IDEX_regWrEnable),
+        .i_regWrDataSel (IDEX_regWrDataSel),
+        .i_isLoad       (IDEX_isLoad),
+        .o_pc           (EXMEM_pc),
+        .o_result       (EXMEM_result),
+        .o_dataB        (EXMEM_dataB),
+        .o_memWrEnable  (EXMEM_memWrEnable),
+        .o_regWrAddr    (EXMEM_regWrAddr),
+        .o_regWrEnable  (EXMEM_regWrEnable),
+        .o_regWrDataSel (EXMEM_regWrDataSel),
+        .o_isLoad       (EXMEM_isLoad)
+
+`ifdef DEBUG
+        ,
+        .i_dbgTick        (IDEX_dbgTick),
+        .i_dbgOk          (IDEX_dbgOk),
+        .i_dbgPc          (IDEX_dbgPc),
+        .i_dbgInst        (IDEX_dbgInst),
+        .i_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
+        .i_dbgRegWrEnable (IDEX_dbgRegWrEnable),
+        .o_dbgTick        (EXMEM_dbgTick),
+        .o_dbgOk          (EXMEM_dbgOk),
+        .o_dbgPc          (EXMEM_dbgPc),
+        .o_dbgInst        (EXMEM_dbgInst),
+        .o_dbgRegWrAddr   (EXMEM_dbgRegWrAddr),
+        .o_dbgRegWrEnable (EXMEM_dbgRegWrEnable)
+`endif
+    );
 
 
     // ------------------------------------------------------------------------
     // Stage MEM
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] MEM_RegWrData;
+    Data MEM_regWrData;
 
-    StageMEM #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    MEM (
-        .DBus           (DBus),
-        .i_PC           (EXMEM_PC),
-        .i_Result       (EXMEM_Result),
-        .i_DataB        (EXMEM_DataB),
-        .i_RegWrDataSel (EXMEM_RegWrDataSel),
-        .i_MemWrEnable  (EXMEM_MemWrEnable),
-        .o_RegWrData    (MEM_RegWrData));
+    StageMEM
+    stageMEM (
+        .dataBus        (dataBus),
+        .i_pc           (EXMEM_pc),
+        .i_result       (EXMEM_result),
+        .i_dataB        (EXMEM_dataB),
+        .i_regWrDataSel (EXMEM_regWrDataSel),
+        .i_memWrEnable  (EXMEM_memWrEnable),
+        .o_regWrData    (MEM_regWrData));
 
 
     // ------------------------------------------------------------------------
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
-    logic [6:0]            MEMWB_InstOP;
-    logic [DATA_WIDTH-1:0] MEMWB_RegWrData;
-    logic [REG_WIDTH-1:0]  MEMWB_RegWrAddr;
-    logic                  MEMWB_RegWrEnable;
-    logic [7:0]            MEMWB_DbgTag;
-    logic [PC_WIDTH-1:0]   MEMWB_DbgPC;
-    logic [31:0]           MEMWB_DbgInst;
+    logic [DATA_WIDTH-1:0] MEMWB_regWrData;
+    logic [REG_WIDTH-1:0]  MEMWB_regWrAddr;
+    logic                  MEMWB_regWrEnable;
 
-    PipelineMEMWB #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
-    MEMWB (
-        .i_Clock       (i_Clock),
-        .i_Reset       (i_Reset),
-        .i_Flush       (0),
-        .i_DbgTag      (EXMEM_DbgTag),
-        .i_DbgPC       (EXMEM_DbgPC),
-        .i_DbgInst     (EXMEM_DbgInst),
-        .o_DbgTag      (MEMWB_DbgTag),
-        .o_DbgPC       (MEMWB_DbgPC),
-        .o_DbgInst     (MEMWB_DbgInst),
-        .i_InstOP      (EXMEM_InstOP),
-        .i_RegWrAddr   (EXMEM_RegWrAddr),
-        .i_RegWrEnable (EXMEM_RegWrEnable),
-        .i_RegWrData   (MEM_RegWrData),
-        .o_InstOP      (MEMWB_InstOP),
-        .o_RegWrAddr   (MEMWB_RegWrAddr),
-        .o_RegWrEnable (MEMWB_RegWrEnable),
-        .o_RegWrData   (MEMWB_RegWrData));
+    PipelineMEMWB
+    pipelineMEMWB (
+        .i_clock       (i_clock),
+        .i_reset       (i_reset),
+        .i_flush       (0),
+        .i_regWrAddr   (EXMEM_regWrAddr),
+        .i_regWrEnable (EXMEM_regWrEnable),
+        .i_regWrData   (MEM_regWrData),
+        .o_regWrAddr   (MEMWB_regWrAddr),
+        .o_regWrEnable (MEMWB_regWrEnable),
+        .o_regWrData   (MEMWB_regWrData));
 
 
     // ------------------------------------------------------------------------
@@ -355,7 +321,35 @@ module ProcessorPP
     // d'escriptura en els registres, que es troben en el stage ID.
     // ------------------------------------------------------------------------
 
+    Types::TraceWB traceWB;
+    assign traceWB.tick        = MEMWB_traceMEM.tick;
+    assign traceWB.ok          = i_reset ? 1'b0 : MEMWB_traceMEM.ok;
+    assign traceWB.inst        = MEMWB_traceMEM.inst;
+    assign traceWB.pc          = MEMWB_traceMEM.pc;
+    assign traceWB.regWrEnable = MEMWB_traceMEM.regWrEnable;
+    assign traceWB.regWrAddr   = MEMWB_traceMEM.regWrAddr;
+    assign traceWB.memWrEnable = MEMWB_traceMEM.memWrEnable;
+    assign traceWB.memWrAddr   = MEMWB_traceMEM.memWrAddr;
+    assign traceWB.memWrData   = MEMWB_traceMEM.memWrData;
+    assign traceWB.regWrData   = MEMWB_regWrData;
+
+
+    // ------------------------------------------------------------------------
+    // Trace
+    // Traçat de l'ultima intruccio executada.
+    // ------------------------------------------------------------------------
+
+    int dbg_Tick;
+
+    DebugController
+    dbg(
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .i_stall (ID_Bubble),
+        .i_tick  (),
+        .i_ok    (),
+        .i_pc    (),
+        .i_inst  ()
+        .o_tick  (dbg_Tick));
 
 endmodule
-
-

@@ -9,32 +9,32 @@
 //           FILE_NAME  : El fitxer d'inicialitzacio.
 //
 //       Entrada:
-//           i_Addr     : Adresa de lectura.
+//           i_addr     : Adresa de lectura.
 //
 //       Sortida:
-//           o_RdData   : Dades lleigides.
+//           o_rdData   : Dades lleigides.
 //
 // -----------------------------------------------------------------------
 
-module RoMemory 
+module RoMemory
 #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 32,
     parameter FILE_NAME  = "data.txt")
 (
-    input  logic [ADDR_WIDTH-1:0] i_Addr,    // Adressa en bytes
-    output logic [DATA_WIDTH-1:0] o_RdData); // Dades lleigides lectura
-    
+    input  logic [ADDR_WIDTH-1:0] i_addr,    // Adressa en bytes
+    output logic [DATA_WIDTH-1:0] o_rdData); // Dades lleigides lectura
+
     localparam SIZE = (2**ADDR_WIDTH)>>2;
 
-    
-    logic [DATA_WIDTH-1:0] Data[SIZE];
+
+    logic [DATA_WIDTH-1:0] data[SIZE];
     logic [DATA_WIDTH-1:0] d;
-    
-    assign d = Data[i_Addr[ADDR_WIDTH-1:2]];   
-    assign o_RdData = {d[7:0], d[15:8], d[23:16], d[31:24]};
-             
+
+    assign d = data[i_addr[ADDR_WIDTH-1:2]];
+    assign o_rdData = {d[7:0], d[15:8], d[23:16], d[31:24]};
+
     initial
-        $readmemh(FILE_NAME, Data);
-   
+        $readmemh(FILE_NAME, data);
+
 endmodule

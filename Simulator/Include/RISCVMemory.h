@@ -26,11 +26,12 @@ namespace RISCV {
             void write16(addr_t addr, data_t data);
             void write8(addr_t addr, data_t data);
 
-            uint8_t *getMem() const { return mem; }
-            unsigned getSize() const { return size; }
+            inline uint8_t *getMem() const { return mem; }
+            inline unsigned getSize() const { return size; }
 
             void dump(addr_t addr, unsigned length) const;
-            void load(const char *fileName, unsigned length);
+
+            void load(const char *fileName);
     };
 
 }

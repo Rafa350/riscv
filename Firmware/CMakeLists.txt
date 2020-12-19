@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
+project("firmware")
 
 
 set(TOOLCHAIN_BIN /opt/riscv32/bin)
@@ -32,13 +33,13 @@ find_program(CMD_SIZE
 )
 
 
-set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set_source_files_properties(
     crt0.S PROPERTIES LANGUAGE C)
 
+
 # Mostra la configuracio actual
-message("*")
-message("* Sub-project 'Firmware' configuration.")
+message("* ------------------------------------------------------------------------------------")
+message("* Sub-project '${PROJECT_NAME}' configuration.")
 message("*   Toochain:")
 message("*     gcc     : " ${CMAKE_C_COMPILER})
 message("*     g++     : " ${CMAKE_CXX_COMPILER})
@@ -49,7 +50,7 @@ message("*     size    : " ${CMD_SIZE})
 message("*")
 message("*   Directories:")
 message("*     Root    : " ${PROJECT_DIR})
-message("*     Current : " ${SOURCE_DIR})
+message("*     Current : " ${CMAKE_CURRENT_SOURCE_DIR})
 message("*")
 
 
@@ -62,45 +63,36 @@ target_sources(
 target_compile_options(
     main.elf
     PRIVATE -Wall
-            -march=rv32i -mabi=ilp32 
+            -march=rv32i -mabi=ilp32
             -static -mcmodel=medany
             -ffreestanding -ffunction-sections -fdata-sections
             -Wl,--gc-sections -Wl,--print-gc-sections)
 target_link_options(
     main.elf
-    PRIVATE -T ${SOURCE_DIR}/link.ld      
+    PRIVATE -T ${CMAKE_CURRENT_SOURCE_DIR}/link.ld
             -nostdlib -e _start)
 
 
-# Obte el llistat desensamblat a partir del fitxer elf
-add_custom_target(
-    main.lst
-    ALL)
-add_dependencies(
-    main.lst
-    main.elf)
+# Genera el llistat desensamblat a partir del fitxer elf
 add_custom_command(
-    TARGET     main.lst
+    TARGET main.elf
     POST_BUILD
-    DEPENDS    main.elf
-    COMMAND    ${CMD_OBJDUMP}
-    ARGS       -M no-aliases -j .text -t -d main.elf > main.lst)
+    COMMAND ${CMD_OBJDUMP}
+    ARGS -M no-aliases -j .text -t -d main.elf > firmware.lst)
 
 
-# Obte el llistat de memoria en format verilog
-add_custom_target(
-    main.txt
-    ALL)
-add_dependencies(
-    main.txt
-    main.elf)
+# Genera el llistat de memoria en format verilog
 add_custom_command(
-    TARGET     main.txt
+    TARGET main.elf
     POST_BUILD
-    DEPENDS    main.elf
-    COMMAND    ${CMD_OBJCOPY}
-    ARGS       --output-target=verilog 
-               --verilog-data-width=4 
-               --only-section=.text
-               main.elf main.txt)
+    COMMAND ${CMD_OBJCOPY}
+    ARGS --output-target=verilog
+         --verilog-data-width=4
+         --only-section=.text
+         main.elf firmware.txt)
 
+# Instalacio en la carpeta Run
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/firmware.txt
+          ${CMAKE_CURRENT_BINARY_DIR}/firmware.lst
+    DESTINATION ${PROJECT_DIR}/Run)

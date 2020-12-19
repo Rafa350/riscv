@@ -6,11 +6,11 @@
 //           WIDTH      : Amplada del canal de dades
 //
 //       Entrada:
-//           i_OperandA : Oparans A
-//           i_OperandB : Operand B
+//           i_operandA : Oparans A
+//           i_operandB : Operand B
 //
 //       Sortida:
-//           o_Result   : Resultat de la suma
+//           o_result   : Resultat de la suma
 //
 // -----------------------------------------------------------------------
 
@@ -18,11 +18,11 @@ module HalfAdder
 #(
     parameter WIDTH = 32)                // Amplada de dades
 (
-    input  logic [WIDTH-1:0] i_OperandA, // Operand A
-    input  logic [WIDTH-1:0] i_OperandB, // Operand B
+    input  logic [WIDTH-1:0] i_operandA, // Operand A
+    input  logic [WIDTH-1:0] i_operandB, // Operand B
 
-    output logic [WIDTH-1:0] o_Result);  // El resultat de l'operacio (A + B)
+    output logic [WIDTH-1:0] o_result);  // El resultat de l'operacio (A + B)
 
-    assign o_Result = i_OperandA + i_OperandB;
+    assign o_result = i_operandA + i_operandB;
 
 endmodule

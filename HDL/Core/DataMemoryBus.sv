@@ -1,23 +1,22 @@
-interface DataMemoryBus
-#(    
-    parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32);
-    
-    logic [ADDR_WIDTH-1:0] Addr;
-    logic                  WrEnable;
-    logic [DATA_WIDTH-1:0] WrData;
-    logic [DATA_WIDTH-1:0] RdData;
-    
-    modport Master(
-        output Addr,
-        input  RdData,
-        output WrData,
-        output WrEnable);
-        
-    modport Slave(
-        input  Addr,
-        output RdData,
-        input  WrData,
-        input  WrEnable);
-    
+interface DataMemoryBus;
+
+    import Types::*;
+
+    DataAddr addr;
+    logic    wrEnable;
+    Data     wrData;
+    Data     rdData;
+
+    modport master(
+        output addr,
+        input  rdData,
+        output wrData,
+        output wrEnable);
+
+    modport slave(
+        input  addr,
+        output rdData,
+        input  wrData,
+        input  wrEnable);
+
 endinterface
