@@ -1,3 +1,6 @@
+`include "RV.svh"
+
+
 module StageWB
     import Types::*;
 (

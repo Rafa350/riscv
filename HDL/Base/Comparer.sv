@@ -7,18 +7,18 @@ module Comparer
 
     input  logic             i_unsigned, // Opera sense signe
 
-    output logic             o_eq,     // A == B
-    output logic             o_gt,     // A > B
-    output logic             o_lt);    // A < B
+    output logic             o_equal,    // A == B
+    output logic             o_greater,  // A > B
+    output logic             o_less);    // A < B
 
 
     always_comb begin
         if (i_unsigned)
-            o_gt  = i_inputA > i_inputB;
+            o_greater  = i_inputA > i_inputB;
         else
-            o_gt  = $signed(i_inputA) > $signed(i_inputB);
-        o_eq = i_inputA == i_inputB;
-        o_lt = !o_eq & !o_gt;
+            o_greater  = $signed(i_inputA) > $signed(i_inputB);
+        o_equal = i_inputA == i_inputB;
+        o_less = !o_equal & !o_greater;
     end
 
 endmodule

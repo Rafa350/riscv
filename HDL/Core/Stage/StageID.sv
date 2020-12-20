@@ -1,5 +1,6 @@
 `include "RV.svh"
 
+
 module StageID
     import Types::*;
 (
@@ -110,8 +111,8 @@ module StageID
     DatapathController
     dpCtrl (
         .i_inst         (exp_inst),           // La instruccio
-        .i_isEQ         (comp_eq),            // Indicador r1 == r2
-        .i_isLT         (comp_lt),            // Indicador r1 < r2
+        .i_isEqual      (comp_equal),         // Indicador r1 == r2
+        .i_isLess       (comp_less),          // Indicador r1 < r2
         .o_memWrEnable  (dpCtrl_memWrEnable),
         .o_regWrEnable  (dpCtrl_regWrEnable),
         .o_regWrDataSel (dpCtrl_dataToRegSel),
@@ -194,8 +195,8 @@ module StageID
     // en IF.
     // ------------------------------------------------------------------------
     //
-    logic comp_eq; // Indica A == B
-    logic comp_lt; // Indica A <= B
+    logic comp_equal; // Indica A == B
+    logic comp_less;  // Indica A <= B
 
     // verilator lint_off PINMISSING
     Comparer #(
@@ -204,8 +205,8 @@ module StageID
         .i_inputA   (fwdDataASelector_output),
         .i_inputB   (fwdDataBSelector_output),
         .i_unsigned (0),
-        .o_eq       (comp_eq),
-        .o_lt       (comp_lt));
+        .o_equal    (comp_equal),
+        .o_less     (comp_less));
     // verilator lint_on PINMISSING
 
 

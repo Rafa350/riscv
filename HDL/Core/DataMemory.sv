@@ -4,8 +4,8 @@ module DataMemory
     input logic         i_clock,
     DataMemoryBus.slave bus);
 
-    localparam DATA_WIDTH = $size(Data);
-    localparam ADDR_WIDTH = $size(DataAddr);
+    localparam DATA_WIDTH = $size(bus.data);
+    localparam ADDR_WIDTH = $size(bus.addr);
 
     RwMemory #(
         .DATA_WIDTH (DATA_WIDTH),

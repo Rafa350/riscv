@@ -2,8 +2,8 @@ module DatapathController
     import Types::*;
 (
     input  Inst        i_inst,          // La instruccio
-    input  logic       i_isEQ,          // Indica A == B
-    input  logic       i_isLT,          // Indica A < B
+    input  logic       i_isEqual,       // Indica A == B
+    input  logic       i_isLess,        // Indica A < B
 
     output logic       o_memWrEnable,   // Habilita erscriptura en la memoria
 
@@ -102,7 +102,7 @@ module DatapathController
     // Evalua les condicions de salt per les instruccions Branch y Jump
     //
     always_comb begin
-        unique casez ({i_inst[14:12], i_inst[6:0], i_isEQ, i_isLT})
+        unique casez ({i_inst[14:12], i_inst[6:0], i_isEqual, i_isLess})
             /*  BEQ   */ 12'b000_1100011_1_?: br = 1;
             /*  BGE   */ 12'b101_1100011_?_0: br = 1;
             /*  BGEU  */ 12'b111_1100011_?_0: br = 1;

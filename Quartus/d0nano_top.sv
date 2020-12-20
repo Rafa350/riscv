@@ -53,14 +53,8 @@ module top(
     assign Reset = ~KEY[0];
 
 
-    DataMemoryBus #(
-        .DATA_WIDTH ($size(Data)),
-        .ADDR_WIDTH ($size(DataAddr)))
-    dataBus();        
-    
-    InstMemoryBus #(
-        .PC_WIDTH ($size(InstAddr)))
-    instBus();
+    DataMemoryBus dataBus();        
+    InstMemoryBus instBus();
        
     // ------------------------------------------------------------------------
     // Port IO LEDSA
@@ -75,9 +69,7 @@ module top(
     // Memoria de dades
     // ------------------------------------------------------------------------
     
-    DataMemory #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH))
+    DataMemory
     DataMem (
         .i_clock (Clock),
         .bus     (dataBus));
@@ -87,8 +79,7 @@ module top(
     // Memoria de programa
     // ------------------------------------------------------------------------
     
-    InstMemory #(
-        .PC_WIDTH (PC_WIDTH))
+    InstMemory
     InstMem (
         .bus (instBus));
 

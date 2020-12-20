@@ -37,13 +37,13 @@ module DebugController
 
             TraceTick(i_tick);
 
-            TraceInstruction(i_pc, i_inst);
+            TraceInstruction(int'(i_pc), i_inst);
 
             if ((i_regWrAddr != 0) & i_regWrEnable)
-                TraceRegister(i_regWrAddr, i_regWrData);
+                TraceRegister(int'(i_regWrAddr), i_regWrData);
 
             if (i_memWrEnable)
-                TraceMemory(i_memWrAddr, i_memWrData);
+                TraceMemory(int'(i_memWrAddr), i_memWrData);
 
             $display("");
         end

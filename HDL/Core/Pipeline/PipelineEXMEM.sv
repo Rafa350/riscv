@@ -1,3 +1,6 @@
+`include "RV.svh"
+
+
 module PipelineEXMEM
     import Types::*;
 (
@@ -16,12 +19,12 @@ module PipelineEXMEM
     input  logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
 
     // Senyals de sortidade depuracio
-    input  int         i_dbgTick,        // Numero de tick
-    input  logic       i_dbgOk,          // Indicador d'instruccio executada
-    input  InstAddr    i_dbgPc,          // Adressa de la instruccio
-    input  Inst        i_dbgInst,        // Instruccio
-    output RegAddr     i_dbgRegWrAddr,   // Registre per escriure
-    output logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
+    output int         o_dbgTick,        // Numero de tick
+    output logic       o_dbgOk,          // Indicador d'instruccio executada
+    output InstAddr    o_dbgPc,          // Adressa de la instruccio
+    output Inst        o_dbgInst,        // Instruccio
+    output RegAddr     o_dbgRegWrAddr,   // Registre per escriure
+    output logic       o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
 `endif
 
     // Senyals d'entrada al pipeline
@@ -46,26 +49,23 @@ module PipelineEXMEM
 
 
     always_ff @(posedge i_clock) begin
-        o_pc           <= i_reset ? {$size(InstAddr){1'b0}} : i_pc;
-        o_result       <= i_reset ? {$size(Data){1'b0}}     : i_result;
-        o_dataB        <= i_reset ? {$size(Data){1'b0}}     : i_dataB;
-        o_memWrEnable  <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
-        o_regWrAddr    <= i_reset ? {$size(RegAddr){1'b0}}  : i_regWrAddr;
-        o_regWrEnable  <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
-        o_regWrDataSel <= i_reset ? 2'b0                    : i_regWrDataSel;
-        o_isLoad       <= i_reset ? 1'b0                    : i_isLoad;
-    end
-
+        o_pc             <= i_reset ? {$size(InstAddr){1'b0}} : i_pc;
+        o_result         <= i_reset ? {$size(Data){1'b0}}     : i_result;
+        o_dataB          <= i_reset ? {$size(Data){1'b0}}     : i_dataB;
+        o_memWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
+        o_regWrAddr      <= i_reset ? {$size(RegAddr){1'b0}}  : i_regWrAddr;
+        o_regWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
+        o_regWrDataSel   <= i_reset ? 2'b0                    : i_regWrDataSel;
+        o_isLoad         <= i_reset ? 1'b0                    : i_isLoad;
 `ifdef DEBUG
-    always_ff @(posedge i_clock) begin
         o_dbgTick        <= i_dbgTick;
-        o_dbgOk          <= i_flush ? 1'b0 : i_dbgOk;
+        o_dbgOk          <= (i_reset | i_flush) ? 1'b0 : i_dbgOk;
         o_dbgPc          <= i_dbgPc;
         o_dbgInst        <= i_dbgInst;
         o_dbgRegWrAddr   <= i_dbgRegWrAddr;
         o_dbgRegWrEnable <= i_dbgRegWrEnable;
-    end
 `endif
+    end
 
 
 endmodule

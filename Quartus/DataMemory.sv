@@ -1,17 +1,17 @@
 module DataMemory
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32)
+    import Types::*;
 (
     input               i_clock,
     DataMemoryBus.slave bus);
+    
+    localparam DATA_WIDTH = $size(bus.addr);
    
     mw_ram ram(
         .clock     (i_clock),
         .wren      (bus.wrEnable),
         .data      (bus.wrData),
         .q         (bus.rdData),
-        .rdaddress (bus.addr[ADDR_WIDTH-1:2]),
-        .wraddress (bus.addr[ADDR_WIDTH-1:2]));
+        .rdaddress (bus.addr[DATA_WIDTH-1:2]),
+        .wraddress (bus.addr[DATA_WIDTH-1:2]));
 
 endmodule
