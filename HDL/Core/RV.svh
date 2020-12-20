@@ -11,6 +11,7 @@
 
 // Extensions del procesador
 //
+//`define RV_EXT_E             // Reduccio de registres
 //`define RV_EXT_C             // Instruccions comprimides
 //`define RV_EXT_M             // Multiplicacio i divisio d'enters
 

@@ -24,6 +24,21 @@ module StageMEM
     assign dataBus.wrData   = i_dataB;
     assign dataBus.wrEnable = i_memWrEnable;
 
+    Data memDataSel_output;
+
+    // verilator lint_off PINMISSING
+    Mux8To1 #(
+        .WIDTH ($size(Data)))
+    memDataSel (
+        .i_select(2),
+        .i_input0 ({dataBus.rdData[7] ? 24'hFFFFFF : 24'h000000, dataBus.rdData[7:0]}), // Acces signed byte
+        .i_input1 ({dataBus.rdData[15] ? 16'hFFFF : 16'h0000, dataBus.rdData[15:0]}),   // Acces signed half
+        .i_input2 (dataBus.rdData),                                                     // Acces word
+        .i_input3 ({24'h000000, dataBus.rdData[7:0]}),                                  // Acces unsigned byte
+        .i_input4 ({16'h0000, dataBus.rdData[15:0]}),                                   // Acces unsigned half
+        .o_output (memDataSel_output));
+    // verilator lint_on PINMISSING
+
 
     /// -----------------------------------------------------------------------
     /// Evalua PC + 4
@@ -55,7 +70,7 @@ module StageMEM
     regWrDataSelector (
         .i_select (i_regWrDataSel),
         .i_input0 (i_result),
-        .i_input1 (dataBus.rdData),
+        .i_input1 (memDataSel_output),
         .i_input2 ({{$size(Data)-$size(InstAddr){1'b0}}, adder_result}),
         .o_output (o_regWrData));
     // verilator lint_on PINMISSING

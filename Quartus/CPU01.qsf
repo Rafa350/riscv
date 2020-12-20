@@ -389,6 +389,7 @@ set_global_assignment -name SDC_FILE CPU01.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux8To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Comparer.sv
 set_global_assignment -name QIP_FILE mw_u32_comparer.qip

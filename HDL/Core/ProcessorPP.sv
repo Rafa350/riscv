@@ -2,11 +2,6 @@
 
 module ProcessorPP
     import Types::*;
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
 (
     input  logic         i_clock,  // Clock
     input  logic         i_reset,  // Reset
@@ -217,14 +212,14 @@ module ProcessorPP
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0]   EXMEM_pc;
-    logic [DATA_WIDTH-1:0] EXMEM_result;
-    logic [DATA_WIDTH-1:0] EXMEM_dataB;
-    logic [REG_WIDTH-1:0]  EXMEM_regWrAddr;
-    logic                  EXMEM_regWrEnable;
-    logic [1:0]            EXMEM_regWrDataSel;
-    logic                  EXMEM_memWrEnable;
-    logic                  EXMEM_isLoad;
+    InstAddr    EXMEM_pc;
+    Data        EXMEM_result;
+    Data        EXMEM_dataB;
+    RegAddr     EXMEM_regWrAddr;
+    logic       EXMEM_regWrEnable;
+    logic [1:0] EXMEM_regWrDataSel;
+    logic       EXMEM_memWrEnable;
+    logic       EXMEM_isLoad;
 
 `ifdef DEBUG
     int      EXMEM_dbgTick;
@@ -296,9 +291,9 @@ module ProcessorPP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] MEMWB_regWrData;
-    logic [REG_WIDTH-1:0]  MEMWB_regWrAddr;
-    logic                  MEMWB_regWrEnable;
+    Data    MEMWB_regWrData;
+    RegAddr MEMWB_regWrAddr;
+    logic   MEMWB_regWrEnable;
 
 `ifdef DEBUG
     int      MEMWB_dbgTick;

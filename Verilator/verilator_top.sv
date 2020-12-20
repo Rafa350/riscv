@@ -9,7 +9,6 @@
 module top
     import Types::*;
 #(
-
     parameter DATA_WIDTH = `DATA_WIDTH,
     parameter ADDR_WIDTH = `ADDR_WIDTH,
     parameter PC_WIDTH   = `PC_WIDTH,
@@ -22,10 +21,7 @@ module top
     input  Data     i_memRdData,
     output Data     o_memWrData,
     output DataAddr o_memAddr,
-    output logic    o_memWrEnable,
-
-    output InstAddr o_dbgPgmAddr,
-    output Inst     o_dbgPgmInst);
+    output logic    o_memWrEnable);
 
 
     DataMemoryBus dataBus;
@@ -35,10 +31,6 @@ module top
     assign o_memAddr     = dataBus.master.addr;
     assign o_memWrData   = dataBus.master.wrData;
     assign o_memWrEnable = dataBus.master.wrEnable;
-
-
-    assign o_dbgPgmAddr = instBus.slave.addr;
-    assign o_dbgPgmInst = instBus.slave.inst;
 
 
     // -------------------------------------------------------------------
@@ -55,32 +47,23 @@ module top
     // La memoria de dades
     // -------------------------------------------------------------------
 
-    /*logic [DATA_WIDTH-1:0] RAM_RdData;
-
-    RwMemory
+    /*
+    DataMemory
     dataMem (
         .i_Clock     (i_Clock),
-        .i_Addr      (0),
-        .i_WrEnable  (0),
-        .i_WrData    (0),
-        .o_RdData    (RAM_RdData));*/
+        .i_bus       (dataBus));
+    */
 
 
     // -------------------------------------------------------------------
     // La CPU
     // -------------------------------------------------------------------
 
-    InstAddr CPU_PgmAddr;
-
 `ifdef PIPELINE
-    ProcessorPP #(
+    ProcessorPP
 `else
-    ProcessorSC #(
+    ProcessorSC
 `endif
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH))
     processor (
         .i_clock (i_clock),
         .i_reset (i_reset),

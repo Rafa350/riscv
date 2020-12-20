@@ -1,20 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sat Dec 19 19:52:59 2020
+[*] Sun Dec 20 18:06:02 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.fst"
-[dumpfile_mtime] "Sat Dec 19 19:37:17 2020"
-[dumpfile_size] 10806
+[dumpfile_mtime] "Sun Dec 20 13:41:10 2020"
+[dumpfile_size] 9462
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.gtkw"
 [timestart] 0
 [size] 1920 1017
-[pos] -217 -217
-*-4.930773 25 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -113 -113
+*-4.930773 138 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
-[treeopen] TOP.top.processor.
 [treeopen] TOP.top.processor.pipelineIDEX.
-[treeopen] TOP.top.processor.stageID.
 [treeopen] TOP.top.processor.stageID.regs.
 [sst_width] 276
 [signals_width] 354
@@ -27,16 +25,22 @@ TOP.top.processor.i_clock
 TOP.top.processor.i_reset
 @200
 -
+@201
 -Data Memory
 @22
-TOP.top.o_memAddr[31:0]
-TOP.top.i_memRdData[31:0]
-TOP.top.o_memWrData[31:0]
+TOP.top.dataBus.addr[31:0]
 @28
-TOP.top.o_memWrEnable
+TOP.top.dataBus.wrEnable
+@22
+TOP.top.dataBus.rdData[31:0]
+TOP.top.dataBus.wrData[31:0]
 @200
 -
 -Program Memory
+@22
+TOP.top.instBus.addr[9:0]
+TOP.top.instBus.inst[31:0]
+@200
 -
 -REG file
 @22
@@ -52,7 +56,8 @@ TOP.top.processor.stageID.regs.i_wrEnable
 -
 -IFID pipeline
 @22
-TOP.top.processor.pipelineIFID.o_pc[9:0]
+[color] 2
+TOP.top.processor.pipelineIFID.o_dbgPc[9:0]
 @200
 -
 -ID stage
@@ -73,7 +78,8 @@ TOP.top.processor.stageID.o_instIMM[31:0]
 -
 -IDEX pipeline
 @22
-TOP.top.processor.pipelineIDEX.o_pc[9:0]
+[color] 2
+TOP.top.processor.pipelineIDEX.o_dbgPc[9:0]
 @200
 -
 -EX stage
@@ -89,19 +95,22 @@ TOP.top.processor.stageEX.o_result[31:0]
 @200
 -
 -EXMEM pipeline
-@23
-TOP.top.processor.pipelineEXMEM.o_pc[9:0]
+@22
+[color] 2
+TOP.top.processor.pipelineEXMEM.o_dbgPc[9:0]
 @200
 -
 -MEM stage
 @22
 TOP.top.processor.stageMEM.i_result[31:0]
-TOP.top.processor.stageMEM.i_pc[9:0]
 @28
 TOP.top.processor.stageMEM.i_memWrEnable
 TOP.top.processor.stageMEM.i_regWrDataSel[1:0]
 @200
 -
 -MEMWB pipeline
+@22
+[color] 2
+TOP.top.processor.pipelineMEMWB.o_dbgPc[9:0]
 [pattern_trace] 1
 [pattern_trace] 0

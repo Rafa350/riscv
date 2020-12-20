@@ -48,7 +48,7 @@ module StageID
 
 //`define RV32_COMPRESS
 
-`ifdef RV_EXTENSION_C
+`ifdef RV_EXT_C
     InstExpander
     exp (
         .i_inst         (i_inst),

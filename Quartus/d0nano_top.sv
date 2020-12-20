@@ -89,14 +89,10 @@ module top(
     // ------------------------------------------------------------------------
     
 `ifdef PIPELINE
-    ProcessorPP #(
+    ProcessorPP
 `else    
-    ProcessorSC #(
+    ProcessorSC
 `endif    
-        .DATA_WIDTH (DATA_WIDTH), 
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PC_WIDTH   (PC_WIDTH),
-        .REG_WIDTH  (REG_WIDTH)) 
     Cpu (
         .i_clock (Clock),
         .i_reset (Reset),

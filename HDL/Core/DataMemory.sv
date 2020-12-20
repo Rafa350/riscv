@@ -9,12 +9,42 @@ module DataMemory
 
     RwMemory #(
         .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH))
+        .ADDR_WIDTH (ADDR_WIDTH-2))
+    memoryB0 (
+        .i_Clock    (i_clock),
+        .i_Addr     (bus.addr[ADDR_WIDTH:2]),
+        .o_RdAddr   (bus.rdData[7:0]),
+        .i_WrData   (bus.wrData[7:0]),
+        .i_WrEnable (bus.wrEnable));
+
+    RwMemory #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH-2))
+    memoryB1 (
+        .i_Clock    (i_clock),
+        .i_Addr     (bus.addr[ADDR_WIDTH:2]),
+        .o_RdAddr   (bus.rdData[15:8]),
+        .i_WrData   (bus.wrData[15:8]),
+        .i_WrEnable (bus.wrEnable));
+
+    RwMemoryB2 #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH-2))
     memory (
         .i_Clock    (i_clock),
-        .i_Addr     (bus.addr),
-        .o_RdAddr   (bus.rdData),
-        .i_WrData   (bus.wrData),
+        .i_Addr     (bus.addr[ADDR_WIDTH:2]),
+        .o_RdAddr   (bus.rdData[23:16]),
+        .i_WrData   (bus.wrData[23:16]),
+        .i_WrEnable (bus.wrEnable));
+
+    RwMemory #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH-2))
+    memoryB3 (
+        .i_Clock    (i_clock),
+        .i_Addr     (bus.addr[ADDR_WIDTH:2]),
+        .o_RdAddr   (bus.rdData[31:24]),
+        .i_WrData   (bus.wrData[31:24]),
         .i_WrEnable (bus.wrEnable));
 
 endmodule
