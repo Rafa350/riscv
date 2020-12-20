@@ -1,15 +1,15 @@
 module GPIO (
 
-    logic  input        i_clk,
-    input  logic        i_rst,
+    logic  input        i_clock,
+    input  logic        i_reset,
     
     output logic [7:0]  o_pins,
     
     input  logic [3:0]  i_addr,
     input  logic        i_cs,
-    input  logic        i_we,
-    input  logic [15:0] i_wdata,
-    output logic [15:0] o_rdata);
+    input  logic        i_wrEnable,
+    input  logic [15:0] i_wrData,
+    output logic [15:0] o_rdData);
        
     always_comb
         casez ({i_rst, i_addr, i_cs})
