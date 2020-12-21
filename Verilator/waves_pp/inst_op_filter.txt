@@ -1,9 +1,0 @@
-03 Load
-13 OpIMM
-23 Store
-6F JAL
-67 JALR
-37 LUI
-17 AUIPC
-33 Op
-63 Branch

@@ -12,7 +12,7 @@
 // Extensions del procesador
 //
 //`define RV_EXT_E             // Reduccio de registres
-//`define RV_EXT_C             // Instruccions comprimides
+`define RV_EXT_C             // Instruccions comprimides
 //`define RV_EXT_M             // Multiplicacio i divisio d'enters
 
 
@@ -20,10 +20,25 @@
 //
 `ifdef RV_BASE_RV32I
 `define DATA_WIDTH 32
-`define ADDR_WIDTH 32
-`define PC_WIDTH   10
+`ifdef RV_EXT_E
+`define REG_WIDTH  4
+`else
 `define REG_WIDTH  5
 `endif
+`endif
+
+`ifdef RV_BASE_RV64I
+`define DATA_WIDTH 64
+`define REG_WIDTH  5
+`endif
+
+`ifdef RV_BASE_RV128I
+`define DATA_WIDTH 128
+`define REG_WIDTH  5
+`endif
+
+`define ADDR_WIDTH 32
+`define PC_WIDTH   12
 
 
 // Definicio de parametres de depuracio

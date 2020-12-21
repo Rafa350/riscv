@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sun Dec 20 18:06:02 2020
+[*] Mon Dec 21 20:08:54 2020
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.fst"
-[dumpfile_mtime] "Sun Dec 20 13:41:10 2020"
-[dumpfile_size] 9462
+[dumpfile_mtime] "Mon Dec 21 19:47:30 2020"
+[dumpfile_size] 9659
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.gtkw"
 [timestart] 0
 [size] 1920 1017
-[pos] -113 -113
-*-4.930773 138 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-4.930773 119 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
+[treeopen] TOP.top.processor.
 [treeopen] TOP.top.processor.pipelineIDEX.
 [treeopen] TOP.top.processor.stageID.regs.
 [sst_width] 276
@@ -25,61 +26,77 @@ TOP.top.processor.i_clock
 TOP.top.processor.i_reset
 @200
 -
-@201
 -Data Memory
 @22
 TOP.top.dataBus.addr[31:0]
-@28
-TOP.top.dataBus.wrEnable
-@22
 TOP.top.dataBus.rdData[31:0]
 TOP.top.dataBus.wrData[31:0]
 @200
 -
 -Program Memory
 @22
-TOP.top.instBus.addr[9:0]
 TOP.top.instBus.inst[31:0]
 @200
 -
 -REG file
-@22
+@2024
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
 TOP.top.processor.stageID.regs.i_rdAddrA[4:0]
+@22
 TOP.top.processor.stageID.regs.o_rdDataA[31:0]
+@2024
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
 TOP.top.processor.stageID.regs.i_rdAddrB[4:0]
+@22
 TOP.top.processor.stageID.regs.o_rdDataB[31:0]
+@2024
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
 TOP.top.processor.stageID.regs.i_wrAddr[4:0]
+@22
 TOP.top.processor.stageID.regs.i_wrData[31:0]
 @28
 TOP.top.processor.stageID.regs.i_wrEnable
 @200
 -
 -IFID pipeline
-@22
+@24
 [color] 2
-TOP.top.processor.pipelineIFID.o_dbgPc[9:0]
+TOP.top.processor.pipelineIFID.o_dbgTick[31:0]
+@22
+TOP.top.processor.pipelineIFID.o_dbgPc[11:0]
+TOP.top.processor.pipelineIFID.o_dbgInst[31:0]
 @200
 -
 -ID stage
 @22
-TOP.top.processor.stageID.i_pc[9:0]
 TOP.top.processor.stageID.i_inst[31:0]
 @100002028
-^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\inst_op_filter.txt
+^2 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\inst_op_filter.txt
 TOP.top.processor.stageID.dec_instOP[6:0]
-@24
+@28
+[color] 3
+TOP.top.processor.stageID.fwdCtrl_dataASel[1:0]
+[color] 3
+TOP.top.processor.stageID.fwdCtrl_dataBSel[1:0]
+@25
 TOP.top.processor.stageID.fwdDataASelector_output[31:0]
+@24
 TOP.top.processor.stageID.fwdDataBSelector_output[31:0]
 @22
 TOP.top.processor.stageID.o_dataA[31:0]
 TOP.top.processor.stageID.o_dataB[31:0]
 TOP.top.processor.stageID.o_instIMM[31:0]
+@28
+TOP.top.processor.stageID.o_bubble
 @200
 -
 -IDEX pipeline
-@22
+@24
 [color] 2
-TOP.top.processor.pipelineIDEX.o_dbgPc[9:0]
+TOP.top.processor.pipelineIDEX.o_dbgTick[31:0]
+@22
+TOP.top.processor.pipelineIDEX.o_dbgPc[11:0]
+TOP.top.processor.pipelineIDEX.o_dbgInst[31:0]
 @200
 -
 -EX stage
@@ -95,9 +112,12 @@ TOP.top.processor.stageEX.o_result[31:0]
 @200
 -
 -EXMEM pipeline
-@22
+@24
 [color] 2
-TOP.top.processor.pipelineEXMEM.o_dbgPc[9:0]
+TOP.top.processor.pipelineEXMEM.o_dbgTick[31:0]
+@22
+TOP.top.processor.pipelineEXMEM.o_dbgPc[11:0]
+TOP.top.processor.pipelineEXMEM.o_dbgInst[31:0]
 @200
 -
 -MEM stage
@@ -109,8 +129,11 @@ TOP.top.processor.stageMEM.i_regWrDataSel[1:0]
 @200
 -
 -MEMWB pipeline
-@22
+@24
 [color] 2
-TOP.top.processor.pipelineMEMWB.o_dbgPc[9:0]
+TOP.top.processor.pipelineMEMWB.o_dbgTick[31:0]
+@22
+TOP.top.processor.pipelineMEMWB.o_dbgPc[11:0]
+TOP.top.processor.pipelineMEMWB.o_dbgInst[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

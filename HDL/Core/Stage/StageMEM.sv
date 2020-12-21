@@ -22,7 +22,7 @@ module StageMEM
 
     assign dataBus.addr     = i_result[$size(DataAddr)-1:0];
     assign dataBus.wrData   = i_dataB;
-    assign dataBus.wrEnable = i_memWrEnable;
+    assign dataBus.wrEnable = {i_memWrEnable, i_memWrEnable, i_memWrEnable, i_memWrEnable};
 
     Data memDataSel_output;
 

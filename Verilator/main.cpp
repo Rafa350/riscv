@@ -89,8 +89,19 @@ void CPUTestbench::run() {
         // Acces a la memoria de dades
         //
         top->i_memRdData = dataMem->read32(top->o_memAddr);
-        if (top->o_memWrEnable)
-            dataMem->write32(top->o_memAddr, top->o_memWrData);
+        switch (top->o_memWrEnable) {
+            case 0b0001:
+                dataMem->write8(top->o_memAddr, top->o_memWrData);
+                break;
+
+            case 0b0011:
+                dataMem->write16(top->o_memAddr, top->o_memWrData);
+                break;
+
+            case 0b1111:
+                dataMem->write32(top->o_memAddr, top->o_memWrData);
+                break;
+        }
 
     } while (nextTick() && (tick < CLOCK_MAX));
 

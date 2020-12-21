@@ -3,19 +3,22 @@
 _reset_handler:
 _start:
     .global _start
-    
-    // Operacions inmediates no relacionades
-    addi    a0, zero, 0
-    addi    a1, zero, 1
-    addi    a2, zero, 2
-    addi    a3, zero, 3
-    addi    a4, zero, 4
 
-    // Operacions no relacionades
-    add     a0, a0, a1
-    add     a0, a0, a2
-    add     a0, a0, a3
-    add     a0, a0, a4
+    // Operacions inmediates no relacionades
+    addi    a0, zero, 0x000
+    addi    a1, zero, 0x111
+    addi    a2, zero, 0x222
+
+    // Operacions  relacionades
+    add     a3, zero, a0
+    add     a4, zero, a1
+    add     a5, zero, a2
+
+    lui     a0, 0x100
+    addi    a0, a0, 0
+    sw      a3, 0(a0)
+    sw      a4, 4(a0)
+    sw      a5, 8(a0)
 
 _loop:
     j       _loop

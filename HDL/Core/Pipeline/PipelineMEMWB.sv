@@ -5,34 +5,34 @@ module PipelineMEMWB
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,          // Clock
-    input  logic       i_reset,          // Reset
-    input  logic       i_flush,          // Descarta les accions d'escriptura
+    input  logic    i_clock,          // Clock
+    input  logic    i_reset,          // Reset
+    input  logic    i_flush,          // Descarta les accions d'escriptura
 
 `ifdef DEBUG
     // Senyals d'entrada de depuracio
-    input  int         i_dbgTick,        // Numero de tick
-    input  logic       i_dbgOk,          // Indicador d'iInstruccio executada
-    input  InstAddr    i_dbgPc,          // Adressa de la instruccio
-    input  Inst        i_dbgInst,        // Instruccio
-    input  RegAddr     i_dbgRegWrAddr,   // Registre per escriure
-    input  logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
-    input  Data        i_dbgRegWrData,
-    input  DataAddr    i_dbgMemWrAddr,
-    input  logic       i_dbgMemWrEnable,
-    input  Data        i_dbgMemWrData,
+    input  int      i_dbgTick,        // Numero de tick
+    input  logic    i_dbgOk,          // Indicador d'iInstruccio executada
+    input  InstAddr i_dbgPc,          // Adressa de la instruccio
+    input  Inst     i_dbgInst,        // Instruccio
+    input  RegAddr  i_dbgRegWrAddr,   // Registre per escriure
+    input  logic    i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
+    input  Data     i_dbgRegWrData,
+    input  DataAddr i_dbgMemWrAddr,
+    input  logic    i_dbgMemWrEnable,
+    input  Data     i_dbgMemWrData,
 
     // Senyals de sortidade depuracio
-    output int         o_dbgTick,        // Numero de tick
-    output logic       o_dbgOk,          // Indicador d'instruccio executada
-    output InstAddr    o_dbgPc,          // Adressa de la instruccio
-    output Inst        o_dbgInst,        // Instruccio
-    output RegAddr     o_dbgRegWrAddr,   // Registre per escriure
-    output logic       o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
-    output Data        o_dbgRegWrData,
-    output DataAddr    o_dbgMemWrAddr,
-    output logic       o_dbgMemWrEnable,
-    output Data        o_dbgMemWrData,
+    output int      o_dbgTick,        // Numero de tick
+    output logic    o_dbgOk,          // Indicador d'instruccio executada
+    output InstAddr o_dbgPc,          // Adressa de la instruccio
+    output Inst     o_dbgInst,        // Instruccio
+    output RegAddr  o_dbgRegWrAddr,   // Registre per escriure
+    output logic    o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
+    output Data     o_dbgRegWrData,
+    output DataAddr o_dbgMemWrAddr,
+    output logic    o_dbgMemWrEnable,
+    output Data     o_dbgMemWrData,
 `endif
 
 

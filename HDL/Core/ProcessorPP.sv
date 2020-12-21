@@ -15,15 +15,17 @@ module ProcessorPP
 
     Inst     IF_inst;
     InstAddr IF_pc;
+    logic    IF_instCompressed;
 
     StageIF
     stageIF (
-        .i_clock  (i_clock),   // Clock
-        .i_reset  (i_reset),   // Reset
-        .instBus  (instBus),   // Bus de la memoria d'instruccio
-        .i_pcNext (ID_pcNext), // Adressa de salt
-        .o_inst   (IF_inst),   // Instruccio
-        .o_pc     (IF_pc));    // Adressa de la instruccio
+        .i_clock          (i_clock),           // Clock
+        .i_reset          (i_reset),           // Reset
+        .instBus          (instBus),           // Bus de la memoria d'instruccio
+        .i_pcNext         (ID_pcNext),         // Adressa de salt
+        .o_inst           (IF_inst),           // Instruccio
+        .o_instCompressed (IF_instCompressed), // Indica si instruccio es comprimida
+        .o_pc             (IF_pc));            // Adressa de la instruccio
 
 
     // ------------------------------------------------------------------------
@@ -32,6 +34,7 @@ module ProcessorPP
 
     Inst     IFID_inst;
     InstAddr IFID_pc;
+    logic    IFID_instCompressed;
 
 `ifdef DEBUG
     int      IFID_dbgTick;
@@ -42,13 +45,15 @@ module ProcessorPP
 
     PipelineIFID
     pipelineIFID (
-        .i_clock   (i_clock),
-        .i_reset   (i_reset),
-        .i_stall   (ID_bubble),
-        .i_pc      (IF_pc),
-        .i_inst    (IF_inst),
-        .o_pc      (IFID_pc),
-        .o_inst    (IFID_inst)
+        .i_clock          (i_clock),
+        .i_reset          (i_reset),
+        .i_stall          (ID_bubble),
+        .i_pc             (IF_pc),
+        .i_inst           (IF_inst),
+        .i_instCompressed (IF_instCompressed),
+        .o_pc             (IFID_pc),
+        .o_inst           (IFID_inst),
+        .o_instCompressed (IFID_instCompressed)
 
 `ifdef DEBUG
         ,
@@ -133,12 +138,12 @@ module ProcessorPP
     logic [1:0] IDEX_operandBSel;
 
 `ifdef DEBUG
-    int      IDEX_dbgTick;
-    logic    IDEX_dbgOk;
-    InstAddr IDEX_dbgPc;
-    Inst     IDEX_dbgInst;
-    RegAddr  IDEX_dbgRegWrAddr;
-    logic    IDEX_dbgRegWrEnable;
+    int         IDEX_dbgTick;
+    logic       IDEX_dbgOk;
+    InstAddr    IDEX_dbgPc;
+    Inst        IDEX_dbgInst;
+    RegAddr     IDEX_dbgRegWrAddr;
+    logic       IDEX_dbgRegWrEnable;
 `endif
 
     PipelineIDEX
@@ -222,12 +227,12 @@ module ProcessorPP
     logic       EXMEM_isLoad;
 
 `ifdef DEBUG
-    int      EXMEM_dbgTick;
-    logic    EXMEM_dbgOk;
-    InstAddr EXMEM_dbgPc;
-    Inst     EXMEM_dbgInst;
-    RegAddr  EXMEM_dbgRegWrAddr;
-    logic    EXMEM_dbgRegWrEnable;
+    int         EXMEM_dbgTick;
+    logic       EXMEM_dbgOk;
+    InstAddr    EXMEM_dbgPc;
+    Inst        EXMEM_dbgInst;
+    RegAddr     EXMEM_dbgRegWrAddr;
+    logic       EXMEM_dbgRegWrEnable;
 `endif
 
     PipelineEXMEM
@@ -291,21 +296,21 @@ module ProcessorPP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
-    Data    MEMWB_regWrData;
-    RegAddr MEMWB_regWrAddr;
-    logic   MEMWB_regWrEnable;
+    Data        MEMWB_regWrData;
+    RegAddr     MEMWB_regWrAddr;
+    logic       MEMWB_regWrEnable;
 
 `ifdef DEBUG
-    int      MEMWB_dbgTick;
-    logic    MEMWB_dbgOk;
-    InstAddr MEMWB_dbgPc;
-    Inst     MEMWB_dbgInst;
-    RegAddr  MEMWB_dbgRegWrAddr;
-    logic    MEMWB_dbgRegWrEnable;
-    Data     MEMWB_dbgRegWrData;
-    DataAddr MEMWB_dbgMemWrAddr;
-    logic    MEMWB_dbgMemWrEnable;
-    Data     MEMWB_dbgMemWrData;
+    int         MEMWB_dbgTick;
+    logic       MEMWB_dbgOk;
+    InstAddr    MEMWB_dbgPc;
+    Inst        MEMWB_dbgInst;
+    RegAddr     MEMWB_dbgRegWrAddr;
+    logic       MEMWB_dbgRegWrEnable;
+    Data        MEMWB_dbgRegWrData;
+    DataAddr    MEMWB_dbgMemWrAddr;
+    logic       MEMWB_dbgMemWrEnable;
+    Data        MEMWB_dbgMemWrData;
 
 `endif
 
@@ -331,7 +336,7 @@ module ProcessorPP
         .i_dbgRegWrEnable (EXMEM_dbgRegWrEnable),
         .i_dbgRegWrData   (MEM_regWrData),
         .i_dbgMemWrAddr   (dataBus.addr),
-        .i_dbgMemWrEnable (dataBus.wrEnable),
+        .i_dbgMemWrEnable (|dataBus.wrEnable),
         .i_dbgMemWrData   (dataBus.wrData),
         .o_dbgTick        (MEMWB_dbgTick),
         .o_dbgOk          (MEMWB_dbgOk),

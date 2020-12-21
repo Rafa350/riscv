@@ -361,7 +361,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_RAS
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
-set_global_assignment -name SYSTEMVERILOG_FILE DataMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
@@ -387,6 +386,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DatapathController.sv
 set_global_assignment -name QIP_FILE mw_ram.qip
 set_global_assignment -name SDC_FILE CPU01.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE DataMemory256x32.sv
+set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux8To1.sv

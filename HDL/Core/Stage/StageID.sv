@@ -38,31 +38,6 @@ module StageID
 
 
     // ------------------------------------------------------------------------
-    // Expansor d'instruccions comprimides.
-    // Converteix un instruccio comprimida al seu equivalent normal.
-    // ------------------------------------------------------------------------
-
-    Inst  exp_inst;
-    logic exp_isCompressed;
-    logic exp_isIllegal;
-
-//`define RV32_COMPRESS
-
-`ifdef RV_EXT_C
-    InstExpander
-    exp (
-        .i_inst         (i_inst),
-        .o_inst         (exp_inst),
-        .o_isCompressed (exp_isCompressed),
-        .o_isIllegal    (exp_isIllegal));
-`else
-      assign exp_inst         = i_inst;
-      assign exp_isCompressed = 1'b0;
-      assign exp_isIllegal    = 1'b0;
-`endif
-
-
-    // ------------------------------------------------------------------------
     // Decodificador d'instruccions.
     // Separa les instruccions en els seus components, calculant el valor
     // IMM de la instruccio en funcio del seu tipus. Tambe indica el tipus
@@ -82,7 +57,7 @@ module StageID
 
     InstDecoder
     dec (
-        .i_inst      (exp_inst),
+        .i_inst      (i_inst),
         .o_instOP    (dec_instOP),
         .o_instRS1   (dec_instRS1),
         .o_instRS2   (dec_instRS2),
@@ -103,6 +78,8 @@ module StageID
     AluOp       dpCtrl_aluControl;   // Operacio de la ALU
     logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
     logic       dpCtrl_memWrEnable;  // Autoritza escritura en memoria
+    logic [2:0] dpCtrl_memAccess;    // Modos d'access a la memoria (byte, half o word)
+    logic       dpCtrl_memSigned;    // Lectura byte o half amb extenssio de signe
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
     logic [1:0] dpCtrl_dataToRegSel; // Selector del les dades d'escriptura en el registre
     logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
@@ -110,10 +87,12 @@ module StageID
 
     DatapathController
     dpCtrl (
-        .i_inst         (exp_inst),           // La instruccio
+        .i_inst         (i_inst),             // La instruccio
         .i_isEqual      (comp_equal),         // Indicador r1 == r2
         .i_isLess       (comp_less),          // Indicador r1 < r2
         .o_memWrEnable  (dpCtrl_memWrEnable),
+        .o_memAccess    (dpCtrl_memAccess),
+        .o_memSigned    (dpCtrl_memSigned),
         .o_regWrEnable  (dpCtrl_regWrEnable),
         .o_regWrDataSel (dpCtrl_dataToRegSel),
         .o_aluControl   (dpCtrl_aluControl),
