@@ -16,7 +16,7 @@ static Tracer *getTracer() {
 }
 
 
-extern "C" void TraceTick(
+extern "C" void dpiTraceTick(
     int tick) {
 
     Tracer *tracer = getTracer();
@@ -24,7 +24,7 @@ extern "C" void TraceTick(
 }
 
 
-extern "C" void TraceInstruction(
+extern "C" void dpiTraceInstruction(
     int addr,
     int data) {
 
@@ -33,7 +33,7 @@ extern "C" void TraceInstruction(
 }
 
 
-extern "C" void TraceRegister(
+extern "C" void dpiTraceRegister(
     int addr,
     int data) {
 
@@ -42,7 +42,7 @@ extern "C" void TraceRegister(
 }
 
 
-extern "C" void TraceMemory(
+extern "C" void dpiTraceMemory(
     int addr,
     int data) {
 

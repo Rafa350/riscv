@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __RISCVTracer__
+#define __RISCVTracer__
 
 
 #include "RISCV.h"
@@ -19,3 +21,14 @@ namespace RISCV {
     };
 
 }
+
+
+extern "C" {
+    void dpiTraceTick(int tick);
+    void dpiTraceInstruction(int addr, int data);
+    void dpiTraceRegister(int addr, int data);
+    void dpiTraceMemory(int addr, int data);
+}
+
+
+#endif // __RISCVTracer__

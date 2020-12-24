@@ -27,23 +27,23 @@ module DebugController
 
 `ifdef VERILATOR
 
-    import "DPI-C" function void TraceInstruction(input int addr, input int data);
-    import "DPI-C" function void TraceRegister(input int addr, input int data);
-    import "DPI-C" function void TraceMemory(input int addr, input int data);
-    import "DPI-C" function void TraceTick(input int tick);
+    import "DPI-C" function void dpiTraceInstruction(input int addr, input int data);
+    import "DPI-C" function void dpiTraceRegister(input int addr, input int data);
+    import "DPI-C" function void dpiTraceMemory(input int addr, input int data);
+    import "DPI-C" function void dpiTraceTick(input int tick);
 
     always_ff @(posedge i_clock)
         if (!i_reset & i_ok) begin
 
-            TraceTick(i_tick);
+            dpiTraceTick(i_tick);
 
-            TraceInstruction(int'(i_pc), i_inst);
+            dpiTraceInstruction(int'(i_pc), i_inst);
 
             if ((i_regWrAddr != 0) & i_regWrEnable)
-                TraceRegister(int'(i_regWrAddr), i_regWrData);
+                dpiTraceRegister(int'(i_regWrAddr), i_regWrData);
 
             if (i_memWrEnable)
-                TraceMemory(int'(i_memWrAddr), i_memWrData);
+                dpiTraceMemory(int'(i_memWrAddr), i_memWrData);
 
             $display("");
         end

@@ -13,7 +13,6 @@ module PipelineIDEX
     // Senyals d'entrada de depuracio
     input  int         i_dbgTick,        // Numero de tick
     input  logic       i_dbgOk,          // Indicador d'iInstruccio executada
-    input  InstAddr    i_dbgPc,          // Adressa de la instruccio
     input  Inst        i_dbgInst,        // Instruccio
     input  RegAddr     i_dbgRegWrAddr,   // Registre per escriure
     input  logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
@@ -21,7 +20,6 @@ module PipelineIDEX
     // Senyals de sortidade depuracio
     output int         o_dbgTick,        // Numero de tick
     output logic       o_dbgOk,          // Indicador d'instruccio executada
-    output InstAddr    o_dbgPc,          // Adressa de la instruccio
     output Inst        o_dbgInst,        // Instruccio
     output RegAddr     o_dbgRegWrAddr,   // Registre per escriure
     output logic       o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
@@ -36,6 +34,8 @@ module PipelineIDEX
     input  logic       i_regWrEnable,    // Habilita l'escriptura en el registres
     input  logic [1:0] i_regWrDataSel,   // Seleccio de dades per escriure en els registre
     input  logic       i_memWrEnable,    // Habilita la escriptura en memoria
+    input  DataAccess  i_memAccess,      // Tamany del acces a la memoria
+    input  logic       i_memUnsigned,    // Lectura de memoria sense signe
     input  logic       i_isLoad,         // Indica si es una instruccio Load
     input  logic [1:0] i_operandASel,    // Seleccio de l'operasnd A
     input  logic [1:0] i_operandBSel,    // Seleccio de l'operand B
@@ -49,7 +49,9 @@ module PipelineIDEX
     output RegAddr     o_regWrAddr,
     output logic       o_regWrEnable,
     output logic [1:0] o_regWrDataSel,
-    output logic       o_memWrEnable,
+    output logic       o_memWrEnable,    // Habilita la escriptura en memoria
+    output DataAccess  o_memAccess,      // Tamany del acces la memoria
+    output logic       o_memUnsigned,    // Lectura de memoria sense signe
     output logic       o_isLoad,
     output logic [1:0] o_operandASel,
     output logic [1:0] o_operandBSel,
@@ -65,14 +67,15 @@ module PipelineIDEX
         o_regWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
         o_regWrDataSel   <= i_reset ? 2'b0                    : i_regWrDataSel;
         o_memWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
-        o_isLoad         <= i_reset ? 1'b0                    : i_isLoad;
+        o_memAccess      <= i_reset ? DataAccess_Word         : i_memAccess;
+        o_memUnsigned    <= i_reset ? 1'b0                    : i_memUnsigned;
+        o_isLoad         <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_isLoad);
         o_aluControl     <= i_reset ? AluOp_Unknown           : i_aluControl;
         o_operandASel    <= i_reset ? 2'b0                    : i_operandASel;
         o_operandBSel    <= i_reset ? 2'b0                    : i_operandBSel;
 `ifdef DEBUG
         o_dbgTick        <= i_dbgTick;
         o_dbgOk          <= (i_reset | i_flush) ? 1'b0 : i_dbgOk;
-        o_dbgPc          <= i_dbgPc;
         o_dbgInst        <= i_dbgInst;
         o_dbgRegWrAddr   <= i_dbgRegWrAddr;
         o_dbgRegWrEnable <= i_dbgRegWrEnable;

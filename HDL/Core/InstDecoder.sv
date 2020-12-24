@@ -20,8 +20,8 @@ module InstDecoder
          immJValue,
          shamtValue;
 
-    assign immIValue  = {{20{i_inst[31]}}, i_inst[31:20]};
-    assign immSValue  = {{20{i_inst[31]}}, i_inst[31:25], i_inst[11:7]};
+    assign immIValue  = {{21{i_inst[31]}}, i_inst[30:20]};
+    assign immSValue  = {{21{i_inst[31]}}, i_inst[30:25], i_inst[11:7]};
     assign immBValue  = {{20{i_inst[31]}}, i_inst[7], i_inst[30:25], i_inst[11:8], 1'b0};
     assign immJValue  = {{12{i_inst[31]}}, i_inst[19:12], i_inst[20], i_inst[30:21], 1'b0};
     assign immUValue  = {i_inst[31:12], 12'b0};
@@ -89,6 +89,11 @@ module InstDecoder
             {10'b0000000_110, OpCode_Op    }, // OR
             {10'b0000000_111, OpCode_Op    }: // AND
                 o_isALU = 1'b1;
+
+`ifdef RV_EXT_M
+            {10'b0000001_???, OpCode_Op    }: // MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU
+                o_isALU = 1'b1;
+`endif
 
             {10'b???????_000, OpCode_OpIMM }, // ADDI
             {10'b???????_010, OpCode_OpIMM }, // SLTI

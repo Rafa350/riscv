@@ -22,11 +22,11 @@ module RegisterFile
     output Data    o_rdDataA, // Dades lleigides del port A
 
     // Port de lectura B
-    input  RegAddr i_rdAddrB,  // Adressa del regisres del port de lectura B
+    input  RegAddr i_rdAddrB,  // Adressa del registre del port de lectura B
     output Data    o_rdDataB); // Dades lleigides del port B
 
-    localparam SIZE  = 2**$size(RegAddr);
-    localparam ZERO  = {$size(Data){1'b0}};
+    localparam SIZE = 2**$size(RegAddr);
+    localparam ZERO = {$size(Data){1'b0}};
 
 
     Data data[1:SIZE-1];

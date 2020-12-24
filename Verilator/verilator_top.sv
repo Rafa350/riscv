@@ -15,13 +15,14 @@ module top
     parameter REG_WIDTH  = `REG_WIDTH,
     parameter FIRMWARE   = `FIRMWARE)
 (
-    input              i_clock,
-    input              i_reset,
+    input             i_clock,
+    input             i_reset,
 
-    input  Data        i_memRdData,
-    output Data        o_memWrData,
-    output DataAddr    o_memAddr,
-    output logic [3:0] o_memWrEnable);
+    input  Data       i_memRdData,
+    output Data       o_memWrData,
+    output DataAddr   o_memAddr,
+    output DataAccess o_memAccess,
+    output logic      o_memWrEnable);
 
 
     DataMemoryBus dataBus;
@@ -29,8 +30,9 @@ module top
 
 
     assign o_memAddr     = dataBus.master.addr;
-    assign o_memWrData   = dataBus.master.wrData;
+    assign o_memAccess   = dataBus.master.access;
     assign o_memWrEnable = dataBus.master.wrEnable;
+    assign o_memWrData   = dataBus.master.wrData;
 
 
     // -------------------------------------------------------------------

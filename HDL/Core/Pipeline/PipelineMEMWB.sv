@@ -37,9 +37,9 @@ module PipelineMEMWB
 
 
     // Senyals d'entrada al pipeline
-    input  RegAddr     i_regWrAddr,      // Registre per escriure
-    input  logic       i_regWrEnable,    // Autoritzacio per escriure
-    input  Data        i_regWrData,      // Dades per escriure
+    input  RegAddr     i_regWrAddr,    // Registre per escriure
+    input  logic       i_regWrEnable,  // Autoritzacio per escriure
+    input  Data        i_regWrData,    // Dades per escriure
 
     // Senyal de sortida del pipeline
     //

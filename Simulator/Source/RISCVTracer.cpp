@@ -9,6 +9,7 @@ using namespace RISCV;
 
 
 static const char* getRegName(uint32_t reg);
+static const char* getFpRegName(uint32_t reg);
 
 
 /// ----------------------------------------------------------------------
@@ -241,7 +242,7 @@ void Tracer::traceReg(
     if (reg) {
         const char *regName = getRegName(reg);
 
-        printf("R: %s: %8.8X\n", regName, data);
+        printf("R: %s: %8.8X  (%d)\n", regName, data, data);
     }
 }
 
@@ -250,7 +251,7 @@ void Tracer::traceMem(
     addr_t addr,
     data_t data) {
 
-        printf("M: %8.8X: %8.8X\n", addr, data);
+        printf("M: %8.8X: %8.8X  (%d)\n", addr, data, data);
 }
 
 

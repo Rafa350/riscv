@@ -14,6 +14,14 @@ package Types;
     typedef logic [PC_WIDTH-1:0]   InstAddr;
     typedef logic [REG_WIDTH-1:0]  RegAddr;
 
+    typedef enum logic [2:0] {
+        DataAccess_Byte,
+        DataAccess_Half,
+        DataAccess_Word,
+        DataAccess_DWord,
+        DataAccess_QWord
+    } DataAccess;
+
     typedef enum logic [6:0] {
         OpCode_Unknown = 7'b000_0000,
         OpCode_Load    = 7'b000_0011,
@@ -49,6 +57,7 @@ package Types;
         AluOp_SUBU,
         AluOp_XOR
     } AluOp;
+
 
     typedef enum logic [11:0] {
         CSRAddr_USTATUS  = 12'h000,

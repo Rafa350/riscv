@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __RISCVMemory__
+#define __RISCVMemory__
 
 
 #include "RISCV.h"
@@ -35,3 +37,16 @@ namespace RISCV {
     };
 
 }
+
+
+extern "C" {
+    void dpiMemWrite32(int addr, int data);
+    void dpiMemWrite16(int addr, int data);
+    void dpiMemWrite8(int addr, int data);
+    int dpiMemRead32(int addr);
+    int dpiMemRead16(int addr);
+    int dpiMemRead8(int addr);
+}
+
+
+#endif // __RISCVMemory__

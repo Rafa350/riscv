@@ -1,22 +1,32 @@
-interface DataMemoryBus;
+interface DataMemoryBus
+#(
+    parameter DATA_BYTES = 4);
 
     import Types::*;
 
+    localparam DATA_WIDTH = $size(Data);
+
     DataAddr   addr;     // Addresa en bytes
-    logic[3:0] wrEnable; // Autoritzacio d'escriptura per bytes
-    Data       wrData;   // Dades per escriure
+    DataAccess access;   // Tamany de dades
+    logic      wrEnable; // Habilita l'escriptura
+    logic      rdEnable; // Habilita la lectura
+    Data       wrData;   // Dades a escriure
     Data       rdData;   // Dades lleigides
 
     modport master(
         output addr,
+        output access,
+        output wrEnable,
+        output rdEnable,
         input  rdData,
-        output wrData,
-        output wrEnable);
+        output wrData);
 
     modport slave(
         input  addr,
+        input  access,
+        input  wrEnable,
+        input  rdEnable,
         output rdData,
-        input  wrData,
-        input  wrEnable);
+        input  wrData);
 
 endinterface

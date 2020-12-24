@@ -61,6 +61,7 @@ void CPUTestbench::run() {
 
     Vtop *top = getTop();
 
+    bool clockPosEdge = false;
     top->i_clock = 0;
     top->i_reset = 0;
 
@@ -75,8 +76,10 @@ void CPUTestbench::run() {
         if (tick >= CLOCK_START) {
             if ((tick % 10) == 0)
                 top->i_clock = 0;
-            else if ((tick % 10) == 5)
+            else if ((tick % 10) == 5) {
                 top->i_clock = 1;
+                clockPosEdge = true;
+            }
         }
 
         // Genera la senyal de 'reset'
@@ -89,19 +92,38 @@ void CPUTestbench::run() {
         // Acces a la memoria de dades
         //
         top->i_memRdData = dataMem->read32(top->o_memAddr);
-        switch (top->o_memWrEnable) {
-            case 0b0001:
-                dataMem->write8(top->o_memAddr, top->o_memWrData);
-                break;
+        if (clockPosEdge && (top->o_memWrEnable == 1)) {
+            if (top->o_memAddr >= 0x00200000) {
 
-            case 0b0011:
-                dataMem->write16(top->o_memAddr, top->o_memWrData);
-                break;
+                // Periferics
+                //
+                switch (top->o_memAddr) {
+                    case 0x00200000:
+                        printf("TTY: %c\n", (char)top->o_memWrData);
+                        break;
+                }
+            }
+            else {
 
-            case 0b1111:
-                dataMem->write32(top->o_memAddr, top->o_memWrData);
-                break;
+                // Memoria ram
+                //
+                switch (top->o_memAccess) {
+                    case 0b000:
+                        dataMem->write8(top->o_memAddr, top->o_memWrData);
+                        break;
+
+                    case 0b001:
+                        dataMem->write16(top->o_memAddr, top->o_memWrData);
+                        break;
+
+                    case 0b010:
+                        dataMem->write32(top->o_memAddr, top->o_memWrData);
+                        break;
+                }
+            }
         }
+
+        clockPosEdge = false;
 
     } while (nextTick() && (tick < CLOCK_MAX));
 

@@ -6,11 +6,13 @@ module StageMEM
 (
     DataMemoryBus.master dataBus,        // Bus de la memoria de dades
 
-    input  InstAddr      i_pc,
-    input  Data          i_result,
-    input  Data          i_dataB,
+    input  InstAddr      i_pc,           // Adressa de la instruccio
+    input  Data          i_result,       // Adressa de memoria
+    input  Data          i_dataB,        // Dades per escriure
 
     input  logic         i_memWrEnable,  // Habilita escriptura en memoria
+    input  DataAccess    i_memAccess,    // Tamany d'acces a la memori
+    input  logic         i_memUnsigned,  // Lectura de memoria sense signe
 
     input  logic [1:0]   i_regWrDataSel, // Seleccio de dades per escriure en el registre
     output Data          o_regWrData);   // Dades per escriure en el registre
@@ -21,23 +23,34 @@ module StageMEM
     // ------------------------------------------------------------------------
 
     assign dataBus.addr     = i_result[$size(DataAddr)-1:0];
+    assign dataBus.access   = i_memAccess;
+    assign dataBus.wrEnable = i_memWrEnable;
     assign dataBus.wrData   = i_dataB;
-    assign dataBus.wrEnable = {i_memWrEnable, i_memWrEnable, i_memWrEnable, i_memWrEnable};
 
-    Data memDataSel_output;
+    Data rdData;
+    always_comb begin
+        unique case ({i_memUnsigned, i_memAccess})
+            // Signed byte
+            {1'b0, DataAccess_Byte}:
+                 rdData = {dataBus.rdData[7] ? 25'h1FFFFFF : 25'h0, dataBus.rdData[6:0]};
 
-    // verilator lint_off PINMISSING
-    Mux8To1 #(
-        .WIDTH ($size(Data)))
-    memDataSel (
-        .i_select(2),
-        .i_input0 ({dataBus.rdData[7] ? 24'hFFFFFF : 24'h000000, dataBus.rdData[7:0]}), // Acces signed byte
-        .i_input1 ({dataBus.rdData[15] ? 16'hFFFF : 16'h0000, dataBus.rdData[15:0]}),   // Acces signed half
-        .i_input2 (dataBus.rdData),                                                     // Acces word
-        .i_input3 ({24'h000000, dataBus.rdData[7:0]}),                                  // Acces unsigned byte
-        .i_input4 ({16'h0000, dataBus.rdData[15:0]}),                                   // Acces unsigned half
-        .o_output (memDataSel_output));
-    // verilator lint_on PINMISSING
+            // Signed half
+            {1'b0, DataAccess_Half}:
+                rdData = {dataBus.rdData[15] ? 17'h1FFFF : 17'h0, dataBus.rdData[14:0]};
+
+            // Unsigned byte
+            {1'b1, DataAccess_Byte}:
+                rdData = {24'h000000, dataBus.rdData[7:0]};
+
+            // Unsigned half
+            {1'b1, DataAccess_Half}:
+                rdData = {16'h0000, dataBus.rdData[15:0]};
+
+            // Word
+            default:
+                rdData = dataBus.rdData;
+        endcase
+    end
 
 
     /// -----------------------------------------------------------------------
@@ -70,7 +83,7 @@ module StageMEM
     regWrDataSelector (
         .i_select (i_regWrDataSel),
         .i_input0 (i_result),
-        .i_input1 (memDataSel_output),
+        .i_input1 (rdData),
         .i_input2 ({{$size(Data)-$size(InstAddr){1'b0}}, adder_result}),
         .o_output (o_regWrData));
     // verilator lint_on PINMISSING

@@ -5,9 +5,10 @@ module DatapathController
     input  logic       i_isEqual,       // Indica A == B
     input  logic       i_isLess,        // Indica A < B
 
-    output logic       o_memWrEnable,   // Habilita erscriptura en la memoria
-    output logic [2:0] o_memAccess,     // Access byte, half o word
-    output logic       o_memSigned,     // Access bytre o half amb extensio de signe
+    output logic       o_memWrEnable,   // Habilita l'escriptura en memoria
+    output logic       o_memRdEnable,   // Habilita la lectura de la memoria
+    output DataAccess  o_memAccess,     // Tamany d'acces a la memoria
+    output logic       o_memUnsigned,   // Lectura de memoria sense signe
 
     output logic [1:0] o_pcNextSel,     // Selecciona el seguent valor del PC
 
@@ -34,10 +35,6 @@ module DatapathController
     localparam  pcOFS = 2'b01;           // PC = PC + offset
     localparam  pcIND = 2'b10;           // PC = [RS1] + offset
 
-    localparam  maBYTE = 3'b001;         // Memory access byte
-    localparam  maHALF = 3'b010;         // Memory access half
-    localparam  maWORD = 3'b100;         // Memory access word
-
     always_comb begin
 
         o_aluControl   = AluOp_Unknown;
@@ -45,8 +42,9 @@ module DatapathController
         o_operandBSel  = bsREG;
         o_pcNextSel    = pcPP4;
         o_memWrEnable  = 1'b0;
-        o_memAccess    = maWORD;
-        o_memSigned    = 1'b0;
+        o_memRdEnable  = 1'b0;
+        o_memAccess    = DataAccess_Word;
+        o_memUnsigned  = 1'b0;
         o_regWrEnable  = 1'b0;
         o_regWrDataSel = wrALU;
 
@@ -103,15 +101,16 @@ module DatapathController
             {10'b???????_100, OpCode_Load  }, // LBU
             {10'b???????_101, OpCode_Load  }: // LHU
                 begin
-                    o_aluControl   = AluOp_ADD;
-                    o_operandBSel  = bsIMM;
-                    o_regWrDataSel = wrMEM;
-                    o_regWrEnable  = 1'b1;
-                    o_memSigned    = i_inst[14];
+                    o_aluControl    = AluOp_ADD;
+                    o_operandBSel   = bsIMM;
+                    o_regWrDataSel  = wrMEM;
+                    o_regWrEnable   = 1'b1;
+                    o_memRdEnable   = 1'b1;
+                    o_memUnsigned   = i_inst[14];
 
                     unique case (i_inst[13:12])
-                        2'b00: o_memAccess = maBYTE;
-                        2'b01: o_memAccess = maHALF;
+                        2'b00: o_memAccess = DataAccess_Byte;
+                        2'b01: o_memAccess = DataAccess_Half;
                         default: ;
                     endcase
                 end
@@ -125,8 +124,8 @@ module DatapathController
                     o_memWrEnable = 1'b1;
 
                     unique case (i_inst[13:12])
-                        2'b00: o_memAccess = maBYTE;
-                        2'b01: o_memAccess = maHALF;
+                        2'b00: o_memAccess = DataAccess_Byte;
+                        2'b01: o_memAccess = DataAccess_Half;
                         default: ;
                     endcase
                 end

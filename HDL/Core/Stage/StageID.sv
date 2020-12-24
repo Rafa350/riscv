@@ -9,6 +9,7 @@ module StageID
     input  logic       i_reset,             // Reset
 
     input  Inst        i_inst,              // Instruccio
+    input  logic       i_instCompressed,    // Indica que es una instruccio comprimida
     input  InstAddr    i_pc,                // Adressa de la instruccio
     input  RegAddr     i_EX_RegWrAddr,      // Registre per escriure
     input  logic       i_EX_RegWrEnable,    // Habilita l'escriptura en el registre
@@ -30,6 +31,8 @@ module StageID
     output RegAddr     o_regWrAddr,         // Registre a escriure.
     output logic       o_regWrEnable,       // Habilita l'escriptura del registre
     output logic       o_memWrEnable,       // Habilita l'escritura en memoria
+    output DataAccess  o_memAccess,         // Tamany d'acces a la memoria
+    output logic       o_memUnsigned,       // Lectura de memoria sense signe
     output logic [1:0] o_regWrDataSel,      // Seleccio de les dades per escriure en el registre (rd)
     output logic [1:0] o_operandASel,       // Seleccio del valor A de la ALU
     output logic [1:0] o_operandBSel,       // Seleccio del valor B de la ALU
@@ -77,9 +80,10 @@ module StageID
 
     AluOp       dpCtrl_aluControl;   // Operacio de la ALU
     logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
-    logic       dpCtrl_memWrEnable;  // Autoritza escritura en memoria
-    logic [2:0] dpCtrl_memAccess;    // Modos d'access a la memoria (byte, half o word)
-    logic       dpCtrl_memSigned;    // Lectura byte o half amb extenssio de signe
+    logic       dpCtrl_memWrEnable;  // Autoritza l'escritura en memoria
+    logic       dpCtrl_memRdEnable;  // Autoritza la lectura de la memoria
+    DataAccess  dpCtrl_memAccess;    // Tamany d'access a la memoria
+    logic       dpCtrl_memUnsigned;  // Lectura de memoria sense signe
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
     logic [1:0] dpCtrl_dataToRegSel; // Selector del les dades d'escriptura en el registre
     logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
@@ -87,12 +91,13 @@ module StageID
 
     DatapathController
     dpCtrl (
-        .i_inst         (i_inst),             // La instruccio
-        .i_isEqual      (comp_equal),         // Indicador r1 == r2
-        .i_isLess       (comp_less),          // Indicador r1 < r2
+        .i_inst         (i_inst),              // La instruccio
+        .i_isEqual      (comp_equal),          // Indicador r1 == r2
+        .i_isLess       (comp_less),           // Indicador r1 < r2
         .o_memWrEnable  (dpCtrl_memWrEnable),
-        .o_memAccess    (dpCtrl_memAccess),
-        .o_memSigned    (dpCtrl_memSigned),
+        .o_memAccess    (dpCtrl_memAccess),    // Tamany d'acces a la memoria
+        .o_memUnsigned  (dpCtrl_memUnsigned),  // Lectura de memoria sense signe
+        .o_memRdEnable  (dpCtrl_memRdEnable),
         .o_regWrEnable  (dpCtrl_regWrEnable),
         .o_regWrDataSel (dpCtrl_dataToRegSel),
         .o_aluControl   (dpCtrl_aluControl),
@@ -233,6 +238,8 @@ module StageID
         o_regWrEnable  = dpCtrl_regWrEnable;
         o_regWrDataSel = dpCtrl_dataToRegSel;
         o_memWrEnable  = dpCtrl_memWrEnable;
+        o_memAccess    = dpCtrl_memAccess;
+        o_memUnsigned  = dpCtrl_memUnsigned;
         o_operandASel  = dpCtrl_operandASel;
         o_operandBSel  = dpCtrl_operandBSel;
         o_aluControl   = dpCtrl_aluControl;
