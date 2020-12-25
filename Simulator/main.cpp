@@ -25,14 +25,6 @@ int main() {
             Memory *dataMem = new Memory(nullptr, RISCV_DMEM_BASE, RISCV_DMEM_SIZE);
             if (dataMem) {
 
-                //printf("Instruction memory dump:\n");
-                //instMem->dump(RISCV_IMEM_BASE, 128);
-                //printf("\n");
-
-                //printf("Data memory dump:\n");
-                //dataMem->dump(RISCV_DMEM_BASE, 128);
-                //printf("\n");
-
                 Processor *proc = new Processor(tracer, dataMem, nullptr);
                 if (proc) {
 

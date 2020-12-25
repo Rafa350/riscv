@@ -75,6 +75,7 @@ module ProcessorPP
     logic       ID_regWrEnable;
     logic [1:0] ID_regWrDataSel;
     logic       ID_memWrEnable;
+    logic       ID_memRdEnable;
     DataAccess  ID_memAccess;
     logic       ID_memUnsigned;
     AluOp       ID_aluControl;
@@ -111,7 +112,8 @@ module ProcessorPP
         .o_regWrEnable     (ID_regWrEnable),      // Habilita escriure en el registre
         .o_regWrDataSel    (ID_regWrDataSel),
         .o_memWrEnable     (ID_memWrEnable),      // Habilita l'escriptura en memoria
-        .o_memAccess       (ID_memAccess),          // Tamany d'acces a la memoria
+        .o_memRdEnable     (ID_memRdEnable),      // Habilita la lectura de la memoria
+        .o_memAccess       (ID_memAccess),        // Tamany d'acces a la memoria
         .o_memUnsigned     (ID_memUnsigned),      // Lectura en memoria sense signe
         .o_aluControl      (ID_aluControl),
         .o_operandASel     (ID_operandASel),
@@ -131,6 +133,7 @@ module ProcessorPP
     logic       IDEX_regWrEnable;
     logic [1:0] IDEX_regWrDataSel;
     logic       IDEX_memWrEnable;
+    logic       IDEX_memRdEnable;
     DataAccess  IDEX_memAccess;
     logic       IDEX_memUnsigned;
     logic       IDEX_isLoad;
@@ -158,6 +161,7 @@ module ProcessorPP
         .i_regWrEnable    (ID_regWrEnable),
         .i_regWrDataSel   (ID_regWrDataSel),
         .i_memWrEnable    (ID_memWrEnable),
+        .i_memRdEnable    (ID_memRdEnable),
         .i_memAccess      (ID_memAccess),
         .i_memUnsigned    (ID_memUnsigned),
         .i_isLoad         (ID_isLoad),
@@ -172,6 +176,7 @@ module ProcessorPP
         .o_regWrEnable    (IDEX_regWrEnable),
         .o_regWrDataSel   (IDEX_regWrDataSel),
         .o_memWrEnable    (IDEX_memWrEnable),
+        .o_memRdEnable    (IDEX_memRdEnable),
         .o_memAccess      (IDEX_memAccess),
         .o_memUnsigned    (IDEX_memUnsigned),
         .o_isLoad         (IDEX_isLoad),
@@ -226,6 +231,7 @@ module ProcessorPP
     logic       EXMEM_regWrEnable;
     logic [1:0] EXMEM_regWrDataSel;
     logic       EXMEM_memWrEnable;
+    logic       EXMEM_memRdEnable;
     DataAccess  EXMEM_memAccess;
     logic       EXMEM_memUnsigned;
     logic       EXMEM_isLoad;
@@ -247,6 +253,7 @@ module ProcessorPP
         .i_result         (EX_result),
         .i_dataB          (EX_dataB),
         .i_memWrEnable    (IDEX_memWrEnable),
+        .i_memRdEnable    (IDEX_memRdEnable),
         .i_memAccess      (IDEX_memAccess),
         .i_memUnsigned    (IDEX_memUnsigned),
         .i_regWrAddr      (IDEX_regWrAddr),
@@ -257,6 +264,7 @@ module ProcessorPP
         .o_result         (EXMEM_result),
         .o_dataB          (EXMEM_dataB),
         .o_memWrEnable    (EXMEM_memWrEnable),
+        .o_memRdEnable    (EXMEM_memRdEnable),
         .o_memAccess      (EXMEM_memAccess),
         .o_memUnsigned    (EXMEM_memUnsigned),
         .o_regWrAddr      (EXMEM_regWrAddr),
@@ -288,12 +296,15 @@ module ProcessorPP
 
     StageMEM
     stageMEM (
+        .i_clock        (i_clock),            // Clock
+        .i_reset        (i_reset),            // Reseset
         .dataBus        (dataBus),            // Interficie amb la memoria de dades
         .i_pc           (EXMEM_pc),           // Adressa de la instruccio
         .i_result       (EXMEM_result),       // Adressa per escriure en memoria
         .i_dataB        (EXMEM_dataB),        // Dades per escriure
         .i_regWrDataSel (EXMEM_regWrDataSel), // Seleccio de dades d'escriptura en el registre
         .i_memWrEnable  (EXMEM_memWrEnable),  // Autoritzacio d'escriptura en memoria
+        .i_memRdEnable  (EXMEM_memRdEnable),  // Autoritza la lectura de la memoria
         .i_memAccess    (EXMEM_memAccess),    // Tamany d'acces a la memoria
         .i_memUnsigned  (EXMEM_memUnsigned),  // Lectura de memoria sense signe
         .o_regWrData    (MEM_regWrData));     // Dades per escriure en el registre

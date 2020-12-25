@@ -34,6 +34,7 @@ module PipelineIDEX
     input  logic       i_regWrEnable,    // Habilita l'escriptura en el registres
     input  logic [1:0] i_regWrDataSel,   // Seleccio de dades per escriure en els registre
     input  logic       i_memWrEnable,    // Habilita la escriptura en memoria
+    input  logic       i_memRdEnable,    // Habilida el lecturad e la memoria
     input  DataAccess  i_memAccess,      // Tamany del acces a la memoria
     input  logic       i_memUnsigned,    // Lectura de memoria sense signe
     input  logic       i_isLoad,         // Indica si es una instruccio Load
@@ -50,6 +51,7 @@ module PipelineIDEX
     output logic       o_regWrEnable,
     output logic [1:0] o_regWrDataSel,
     output logic       o_memWrEnable,    // Habilita la escriptura en memoria
+    output logic       o_memRdEnable,    // Habilita la lectura de la memoria
     output DataAccess  o_memAccess,      // Tamany del acces la memoria
     output logic       o_memUnsigned,    // Lectura de memoria sense signe
     output logic       o_isLoad,
@@ -67,6 +69,7 @@ module PipelineIDEX
         o_regWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
         o_regWrDataSel   <= i_reset ? 2'b0                    : i_regWrDataSel;
         o_memWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
+        o_memRdEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memRdEnable);
         o_memAccess      <= i_reset ? DataAccess_Word         : i_memAccess;
         o_memUnsigned    <= i_reset ? 1'b0                    : i_memUnsigned;
         o_isLoad         <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_isLoad);

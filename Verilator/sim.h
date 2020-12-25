@@ -9,16 +9,14 @@
 #include <stdio.h>
 
 #include "Vverilator_top.h"
+#include "Vverilator_top_top.h"
+#include "Vverilator_top_DpiMemory__B100000_S400.h"
 
 
 #include "simTestbench.h"
-#include "simMemory.h"
 
 
 typedef Vverilator_top Vtop;
-
-class Vverilator_top_ProcessorPP__Aa_Pa;
-
 
 
 #endif

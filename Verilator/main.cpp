@@ -27,16 +27,15 @@
 
 
 using namespace Simulation;
+using namespace RISCV;
 
 
 class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 
-    private:
-        RISCV::Memory *dataMem;
-
     public:
-        CPUTestbench(RISCV::Memory *dataMem);
+        CPUTestbench();
         void run();
+        void dumpDataMemory(addr_t addr, unsigned length);
 };
 
 
@@ -45,10 +44,7 @@ class CPUTestbench: public Testbench<Vtop, VerilatedFstC> {
 /// \param    rom: Memoria rom
 /// \param    ram: Memoria ram
 ///
-CPUTestbench::CPUTestbench(
-    RISCV::Memory *dataMem):
-
-    dataMem(dataMem) {
+CPUTestbench::CPUTestbench() {
 }
 
 
@@ -61,7 +57,6 @@ void CPUTestbench::run() {
 
     Vtop *top = getTop();
 
-    bool clockPosEdge = false;
     top->i_clock = 0;
     top->i_reset = 0;
 
@@ -76,10 +71,8 @@ void CPUTestbench::run() {
         if (tick >= CLOCK_START) {
             if ((tick % 10) == 0)
                 top->i_clock = 0;
-            else if ((tick % 10) == 5) {
+            else if ((tick % 10) == 5)
                 top->i_clock = 1;
-                clockPosEdge = true;
-            }
         }
 
         // Genera la senyal de 'reset'
@@ -89,45 +82,28 @@ void CPUTestbench::run() {
         else if (tick == CLOCK_RST_SET)
             top->i_reset = 1;
 
-        // Acces a la memoria de dades
-        //
-        top->i_memRdData = dataMem->read32(top->o_memAddr);
-        if (clockPosEdge && (top->o_memWrEnable == 1)) {
-            if (top->o_memAddr >= 0x00200000) {
-
-                // Periferics
-                //
-                switch (top->o_memAddr) {
-                    case 0x00200000:
-                        printf("TTY: %c\n", (char)top->o_memWrData);
-                        break;
-                }
-            }
-            else {
-
-                // Memoria ram
-                //
-                switch (top->o_memAccess) {
-                    case 0b000:
-                        dataMem->write8(top->o_memAddr, top->o_memWrData);
-                        break;
-
-                    case 0b001:
-                        dataMem->write16(top->o_memAddr, top->o_memWrData);
-                        break;
-
-                    case 0b010:
-                        dataMem->write32(top->o_memAddr, top->o_memWrData);
-                        break;
-                }
-            }
-        }
-
-        clockPosEdge = false;
-
     } while (nextTick() && (tick < CLOCK_MAX));
 
     closeTrace();
+}
+
+
+/// ----------------------------------------------------------------------
+/// \brief    Llista un bloc de memoria de dades
+/// \param    addr: Adressa del bloc
+/// \param    length: Longitut del bloc
+///
+void CPUTestbench::dumpDataMemory(
+    RISCV::addr_t addr,
+    unsigned length) {
+
+    Vtop *top = getTop();
+    long long memObj = top->top->dataMem->getMemObj();
+    Memory *mem = (Memory*) memObj;
+
+    printf("Data memory dump\n");
+    mem->dump(addr, length);
+    printf("\n");
 }
 
 
@@ -145,20 +121,11 @@ int main(
 
     printf("RISCV RTL simulator V1.0\n\n");
 
-    RISCV::Memory *dataMem = new RISCV::Memory(nullptr, RISCV_DMEM_BASE, RISCV_DMEM_SIZE);
-    if (dataMem) {
-
-        CPUTestbench *tb = new CPUTestbench(dataMem);
-        if (tb) {
-            tb->run();
-            delete tb;
-        }
-
-        printf("Data memory dump\n");
-        dataMem->dump(RISCV_DMEM_BASE, 128);
-        printf("\n");
-
-        delete dataMem;
+    CPUTestbench *tb = new CPUTestbench();
+    if (tb) {
+        tb->run();
+        tb->dumpDataMemory(RISCV_DMEM_BASE, 128);
+        delete tb;
     }
 
     return 0;

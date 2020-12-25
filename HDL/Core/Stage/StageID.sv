@@ -31,6 +31,7 @@ module StageID
     output RegAddr     o_regWrAddr,         // Registre a escriure.
     output logic       o_regWrEnable,       // Habilita l'escriptura del registre
     output logic       o_memWrEnable,       // Habilita l'escritura en memoria
+    output logic       o_memRdEnable,       // Habilita la lectura de la memoria
     output DataAccess  o_memAccess,         // Tamany d'acces a la memoria
     output logic       o_memUnsigned,       // Lectura de memoria sense signe
     output logic [1:0] o_regWrDataSel,      // Seleccio de les dades per escriure en el registre (rd)
@@ -238,6 +239,7 @@ module StageID
         o_regWrEnable  = dpCtrl_regWrEnable;
         o_regWrDataSel = dpCtrl_dataToRegSel;
         o_memWrEnable  = dpCtrl_memWrEnable;
+        o_memRdEnable  = dpCtrl_memRdEnable;
         o_memAccess    = dpCtrl_memAccess;
         o_memUnsigned  = dpCtrl_memUnsigned;
         o_operandASel  = dpCtrl_operandASel;

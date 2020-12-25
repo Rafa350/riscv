@@ -30,6 +30,7 @@ module PipelineEXMEM
     input  Data        i_result,
     input  Data        i_dataB,
     input  logic       i_memWrEnable,    // Autoritza l'escriptura en la memoria
+    input  logic       i_memRdEnable,    // Habilita la lectura de la memoria
     input  DataAccess  i_memAccess,      // Tamany del access a la memoria
     input  logic       i_memUnsigned,    // Lectura de memoria sense signe
     input  RegAddr     i_regWrAddr,
@@ -42,6 +43,7 @@ module PipelineEXMEM
     output Data        o_result,
     output Data        o_dataB,
     output logic       o_memWrEnable,  // Autoritza l'escriptura en memoria
+    output logic       o_memRdEnable,  // Autoritza la lectura de la memoria
     output DataAccess  o_memAccess,    // Tamany del acces a la memoria
     output logic       o_memUnsigned,  // Lectura de memoria sense signe
     output RegAddr     o_regWrAddr,
@@ -55,6 +57,7 @@ module PipelineEXMEM
         o_result         <= i_reset ? {$size(Data){1'b0}}     : i_result;
         o_dataB          <= i_reset ? {$size(Data){1'b0}}     : i_dataB;
         o_memWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
+        o_memRdEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memRdEnable);
         o_memAccess      <= i_reset ? DataAccess_Word         : i_memAccess;
         o_memUnsigned    <= i_reset ? 1'b0                    : i_memUnsigned;
         o_regWrAddr      <= i_reset ? {$size(RegAddr){1'b0}}  : i_regWrAddr;

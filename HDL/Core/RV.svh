@@ -48,10 +48,16 @@
 `define DEBUG
 
 
-// Adresses dels vectors
+// Adresses dels vectors d'interrupcio
 //
-`define RV_VECTOR_RESET  32'd0
-`define RV_VECTOR_NMI    32'd4
+`define RV_VECTOR_RESET  32'h0
+`define RV_VECTOR_NMI    32'h4
+
+
+// Adresses dels blocs de memoria
+//
+`define RV_DMEM_BASE     32'h100000   // Adressa base de la memoria de dades
+`define RV_DMEM_SIZE     32'd1024     // Tam,any de la memoria de dades en bytes
 
 
 `endif
