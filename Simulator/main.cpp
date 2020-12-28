@@ -13,7 +13,7 @@ using namespace RISCV;
 
 int main() {
 
-    printf("RISCV Behavioral simulator V1.0\n\n");
+    printf("RISCV ISS Simulator V1.0\n\n");
 
     Tracer *tracer = new Tracer();
     if (tracer) {
@@ -24,6 +24,10 @@ int main() {
 
             Memory *dataMem = new Memory(nullptr, RISCV_DMEM_BASE, RISCV_DMEM_SIZE);
             if (dataMem) {
+
+                printf("Emulated RAM memory:\n");
+                printf("    Base addr     : %8.8X\n", dataMem->getBase());
+                printf("    Size in bytes : %-d\n\n", dataMem->getSize());
 
                 Processor *proc = new Processor(tracer, dataMem, nullptr);
                 if (proc) {
@@ -39,9 +43,9 @@ int main() {
                     delete proc;
                 }
 
-                printf("Instruction memory dump:\n");
+                /*printf("Instruction memory dump:\n");
                 instMem->dump(RISCV_IMEM_BASE, 128);
-                printf("\n");
+                printf("\n");*/
 
                 printf("Data memory dump:\n");
                 dataMem->dump(RISCV_DMEM_BASE, 128);

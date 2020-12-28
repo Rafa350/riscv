@@ -11,13 +11,13 @@ namespace RISCV {
 
     class Memory {
         private:
-            unsigned base;
+            addr_t base;
             unsigned size;
-            uint8_t *mem;
             bool allocated;
+            uint8_t *mem;
 
         public:
-            Memory(uint8_t *memPtr, unsigned memBase, unsigned memSize);
+            Memory(uint8_t *memPtr, addr_t memBase, unsigned memSize);
             ~Memory();
 
             data_t read32(addr_t addr) const;
@@ -29,6 +29,7 @@ namespace RISCV {
             void write8(addr_t addr, data_t data);
 
             inline uint8_t *getMem() const { return mem; }
+            inline addr_t getBase() const { return base; }
             inline unsigned getSize() const { return size; }
 
             void dump(addr_t addr, unsigned length) const;

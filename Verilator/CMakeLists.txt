@@ -56,6 +56,12 @@ target_sources(
             ${SIMULATOR_SOURCE_DIR}/RISCVTracerDpi.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVMemory.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVMemoryDpi.cpp)
+target_compile_options(
+    ${TARGET_NAME}
+    PRIVATE -Wall -O3
+            -ffreestanding -ffunction-sections -fdata-sections
+            -Wl,--gc-sections -Wl,--print-gc-sections
+)
 target_include_directories(
     ${TARGET_NAME}
     PRIVATE .
@@ -67,7 +73,8 @@ target_include_directories(
 verilate(${TARGET_NAME}
     TOP_MODULE top
     TRACE_FST
-    INCLUDE_DIRS ${HDL_INCLUDE_DIR}
+    INCLUDE_DIRS ${SOURCE_DIR}
+                 ${HDL_INCLUDE_DIR}
                  ${HDL_INCLUDE_DIR}/Base
                  ${HDL_INCLUDE_DIR}/Core
                  ${HDL_INCLUDE_DIR}/Core/ALU

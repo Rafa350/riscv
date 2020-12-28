@@ -39,7 +39,7 @@ extern "C" int dpiMemDestroy(
 
     Memory *mem = (Memory*) memObj;
 
-    if (mem) {
+    if (mem != nullptr) {
         delete mem;
         return 0;
     }
@@ -51,7 +51,7 @@ extern "C" int dpiMemDestroy(
 /// ----------------------------------------------------------------------
 /// \brief    Escriu en la memoria
 /// \param    memObj: L'objecte Memory
-/// \param    addr: Adressa de memoris
+/// \param    addr: Adressa de memoria
 /// \param    mask: Mascara de bytes a escriure
 /// \param    data: Les dades a escriure
 ///
@@ -61,28 +61,30 @@ extern "C" void dpiMemWrite(
     int mask,
     int data) {
 
-    Memory *memory = (Memory*) memObj;
+    Memory *mem = (Memory*) memObj;
+    if (mem != nullptr) {
+        if (mask == 0b1111)
+            mem->write32(unsigned(addr), unsigned(data));
 
-    switch (mask) {
-        case 0b1111:
-            memory->write32(unsigned(addr), unsigned(data));
-            break;
+        else if (mask == 0b0011)
+            mem->write16(unsigned(addr + 0), unsigned(data));
 
-        case 0b0001:
-            memory->write8(unsigned(addr), unsigned(data));
-            break;
+        else if (mask == 0b1100)
+            mem->write16(unsigned(addr + 1), unsigned(data));
 
-        case 0b0010:
-            memory->write8(unsigned(addr), unsigned(data) >> 8);
-            break;
+        else {
+            if (mask == 0b0001)
+                mem->write8(unsigned(addr + 0), unsigned(data));
 
-        case 0b0100:
-            memory->write8(unsigned(addr), unsigned(data) >> 16);
-            break;
+            if (mask == 0b0010)
+                mem->write8(unsigned(addr + 1), unsigned(data) >> 8);
 
-        case 0b1000:
-            memory->write8(unsigned(addr), unsigned(data) >> 24);
-            break;
+            if (mask == 0b0100)
+                mem->write8(unsigned(addr + 2), unsigned(data) >> 16);
+
+            if (mask == 0b1000)
+                mem->write8(unsigned(addr + 3), unsigned(data) >> 24);
+        }
     }
 }
 
@@ -97,7 +99,9 @@ extern "C" int dpiMemRead(
     const long long memObj,
     int addr) {
 
-    Memory *memory = (Memory*) memObj;
-
-    return memory->read32(unsigned(addr));
+    Memory *mem = (Memory*) memObj;
+    if (mem != nullptr)
+        return mem->read32(unsigned(addr));
+    else
+        return 0;
 }

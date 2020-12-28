@@ -24,13 +24,13 @@ using namespace RISCV;
 ///
 Memory::Memory(
     uint8_t *memPtr,
-    unsigned memBase,
+    addr_t memBase,
     unsigned memSize):
 
-    mem(memPtr),
     base(memBase),
     size(memSize),
-    allocated(false) {
+    allocated(false),
+    mem(memPtr) {
 
     if (mem == nullptr) {
         mem = (uint8_t*) malloc(size);
@@ -45,7 +45,7 @@ Memory::Memory(
 ///
 Memory::~Memory() {
 
-    if (mem && allocated)
+    if ((mem != nullptr) && allocated)
         free(mem);
 }
 
@@ -250,7 +250,7 @@ void Memory::load(
         bool addrMode = false;
         unsigned state = 0;
         addr_t addr = 0;
-        while (state != -1) {
+        while (state != unsigned(-1)) {
             int ch = fgetc(f);
             switch (state) {
                 case 0:

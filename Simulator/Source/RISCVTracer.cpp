@@ -9,7 +9,7 @@ using namespace RISCV;
 
 
 static const char* getRegName(uint32_t reg);
-static const char* getFpRegName(uint32_t reg);
+//static const char* getFpRegName(uint32_t reg);
 
 
 /// ----------------------------------------------------------------------
@@ -153,32 +153,6 @@ void Tracer::traceInst(
             break;
         }
 
-        case OpCode::AUIPC: {
-            data_t imm =
-                ((inst & 0xFFFFF000) >> 12) |
-                ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("auipc %s, %8.8X", rd, imm);
-            break;
-        }
-
-        case OpCode::LUI: {
-            uint32_t imm =
-                ((inst & 0xFFFFF000) >> 12) |
-                ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("lui  %s, %8.8X", rd, imm);
-            break;
-        }
-
-        case OpCode::JAL: {
-            uint32_t offset =
-                (((inst >> 21) & 0x000003FF) << 1) |
-                (((inst >> 20) & 0x00000001) << 11) |
-                (((inst >> 12) & 0x000000FF) << 12) |
-                ((inst & 0x80000000) ? 0xFFF00000 : 0);
-            printf("jal   %s, %8.8X", rd, addr + offset);
-            break;
-        }
-
         case OpCode::Branch: {
             switch (fn3) {
                 case 0b000:
@@ -211,6 +185,43 @@ void Tracer::traceInst(
                 (((inst >> 25) & 0x0000003F) << 5) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
             printf("  %s, %s, %8.8X", rs1, rs2, addr + offset);
+            break;
+        }
+
+        case OpCode::System:
+            break;
+
+        case OpCode::AUIPC: {
+            data_t imm =
+                ((inst & 0xFFFFF000) >> 12) |
+                ((inst & 0x80000000) ? 0xFFFFF000 : 0);
+            printf("auipc %s, %8.8X", rd, imm);
+            break;
+        }
+
+        case OpCode::LUI: {
+            uint32_t imm =
+                ((inst & 0xFFFFF000) >> 12) |
+                ((inst & 0x80000000) ? 0xFFFFF000 : 0);
+            printf("lui  %s, %8.8X", rd, imm);
+            break;
+        }
+
+        case OpCode::JAL: {
+            uint32_t offset =
+                (((inst >> 21) & 0x000003FF) << 1) |
+                (((inst >> 20) & 0x00000001) << 11) |
+                (((inst >> 12) & 0x000000FF) << 12) |
+                ((inst & 0x80000000) ? 0xFFF00000 : 0);
+            printf("jal   %s, %8.8X", rd, addr + offset);
+            break;
+        }
+
+        case OpCode::JALR: {
+            uint32_t offset =
+                ((inst >> 20) & 0x00000FFF) |
+                ((inst & 0x80000000) ? 0xFFFFF000 : 0);
+            printf("jalr   %s, %8.8X", rd, addr + offset);
             break;
         }
     }
@@ -298,3 +309,10 @@ static const char* getRegName(
         default: return "X?";
     }
 }
+
+
+/*static const char* getFpRegName(
+    reg_t regAddr) {
+
+    return "fpX";
+}*/

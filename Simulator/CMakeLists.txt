@@ -8,6 +8,11 @@ set(TARGET_NAME ${PROJECT_NAME})
 # Genera l'executable
 add_executable(
     ${TARGET_NAME})
+    target_compile_options(
+        ${TARGET_NAME}
+        PRIVATE -Wall -O3
+                -ffreestanding -ffunction-sections -fdata-sections
+                -Wl,--gc-sections -Wl,--print-gc-sections)
 target_include_directories(
     ${TARGET_NAME}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Include)

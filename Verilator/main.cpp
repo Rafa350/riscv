@@ -119,7 +119,7 @@ int main(
     char **argv,
     char **env) {
 
-    printf("RISCV RTL simulator V1.0\n\n");
+    printf("RISCV RTL Simulator V1.0\n\n");
 
     CPUTestbench *tb = new CPUTestbench();
     if (tb) {

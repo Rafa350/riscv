@@ -69,9 +69,8 @@ module top(
     // Memoria de dades
     // ------------------------------------------------------------------------
     
-    DataMemory256x32
-//    DataMemory1024x32
-    DataMemory (
+    DataMemory1024x32
+    DataMem (
         .i_clock (Clock),
         .bus     (dataBus));
 

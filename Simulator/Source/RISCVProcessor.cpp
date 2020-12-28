@@ -18,11 +18,11 @@ Processor::Processor(
     Memory *dataMem,
     Memory *instMem) :
 
-    tick(0),
-    pc(0),
     tracer(tracer),
     dataMem(dataMem),
-    instMem(instMem) {
+    instMem(instMem),
+    tick(0),
+    pc(0) {
 
     reset();
 }
@@ -99,6 +99,9 @@ void Processor::execute(
 
         case OpCode::OpIMM:
             executeOpIMM(inst);
+            break;
+
+        case OpCode::System:
             break;
     }
 
@@ -319,7 +322,7 @@ void Processor::executeOpIMM(
     data_t imm =
         ((inst >> 20) & 0x00000FFF) |
         ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-    data_t shamt = ((inst >> 20) & 0x1F);
+    //data_t shamt = ((inst >> 20) & 0x1F);
 
     // Execucio
     //

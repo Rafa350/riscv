@@ -1,10 +1,13 @@
 module DataMemory
+    import Types::*;
 #(
     parameter BASE = 0,
     parameter SIZE = 1024)
 (
     input  logic        i_clock,
     DataMemoryBus.slave bus);
+
+    localparam DATA_WIDTH = $size(Data);
 
     longint memObj;
 
@@ -22,9 +25,9 @@ module DataMemory
 
     initial begin
         if (dpiMemCreate(BASE, SIZE, memObj) == 0) begin
-            $display("Emulated RAM memory:");
-            $display("   Base addr    : %H", BASE);
-            $display("   Size in byes : %0d", SIZE);
+            $display("Emulated RAM memory %0dbit:", DATA_WIDTH);
+            $display("    Base addr     : %X", BASE);
+            $display("    Size in bytes : %0d", SIZE);
             $display("");
         end
         else begin
