@@ -20,7 +20,7 @@ module DataMemory1024x32
     ram0(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (~bus.addr[1] & ~bus.addr[0] & bus.wrBase[0]),
+        .wren      (~bus.addr[1] & ~bus.addr[0] & bus.wrMask[0] & bus.wrEnable),
         .data      (bus.wrData[7:0]),
         .q         (bus.rdData[7:0]));
         
@@ -28,7 +28,7 @@ module DataMemory1024x32
     ram1(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (~bus.addr[1] & bus.addr[0] & bus.wrBase[0]),
+        .wren      (~bus.addr[1] & bus.addr[0] & bus.wrMask[1] & bus.wrEnable),
         .data      (bus.wrData[15:8]),
         .q         (bus.rdData[15:8]));
 
@@ -36,7 +36,7 @@ module DataMemory1024x32
     ram2(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (bus.addr[1] & ~bus.addr[0] & bus.wrBase[0]),
+        .wren      (bus.addr[1] & ~bus.addr[0] & bus.wrMask[2] & bus.wrEnable),
         .data      (bus.wrData[23:16]),
         .q         (bus.rdData[23:16]));
 
@@ -44,7 +44,7 @@ module DataMemory1024x32
     ram3(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (bus.addr[1] & bus.addr[0] & bus.wrBase[0]),
+        .wren      (bus.addr[1] & bus.addr[0] & bus.wrMask[3] & bus.wrEnable),
         .data      (bus.wrData[31:24]),
         .q         (bus.rdData[31:24]));
 

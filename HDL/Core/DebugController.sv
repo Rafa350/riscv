@@ -27,26 +27,41 @@ module DebugController
 
 `ifdef VERILATOR
 
-    import "DPI-C" function void dpiTraceInstruction(input int addr, input int data);
-    import "DPI-C" function void dpiTraceRegister(input int addr, input int data);
-    import "DPI-C" function void dpiTraceMemory(input int addr, input int data);
-    import "DPI-C" function void dpiTraceTick(input int tick);
+    longint tracerObj;
+
+    import "DPI-C" function int dpiTracerCreate(output longint tracerObj);
+    import "DPI-C" function int dpiTracerDestroy(input longint tracerObj);
+    import "DPI-C" function void dpiTraceInstruction(input longint tracerObj, input int addr, input int data);
+    import "DPI-C" function void dpiTraceRegister(input longint tracerObj, input int addr, input int data);
+    import "DPI-C" function void dpiTraceMemory(input longint tracerObj, input int addr, input int data);
+    import "DPI-C" function void dpiTraceTick(input longint tracerObj, input int tick);
 
     always_ff @(posedge i_clock)
         if (!i_reset & i_ok) begin
 
-            dpiTraceTick(i_tick);
+            dpiTraceTick(tracerObj, i_tick);
 
-            dpiTraceInstruction(int'(i_pc), i_inst);
+            dpiTraceInstruction(tracerObj, int'(i_pc), i_inst);
 
             if ((i_regWrAddr != 0) & i_regWrEnable)
-                dpiTraceRegister(int'(i_regWrAddr), i_regWrData);
+                dpiTraceRegister(tracerObj, int'(i_regWrAddr), i_regWrData);
 
             if (i_memWrEnable)
-                dpiTraceMemory(int'(i_memWrAddr), i_memWrData);
+                dpiTraceMemory(tracerObj, int'(i_memWrAddr), i_memWrData);
 
             $display("");
         end
+
+    initial
+        if (dpiTracerCreate(tracerObj) != 0) begin
+            $display("Create tracer error.");
+            $finish();
+        end
+
+    final
+        // verilator lint_off IGNOREDRETURN
+        dpiTracerDestroy(tracerObj);
+        // verilator lint_on IGNOREDRETURN
 
 `endif
 

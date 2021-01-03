@@ -78,7 +78,7 @@ add_custom_command(
     TARGET main.elf
     POST_BUILD
     COMMAND ${CMD_OBJDUMP}
-    ARGS -M no-aliases -j .text -t -d main.elf > firmware.lst)
+    ARGS -M no-aliases -j .text -j .bss -t -d main.elf > firmware.lst)
 
 
 # Genera el llistat de memoria en format verilog

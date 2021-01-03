@@ -18,7 +18,7 @@ extern "C" int dpiMemCreate(
     long long *memObj) {
 
     Memory *mem = new Memory(nullptr, base, size);
-    if (mem) {
+    if (mem != nullptr) {
         *memObj = (long long) mem;
         return 0;
     }

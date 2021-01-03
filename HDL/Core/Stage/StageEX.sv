@@ -3,11 +3,6 @@
 
 module StageEX
     import Types::*;
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
 (
     input  Data        i_instIMM,            // Parametre IMM de la instruccio
     input  Data        i_dataA,              // Dades A dels registres
@@ -64,10 +59,10 @@ module StageEX
     ALU #(
         .WIDTH (DATA_WIDTH))
     alu (
-        .i_Op       (i_aluControl),
-        .i_OperandA (operandASelector_output),
-        .i_OperandB (operandBSelector_output),
-        .o_Result   (o_result));
+        .i_op       (i_aluControl),
+        .i_operandA (operandASelector_output),
+        .i_operandB (operandBSelector_output),
+        .o_result   (o_result));
 
     assign o_dataB = i_dataB;
 

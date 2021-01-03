@@ -31,7 +31,7 @@ module DataMemory
             $display("");
         end
         else begin
-            $display("Error al crear la memoria.");
+            $display("Create memory error.");
             $finish();
         end
     end

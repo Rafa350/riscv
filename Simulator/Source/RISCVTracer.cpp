@@ -32,6 +32,7 @@ void Tracer::traceInst(
     unsigned op  = inst & 0x7F;
     unsigned fn3 = (inst >> 12) & 0x07;
     unsigned fn7 = (inst >> 25) & 0x7F;
+    const char *name = "???";
     const char *rs1 = getRegName((inst >> 15) & 0x1F);
     const char *rs2 = getRegName((inst >> 20) & 0x1F);
     const char *rd  = getRegName((inst >> 7) & 0x1F);
@@ -43,56 +44,68 @@ void Tracer::traceInst(
             switch (fn3) {
                 case 0b000:
                     if (fn7 & 0b0100000)
-                        printf("sub ");
+                        name = "sub ";
                     else
-                        printf("add ");
+                        name = "add ";
                     break;
 
                 case 0b001:
-                    printf("sll ");
+                    name = "sll ";
                     break;
 
                 case 0b010:
-                    printf("slt ");
+                    name = "slt ";
                     break;
 
                 case 0b011:
-                    printf("sltu");
+                    name = "sltu";
                     break;
 
                 case 0b100:
-                    printf("xor ");
+                    name = "xor ";
                     break;
 
                 case 0b101:
                     if (fn7 & 0b0100000)
-                        printf("sla ");
+                        name = "sla ";
                     else
-                        printf("srr ");
+                        name = "srr ";
                     break;
 
                 case 0b110:
-                    printf("or  ");
+                    name = "or  ";
                     break;
 
                 case 0b111:
-                    printf("and ");
+                    name = "and ";
                     break;
             }
-            printf("  %s, %s, %s", rd, rs1, rs2);
+            printf("%s  %s, %s, %s", name, rd, rs1, rs2);
             break;
         }
 
         case OpCode::OpIMM: {
             switch (fn3) {
                 case 0b000:
-                    printf("addi  ");
-                break;
+                    name = "addi";
+                    break;
+
+                case 0b100:
+                    name = "xori";
+                    break;
+
+                case 0b110:
+                    name = "ori ";
+                    break;
+
+                case 0b111:
+                    name = "andi";
+                    break;
             }
             data_t imm =
                 ((inst >> 20) & 0x00000FFF) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("%s, %s, %8.8X", rd, rs1, imm);
+            printf("%s  %s, %s, %8.8X", name, rd, rs1, imm);
             break;
         }
 
@@ -134,7 +147,7 @@ void Tracer::traceInst(
         case OpCode::Store: {
             switch (fn3) {
                 case 0b000:
-                    printf("sw");
+                    printf("sb");
                     break;
 
                 case 0b001:
@@ -184,7 +197,7 @@ void Tracer::traceInst(
                 (((inst >> 8) & 0x0000000F) << 1) |
                 (((inst >> 25) & 0x0000003F) << 5) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("  %s, %s, %8.8X", rs1, rs2, addr + offset);
+            printf("  %s, %s, %8.8X  <%8.8X>", rs1, rs2, offset, addr + offset);
             break;
         }
 
@@ -213,7 +226,7 @@ void Tracer::traceInst(
                 (((inst >> 20) & 0x00000001) << 11) |
                 (((inst >> 12) & 0x000000FF) << 12) |
                 ((inst & 0x80000000) ? 0xFFF00000 : 0);
-            printf("jal   %s, %8.8X", rd, addr + offset);
+            printf("jal   %s, %8.8X  <%8.8X>", rd, offset, addr + offset);
             break;
         }
 
@@ -221,7 +234,7 @@ void Tracer::traceInst(
             uint32_t offset =
                 ((inst >> 20) & 0x00000FFF) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("jalr   %s, %8.8X", rd, addr + offset);
+            printf("jalr   %s, %8.8X(%s)", rd, offset, rs1);
             break;
         }
     }
@@ -262,7 +275,7 @@ void Tracer::traceMem(
     addr_t addr,
     data_t data) {
 
-        printf("M: %8.8X: %8.8X  (%d)\n", addr, data, data);
+    printf("M: %8.8X: %8.8X  (%d)\n", addr, data, data);
 }
 
 

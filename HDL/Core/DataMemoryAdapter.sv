@@ -13,7 +13,7 @@ module DataMemoryAdapter
     output logic         o_alignError, // Indica error d'aliniacio
     DataMemoryBus.master bus);         // Interficie amb la memoria
 
-    localparam BYTE_ADDR_WIDTH = $clog2($size(Data) / 8);
+    localparam BYTE_ADDR_WIDTH = $clog2(($size(Data)+7)/8);
 
     logic [BYTE_ADDR_WIDTH-1:0] byteAddr;
     assign byteAddr = i_addr[BYTE_ADDR_WIDTH-1:0];

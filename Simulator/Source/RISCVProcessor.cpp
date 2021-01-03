@@ -435,15 +435,15 @@ void Processor::executeStore(
     addr_t addr = offset + r[rs1];
     data_t data = r[rs2];
     switch ((inst >> 12) & 0b111) {
-        case 0b000:
+        case 0b000: // SB
             dataMem->write8(addr, data);
             break;
 
-        case 0b001:
+        case 0b001: // SH
             dataMem->write16(addr, data);
             break;
 
-        case 0b010:
+        case 0b010: // SW
             dataMem->write32(addr, data);
             break;
     }

@@ -33,7 +33,7 @@ module DatapathController
 
     localparam  pcPP4 = 2'b00;           // PC = PC + 4
     localparam  pcOFS = 2'b01;           // PC = PC + offset
-    localparam  pcIND = 2'b10;           // PC = [RS1] + offset
+    localparam  pcIND = 2'b11;           // PC = [RS1] + offset
 
     always_comb begin
 
@@ -67,12 +67,14 @@ module DatapathController
 
             {10'b???????_???, OpCode_JAL   }: // JAL
                 begin
-                    o_regWrEnable = 1'b1;
-                    o_pcNextSel   = pcOFS;
+                    o_regWrDataSel = wrPC4;
+                    o_regWrEnable  = 1'b1;
+                    o_pcNextSel    = pcOFS;
                 end
 
             {10'b???????_000, OpCode_JALR  }: // JALR
                 begin
+                    o_regWrDataSel = wrPC4;
                     o_regWrEnable = 1'b1;
                     o_pcNextSel   = pcIND;
                 end

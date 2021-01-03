@@ -98,7 +98,7 @@ module ProcessorPP
         .i_EX_IsLoad       (IDEX_isLoad),         // Indica si hi ha una instruccio Load en EX
         .i_MEM_RegWrAddr   (EXMEM_regWrAddr),
         .i_MEM_RegWrEnable (EXMEM_regWrEnable),
-        .i_MEM_RegWrData   (EXMEM_result),        // El valor a escriure en el registre
+        .i_MEM_RegWrData   (MEM_regWrData),       // El valor a escriure en el registre
         .i_MEM_IsLoad      (EXMEM_isLoad),        // Indica si hi ha una instruccio Load en MEM
         .i_WB_RegWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escriure
         .i_WB_RegWrData    (MEMWB_regWrData),     // Dades del registre on escriure

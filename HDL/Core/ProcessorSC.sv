@@ -2,282 +2,277 @@
 
 module ProcessorSC
     import Types::*;
-#(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter PC_WIDTH   = 32,
-    parameter REG_WIDTH  = 5)
 (
     input  logic         i_clock, // Clock
     input  logic         i_reset, // Reset
 
     DataMemoryBus.master dataBus,    // Bus de dades
     InstMemoryBus.master instBus);   // Bus d'instruccions
- 
-    
+
+
     // ------------------------------------------------------------------------
     // Program counter (PC)
     // ------------------------------------------------------------------------
 
-    logic [PC_WIDTH-1:0] PC;       // Valor actual del PC
-    logic [PC_WIDTH-1:0] PCNext;   // Valor per actualitzar PC
-    logic [PC_WIDTH-1:0] PCPlus4;  // Valor incrementat (+4)
-    
-    
+    InstAddr pc;       // Valor actual del PC
+    InstAddr pcNext;   // Valor per actualitzar PC
+    InstAddr pcPlus4;  // Valor incrementat (+4)
+
+
     // ------------------------------------------------------------------------
     // Depuracio
     // ------------------------------------------------------------------------
-    
-    logic [7:0] DbgCtrl_Tag;
-    
-    DebugController #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .REG_WIDTH  (REG_WIDTH),
-        .PC_WIDTH   (PC_WIDTH))
-    DbgCtrl (
-        .i_Clock          (i_Clock),
-        .i_Reset          (i_Reset),
-        .i_ExTag          (DbgCtrl_Tag),
-        .i_ExPC           (IBus.Addr),
-        .i_ExInst         (IBus.Inst),
-        .i_ExRegWrAddr    (Dec_InstRD),
-        .i_ExRegWrData    (Sel3_Output),
-        .i_ExRegWrEnable  (DpCtrl_RegWrEnable),
-        .i_ExMemWrAddr    (DBus.Addr),
-        .i_ExMemWrData    (DBus.WrData),
-        .i_ExMemWrEnable  (DpCtrl_MemWrEnable),
-        .o_Tag            (DbgCtrl_Tag));
-   
+
+    int dbgCtrl_tick;
+
+    DebugController
+    dbgCtrl (
+        .i_clock        (i_clock),
+        .i_reset        (i_reset),
+        .i_stall        (0),
+        .i_ok           (1),
+        .i_tick         (dbgCtrl_tick),
+        .i_pc           (instBus.addr),
+        .i_inst         (instBus.inst),
+        .i_regWrAddr    (dec_instRD),
+        .i_regWrData    (sel3_output),
+        .i_regWrEnable  (dpCtrl_regWrEnable),
+        .i_memWrAddr    (dataBus.addr),
+        .i_memWrData    (dataBus.wrData),
+        .i_memWrEnable  (dpCtrl_memWrEnable),
+        .o_tick         (dbgCtrl_tick));
+
 
     // ------------------------------------------------------------------------
     // Control del datapath. Genera les senyals de control
     // ------------------------------------------------------------------------
-    
-    AluOp       DpCtrl_AluControl;   // Operacio de la ALU
-    logic       DpCtrl_RegWrEnable;  // Autoritza escriptura del regisres
-    logic       DpCtrl_MemWrEnable;  // Autoritza escritura en memoria
-    logic [1:0] DpCtrl_PCNextSel;    // Selector del seguent valor del PC
-    logic [1:0] DpCtrl_RegWrDataSel; // Selector del les dades d'esacriptura en el registre
-    logic [1:0] DpCtrl_OperandASel;  // Seleccio del operand A de la ALU
-    logic [1:0] DpCtrl_OperandBSel;  // Seleccio del operand B de la ALU
+
+    AluOp       dpCtrl_aluControl;   // Operacio de la ALU
+    logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
+    logic       dpCtrl_memWrEnable;  // Autoritza escritura en memoria
+    logic       dpCtrl_memRdEnable;
+    DataAccess  dpCtrl_memAccess;    // Tipus d'acces a la memoria (byte, half o word)
+    logic       dpCtrl_memUnsigned;
+    logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
+    logic [1:0] dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
+    logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
+    logic [1:0] dpCtrl_operandBSel;  // Seleccio del operand B de la ALU
 
     DatapathController
-    DpCtrl (
-        .i_Inst         (IBus.Inst),
-        .i_IsEQ         (Comp_EQ),
-        .i_IsLT         (Comp_LT),
-        .o_AluControl   (DpCtrl_AluControl),
-        .o_MemWrEnable  (DpCtrl_MemWrEnable),
-        .o_RegWrEnable  (DpCtrl_RegWrEnable),
-        .o_OperandASel  (DpCtrl_OperandASel),
-        .o_OperandBSel  (DpCtrl_OperandBSel),
-        .o_RegWrDataSel (DpCtrl_RegWrDataSel),
-        .o_PCNextSel    (DpCtrl_PCNextSel));
+    dpCtrl (
+        .i_inst         (instBus.inst),
+        .i_isEqual      (comp_equal),
+        .i_isLess       (comp_less),
+        .o_aluControl   (dpCtrl_aluControl),
+        .o_memWrEnable  (dpCtrl_memWrEnable),
+        .o_memRdEnable  (dpCtrl_memRdEnable),
+        .o_memAccess    (dpCtrl_memAccess),
+        .o_memUnsigned  (dpCtrl_memUnsigned),
+        .o_regWrEnable  (dpCtrl_regWrEnable),
+        .o_operandASel  (dpCtrl_operandASel),
+        .o_operandBSel  (dpCtrl_operandBSel),
+        .o_regWrDataSel (dpCtrl_regWrDataSel),
+        .o_pcNextSel    (dpCtrl_pcNextSel));
 
 
     // ------------------------------------------------------------------------
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
     // ------------------------------------------------------------------------
-    
-    logic [31:0]          Dec_InstIMM;
-    logic [REG_WIDTH-1:0] Dec_InstRS1;
-    logic [REG_WIDTH-1:0] Dec_InstRS2;
-    logic [REG_WIDTH-1:0] Dec_InstRD;
+
+    Data    dec_instIMM;
+    RegAddr dec_instRS1;
+    RegAddr dec_instRS2;
+    RegAddr dec_instRD;
 
     // verilator lint_off PINMISSING
     InstDecoder
-    Dec (
-        .i_Inst (IBus.Inst),
-        .o_RS1  (Dec_InstRS1),
-        .o_RS2  (Dec_InstRS2),
-        .o_RD   (Dec_InstRD),
-        .o_IMM  (Dec_InstIMM));
+    dec (
+        .i_inst   (instBus.inst),
+        .o_instRS1 (dec_instRS1),
+        .o_instRS2 (dec_instRS2),
+        .o_instRD  (dec_instRD),
+        .o_instIMM (dec_instIMM));
     // verilator lint_on PINMISSING
-    
+
 
     // ------------------------------------------------------------------------
     // Compara els valors del registre per decidir els salta condicionals
     // ------------------------------------------------------------------------
-    
-    logic Comp_EQ; // Indica A == B
-    logic Comp_LT; // Indica A <= B
-    
+
+    logic comp_equal; // Indica A == B
+    logic comp_less;  // Indica A <= B
+
     // verilator lint_off PINMISSING
     Comparer #(
         .WIDTH (DATA_WIDTH))
-    Comp (
-        .i_InputA   (RegBlock_RdDataA),
-        .i_InputB   (RegBlock_RdDataB),
-        .i_Unsigned (0),
-        .o_EQ       (Comp_EQ),
-        .o_LT       (Comp_LT));
+    comp (
+        .i_inputA   (regs_rdDataA),
+        .i_inputB   (regs_rdDataB),
+        .i_unsigned (0),
+        .o_equal    (comp_equal),
+        .o_less     (comp_less));
     // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
     // Bloc de registres
     // ------------------------------------------------------------------------
-    
-    logic [DATA_WIDTH-1:0] RegBlock_RdDataA, // Dades de lectura A
-                           RegBlock_RdDataB; // Dades de lectura B
-                           
-    RegisterFile #(
-        .DATA_WIDTH  (DATA_WIDTH),
-        .ADDR_WIDTH  (REG_WIDTH))
-    Regs (
-        .i_Clock    (i_Clock),
-        .i_Reset    (i_Reset),
-        .i_WrAddr   (Dec_InstRD),
-        .i_WrData   (Sel3_Output),
-        .i_WrEnable (DpCtrl_RegWrEnable),
-        .i_RdAddrA  (Dec_InstRS1),
-        .o_RdDataA  (RegBlock_RdDataA),
-        .i_RdAddrB  (Dec_InstRS2),
-        .o_RdDataB  (RegBlock_RdDataB));
-        
-        
+
+    Data regs_rdDataA, // Dades de lectura A
+         regs_rdDataB; // Dades de lectura B
+
+    RegisterFile
+    regs (
+        .i_clock    (i_clock),
+        .i_reset    (i_reset),
+        .i_wrAddr   (dec_instRD),
+        .i_wrData   (sel3_output),
+        .i_wrEnable (dpCtrl_regWrEnable),
+        .i_rdAddrA  (dec_instRS1),
+        .o_rdDataA  (regs_rdDataA),
+        .i_rdAddrB  (dec_instRS2),
+        .o_rdDataB  (regs_rdDataB));
+
+
     // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada A de la alu
     // ------------------------------------------------------------------------
-    
-    logic [DATA_WIDTH-1:0] Sel5_Output;
-    
+
+    logic [DATA_WIDTH-1:0] sel5_output;
+
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (DATA_WIDTH))
-    Sel5 (
-        .i_Select (DpCtrl_OperandASel),
-        .i_Input0 (RegBlock_RdDataA),
-        .i_Input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PC}),
-        .i_Input2 ('d0),
-        .o_Output (Sel5_Output));
+    sel5 (
+        .i_select (dpCtrl_operandASel),
+        .i_input0 (regs_rdDataA),
+        .i_input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, pc}),
+        .i_input2 ('d0),
+        .o_output (sel5_output));
     // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada B de la ALU
     // ------------------------------------------------------------------------
-    
-    logic [DATA_WIDTH-1:0] Sel1_Output;   
-    
+
+    logic [DATA_WIDTH-1:0] sel1_output;
+
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (DATA_WIDTH))
-    Sel1 (
-        .i_Select (DpCtrl_OperandBSel),
-        .i_Input0 (RegBlock_RdDataB),
-        .i_Input1 (Dec_InstIMM),
-        .i_Input2 ('d4),
-        .o_Output (Sel1_Output));
+    sel1 (
+        .i_select (dpCtrl_operandBSel),
+        .i_input0 (regs_rdDataB),
+        .i_input1 (dec_instIMM),
+        .i_input2 ('d4),
+        .o_output (sel1_output));
     // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
     // Selecciona les dades per escriure en el registre
     // ------------------------------------------------------------------------
-    
-    logic [DATA_WIDTH-1:0] Sel3_Output;  
-    
+
+    logic [DATA_WIDTH-1:0] sel3_output;
+
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH  (DATA_WIDTH))
-    Sel3 (
-        .i_Select (DpCtrl_RegWrDataSel),
-        .i_Input0 (Alu_Result),             // Escriu el resultat de la ALU
-        .i_Input1 (DBus.RdData),            // Escriu el valor lleigit de la memoria
-        .i_Input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, PCPlus4}), // Escriu el valor de PC+4
-        .o_Output (Sel3_Output));
+    sel3 (
+        .i_select (dpCtrl_regWrDataSel),
+        .i_input0 (alu_result),             // Escriu el resultat de la ALU
+        .i_input1 (dataBus.rdData),            // Escriu el valor lleigit de la memoria
+        .i_input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, pcPlus4}), // Escriu el valor de PC+4
+        .o_output (sel3_output));
     // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
     // ALU
     // ------------------------------------------------------------------------
-    
-    logic [DATA_WIDTH-1:0] Alu_Result; 
-    
-    IntegerALU #(
+
+    logic [DATA_WIDTH-1:0] alu_result;
+
+    ALU #(
         .WIDTH (DATA_WIDTH))
-    Alu (
-        .i_Op       (DpCtrl_AluControl),
-        .i_OperandA (Sel5_Output),
-        .i_OperandB (Sel1_Output),
-        .o_Result   (Alu_Result));
+    alu (
+        .i_op       (dpCtrl_aluControl),
+        .i_operandA (sel5_output),
+        .i_operandB (sel1_output),
+        .o_result   (alu_result));
 
 
     // Evalua PC = PC + 4
     //
     HalfAdder #(
         .WIDTH (PC_WIDTH))
-    Adder1 (
-        .i_OperandA (PC),
-        .i_OperandB (4),
-        .o_Result   (PCPlus4));
+    adder1 (
+        .i_operandA (pc),
+        .i_operandB (4),
+        .o_result   (pcPlus4));
 
 
     // Evalua PC = PC + offset
     //
-    logic [ADDR_WIDTH-1:0] PCPlusOffset;
-    
+    InstAddr pcPlusOffset;
+
     HalfAdder #(
         .WIDTH (PC_WIDTH))
     Adder2 (
-        .i_OperandA (PC),
-        .i_OperandB (Dec_InstIMM[PC_WIDTH-1:0]),
-        .o_Result   (PCPlusOffset));
-        
-        
+        .i_operandA (pc),
+        .i_operandB (dec_instIMM[PC_WIDTH-1:0]),
+        .o_result   (pcPlusOffset));
+
+
     // Evalua PC = [rs1] + offset
     //
-    logic [PC_WIDTH-1:0] PCPlusOffsetAndRS1;
-    
+    logic [PC_WIDTH-1:0] pcPlusOffsetAndRS1;
+
     HalfAdder #(
         .WIDTH (PC_WIDTH))
-    Adder3 (
-        .i_OperandA (Dec_InstIMM[PC_WIDTH-1:0]),
-        .i_OperandB (RegBlock_RdDataA[PC_WIDTH-1:0]),
-        .o_Result   (PCPlusOffsetAndRS1));
+    adder3 (
+        .i_operandA (dec_instIMM[PC_WIDTH-1:0]),
+        .i_operandB (regs_rdDataA[PC_WIDTH-1:0]),
+        .o_result   (pcPlusOffsetAndRS1));
 
 
     // Selecciona el nou valor del contador de programa
     //
     Mux4To1 #(
-        .WIDTH (PC_WIDTH))
-    Sel4 (
-        .i_Select (DpCtrl_PCNextSel),
-        .i_Input0 (PCPlus4),
-        .i_Input1 (PCPlusOffset),
-        .i_Input2 (PCPlusOffsetAndRS1),
-        .i_Input3 (PCPlus4),
-        .o_Output (PCNext));
-        
+        .WIDTH ($size(InstAddr)))
+    sel4 (
+        .i_select (dpCtrl_pcNextSel),
+        .i_input0 (pcPlus4),
+        .i_input1 (pcPlusOffset),
+        .i_input2 (pcPlusOffsetAndRS1),
+        .i_input3 (pcPlus4),
+        .o_output (pcNext));
+
     // Registre del contador de programa
     //
     Register #(
-        .WIDTH (PC_WIDTH),
+        .WIDTH ($size(InstAddr)),
         .INIT  ({PC_WIDTH{1'b0}}))
     PCReg (
-        .i_Clock    (i_Clock),
-        .i_Reset    (i_Reset),
-        .i_WrEnable (1),
-        .i_WrData   (PCNext),
-        .o_RdData   (PC));
+        .i_clock    (i_clock),
+        .i_reset    (i_reset),
+        .i_wrEnable (1),
+        .i_wrData   (pcNext),
+        .o_rdData   (pc));
 
 
     // Interface amb la memoria RAM
     //
     always_comb begin
-        DBus.Addr     = Alu_Result[ADDR_WIDTH-1:0];
-        DBus.WrEnable = DpCtrl_MemWrEnable;
-        DBus.WrData   = RegBlock_RdDataB;
+        dataBus.addr     = alu_result[$size(DataAddr)-1:0];
+        dataBus.wrEnable = dpCtrl_memWrEnable;
+        dataBus.wrData   = regs_rdDataB;
     end
 
 
     // Interface amb la memoria de programa
     //
-    assign IBus.Addr = PC;
+    assign instBus.addr = pc;
 
 endmodule
-
-
