@@ -16,9 +16,10 @@ namespace RISCV {
             Tracer *tracer;
             Memory *dataMem;
             Memory *instMem;
-            uint32_t tick;
-            addr_t pc;
-            data_t r[32];
+            uint32_t tick;      // Contador de tics
+            addr_t pc;          // Contador de programa
+            data_t r[32];       // Registres base 
+            data_t csr[4096];   // Registres de control
 
         private:
             void executeLoad(inst_t inst);
@@ -37,7 +38,7 @@ namespace RISCV {
             void traceTick();
             void traceInst(inst_t inst);
             void traceReg(reg_t reg);
-            void traceMem(addr_t addr);
+            void traceMem(addr_t addr, int access);
 
         public:
             Processor(Tracer *tracer, Memory *dataMem, Memory *instMem);

@@ -105,91 +105,85 @@ void Tracer::traceInst(
             data_t imm =
                 ((inst >> 20) & 0x00000FFF) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("%s  %s, %s, %8.8X", name, rd, rs1, imm);
+            printf("%s  %s, %s, %8.8X  (%d)", name, rd, rs1, imm, imm);
             break;
         }
-
 
         case OpCode::Load: {
             switch (fn3) {
                 case 0b000:
-                    printf("lb");
+                    name = "lb ";
                     break;
 
                 case 0b001:
-                    printf("lh");
+                    name = "lh ";
                     break;
 
                 case 0b010:
-                    printf("lw");
+                    name = "lw ";
                     break;
 
                 case 0b100:
-                    printf("lbu");
+                    name = "lbu";
                     break;
 
                 case 0b101:
-                    printf("lhu");
-                    break;
-
-                default:
-                    printf("[%1.1X]", fn3);
+                    name = "lhu";
                     break;
             }
             data_t offset =
                 ((inst >> 20) & 0x00000FFF) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-
-            printf("    %s, %8.8X(%s)", rd, offset, rs1);
+            printf("%s   %s, %8.8X[%s]  (%d)", name, rd, offset, rs1, offset);
             break;
         }
 
         case OpCode::Store: {
             switch (fn3) {
                 case 0b000:
-                    printf("sb");
+                    name = "sb";
                     break;
 
                 case 0b001:
-                    printf("sh");
+                    name = "sh";
                     break;
 
                 case 0b010:
-                    printf("sw");
+                    name = "sw";
                     break;
             }
             data_t offset =
                 (((inst & 0xFE000000) >> 25) << 5) |
                 ((inst & 0x00000F80) >> 7) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("    %s, %8.8X(%s)", rs2, offset, rs1);
+            printf("%s    %s, %8.8X[%s]  (%d)", name, rs2, offset, rs1, offset);
             break;
         }
 
         case OpCode::Branch: {
             switch (fn3) {
                 case 0b000:
-                    printf("beq ");
+                    name = "beq ";
                     break;
 
                 case 0b001:
-                    printf("bne ");
+                    name = "bne ";
                     break;
 
                 case 0b100:
-                    printf("blt ");
+                    name = "blt ";
                     break;
 
                 case 0b101:
-                    printf("bge ");
+                    name = "bge ";
                     break;
 
                 case 0b110:
-                    printf("bltu");
+                    name = "bltu";
                     break;
 
                 case 0b111:
-                    printf("bgeu");
+                    name = "bgeu";
                     break;
             }
             uint32_t offset =
@@ -197,7 +191,7 @@ void Tracer::traceInst(
                 (((inst >> 8) & 0x0000000F) << 1) |
                 (((inst >> 25) & 0x0000003F) << 5) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("  %s, %s, %8.8X  <%8.8X>", rs1, rs2, offset, addr + offset);
+            printf("%s  %s, %s, %8.8X  <%8.8X>", name, rs1, rs2, offset, addr + offset);
             break;
         }
 
@@ -208,7 +202,7 @@ void Tracer::traceInst(
             data_t imm =
                 ((inst & 0xFFFFF000) >> 12) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("auipc %s, %8.8X", rd, imm);
+            printf("auipc %s, %8.8X  (%d)", rd, imm, imm);
             break;
         }
 
@@ -216,7 +210,7 @@ void Tracer::traceInst(
             uint32_t imm =
                 ((inst & 0xFFFFF000) >> 12) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("lui  %s, %8.8X", rd, imm);
+            printf("lui   %s, %8.8X  (%d)", rd, imm, imm);
             break;
         }
 
@@ -234,7 +228,7 @@ void Tracer::traceInst(
             uint32_t offset =
                 ((inst >> 20) & 0x00000FFF) |
                 ((inst & 0x80000000) ? 0xFFFFF000 : 0);
-            printf("jalr   %s, %8.8X(%s)", rd, offset, rs1);
+            printf("jalr   %s, %8.8X[%s]  (%d)", rd, offset, rs1, offset);
             break;
         }
     }
@@ -266,16 +260,29 @@ void Tracer::traceReg(
     if (reg) {
         const char *regName = getRegName(reg);
 
-        printf("R: %s: %8.8X  (%d)\n", regName, data, data);
+        printf("R: %s = %8.8X  (%d)\n", regName, data, data);
     }
 }
 
 
 void Tracer::traceMem(
     addr_t addr,
-    data_t data) {
+    data_t data,
+    int access) {
 
-    printf("M: %8.8X: %8.8X  (%d)\n", addr, data, data);
+    switch (access) {
+        case 0: // Byte
+            printf("M: %8.8X = %2.2X  (%d)\n", addr, data & 0xFF, data & 0xFF);
+            break;
+
+        case 1: // Half
+            printf("M: %8.8X = %4.4X  (%d)\n", addr, data & 0xFFFF, data & 0xFFFF);
+            break;
+
+        case 2: // Word
+            printf("M: %8.8X = %8.8X  (%d)\n", addr, data, data);
+            break;
+    }
 }
 
 

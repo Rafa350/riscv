@@ -14,7 +14,7 @@ module Comparer
 
     always_comb begin
         if (i_unsigned)
-            o_greater  = i_inputA > i_inputB;
+            o_greater  = $unsigned(i_inputA) > $unsigned(i_inputB);
         else
             o_greater  = $signed(i_inputA) > $signed(i_inputB);
         o_equal = i_inputA == i_inputB;

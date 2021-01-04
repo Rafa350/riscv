@@ -17,10 +17,10 @@ SECTIONS
     {
         . = ALIGN(4);
         _stext = .;
-        
+
         *(.text*)
         *(.text.*)
-        
+
         . = ALIGN(4);
         _etext = .;
     } > rom
@@ -28,24 +28,24 @@ SECTIONS
     .rodata :
     {
         . = ALIGN(4);
-        
+
         *(.srodata);
         *(.srodata.*)
         *(.rodata);
         *(.rodata.*)
     } > rom
-    
+
     .data :
     {
         . = ALIGN(4);
         sdata = .;
         _sdata = .;
-        
+
         *(.sdata);
         *(.sdata.*)
         *(.data);
         *(.data.*)
-        
+
         . = ALIGN(4);
         edata = .;
         _edata = .;
@@ -55,13 +55,13 @@ SECTIONS
     {
         . = ALIGN(4);
         _bss_start = .;
-        
+
         *(.bss*)
         *(.bss.*)
         *(.sbss)
         *(.sbss.*)
         *(COMMON)
-        
+
         . = ALIGN(4);
         _bss_end = .;
     } > ram

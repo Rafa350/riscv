@@ -43,13 +43,8 @@ namespace RISCV {
 extern "C" {
     int dpiMemCreate(int base, int size, long long *memObj);
     int dpiMemDestroy(const long long memObj);
-    void dpiMemWrite(const long long memObj, int addr, int mask, int data);
-    void dpiMemWrite32(const long long memObj, int addr, int data);
-    void dpiMemWrite16(const long long memObj, int addr, int data);
-    void dpiMemWrite8(const long long memObj, int addr, int data);
-    int dpiMemRead32(const long long memObj, int addr);
-    int dpiMemRead16(const long long memObj, int addr);
-    int dpiMemRead8(const long long memObj, int addr);
+    void dpiMemWrite(const long long memObj, int addr, int access, int data);
+    int dpiMemRead(const long long memObj, int addr, int access);
 }
 
 

@@ -24,6 +24,7 @@ package Types;
 
     typedef enum logic [6:0] {
         OpCode_Unknown = 7'b000_0000,
+        OpCode_Fence   = 7'b000_1111,
         OpCode_Load    = 7'b000_0011,
         OpCode_Store   = 7'b010_0011,
         OpCode_Op      = 7'b011_0011,
@@ -58,29 +59,5 @@ package Types;
         AluOp_XOR
     } AluOp;
 
-
-    typedef enum logic [11:0] {
-        CSRAddr_USTATUS  = 12'h000,
-        CSRAddr_UIE      = 12'h004,
-        CSRAddr_UTVEC    = 12'h005,
-
-        CSRAddr_USCRATCH = 12'h040,
-        CSRAddr_UEPC     = 12'h041,
-        CSRAddr_UCAUSE   = 12'h042,
-        CSRAddr_UTVAL    = 12'h043,
-        CSRAddr_UIP      = 12'h044,
-
-        CSRAddr_FFLAGS   = 12'h001,
-        CSRAddr_FRM      = 12'h002,
-        CSRAddr_FCSR     = 12'h003,
-
-        CSRAddr_CYCLE    = 12'hC00,
-        CSRAddr_TIME     = 12'hC01,
-        CSRAddr_INSTRET  = 12'hC02,
-
-        CSRAddr_CYCLEH   = 12'hC80,
-        CSRAddr_TIMEH    = 12'hC81,
-        CSRAddr_INSTRETH = 12'hC82
-    } CSRAddr;
 
 endpackage

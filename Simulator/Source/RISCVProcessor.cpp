@@ -102,6 +102,7 @@ void Processor::execute(
             break;
 
         case OpCode::System:
+            executeSystem(inst);
             break;
     }
 
@@ -434,16 +435,17 @@ void Processor::executeStore(
     //
     addr_t addr = offset + r[rs1];
     data_t data = r[rs2];
-    switch ((inst >> 12) & 0b111) {
-        case 0b000: // SB
+    int access = (inst >> 12) & 0b111;
+    switch (access) {
+        case 0: // Byte
             dataMem->write8(addr, data);
             break;
 
-        case 0b001: // SH
+        case 1: // Half
             dataMem->write16(addr, data);
             break;
 
-        case 0b010: // SW
+        case 2: // Word
             dataMem->write32(addr, data);
             break;
     }
@@ -452,7 +454,7 @@ void Processor::executeStore(
 
     // Traçat
     //
-    traceMem(addr);
+    traceMem(addr, access);
 }
 
 
@@ -512,6 +514,67 @@ void Processor::executeBranch(
 
 
 /// ----------------------------------------------------------------------
+/// \brief    Exxecuta el grup d'instruccions System
+/// \param    inst: La instruccio a executar
+///
+void Processor::executeSystem(
+    inst_t inst) {
+        
+    // Traçat
+    //
+    traceInst(inst);
+    
+    // Decodificacio
+    //
+    reg_t rd = (inst >> 7) & 0x1F;
+    reg_t rs1 = (inst >> 15) & 0x1F;
+    unsigned cs = (inst >> 20) & 0xFFF;    
+    
+    // Execucio
+    //
+    if (((inst >> 12) & 0b111) == 0) {
+    }
+    else {
+        switch ((inst >> 12 ) & 0b111) {
+            case 0b001: // CSRRW
+                r[rd]   = csr[cs];
+                csr[cs] = r[rs1];
+                break;
+                
+            case 0b010: // CSRRS
+                r[rd]   = csr[cs];
+                csr[cs] = csr[cs] | r[rs1];
+                break;
+                
+            case 0b011: // CSRRC
+                r[rd]   = csr[cs];
+                csr[cs] = csr[cs] & r[rs1];
+                break;
+                
+            case 0b101: // CSRRWI
+                r[rd] = csr[cs];
+                break;
+                
+            case 0b110: // CSRRSI
+                r[rd] = csr[cs];
+                break;
+                
+            case 0b111: // CSRRCI
+                r[rd] = csr[cs];
+                break;
+        }
+    }
+    
+    pc += 4;
+    
+    // Traçat
+    //
+    if (((inst >> 12) & 0b111) != 0) {
+        traceReg(rd);
+}
+
+
+/// ----------------------------------------------------------------------
 /// \brief    Expandeix una instruccio comprimida
 /// \param    inst: La instruccio comprimida
 /// \return   La instruccio expandida.
@@ -540,10 +603,24 @@ void Processor::traceReg(
 
 
 void Processor::traceMem(
-    addr_t addr) {
+    addr_t addr,
+    int access) {
 
-    if (tracer)
-        tracer->traceMem(addr, dataMem->read32(addr));
+    if (tracer) {
+        switch (access) {
+            case 0: // Byte
+                tracer->traceMem(addr, dataMem->read8(addr), 0);
+                break;
+
+            case 1: // Half
+                tracer->traceMem(addr, dataMem->read16(addr), 1);
+                break;
+
+            case 2: // Word
+                tracer->traceMem(addr, dataMem->read32(addr), 2);
+                break;
+        }
+    }
 }
 
 

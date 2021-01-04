@@ -1,3 +1,21 @@
+// -----------------------------------------------------------------------
+//
+//       Memoria ram 32 bits, direccionable en bytes.
+//       La memoria es emulada en una llibreria DPI per la
+//       seva utilitzacio en Verilator
+//
+//       Parametres:
+//            BASE      : Adresa de memoria base
+//            SIZE      : Tamany de la memoria en bytes
+//
+//       Entrades:
+//            i_clock   : Senyal de rellotge
+//
+//       Bus:
+//            bus       : Bus de memoria de dades
+//
+// -----------------------------------------------------------------------
+
 module DataMemory
     import Types::*;
 #(
@@ -11,21 +29,23 @@ module DataMemory
 
     longint memObj;
 
+    // Emula per DPI una memoria RAM de 32 bits, direccionable en bytes
+    //
     import "DPI-C" function int dpiMemCreate(input int base, input int size, output longint memObj);
     import "DPI-C" function int dpiMemDestroy(input longint memObj);
-    import "DPI-C" function void dpiMemWrite(input longint memObj, input int addr, input int mask, input int data);
-    import "DPI-C" function int dpiMemRead(input longint memObj, input int addr);
+    import "DPI-C" function void dpiMemWrite(input longint memObj, input int addr, input int access, input int data);
+    import "DPI-C" function int dpiMemRead(input longint memObj, input int addr, input int access);
 
     always_ff @(posedge i_clock)
         if (bus.wrEnable)
-            dpiMemWrite(memObj, bus.addr, int'(bus.wrMask), bus.wrData);
+            dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wrData);
 
-    assign bus.rdData = dpiMemRead(memObj, bus.addr);
+    assign bus.rdData = dpiMemRead(memObj, bus.addr, int'(bus.access));
 
 
     initial begin
         if (dpiMemCreate(BASE, SIZE, memObj) == 0) begin
-            $display("Emulated RAM memory %0dbit:", DATA_WIDTH);
+            $display("Emulated RAM memory %0d bits:", DATA_WIDTH);
             $display("    Base addr     : %X", BASE);
             $display("    Size in bytes : %0d", SIZE);
             $display("");

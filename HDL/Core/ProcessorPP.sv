@@ -329,6 +329,7 @@ module ProcessorPP
     DataAddr    MEMWB_dbgMemWrAddr;
     logic       MEMWB_dbgMemWrEnable;
     Data        MEMWB_dbgMemWrData;
+    DataAccess  MEMWB_dbgMemAccess;
 
 `endif
 
@@ -355,6 +356,7 @@ module ProcessorPP
         .i_dbgRegWrData   (MEM_regWrData),
         .i_dbgMemWrAddr   (dataBus.addr),
         .i_dbgMemWrEnable (EXMEM_memWrEnable),
+        .i_dbgMemAccess   (EXMEM_memAccess),
         .i_dbgMemWrData   (dataBus.wrData),
         .o_dbgTick        (MEMWB_dbgTick),
         .o_dbgOk          (MEMWB_dbgOk),
@@ -365,6 +367,7 @@ module ProcessorPP
         .o_dbgRegWrData   (MEMWB_dbgRegWrData),
         .o_dbgMemWrAddr   (MEMWB_dbgMemWrAddr),
         .o_dbgMemWrEnable (MEMWB_dbgMemWrEnable),
+        .o_dbgMemAccess   (MEMWB_dbgMemAccess),
         .o_dbgMemWrData   (MEMWB_dbgMemWrData)
 `endif
     );
@@ -400,6 +403,7 @@ module ProcessorPP
         .i_memWrAddr   (MEMWB_dbgMemWrAddr),
         .i_memWrEnable (MEMWB_dbgMemWrEnable),
         .i_memWrData   (MEMWB_dbgMemWrData),
+        .i_memAccess   (MEMWB_dbgMemAccess),
         .o_tick        (dbg_Tick));
 `endif
 

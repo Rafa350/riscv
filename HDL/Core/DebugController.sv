@@ -19,6 +19,7 @@ module DebugController
     input  Data        i_regWrData,   // Dades per escriure en el registre
     input  DataAddr    i_memWrAddr,   // Adressa de memoria per escriure
     input  logic       i_memWrEnable, // Autoritzacio d'escriptura en memoria
+    input  DataAccess  i_memAccess,   // Access a memoria (byte, half o word)
     input  Data        i_memWrData);  // Dades per escriure en memoria
 
     always_ff @(posedge i_clock)
@@ -33,7 +34,7 @@ module DebugController
     import "DPI-C" function int dpiTracerDestroy(input longint tracerObj);
     import "DPI-C" function void dpiTraceInstruction(input longint tracerObj, input int addr, input int data);
     import "DPI-C" function void dpiTraceRegister(input longint tracerObj, input int addr, input int data);
-    import "DPI-C" function void dpiTraceMemory(input longint tracerObj, input int addr, input int data);
+    import "DPI-C" function void dpiTraceMemory(input longint tracerObj, input int addr, input int access, input int data);
     import "DPI-C" function void dpiTraceTick(input longint tracerObj, input int tick);
 
     always_ff @(posedge i_clock)
@@ -47,7 +48,7 @@ module DebugController
                 dpiTraceRegister(tracerObj, int'(i_regWrAddr), i_regWrData);
 
             if (i_memWrEnable)
-                dpiTraceMemory(tracerObj, int'(i_memWrAddr), i_memWrData);
+                dpiTraceMemory(tracerObj, int'(i_memWrAddr), int'(i_memAccess), i_memWrData);
 
             $display("");
         end

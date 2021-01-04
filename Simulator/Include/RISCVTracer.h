@@ -16,7 +16,7 @@ namespace RISCV {
 
             void traceInst(addr_t addr, inst_t inst);
             void traceReg(reg_t reg, data_t data);
-            void traceMem(addr_t addr, data_t data);
+            void traceMem(addr_t addr, data_t data, int access);
             void traceTick(unsigned tick);
     };
 
@@ -29,7 +29,7 @@ extern "C" {
     void dpiTraceTick(const long long tracerObj, int tick);
     void dpiTraceInstruction(const long long tracerObj, int addr, int data);
     void dpiTraceRegister(const long long tracerObj, int addr, int data);
-    void dpiTraceMemory(const long long tracerObj, int addr, int data);
+    void dpiTraceMemory(const long long tracerObj, int addr, int access, int data);
 }
 
 

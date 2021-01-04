@@ -77,8 +77,9 @@ extern "C" void dpiTraceRegister(
 extern "C" void dpiTraceMemory(
     const long long tracerObj,
     int addr,
+    int access,
     int data) {
 
     Tracer *tracer = (Tracer*) tracerObj;
-    tracer->traceMem(addr_t(addr), data_t(data));
+    tracer->traceMem(addr_t(addr), data_t(data), access);
 }

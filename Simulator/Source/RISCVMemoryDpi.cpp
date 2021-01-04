@@ -52,40 +52,30 @@ extern "C" int dpiMemDestroy(
 /// \brief    Escriu en la memoria
 /// \param    memObj: L'objecte Memory
 /// \param    addr: Adressa de memoria
-/// \param    mask: Mascara de bytes a escriure
+/// \param    access: Modus d'acces (Byte, Half o Word)
 /// \param    data: Les dades a escriure
 ///
 extern "C" void dpiMemWrite(
     const long long memObj,
     int addr,
-    int mask,
+    int access,
     int data) {
 
     Memory *mem = (Memory*) memObj;
-    if (mem != nullptr) {
-        if (mask == 0b1111)
-            mem->write32(unsigned(addr), unsigned(data));
+    if (mem != nullptr)
+        switch (access) {
+            case 0: // Byte
+                mem->write8(addr_t(addr), data_t(data));
+                break;
 
-        else if (mask == 0b0011)
-            mem->write16(unsigned(addr + 0), unsigned(data));
+            case 1: // Half
+                mem->write16(addr_t(addr), data_t(data));
+                break;
 
-        else if (mask == 0b1100)
-            mem->write16(unsigned(addr + 1), unsigned(data));
-
-        else {
-            if (mask == 0b0001)
-                mem->write8(unsigned(addr + 0), unsigned(data));
-
-            if (mask == 0b0010)
-                mem->write8(unsigned(addr + 1), unsigned(data) >> 8);
-
-            if (mask == 0b0100)
-                mem->write8(unsigned(addr + 2), unsigned(data) >> 16);
-
-            if (mask == 0b1000)
-                mem->write8(unsigned(addr + 3), unsigned(data) >> 24);
+            default: // Word
+                mem->write32(addr_t(addr), data_t(data));
+                break;
         }
-    }
 }
 
 
@@ -93,15 +83,26 @@ extern "C" void dpiMemWrite(
 /// \brief    Llegeix del contingut de la memoria.
 /// \param    memObj: L'object Memory
 /// \param    addr: L'adressa.
+/// \param    access: Modus d'acces
 /// \return   El valor lleigit
 ///
 extern "C" int dpiMemRead(
     const long long memObj,
-    int addr) {
+    int addr,
+    int access) {
 
     Memory *mem = (Memory*) memObj;
     if (mem != nullptr)
-        return mem->read32(unsigned(addr));
+        switch (access) {
+            case 0: // Byte
+                return int(mem->read8(addr_t(addr)));
+
+            case 1: // Half
+                return int(mem->read16(addr_t(addr)));
+
+            default: // Word
+                return int(mem->read32(addr_t(addr)));
+        }
     else
         return 0;
 }
