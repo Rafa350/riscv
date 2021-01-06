@@ -519,57 +519,57 @@ void Processor::executeBranch(
 ///
 void Processor::executeSystem(
     inst_t inst) {
-        
+
     // Traçat
     //
     traceInst(inst);
-    
+
     // Decodificacio
     //
     reg_t rd = (inst >> 7) & 0x1F;
     reg_t rs1 = (inst >> 15) & 0x1F;
-    unsigned cs = (inst >> 20) & 0xFFF;    
-    
+    unsigned cs = (inst >> 20) & 0xFFF;
+
     // Execucio
     //
     if (((inst >> 12) & 0b111) == 0) {
     }
     else {
-        switch ((inst >> 12 ) & 0b111) {
+        switch ((inst >> 12) & 0b111) {
             case 0b001: // CSRRW
                 r[rd]   = csr[cs];
                 csr[cs] = r[rs1];
                 break;
-                
+
             case 0b010: // CSRRS
                 r[rd]   = csr[cs];
                 csr[cs] = csr[cs] | r[rs1];
                 break;
-                
+
             case 0b011: // CSRRC
                 r[rd]   = csr[cs];
                 csr[cs] = csr[cs] & r[rs1];
                 break;
-                
+
             case 0b101: // CSRRWI
                 r[rd] = csr[cs];
                 break;
-                
+
             case 0b110: // CSRRSI
                 r[rd] = csr[cs];
                 break;
-                
+
             case 0b111: // CSRRCI
                 r[rd] = csr[cs];
                 break;
         }
     }
-    
+
     pc += 4;
-    
+
     // Traçat
     //
-    if (((inst >> 12) & 0b111) != 0) {
+    if (((inst >> 12) & 0b111) != 0) 
         traceReg(rd);
 }
 

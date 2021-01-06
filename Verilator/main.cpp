@@ -101,7 +101,7 @@ void CPUTestbench::dumpDataMemory(
     long long memObj = top->top->dataMem->getMemObj();
     Memory *mem = (Memory*) memObj;
 
-    printf("Data memory dump\n");
+    printf("Data memory dump:\n");
     mem->dump(addr, length);
     printf("\n");
 }

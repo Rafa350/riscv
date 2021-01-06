@@ -70,7 +70,6 @@ module ProcessorPP
     Data        ID_dataA;
     Data        ID_dataB;
     Data        ID_instIMM;
-    logic       ID_isLoad;
     RegAddr     ID_regWrAddr;
     logic       ID_regWrEnable;
     logic [1:0] ID_regWrDataSel;
@@ -91,22 +90,21 @@ module ProcessorPP
         .i_inst            (IFID_inst),           // Instruccio
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
         .i_pc              (IFID_pc),             // Adressa de la instruccio
-        .i_EX_RegWrAddr    (IDEX_regWrAddr),
-        .i_EX_RegWrEnable  (IDEX_regWrEnable),
-        .i_EX_RegWrDataSel (IDEX_regWrDataSel),
-        .i_EX_RegWrData    (EX_result),
-        .i_EX_IsLoad       (IDEX_isLoad),         // Indica si hi ha una instruccio Load en EX
-        .i_MEM_RegWrAddr   (EXMEM_regWrAddr),
-        .i_MEM_RegWrEnable (EXMEM_regWrEnable),
-        .i_MEM_RegWrData   (MEM_regWrData),       // El valor a escriure en el registre
-        .i_MEM_IsLoad      (EXMEM_isLoad),        // Indica si hi ha una instruccio Load en MEM
-        .i_WB_RegWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escriure
-        .i_WB_RegWrData    (MEMWB_regWrData),     // Dades del registre on escriure
-        .i_WB_RegWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre
+        .i_EX_regWrAddr    (IDEX_regWrAddr),
+        .i_EX_regWrEnable  (IDEX_regWrEnable),
+        .i_EX_regWrDataSel (IDEX_regWrDataSel),
+        .i_EX_regWrData    (EX_result),
+        .i_EX_memRdEnable  (IDEX_memRdEnable),         // isLoad  Indica si hi ha una operacio de lectura de memoria EX
+        .i_MEM_regWrAddr   (EXMEM_regWrAddr),
+        .i_MEM_regWrEnable (EXMEM_regWrEnable),
+        .i_MEM_regWrData   (MEM_regWrData),       // El valor a escriure en el registre
+        .i_MEM_memRdEnable (EXMEM_memRdEnable),        // isLoad Indica si hi ha una operacio de lectura de memoria MEM
+        .i_WB_regWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escriure
+        .i_WB_regWrData    (MEMWB_regWrData),     // Dades del registre on escriure
+        .i_WB_regWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre
         .o_dataA           (ID_dataA),            // Dades A
         .o_dataB           (ID_dataB),            // Dades B
         .o_instIMM         (ID_instIMM),
-        .o_isLoad          (ID_isLoad),
         .o_bubble          (ID_bubble),           // Indica si cal generar bombolla
         .o_regWrAddr       (ID_regWrAddr),        // Registre per escriure
         .o_regWrEnable     (ID_regWrEnable),      // Habilita escriure en el registre
@@ -136,7 +134,6 @@ module ProcessorPP
     logic       IDEX_memRdEnable;
     DataAccess  IDEX_memAccess;
     logic       IDEX_memUnsigned;
-    logic       IDEX_isLoad;
     AluOp       IDEX_aluControl;
     logic [1:0] IDEX_operandASel;
     logic [1:0] IDEX_operandBSel;
@@ -164,7 +161,6 @@ module ProcessorPP
         .i_memRdEnable    (ID_memRdEnable),
         .i_memAccess      (ID_memAccess),
         .i_memUnsigned    (ID_memUnsigned),
-        .i_isLoad         (ID_isLoad),
         .i_operandASel    (ID_operandASel),
         .i_operandBSel    (ID_operandBSel),
         .i_aluControl     (ID_aluControl),
@@ -179,7 +175,6 @@ module ProcessorPP
         .o_memRdEnable    (IDEX_memRdEnable),
         .o_memAccess      (IDEX_memAccess),
         .o_memUnsigned    (IDEX_memUnsigned),
-        .o_isLoad         (IDEX_isLoad),
         .o_aluControl     (IDEX_aluControl),
         .o_operandASel    (IDEX_operandASel),
         .o_operandBSel    (IDEX_operandBSel),
@@ -234,7 +229,6 @@ module ProcessorPP
     logic       EXMEM_memRdEnable;
     DataAccess  EXMEM_memAccess;
     logic       EXMEM_memUnsigned;
-    logic       EXMEM_isLoad;
 
 `ifdef DEBUG
     int         EXMEM_dbgTick;
@@ -259,7 +253,6 @@ module ProcessorPP
         .i_regWrAddr      (IDEX_regWrAddr),
         .i_regWrEnable    (IDEX_regWrEnable),
         .i_regWrDataSel   (IDEX_regWrDataSel),
-        .i_isLoad         (IDEX_isLoad),
         .o_pc             (EXMEM_pc),
         .o_result         (EXMEM_result),
         .o_dataB          (EXMEM_dataB),
@@ -269,8 +262,7 @@ module ProcessorPP
         .o_memUnsigned    (EXMEM_memUnsigned),
         .o_regWrAddr      (EXMEM_regWrAddr),
         .o_regWrEnable    (EXMEM_regWrEnable),
-        .o_regWrDataSel   (EXMEM_regWrDataSel),
-        .o_isLoad         (EXMEM_isLoad)
+        .o_regWrDataSel   (EXMEM_regWrDataSel)
 
 `ifdef DEBUG
         ,

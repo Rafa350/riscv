@@ -37,7 +37,6 @@ module PipelineIDEX
     input  logic       i_memRdEnable,    // Habilida el lecturad e la memoria
     input  DataAccess  i_memAccess,      // Tamany del acces a la memoria
     input  logic       i_memUnsigned,    // Lectura de memoria sense signe
-    input  logic       i_isLoad,         // Indica si es una instruccio Load
     input  logic [1:0] i_operandASel,    // Seleccio de l'operasnd A
     input  logic [1:0] i_operandBSel,    // Seleccio de l'operand B
     input  AluOp       i_aluControl,     // Control de la ALU
@@ -54,7 +53,6 @@ module PipelineIDEX
     output logic       o_memRdEnable,    // Habilita la lectura de la memoria
     output DataAccess  o_memAccess,      // Tamany del acces la memoria
     output logic       o_memUnsigned,    // Lectura de memoria sense signe
-    output logic       o_isLoad,
     output logic [1:0] o_operandASel,
     output logic [1:0] o_operandBSel,
     output AluOp       o_aluControl);
@@ -72,7 +70,6 @@ module PipelineIDEX
         o_memRdEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memRdEnable);
         o_memAccess      <= i_reset ? DataAccess_Word         : i_memAccess;
         o_memUnsigned    <= i_reset ? 1'b0                    : i_memUnsigned;
-        o_isLoad         <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_isLoad);
         o_aluControl     <= i_reset ? AluOp_Unknown           : i_aluControl;
         o_operandASel    <= i_reset ? 2'b0                    : i_operandASel;
         o_operandBSel    <= i_reset ? 2'b0                    : i_operandBSel;

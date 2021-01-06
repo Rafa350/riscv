@@ -10,9 +10,11 @@ package Types;
     typedef logic [DATA_WIDTH-1:0] Data;
     typedef logic [31:0]           Inst;
 
-    typedef logic [ADDR_WIDTH-1:0] DataAddr;
-    typedef logic [PC_WIDTH-1:0]   InstAddr;
-    typedef logic [REG_WIDTH-1:0]  RegAddr;
+    typedef logic [ADDR_WIDTH-1:0] DataAddr;   // Adressa de dades
+    typedef logic [PC_WIDTH-1:0]   InstAddr;   // Adressa d'instruccio
+    typedef logic [REG_WIDTH-1:0]  RegAddr;    // Adressa de registre int
+    typedef logic [4:0]            FRegAddr;   // Adressa de registre float
+    typedef logic [11:0]           CSRegAddr;  // Adressa de registre CSR
 
     typedef enum logic [2:0] {
         DataAccess_Byte,

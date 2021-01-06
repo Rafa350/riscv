@@ -36,7 +36,6 @@ module PipelineEXMEM
     input  RegAddr     i_regWrAddr,
     input  logic       i_regWrEnable,    // Autoritza l'escriptura en els registres
     input  logic [1:0] i_regWrDataSel,
-    input  logic       i_isLoad,         // Indica si es una instruccio de lectura de memoria
 
     // Senyals de sortida del pipeline
     output InstAddr    o_pc,
@@ -48,8 +47,7 @@ module PipelineEXMEM
     output logic       o_memUnsigned,  // Lectura de memoria sense signe
     output RegAddr     o_regWrAddr,
     output logic       o_regWrEnable,
-    output logic [1:0] o_regWrDataSel,
-    output logic       o_isLoad);
+    output logic [1:0] o_regWrDataSel);
 
 
     always_ff @(posedge i_clock) begin
@@ -63,7 +61,6 @@ module PipelineEXMEM
         o_regWrAddr      <= i_reset ? {$size(RegAddr){1'b0}}  : i_regWrAddr;
         o_regWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
         o_regWrDataSel   <= i_reset ? 2'b0                    : i_regWrDataSel;
-        o_isLoad         <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_isLoad);
 `ifdef DEBUG
         o_dbgTick        <= i_dbgTick;
         o_dbgOk          <= (i_reset | i_flush) ? 1'b0 : i_dbgOk;

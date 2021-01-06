@@ -1,17 +1,18 @@
 module InstDecoder
     import Types::*;
  (
-    input  Inst    i_inst,      // La instruccio a decodificar
-    output OpCode  o_instOP,    // El codi d'operacio
-    output RegAddr o_instRS1,   // El registre font 1 (rs1)
-    output RegAddr o_instRS2,   // El registre fomt 2 (rs2)
-    output RegAddr o_instRD,    // El registre de destinacio (rd)
-    output Data    o_instIMM,   // El valor inmediat
-    output logic   o_isIllegal, // Indica instruccio ilegal
-    output logic   o_isLoad,    // Indica que es una instruccio LOAD
-    output logic   o_isALU,     // Indica que es una instruccio ALU
-    output logic   o_isECALL,   // Indica instruccio ECALL
-    output logic   o_isEBREAK); // Indica instruccio EBREAK
+    input  Inst      i_inst,      // La instruccio a decodificar
+    output OpCode    o_instOP,    // El codi d'operacio
+    output RegAddr   o_instRS1,   // El registre origen 1 (rs1)
+    output RegAddr   o_instRS2,   // El registre origen 2 (rs2)
+    output RegAddr   o_instRD,    // El registre desti (rd)
+    output CSRegAddr o_instCSR,   // El registre CSR
+    output Data      o_instIMM,   // El valor inmediat
+    output logic     o_isIllegal, // Indica instruccio ilegal
+    output logic     o_isALU,     // Indica que es una instruccio ALU
+    output logic     o_isECALL,   // Indica instruccio ECALL
+    output logic     o_isEBREAK,  // Indica instruccio EBREAK
+    output logic     o_isCSR);    // Indica que es una instruccio CSR
 
     Data immIValue,
          immSValue,
@@ -29,17 +30,18 @@ module InstDecoder
 
     always_comb begin
 
-        o_instOP  = OpCode'(i_inst[6:0]);
-        o_instRS1 = i_inst[REG_WIDTH+14:15];
-        o_instRS2 = i_inst[REG_WIDTH+19:20];
-        o_instRD  = i_inst[REG_WIDTH+6:7];
-        o_instIMM = 0;
+        o_instOP    = OpCode'(i_inst[6:0]);
+        o_instRS1   = i_inst[REG_WIDTH+14:15];
+        o_instRS2   = i_inst[REG_WIDTH+19:20];
+        o_instRD    = i_inst[REG_WIDTH+6:7];
+        o_instIMM   = 0;
+        o_instCSR   = i_inst[31:20];
 
         o_isIllegal = 1'b0;
         o_isALU     = 1'b0;
-        o_isLoad    = 1'b0;
         o_isEBREAK  = 1'b0;
         o_isECALL   = 1'b0;
+        o_isCSR     = 1'b0;
 
         unique casez ({i_inst[31:25], i_inst[14:12], i_inst[6:0]})
             {10'b???????_???, OpCode_LUI   }, // LUI
@@ -73,10 +75,7 @@ module InstDecoder
             {10'b???????_010, OpCode_Load  }, // LW
             {10'b???????_100, OpCode_Load  }, // LBU
             {10'b???????_101, OpCode_Load  }: // LHU
-                begin
-                    o_instIMM = immIValue;
-                    o_isLoad = 1'b1;
-                end
+                o_instIMM = immIValue;
 
             {10'b0000000_000, OpCode_Op    }, // ADD
             {10'b0100000_000, OpCode_Op    }, // SUB
@@ -111,7 +110,10 @@ module InstDecoder
             {10'b???????_010, OpCode_Store }: // SW
                 o_instIMM = immSValue;
 
-            {10'b0000000_000, OpCode_System}:
+            {10'b???????_00?, OpCode_Fence }:
+                o_isIllegal = 1'b1;
+
+            {10'b???????_000, OpCode_System}:
                 case (i_inst[24:20])
                     5'b0000:                  // EBREAK
                         o_isEBREAK = 1'b1;
@@ -122,6 +124,16 @@ module InstDecoder
                     default:
                         o_isIllegal = 1'b1;
                 endcase
+
+            {10'b???????_001, OpCode_System}, // CSRRW
+            {10'b???????_010, OpCode_System}, // CRRRS
+            {10'b???????_011, OpCode_System}: // CSRRC
+                o_isCSR = 1'b1;
+
+            {10'b???????_101, OpCode_System}, // CSRRWI
+            {10'b???????_110, OpCode_System}, // CSRRSI
+            {10'b???????_111, OpCode_System}: // CSRRCI
+                o_isCSR = 1'b1;
 
             default:
                 o_isIllegal = 1'b1;

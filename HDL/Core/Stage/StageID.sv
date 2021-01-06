@@ -5,40 +5,39 @@ module StageID
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,             // Clock
-    input  logic       i_reset,             // Reset
+    input  logic       i_clock,           // Clock
+    input  logic       i_reset,           // Reset
 
-    input  Inst        i_inst,              // Instruccio
-    input  logic       i_instCompressed,    // Indica que es una instruccio comprimida
-    input  InstAddr    i_pc,                // Adressa de la instruccio
-    input  RegAddr     i_EX_RegWrAddr,      // Registre per escriure
-    input  logic       i_EX_RegWrEnable,    // Habilita l'escriptura en el registre
-    input  logic [1:0] i_EX_RegWrDataSel,   // Seleccio de dades
-    input  Data        i_EX_RegWrData,      // Dades a escriure en el registre
-    input  logic       i_EX_IsLoad,         // Indica si es una instruccio Load
-    input  RegAddr     i_MEM_RegWrAddr,     // Registre per escriure
-    input  logic       i_MEM_RegWrEnable,   // Habilita l'escriptura
-    input  Data        i_MEM_RegWrData,     // Dades a escriure
-    input  logic       i_MEM_IsLoad,        // Indica si es una instauccio Load
-    input  RegAddr     i_WB_RegWrAddr,      // Registre a escriure
-    input  logic       i_WB_RegWrEnable,    // Autoritzacio d'escriptura del registre
-    input  Data        i_WB_RegWrData,      // El resultat a escriure
-    output Data        o_instIMM,           // Valor inmediat de la instruccio
-    output Data        o_dataA,             // Dades A (rs1)
-    output Data        o_dataB,             // Dades B (rs2)
-    output logic       o_isLoad,            // Indica instruccio Load
-    output logic       o_bubble,            // Indica si cal generar bombolla
-    output RegAddr     o_regWrAddr,         // Registre a escriure.
-    output logic       o_regWrEnable,       // Habilita l'escriptura del registre
-    output logic       o_memWrEnable,       // Habilita l'escritura en memoria
-    output logic       o_memRdEnable,       // Habilita la lectura de la memoria
-    output DataAccess  o_memAccess,         // Tamany d'acces a la memoria
-    output logic       o_memUnsigned,       // Lectura de memoria sense signe
-    output logic [1:0] o_regWrDataSel,      // Seleccio de les dades per escriure en el registre (rd)
-    output logic [1:0] o_operandASel,       // Seleccio del valor A de la ALU
-    output logic [1:0] o_operandBSel,       // Seleccio del valor B de la ALU
-    output AluOp       o_aluControl,        // Codi de control de la ALU
-    output InstAddr    o_pcNext);           // Nou valor de PC
+    input  Inst        i_inst,            // Instruccio
+    input  logic       i_instCompressed,  // Indica que es una instruccio comprimida
+    input  InstAddr    i_pc,              // Adressa de la instruccio
+    input  RegAddr     i_EX_regWrAddr,    // Registre per escriure
+    input  logic       i_EX_regWrEnable,  // Habilita l'escriptura en el registre
+    input  logic [1:0] i_EX_regWrDataSel, // Seleccio de dades
+    input  Data        i_EX_regWrData,    // Dades a escriure en el registre
+    input  logic       i_EX_memRdEnable,  // Habilita la lectura de memoria
+    input  RegAddr     i_MEM_regWrAddr,   // Registre per escriure
+    input  logic       i_MEM_regWrEnable, // Habilita l'escriptura
+    input  Data        i_MEM_regWrData,   // Dades a escriure
+    input  logic       i_MEM_memRdEnable, // Habilita la lectura de memoria
+    input  RegAddr     i_WB_regWrAddr,    // Registre a escriure
+    input  logic       i_WB_regWrEnable,  // Autoritzacio d'escriptura del registre
+    input  Data        i_WB_regWrData,    // El resultat a escriure
+    output Data        o_instIMM,         // Valor inmediat de la instruccio
+    output Data        o_dataA,           // Dades A (rs1)
+    output Data        o_dataB,           // Dades B (rs2)
+    output logic       o_bubble,          // Indica si cal generar bombolla
+    output RegAddr     o_regWrAddr,       // Registre a escriure.
+    output logic       o_regWrEnable,     // Habilita l'escriptura del registre
+    output logic       o_memWrEnable,     // Habilita l'escritura en memoria
+    output logic       o_memRdEnable,     // Habilita la lectura de la memoria
+    output DataAccess  o_memAccess,       // Tamany d'acces a la memoria
+    output logic       o_memUnsigned,     // Lectura de memoria sense signe
+    output logic [1:0] o_regWrDataSel,    // Seleccio de les dades per escriure en el registre (rd)
+    output logic [1:0] o_operandASel,     // Seleccio del valor A de la ALU
+    output logic [1:0] o_operandBSel,     // Seleccio del valor B de la ALU
+    output AluOp       o_aluControl,      // Codi de control de la ALU
+    output InstAddr    o_pcNext);         // Nou valor de PC
 
 
     // ------------------------------------------------------------------------
@@ -48,16 +47,17 @@ module StageID
     // d'instruccio.
     // ------------------------------------------------------------------------
 
-    OpCode  dec_instOP;
-    RegAddr dec_instRS1;
-    RegAddr dec_instRS2;
-    RegAddr dec_instRD;
-    Data    dec_instIMM;
-    logic   dec_isIllegal;
-    logic   dec_isLoad;
-    logic   dec_isALU;
-    logic   dec_isECALL;
-    logic   dec_isEBREAK;
+    OpCode    dec_instOP;
+    RegAddr   dec_instRS1;
+    RegAddr   dec_instRS2;
+    RegAddr   dec_instRD;
+    Data      dec_instIMM;
+    CSRegAddr dec_instCSR;
+    logic     dec_isIllegal;
+    logic     dec_isALU;
+    logic     dec_isECALL;
+    logic     dec_isEBREAK;
+    logic     dec_isCSR;
 
     InstDecoder
     dec (
@@ -67,11 +67,12 @@ module StageID
         .o_instRS2   (dec_instRS2),
         .o_instRD    (dec_instRD),
         .o_instIMM   (dec_instIMM),
+        .o_instCSR   (dec_instCSR),
         .o_isIllegal (dec_isIllegal),
-        .o_isLoad    (dec_isLoad),
         .o_isALU     (dec_isALU),
         .o_isECALL   (dec_isECALL),
-        .o_isEBREAK  (dec_isEBREAK));
+        .o_isEBREAK  (dec_isEBREAK),
+        .o_isCSR     (dec_isCSR));
 
 
     // ------------------------------------------------------------------------
@@ -109,17 +110,18 @@ module StageID
 
     // ------------------------------------------------------------------------
     // Controllador per stalling.
+    // Stall si hi ha un registre pendent de carregar amb un Load
     // ------------------------------------------------------------------------
 
-    StallController
-    stallCtrl (
-        .i_instRS1     (dec_instRS1),
-        .i_instRS2     (dec_instRS2),
-        .i_EX_IsLoad   (i_EX_IsLoad),
-        .i_EX_RegAddr  (i_EX_RegWrAddr),
-        .i_MEM_IsLoad  (i_MEM_IsLoad),
-        .i_MEM_RegAddr (i_MEM_RegWrAddr),
-        .o_bubble      (o_bubble));
+    HazardDetector
+    hazardDetector (
+        .i_instRS1         (dec_instRS1),
+        .i_instRS2         (dec_instRS2),
+        .i_EX_memRdEnable  (i_EX_memRdEnable),
+        .i_EX_regAddr      (i_EX_regWrAddr),
+        .i_MEM_memRdEnable (i_MEM_memRdEnable),
+        .i_MEM_regAddr     (i_MEM_regWrAddr),
+        .o_bubble          (o_bubble));
 
 
     // ------------------------------------------------------------------------
@@ -134,13 +136,13 @@ module StageID
     fwdCtrl(
         .i_instRS1         (dec_instRS1),
         .i_instRS2         (dec_instRS2),
-        .i_EX_RegWrAddr    (i_EX_RegWrAddr),
-        .i_EX_RegWrEnable  (i_EX_RegWrEnable),
-        .i_EX_RegWrDataSel (i_EX_RegWrDataSel),
-        .i_MEM_RegWrAddr   (i_MEM_RegWrAddr),
-        .i_MEM_RegWrEnable (i_MEM_RegWrEnable),
-        .i_WB_RegWrAddr    (i_WB_RegWrAddr),
-        .i_WB_RegWrEnable  (i_WB_RegWrEnable),
+        .i_EX_regWrAddr    (i_EX_regWrAddr),
+        .i_EX_regWrEnable  (i_EX_regWrEnable),
+        .i_EX_regWrDataSel (i_EX_regWrDataSel),
+        .i_MEM_regWrAddr   (i_MEM_regWrAddr),
+        .i_MEM_regWrEnable (i_MEM_regWrEnable),
+        .i_WB_regWrAddr    (i_WB_regWrAddr),
+        .i_WB_regWrEnable  (i_WB_regWrEnable),
         .o_dataASel        (fwdCtrl_dataASel),
         .o_dataBSel        (fwdCtrl_dataBSel));
 
@@ -157,9 +159,9 @@ module StageID
     fwdDataASelector (
         .i_select (fwdCtrl_dataASel),
         .i_input0 (regs_dataA),
-        .i_input1 (i_EX_RegWrData),
-        .i_input2 (i_MEM_RegWrData),
-        .i_input3 (i_WB_RegWrData),
+        .i_input1 (i_EX_regWrData),
+        .i_input2 (i_MEM_regWrData),
+        .i_input3 (i_WB_regWrData),
         .o_output (fwdDataASelector_output));
 
     Mux4To1 #(
@@ -167,9 +169,9 @@ module StageID
     fwdDataBSelector (
         .i_select (fwdCtrl_dataBSel),
         .i_input0 (regs_dataB),
-        .i_input1 (i_EX_RegWrData),
-        .i_input2 (i_MEM_RegWrData),
-        .i_input3 (i_WB_RegWrData),
+        .i_input1 (i_EX_regWrData),
+        .i_input2 (i_MEM_regWrData),
+        .i_input3 (i_WB_regWrData),
         .o_output (fwdDataBSelector_output));
 
 
@@ -206,9 +208,9 @@ module StageID
     regs (
         .i_clock    (i_clock),
         .i_reset    (i_reset),
-        .i_wrEnable (i_WB_RegWrEnable),
-        .i_wrAddr   (i_WB_RegWrAddr),
-        .i_wrData   (i_WB_RegWrData),
+        .i_wrEnable (i_WB_regWrEnable),
+        .i_wrAddr   (i_WB_regWrAddr),
+        .i_wrData   (i_WB_regWrData),
         .i_rdAddrA  (dec_instRS1),
         .o_rdDataA  (regs_dataA),
         .i_rdAddrB  (dec_instRS2),
@@ -234,7 +236,6 @@ module StageID
         o_instIMM      = dec_instIMM;
         o_dataA        = fwdDataASelector_output;
         o_dataB        = fwdDataBSelector_output;
-        o_isLoad       = dec_isLoad;
         o_regWrAddr    = dec_instRD;
         o_regWrEnable  = dpCtrl_regWrEnable;
         o_regWrDataSel = dpCtrl_dataToRegSel;
