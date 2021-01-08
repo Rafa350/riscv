@@ -2,7 +2,7 @@
 
 ## CPU features
 - Base RV32I
-- Optional sxtensions M & C
+- Optional extensions M & C
 - Clasic five pipeline stages
 - Machine mode only
 - CSR block
@@ -12,3 +12,7 @@
 ## Simulation
 - Verilator RTL simulation
 - Custom C++ app for behavioral simulation
+
+## Implementation
+- Quartus Primer 20.1
+- Terasic DE0-Nano (Cyclone-IV)
