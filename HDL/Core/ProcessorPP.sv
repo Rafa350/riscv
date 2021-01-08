@@ -9,6 +9,19 @@ module ProcessorPP
     InstMemoryBus.master instBus); // Bus de la memoria d'instruccions
 
 
+    RegisterBus regBus();
+
+    // -----------------------------------------------------------------------
+    // Bloc de registres base
+    // -----------------------------------------------------------------------
+
+    RegisterFile
+    regs (
+        .i_clock  (i_clock),
+        .i_reset  (i_reset),
+        .bus      (regBus));
+
+
     // ------------------------------------------------------------------------
     // Stage IF
     // ------------------------------------------------------------------------
@@ -87,6 +100,7 @@ module ProcessorPP
     stageID (
         .i_clock           (i_clock),             // Clock
         .i_reset           (i_reset),             // Reset
+        .regBus            (regBus),              // Interficie amb els registres
         .i_inst            (IFID_inst),           // Instruccio
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
         .i_pc              (IFID_pc),             // Adressa de la instruccio
@@ -94,11 +108,11 @@ module ProcessorPP
         .i_EX_regWrEnable  (IDEX_regWrEnable),
         .i_EX_regWrDataSel (IDEX_regWrDataSel),
         .i_EX_regWrData    (EX_result),
-        .i_EX_memRdEnable  (IDEX_memRdEnable),         // isLoad  Indica si hi ha una operacio de lectura de memoria EX
+        .i_EX_memRdEnable  (IDEX_memRdEnable),    // Indica si hi ha una operacio de lectura de memoria EX
         .i_MEM_regWrAddr   (EXMEM_regWrAddr),
         .i_MEM_regWrEnable (EXMEM_regWrEnable),
         .i_MEM_regWrData   (MEM_regWrData),       // El valor a escriure en el registre
-        .i_MEM_memRdEnable (EXMEM_memRdEnable),        // isLoad Indica si hi ha una operacio de lectura de memoria MEM
+        .i_MEM_memRdEnable (EXMEM_memRdEnable),   // Indica si hi ha una operacio de lectura de memoria MEM
         .i_WB_regWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escriure
         .i_WB_regWrData    (MEMWB_regWrData),     // Dades del registre on escriure
         .i_WB_regWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre
@@ -367,9 +381,14 @@ module ProcessorPP
 
     // ------------------------------------------------------------------------
     // Stage WB
-    // Es teoric, en la practica no te cap implementacio, ja que es la part
-    // d'escriptura en els registres, que es troben en el stage ID.
     // ------------------------------------------------------------------------
+
+    StageWB
+    stageWB (
+        .regBus        (regBus),            // Interficie amb el bloc de registres
+        .i_regWrAddr   (MEMWB_regWrAddr),   // Adressa del registre
+        .i_regWrEnable (MEMWB_regWrEnable), // Habilila l'escriptura del registre
+        .i_regWrData   (MEMWB_regWrData));  // Dades per escriure en el registre
 
 
     // ------------------------------------------------------------------------

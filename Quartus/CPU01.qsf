@@ -135,7 +135,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
 set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF
 set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
-set_global_assignment -name MUX_RESTRUCTURE AUTO
+set_global_assignment -name MUX_RESTRUCTURE OFF
 set_global_assignment -name ALLOW_ANY_ROM_SIZE_FOR_RECOGNITION ON
 set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
 set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
@@ -281,38 +281,38 @@ set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
 set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to CLOCK_50
 set_global_assignment -name STATE_MACHINE_PROCESSING "ONE-HOT"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[0]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[1]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[2]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[3]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[4]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[5]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[6]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[7]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[8]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[9]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[10]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[11]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[12]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[13]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[14]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[15]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[16]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[17]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[18]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[19]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[20]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[21]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[22]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[23]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[24]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[25]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[26]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[27]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[28]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[29]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[30]~reg0"
-set_instance_assignment -name MAX_FANOUT 50 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[31]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[0]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[1]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[2]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[3]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[4]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[5]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[6]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[7]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[8]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[9]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[10]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[11]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[12]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[13]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[14]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[15]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[16]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[17]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[18]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[19]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[20]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[21]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[22]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[23]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[24]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[25]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[26]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[27]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[28]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[29]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[30]~reg0"
+set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[31]~reg0"
 set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
 set_location_assignment PIN_L15 -to GPIO_1[19]
 set_location_assignment PIN_F13 -to GPIO_1[0]
@@ -367,23 +367,26 @@ set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ALU/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstMemoryBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataMemoryBus.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataMemoryAdapter.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageMEM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchComparer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchAlu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageIF.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageEX.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageMEM.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIFID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIDEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXMEM.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/StallController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/HazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterFile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ProcessorPP.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/PCAlu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ForwardController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DebugController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DatapathController.sv
@@ -393,9 +396,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux8To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Comparer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
-set_global_assignment -name QIP_FILE mw_u32_comparer.qip
-set_global_assignment -name QIP_FILE mw_s32_comparer.qip
 set_global_assignment -name QIP_FILE ram1024x8.qip
+set_global_assignment -name QIP_FILE less32S.qip
+set_global_assignment -name QIP_FILE less32U.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

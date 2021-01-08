@@ -1,14 +1,12 @@
 module ALU 
     import Types::*;
-#(
-    parameter WIDTH = 32)           // Amplada de dades
 (
-    input  Types::AluOp i_op,       // Operacio
+    input  AluOp i_op,       // Operacio
     
-    input  [WIDTH-1:0]  i_operandA, // Operand A
-    input  [WIDTH-1:0]  i_operandB, // Operand B
+    input  Data  i_operandA, // Operand A
+    input  Data  i_operandB, // Operand B
     
-    output [WIDTH-1:0]  o_result);  // Resultat
+    output Data  o_result);  // Resultat
     
 
     always_comb begin       
@@ -29,10 +27,10 @@ module ALU
                 o_result = i_operandA ^ i_operandB;
             
             AluOp_SLT: 
-                o_result = $signed(i_operandA) < $signed(i_operandB) ? {{WIDTH-1{1'b0}}, 1'b1} : 0;
+                o_result = $signed(i_operandA) < $signed(i_operandB) ? {{$size(Data)-1{1'b0}}, 1'b1} : 0;
             
             AluOp_SLTU: 
-                o_result = i_operandA < i_operandB ? {{WIDTH-1{1'b0}}, 1'b1} : 0;
+                o_result = i_operandA < i_operandB ? {{$size(Data)-1{1'b0}}, 1'b1} : 0;
             
             default: 
                 o_result = 0;

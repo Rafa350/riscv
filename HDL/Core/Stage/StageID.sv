@@ -5,39 +5,41 @@ module StageID
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,           // Clock
-    input  logic       i_reset,           // Reset
+    input  logic             i_clock,           // Clock
+    input  logic             i_reset,           // Reset
 
-    input  Inst        i_inst,            // Instruccio
-    input  logic       i_instCompressed,  // Indica que es una instruccio comprimida
-    input  InstAddr    i_pc,              // Adressa de la instruccio
-    input  RegAddr     i_EX_regWrAddr,    // Registre per escriure
-    input  logic       i_EX_regWrEnable,  // Habilita l'escriptura en el registre
-    input  logic [1:0] i_EX_regWrDataSel, // Seleccio de dades
-    input  Data        i_EX_regWrData,    // Dades a escriure en el registre
-    input  logic       i_EX_memRdEnable,  // Habilita la lectura de memoria
-    input  RegAddr     i_MEM_regWrAddr,   // Registre per escriure
-    input  logic       i_MEM_regWrEnable, // Habilita l'escriptura
-    input  Data        i_MEM_regWrData,   // Dades a escriure
-    input  logic       i_MEM_memRdEnable, // Habilita la lectura de memoria
-    input  RegAddr     i_WB_regWrAddr,    // Registre a escriure
-    input  logic       i_WB_regWrEnable,  // Autoritzacio d'escriptura del registre
-    input  Data        i_WB_regWrData,    // El resultat a escriure
-    output Data        o_instIMM,         // Valor inmediat de la instruccio
-    output Data        o_dataA,           // Dades A (rs1)
-    output Data        o_dataB,           // Dades B (rs2)
-    output logic       o_bubble,          // Indica si cal generar bombolla
-    output RegAddr     o_regWrAddr,       // Registre a escriure.
-    output logic       o_regWrEnable,     // Habilita l'escriptura del registre
-    output logic       o_memWrEnable,     // Habilita l'escritura en memoria
-    output logic       o_memRdEnable,     // Habilita la lectura de la memoria
-    output DataAccess  o_memAccess,       // Tamany d'acces a la memoria
-    output logic       o_memUnsigned,     // Lectura de memoria sense signe
-    output logic [1:0] o_regWrDataSel,    // Seleccio de les dades per escriure en el registre (rd)
-    output logic [1:0] o_operandASel,     // Seleccio del valor A de la ALU
-    output logic [1:0] o_operandBSel,     // Seleccio del valor B de la ALU
-    output AluOp       o_aluControl,      // Codi de control de la ALU
-    output InstAddr    o_pcNext);         // Nou valor de PC
+    RegisterBus.masterReader regBus,            // Bus d'acces als registres per lectura
+
+    input  Inst              i_inst,            // Instruccio
+    input  logic             i_instCompressed,  // Indica que es una instruccio comprimida
+    input  InstAddr          i_pc,              // Adressa de la instruccio
+    input  RegAddr           i_EX_regWrAddr,    // Registre per escriure
+    input  logic             i_EX_regWrEnable,  // Habilita l'escriptura en el registre
+    input  logic [1:0]       i_EX_regWrDataSel, // Seleccio de dades
+    input  Data              i_EX_regWrData,    // Dades a escriure en el registre
+    input  logic             i_EX_memRdEnable,  // Habilita la lectura de memoria
+    input  RegAddr           i_MEM_regWrAddr,   // Registre per escriure
+    input  logic             i_MEM_regWrEnable, // Habilita l'escriptura
+    input  Data              i_MEM_regWrData,   // Dades a escriure
+    input  logic             i_MEM_memRdEnable, // Habilita la lectura de memoria
+    input  RegAddr           i_WB_regWrAddr,    // Registre a escriure
+    input  logic             i_WB_regWrEnable,  // Autoritzacio d'escriptura del registre
+    input  Data              i_WB_regWrData,    // El resultat a escriure
+    output Data              o_instIMM,         // Valor inmediat de la instruccio
+    output Data              o_dataA,           // Dades A (rs1)
+    output Data              o_dataB,           // Dades B (rs2)
+    output logic             o_bubble,          // Indica si cal generar bombolla
+    output RegAddr           o_regWrAddr,       // Registre a escriure.
+    output logic             o_regWrEnable,     // Habilita l'escriptura del registre
+    output logic             o_memWrEnable,     // Habilita l'escritura en memoria
+    output logic             o_memRdEnable,     // Habilita la lectura de la memoria
+    output DataAccess        o_memAccess,       // Tamany d'acces a la memoria
+    output logic             o_memUnsigned,     // Lectura de memoria sense signe
+    output logic [1:0]       o_regWrDataSel,    // Seleccio de les dades per escriure en el registre (rd)
+    output logic [1:0]       o_operandASel,     // Seleccio del valor A de la ALU
+    output logic [1:0]       o_operandBSel,     // Seleccio del valor B de la ALU
+    output AluOp             o_aluControl,      // Codi de control de la ALU
+    output InstAddr          o_pcNext);         // Nou valor de PC
 
 
     // ------------------------------------------------------------------------
@@ -86,6 +88,7 @@ module StageID
     logic       dpCtrl_memRdEnable;  // Autoritza la lectura de la memoria
     DataAccess  dpCtrl_memAccess;    // Tamany d'access a la memoria
     logic       dpCtrl_memUnsigned;  // Lectura de memoria sense signe
+    logic       dpCtrl_cmpUnsigned;  // Comparacio sense signe
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
     logic [1:0] dpCtrl_dataToRegSel; // Selector del les dades d'escriptura en el registre
     logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
@@ -93,19 +96,20 @@ module StageID
 
     DatapathController
     dpCtrl (
-        .i_inst         (i_inst),              // La instruccio
-        .i_isEqual      (comp_equal),          // Indicador r1 == r2
-        .i_isLess       (comp_less),           // Indicador r1 < r2
-        .o_memWrEnable  (dpCtrl_memWrEnable),
-        .o_memAccess    (dpCtrl_memAccess),    // Tamany d'acces a la memoria
-        .o_memUnsigned  (dpCtrl_memUnsigned),  // Lectura de memoria sense signe
-        .o_memRdEnable  (dpCtrl_memRdEnable),
-        .o_regWrEnable  (dpCtrl_regWrEnable),
-        .o_regWrDataSel (dpCtrl_dataToRegSel),
-        .o_aluControl   (dpCtrl_aluControl),
-        .o_operandASel  (dpCtrl_operandASel),
-        .o_operandBSel  (dpCtrl_operandBSel),
-        .o_pcNextSel    (dpCtrl_pcNextSel));
+        .i_inst           (i_inst),                // La instruccio
+        .i_isEqual        (brComp_isEqual),        // Indicador r1 == r2
+        .i_isLessSigned   (brComp_isLessSigned),   // Indicador r1 < r2 amb signe
+        .i_isLessUnsigned (brComp_isLessUnsigned), // Indicador r1 < r2 amb signe
+        .o_memWrEnable    (dpCtrl_memWrEnable),
+        .o_memAccess      (dpCtrl_memAccess),      // Tamany d'acces a la memoria
+        .o_memUnsigned    (dpCtrl_memUnsigned),    // Lectura de memoria sense signe
+        .o_memRdEnable    (dpCtrl_memRdEnable),
+        .o_regWrEnable    (dpCtrl_regWrEnable),
+        .o_regWrDataSel   (dpCtrl_dataToRegSel),
+        .o_aluControl     (dpCtrl_aluControl),
+        .o_operandASel    (dpCtrl_operandASel),
+        .o_operandBSel    (dpCtrl_operandBSel),
+        .o_pcNextSel      (dpCtrl_pcNextSel));
 
 
     // ------------------------------------------------------------------------
@@ -182,55 +186,50 @@ module StageID
     // en IF.
     // ------------------------------------------------------------------------
     //
-    logic comp_equal; // Indica A == B
-    logic comp_less;  // Indica A <= B
+    logic brComp_isEqual;        // Indica A == B
+    logic brComp_isLessSigned;   // Indica A < B amb signe
+    logic brComp_isLessUnsigned; // Indica A = B sense signe
 
-    // verilator lint_off PINMISSING
-    Comparer #(
-        .WIDTH ($size(Data)))
-    Comp(
-        .i_inputA   (fwdDataASelector_output),
-        .i_inputB   (fwdDataBSelector_output),
-        .i_unsigned (0),
-        .o_equal    (comp_equal),
-        .o_less     (comp_less));
-    // verilator lint_on PINMISSING
-
-
-    // ------------------------------------------------------------------------
-    // Bloc de registres.
-    // ------------------------------------------------------------------------
-
-    Data regs_dataA;
-    Data regs_dataB;
-
-    RegisterFile
-    regs (
-        .i_clock    (i_clock),
-        .i_reset    (i_reset),
-        .i_wrEnable (i_WB_regWrEnable),
-        .i_wrAddr   (i_WB_regWrAddr),
-        .i_wrData   (i_WB_regWrData),
-        .i_rdAddrA  (dec_instRS1),
-        .o_rdDataA  (regs_dataA),
-        .i_rdAddrB  (dec_instRS2),
-        .o_rdDataB  (regs_dataB));
+    BranchComparer
+    brComp(
+        .i_dataA          (fwdDataASelector_output),
+        .i_dataB          (fwdDataBSelector_output),
+        .o_isEqual        (brComp_isEqual),
+        .o_isLessSigned   (brComp_isLessSigned),
+        .o_isLessUnsigned (brComp_isLessUnsigned));
 
 
     // ------------------------------------------------------------------------
     // Evaluacio de l'adressa de salt
     // ------------------------------------------------------------------------
 
-    InstAddr pcAlu_pc;
+    InstAddr brAlu_pc;
 
-    PCAlu
-    pcAlu (
+    BranchAlu
+    brAlu(
         .i_op      (dpCtrl_pcNextSel),
         .i_pc      (i_pc),
         .i_instIMM (dec_instIMM),
         .i_regData (regs_dataA),
-        .o_pc      (pcAlu_pc));
+        .o_pc      (brAlu_pc));
 
+
+    // ------------------------------------------------------------------------
+    // Interficie amb el bloc de registres.
+    // ------------------------------------------------------------------------
+
+    Data regs_dataA;
+    Data regs_dataB;
+
+    assign regBus.rdAddrA = dec_instRS1;
+    assign regBus.rdAddrB = dec_instRS2;
+    assign regs_dataA     = regBus.rdDataA;
+    assign regs_dataB     = regBus.rdDataB;
+    
+    
+    // ------------------------------------------------------------------------
+    // Asignacio de les sortides
+    // ------------------------------------------------------------------------
 
     always_comb begin
         o_instIMM      = dec_instIMM;
@@ -246,7 +245,7 @@ module StageID
         o_operandASel  = dpCtrl_operandASel;
         o_operandBSel  = dpCtrl_operandBSel;
         o_aluControl   = dpCtrl_aluControl;
-        o_pcNext       = pcAlu_pc;
+        o_pcNext       = brAlu_pc;
     end
 
 

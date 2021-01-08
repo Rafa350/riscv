@@ -4,17 +4,14 @@
 module StageWB
     import Types::*;
 (
-    input  Data    i_regWrData,
-    input  RegAddr i_regWrAddr,
-    input  logic   i_regWrEnable,
+    RegisterBus.masterWriter regBus,         // Bus d'acces als registres per escriptura
 
-    output Data    o_regWrData,
-    output RegAddr o_regWrAddr,
-    output logic   o_regWrEnable);
+    input  Data              i_regWrData,    // Dades per escriure en el registre
+    input  RegAddr           i_regWrAddr,    // Adresa d'escriptura del registre
+    input  logic             i_regWrEnable); // Habilita l'escriptuira en el registre
 
-
-    assign o_regWrData   = i_regWrData;
-    assign o_regWrAddr   = i_regWrAddr;
-    assign o_regWrEnable = i_regWrEnable;
+    assign regBus.wrAddr   = i_regWrAddr;
+    assign regBus.wrData   = i_regWrData;
+    assign regBus.wrEnable = i_regWrEnable;
 
 endmodule

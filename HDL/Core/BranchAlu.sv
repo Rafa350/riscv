@@ -1,4 +1,4 @@
-module PCAlu
+module BranchAlu
     import Types::*;
 (
     input  logic [1:0] i_op,      // Operacio

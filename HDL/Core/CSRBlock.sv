@@ -57,6 +57,11 @@ module CSRBlock
 
     localparam CSR_MSTATUS  = 12'h300;
     localparam CSR_MISA     = 12'h301;
+    localparam CSR_MIE      = 12'h304;
+    localparam CSR_MSCRATCH = 12'h340;
+    localparam CSR_MEPC     = 12'h341;
+    localparam CSR_MCAUSE   = 12'h342;
+    localparam CSR_MIP      = 12'h344;
 
     localparam CSR_CYCLEH   = 12'hC80;
     localparam CSR_TIMEH    = 12'hC81;

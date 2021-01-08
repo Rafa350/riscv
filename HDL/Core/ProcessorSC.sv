@@ -10,6 +10,9 @@ module ProcessorSC
     InstMemoryBus.master instBus);   // Bus d'instruccions
 
 
+    RegisterBus regBus();
+
+
     // ------------------------------------------------------------------------
     // Program counter (PC)
     // ------------------------------------------------------------------------
@@ -38,6 +41,7 @@ module ProcessorSC
         .i_regWrData    (sel3_output),
         .i_regWrEnable  (dpCtrl_regWrEnable),
         .i_memWrAddr    (dataBus.addr),
+        .i_memAccess    (dataBus.access),
         .i_memWrData    (dataBus.wrData),
         .i_memWrEnable  (dpCtrl_memWrEnable),
         .o_tick         (dbgCtrl_tick));
@@ -60,19 +64,20 @@ module ProcessorSC
 
     DatapathController
     dpCtrl (
-        .i_inst         (instBus.inst),
-        .i_isEqual      (comp_equal),
-        .i_isLess       (comp_less),
-        .o_aluControl   (dpCtrl_aluControl),
-        .o_memWrEnable  (dpCtrl_memWrEnable),
-        .o_memRdEnable  (dpCtrl_memRdEnable),
-        .o_memAccess    (dpCtrl_memAccess),
-        .o_memUnsigned  (dpCtrl_memUnsigned),
-        .o_regWrEnable  (dpCtrl_regWrEnable),
-        .o_operandASel  (dpCtrl_operandASel),
-        .o_operandBSel  (dpCtrl_operandBSel),
-        .o_regWrDataSel (dpCtrl_regWrDataSel),
-        .o_pcNextSel    (dpCtrl_pcNextSel));
+        .i_inst           (instBus.inst),
+        .i_isEqual        (brComp_isEqual),
+        .i_isLessSigned   (brComp_isLessSigned),
+        .i_isLessUnsigned (brComp_isLessUnsigned),
+        .o_aluControl     (dpCtrl_aluControl),
+        .o_memWrEnable    (dpCtrl_memWrEnable),
+        .o_memRdEnable    (dpCtrl_memRdEnable),
+        .o_memAccess      (dpCtrl_memAccess),
+        .o_memUnsigned    (dpCtrl_memUnsigned),
+        .o_regWrEnable    (dpCtrl_regWrEnable),
+        .o_operandASel    (dpCtrl_operandASel),
+        .o_operandBSel    (dpCtrl_operandBSel),
+        .o_regWrDataSel   (dpCtrl_regWrDataSel),
+        .o_pcNextSel      (dpCtrl_pcNextSel));
 
 
     // ------------------------------------------------------------------------
@@ -99,18 +104,18 @@ module ProcessorSC
     // Compara els valors del registre per decidir els salta condicionals
     // ------------------------------------------------------------------------
 
-    logic comp_equal; // Indica A == B
-    logic comp_less;  // Indica A <= B
+    logic brComp_isEqual;        // Indica A == B
+    logic brComp_isLessSigned;   // Indica A < B amb signe
+    logic brComp_isLessUnsigned; // Indica A < B sense signe
 
     // verilator lint_off PINMISSING
-    Comparer #(
-        .WIDTH (DATA_WIDTH))
-    comp (
-        .i_inputA   (regs_rdDataA),
-        .i_inputB   (regs_rdDataB),
-        .i_unsigned (0),
-        .o_equal    (comp_equal),
-        .o_less     (comp_less));
+    BranchComparer
+    brComp (
+        .i_dataA          (regs_rdDataA),
+        .i_dataB          (regs_rdDataB),
+        .o_isEqual        (brComp_isEqual),
+        .o_isLessSigned   (brComp_isLessSigned),
+        .o_isLessUnsigned (brComp_isLessUnsigned));
     // verilator lint_on PINMISSING
 
 
@@ -125,30 +130,30 @@ module ProcessorSC
     regs (
         .i_clock    (i_clock),
         .i_reset    (i_reset),
-        .i_wrAddr   (dec_instRD),
-        .i_wrData   (sel3_output),
-        .i_wrEnable (dpCtrl_regWrEnable),
-        .i_rdAddrA  (dec_instRS1),
-        .o_rdDataA  (regs_rdDataA),
-        .i_rdAddrB  (dec_instRS2),
-        .o_rdDataB  (regs_rdDataB));
+        .bus        (regBus));
+
+    assign regs_rdDataA                 = regBus.masterReader.rdDataA;
+    assign regs_rdDataB                 = regBus.masterReader.rdDataB;
+    assign regBus.masterWriter.wrAddr   = dec_instRD;
+    assign regBus.masterWriter.wrData   = sel3_output;
+    assign regBus.masterWriter.wrEnable = dpCtrl_regWrEnable;
 
 
     // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada A de la alu
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] sel5_output;
+    logic [DATA_WIDTH-1:0] operandASelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (DATA_WIDTH))
-    sel5 (
+    operandASelector (
         .i_select (dpCtrl_operandASel),
         .i_input0 (regs_rdDataA),
         .i_input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, pc}),
         .i_input2 ('d0),
-        .o_output (sel5_output));
+        .o_output (operandASelector_output));
     // verilator lint_on PINMISSING
 
 
@@ -156,17 +161,17 @@ module ProcessorSC
     // Selecciona les dades d'entrada B de la ALU
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] sel1_output;
+    logic [DATA_WIDTH-1:0] operandBSelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH (DATA_WIDTH))
-    sel1 (
+    operandBSelector (
         .i_select (dpCtrl_operandBSel),
         .i_input0 (regs_rdDataB),
         .i_input1 (dec_instIMM),
         .i_input2 ('d4),
-        .o_output (sel1_output));
+        .o_output (operandBSelector_output));
     // verilator lint_on PINMISSING
 
 
@@ -194,12 +199,11 @@ module ProcessorSC
 
     logic [DATA_WIDTH-1:0] alu_result;
 
-    ALU #(
-        .WIDTH (DATA_WIDTH))
+    ALU
     alu (
         .i_op       (dpCtrl_aluControl),
-        .i_operandA (sel5_output),
-        .i_operandB (sel1_output),
+        .i_operandA (operandASelector_output),
+        .i_operandB (operandBSelector_output),
         .o_result   (alu_result));
 
 

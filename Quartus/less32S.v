@@ -1,10 +1,10 @@
-// megafunction wizard: %LPM_COMPARE%VBB%
+// megafunction wizard: %LPM_COMPARE%
 // GENERATION: STANDARD
 // VERSION: WM1.0
 // MODULE: LPM_COMPARE 
 
 // ============================================================
-// File Name: mw_s32_comparer.v
+// File Name: less32S.v
 // Megafunction Name(s):
 // 			LPM_COMPARE
 //
@@ -16,6 +16,7 @@
 //
 // 20.1.0 Build 711 06/05/2020 SJ Lite Edition
 // ************************************************************
+
 
 //Copyright (C) 2020  Intel Corporation. All rights reserved.
 //Your use of Intel Corporation's design tools, logic functions 
@@ -32,27 +33,50 @@
 //refer to the applicable agreement for further details, at
 //https://fpgasoftware.intel.com/eula.
 
-module mw_s32_comparer (
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module less32S (
 	dataa,
 	datab,
-	aeb,
-	agb);
+	alb);
 
 	input	[31:0]  dataa;
 	input	[31:0]  datab;
-	output	  aeb;
-	output	  agb;
+	output	  alb;
+
+	wire  sub_wire0;
+	wire  alb = sub_wire0;
+
+	lpm_compare	LPM_COMPARE_component (
+				.dataa (dataa),
+				.datab (datab),
+				.alb (sub_wire0),
+				.aclr (1'b0),
+				.aeb (),
+				.agb (),
+				.ageb (),
+				.aleb (),
+				.aneb (),
+				.clken (1'b1),
+				.clock (1'b0));
+	defparam
+		LPM_COMPARE_component.lpm_representation = "SIGNED",
+		LPM_COMPARE_component.lpm_type = "LPM_COMPARE",
+		LPM_COMPARE_component.lpm_width = 32;
+
 
 endmodule
 
 // ============================================================
 // CNX file retrieval info
 // ============================================================
-// Retrieval info: PRIVATE: AeqB NUMERIC "1"
+// Retrieval info: PRIVATE: AeqB NUMERIC "0"
 // Retrieval info: PRIVATE: AgeB NUMERIC "0"
-// Retrieval info: PRIVATE: AgtB NUMERIC "1"
+// Retrieval info: PRIVATE: AgtB NUMERIC "0"
 // Retrieval info: PRIVATE: AleB NUMERIC "0"
-// Retrieval info: PRIVATE: AltB NUMERIC "0"
+// Retrieval info: PRIVATE: AltB NUMERIC "1"
 // Retrieval info: PRIVATE: AneB NUMERIC "0"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
 // Retrieval info: PRIVATE: LPM_PIPELINE NUMERIC "0"
@@ -70,18 +94,16 @@ endmodule
 // Retrieval info: CONSTANT: LPM_REPRESENTATION STRING "SIGNED"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "LPM_COMPARE"
 // Retrieval info: CONSTANT: LPM_WIDTH NUMERIC "32"
-// Retrieval info: USED_PORT: aeb 0 0 0 0 OUTPUT NODEFVAL "aeb"
-// Retrieval info: USED_PORT: agb 0 0 0 0 OUTPUT NODEFVAL "agb"
+// Retrieval info: USED_PORT: alb 0 0 0 0 OUTPUT NODEFVAL "alb"
 // Retrieval info: USED_PORT: dataa 0 0 32 0 INPUT NODEFVAL "dataa[31..0]"
 // Retrieval info: USED_PORT: datab 0 0 32 0 INPUT NODEFVAL "datab[31..0]"
 // Retrieval info: CONNECT: @dataa 0 0 32 0 dataa 0 0 32 0
 // Retrieval info: CONNECT: @datab 0 0 32 0 datab 0 0 32 0
-// Retrieval info: CONNECT: aeb 0 0 0 0 @aeb 0 0 0 0
-// Retrieval info: CONNECT: agb 0 0 0 0 @agb 0 0 0 0
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mw_s32_comparer_bb.v TRUE
+// Retrieval info: CONNECT: alb 0 0 0 0 @alb 0 0 0 0
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S.bsf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL less32S_bb.v TRUE
 // Retrieval info: LIB_FILE: lpm

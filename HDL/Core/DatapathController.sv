@@ -1,39 +1,40 @@
 module DatapathController
     import Types::*;
 (
-    input  Inst        i_inst,          // La instruccio
-    input  logic       i_isEqual,       // Indica A == B
-    input  logic       i_isLess,        // Indica A < B
+    input  Inst        i_inst,           // La instruccio
 
-    output logic       o_memWrEnable,   // Habilita l'escriptura en memoria
-    output logic       o_memRdEnable,   // Habilita la lectura de la memoria
-    output DataAccess  o_memAccess,     // Tamany d'acces a la memoria
-    output logic       o_memUnsigned,   // Lectura de memoria sense signe
+    input  logic       i_isEqual,        // Indica A == B
+    input  logic       i_isLessSigned,   // Indica A < B amb signe
+    input  logic       i_isLessUnsigned, // Indica A < B sense signe
 
-    output logic [1:0] o_pcNextSel,     // Selecciona el seguent valor del PC
+    output logic       o_memWrEnable,    // Habilita l'escriptura en memoria
+    output logic       o_memRdEnable,    // Habilita la lectura de la memoria
+    output DataAccess  o_memAccess,      // Tamany d'acces a la memoria
+    output logic       o_memUnsigned,    // Lectura de memoria sense signe
+    output logic [1:0] o_pcNextSel,      // Selecciona el seguent valor del PC
 
-    output AluOp       o_aluControl,    // Selecciona l'operacio en la ALU
-    output logic [1:0] o_operandASel,
-    output logic [1:0] o_operandBSel,   // Selecciona l'operand B de la ALU
+    output AluOp       o_aluControl,     // Selecciona l'operacio en la ALU
+    output logic [1:0] o_operandASel,    // Selecciona l'operand A de la alu
+    output logic [1:0] o_operandBSel,    // Selecciona l'operand B de la ALU
 
-    output logic       o_regWrEnable,   // Habilita l'escriptura en els registres
-    output logic [1:0] o_regWrDataSel); // Selecciona les dades per escriure en el registre
+    output logic       o_regWrEnable,    // Habilita l'escriptura en els registres
+    output logic [1:0] o_regWrDataSel);  // Selecciona les dades per escriure en el registre
 
-    localparam  asREG = 2'b00;           // Selecciona el valor del registre
-    localparam  asPC  = 2'b01;           // Selecciona el valor del PC
-    localparam  asV0  = 2'b10;           // Selecciona el valor 0
+    localparam  asREG = 2'b00;  // Selecciona el valor del registre
+    localparam  asPC  = 2'b01;  // Selecciona el valor del PC
+    localparam  asV0  = 2'b10;  // Selecciona el valor 0
 
-    localparam  bsREG = 2'b00;           // Selecciona el valor del registre
-    localparam  bsIMM = 2'b01;           // Selecciona el valor IMM
-    localparam  bsV4  = 2'b10;           // Selecciona el valor 4
+    localparam  bsREG = 2'b00;  // Selecciona el valor del registre
+    localparam  bsIMM = 2'b01;  // Selecciona el valor IMM
+    localparam  bsV4  = 2'b10;  // Selecciona el valor 4
 
-    localparam  wrALU = 2'b00;           // Escriu el valor de la ALU
-    localparam  wrMEM = 2'b01;           // Escriu el valor de la memoria
-    localparam  wrPC4 = 2'b10;           // Escriu el valor de PC+4
+    localparam  wrALU = 2'b00;  // Escriu el valor de la ALU
+    localparam  wrMEM = 2'b01;  // Escriu el valor de la memoria
+    localparam  wrPC4 = 2'b10;  // Escriu el valor de PC+4
 
-    localparam  pcPP4 = 2'b00;           // PC = PC + 4
-    localparam  pcOFS = 2'b01;           // PC = PC + offset
-    localparam  pcIND = 2'b11;           // PC = [RS1] + offset
+    localparam  pcPP4 = 2'b00;  // PC = PC + 4
+    localparam  pcOFS = 2'b01;  // PC = PC + offset
+    localparam  pcIND = 2'b11;  // PC = [RS1] + offset
 
     always_comb begin
 
@@ -87,14 +88,20 @@ module DatapathController
                 if (!i_isEqual)
                     o_pcNextSel = pcOFS;
 
-            {10'b???????_110, OpCode_Branch}, // BLTU
-            {10'b???????_100, OpCode_Branch}: // BLT
-                if (i_isLess)
+            {10'b???????_110, OpCode_Branch}: // BLTU
+                if (i_isLessUnsigned)
                     o_pcNextSel = pcOFS;
 
-            {10'b???????_111, OpCode_Branch}, // BGEU
+            {10'b???????_100, OpCode_Branch}: // BLT
+                if (i_isLessSigned)
+                    o_pcNextSel = pcOFS;
+
+            {10'b???????_111, OpCode_Branch}: // BGEU
+                if (!i_isLessUnsigned & !i_isEqual)
+                    o_pcNextSel = pcOFS;
+
             {10'b???????_101, OpCode_Branch}: // BGE
-                if (!i_isLess & !i_isEqual)
+                if (!i_isLessSigned & !i_isEqual)
                     o_pcNextSel = pcOFS;
 
             {10'b???????_000, OpCode_Load  }, // LB
@@ -103,12 +110,12 @@ module DatapathController
             {10'b???????_100, OpCode_Load  }, // LBU
             {10'b???????_101, OpCode_Load  }: // LHU
                 begin
-                    o_aluControl    = AluOp_ADD;
-                    o_operandBSel   = bsIMM;
-                    o_regWrDataSel  = wrMEM;
-                    o_regWrEnable   = 1'b1;
-                    o_memRdEnable   = 1'b1;
-                    o_memUnsigned   = i_inst[14];
+                    o_aluControl   = AluOp_ADD;
+                    o_operandBSel  = bsIMM;
+                    o_regWrDataSel = wrMEM;
+                    o_regWrEnable  = 1'b1;
+                    o_memRdEnable  = 1'b1;
+                    o_memUnsigned  = i_inst[14];
 
                     unique case (i_inst[13:12])
                         2'b00: o_memAccess = DataAccess_Byte;

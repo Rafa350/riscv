@@ -1,4 +1,5 @@
 module FPU
+    import Types::*;
 (
     );
 
