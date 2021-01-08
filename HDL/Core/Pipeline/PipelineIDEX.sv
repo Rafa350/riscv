@@ -7,7 +7,8 @@ module PipelineIDEX
     // Senyals de control
     input  logic       i_clock,          // Clock
     input  logic       i_reset,          // Reset
-    input  logic       i_flush,          // Descarda les accions d'escriptura
+    input  logic       i_stall,          // Retorna el mateix estat
+    input  logic       i_flush,          // Retorna l'estat NOP
 
 `ifdef DEBUG
     // Senyals d'entrada de depuracio

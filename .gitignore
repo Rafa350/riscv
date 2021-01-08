@@ -3,6 +3,7 @@
 /Quartus/output_files
 /Quartus/simulation
 /Quartus/dse
+/Quartus/greybox_tmp
 /Verilator/build
 /Yosys/build
 /Firmware/build
@@ -13,3 +14,4 @@
 *.exe
 *.fst
 *.qws
+.vscode
