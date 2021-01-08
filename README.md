@@ -1,4 +1,4 @@
-# Experimental RISCV implementacion on FPGA
+# Experimental RISCV implementation on FPGA
 
 ## CPU features
 - Base RV32I
@@ -14,5 +14,5 @@
 - Custom C++ app for behavioral simulation
 
 ## Implementation
-- Quartus Primer 20.1
+- Quartus Prime 20.1
 - Terasic DE0-Nano (Cyclone-IV)
