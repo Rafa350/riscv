@@ -8,6 +8,7 @@ module CSRBlock
     // Senyals d'acces per ISA
     input  CRRegAddr    i_addr,
     input  logic        i_wrEnable,
+    input  logic [1:0]  i_wrMode,     (WRITE, SET, CLEAR)
     input  Data         i_wrData,
     output Data         o_rdData
 
