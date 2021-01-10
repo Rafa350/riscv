@@ -1,4 +1,4 @@
-module MultDiv
+module Divider
     import Types::*;
 (
     input Data i_operandA,
