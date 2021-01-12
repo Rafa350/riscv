@@ -4,15 +4,18 @@
 
 // Procesador base
 //
+//`define RV_BASE_RV32E        // Basic enters 32 bits reduccio de registres
 `define RV_BASE_RV32I        // Basic enters 32 bits
-//`define RV_BASE_RV64I        // Basic enters 64 bits
+//`define RV_BASE_RV64I        // Basic enters 64 bits 
 //`define RV_BASE_RV128I       // Basic enters 128 bits
 
 
 // Extensions del procesador
 //
-//`define RV_EXT_E             // Reduccio de registres
+//`define RV_EXT_B             // Manipulacio de bits
 `define RV_EXT_C             // Instruccions comprimides
+//`define RV_EXT_D             // Operacions float doble precissio (Implica RV_EXT_F)
+//`define RV_EXT_F             // Operacions float simple precissio
 //`define RV_EXT_M             // Multiplicacio i divisio d'enters
 
 

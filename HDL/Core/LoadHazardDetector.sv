@@ -1,4 +1,4 @@
-module HazardDetector
+module LoadHazardDetector
     import Types::*;
 (
     input  RegAddr i_instRS1,
@@ -8,13 +8,13 @@ module HazardDetector
     input  logic   i_MEM_memRdEnable,
     input  RegAddr i_MEM_regAddr,
 
-    output logic   o_bubble);
+    output logic   o_hazard);
 
 
     // Comprova si el valor d'un registre, encara s'ha de carregar
     // de la memoria.
 
-    assign o_bubble =
+    assign o_hazard =
         (i_EX_memRdEnable &
             ((i_instRS1 != RegAddr'(0)) & ((i_instRS1 == i_EX_regAddr) | (i_instRS1 == i_MEM_regAddr)))) |
 

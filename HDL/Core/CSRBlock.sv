@@ -6,7 +6,7 @@ module CSRBlock
     input  logic        i_reset,
 
     // Senyals d'acces per ISA
-    input  CRRegAddr    i_addr,
+    input  CSRegAddr    i_addr,
     input  logic        i_wrEnable,
     input  logic [1:0]  i_wrMode,     (WRITE, SET, CLEAR)
     input  Data         i_wrData,
@@ -23,7 +23,7 @@ module CSRBlock
         (1'b1   <<  2) |     // C - Compressed extension
 `endif
         (1'b0   <<  3) |     // D - Double precision floating-point extension
-`ifdef RV_EXT_E
+`ifdef RV_BASE_RV32E
         (1'b1   <<  4) |     // E - RV32E base ISA
 `endif
         (1'b0   <<  5) |     // F - Single precision floating-point extension

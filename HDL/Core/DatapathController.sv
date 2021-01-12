@@ -14,11 +14,15 @@ module DatapathController
     output logic [1:0] o_pcNextSel,      // Selecciona el seguent valor del PC
 
     output AluOp       o_aluControl,     // Selecciona l'operacio en la ALU
-    output logic [1:0] o_operandASel,    // Selecciona l'operand A de la alu
-    output logic [1:0] o_operandBSel,    // Selecciona l'operand B de la ALU
+`ifdef RV_EXT_M
+    output MduOp       o_mduControl,     // Selecciona l'operacio de la MDU
+`endif
+    output logic [1:0] o_operandASel,    // Selecciona l'operand A
+    output logic [1:0] o_operandBSel,    // Selecciona l'operand B
 
     output logic       o_regWrEnable,    // Habilita l'escriptura en els registres
     output logic [1:0] o_regWrDataSel);  // Selecciona les dades per escriure en el registre
+
 
     localparam  asREG = 2'b00;  // Selecciona el valor del registre
     localparam  asPC  = 2'b01;  // Selecciona el valor del PC
@@ -36,9 +40,10 @@ module DatapathController
     localparam  pcOFS = 2'b01;  // PC = PC + offset
     localparam  pcIND = 2'b11;  // PC = [RS1] + offset
 
+
     always_comb begin
 
-        o_aluControl   = AluOp_Unknown;
+        o_aluControl   = AluOp_ADD;
         o_operandASel  = asREG;
         o_operandBSel  = bsREG;
         o_pcNextSel    = pcPP4;
@@ -116,12 +121,7 @@ module DatapathController
                     o_regWrEnable  = 1'b1;
                     o_memRdEnable  = 1'b1;
                     o_memUnsigned  = i_inst[14];
-
-                    unique case (i_inst[13:12])
-                        2'b00: o_memAccess = DataAccess_Byte;
-                        2'b01: o_memAccess = DataAccess_Half;
-                        default: ;
-                    endcase
+                    o_memAccess    = DataAccess'(i_inst[13:12]);
                 end
 
             {10'b???????_000, OpCode_Store }, // SB
@@ -131,12 +131,7 @@ module DatapathController
                     o_aluControl  = AluOp_ADD;
                     o_operandBSel = bsIMM;
                     o_memWrEnable = 1'b1;
-
-                    unique case (i_inst[13:12])
-                        2'b00: o_memAccess = DataAccess_Byte;
-                        2'b01: o_memAccess = DataAccess_Half;
-                        default: ;
-                    endcase
+                    o_memAccess   = DataAccess'(i_inst[13:12]);
                 end
 
             {10'b???????_000, OpCode_OpIMM }, // ADDI
@@ -148,17 +143,20 @@ module DatapathController
                 begin
                     o_operandBSel = bsIMM;
                     o_regWrEnable = 1'b1;
-
-                    unique case (i_inst[14:12])
-                        3'b000: o_aluControl = AluOp_ADD;
-                        3'b010: o_aluControl = AluOp_SLT;
-                        3'b011: o_aluControl = AluOp_SLTU;
-                        3'b100: o_aluControl = AluOp_XOR;
-                        3'b110: o_aluControl = AluOp_OR;
-                        3'b111: o_aluControl = AluOp_AND;
-                        default: ;
-                    endcase
+                    o_aluControl  = AluOp'({1'b0, i_inst[14:12]});
                 end
+
+`ifdef RV_EXT_M
+            {10'b0000001_000, OpCode_Op   }, // MUL
+            {10'b0000001_001, OpCode_Op   }, // MULH
+            {10'b0000001_010, OpCode_Op   }, // MULHSU
+            {10'b0000001_011, OpCode_Op   }, // MULHU
+            {10'b0000001_100, OpCode_Op   }, // DIV
+            {10'b0000001_101, OpCode_Op   }, // DIVU
+            {10'b0000001_110, OpCode_Op   }, // REM
+            {10'b0000001_111, OpCode_Op   }: // REMU
+                ;
+`endif
 
             {10'b0000000_000, OpCode_Op    }, // ADD
             {10'b0100000_000, OpCode_Op    }, // SUB
@@ -172,20 +170,7 @@ module DatapathController
             {10'b0000000_111, OpCode_Op    }: // AND
                 begin
                     o_regWrEnable = 1'b1;
-
-                    unique casez ({i_inst[30], i_inst[14:12]})
-                        4'b0_000: o_aluControl = AluOp_ADD;
-                        4'b1_000: o_aluControl = AluOp_SUB;
-                        4'b?_001: o_aluControl = AluOp_SLL;
-                        4'b?_010: o_aluControl = AluOp_SLT;
-                        4'b?_011: o_aluControl = AluOp_SLTU;
-                        4'b?_100: o_aluControl = AluOp_XOR;
-                        4'b0_101: o_aluControl = AluOp_SRL;
-                        4'b1_101: o_aluControl = AluOp_SRA;
-                        4'b?_110: o_aluControl = AluOp_OR;
-                        4'b?_111: o_aluControl = AluOp_AND;
-                        default: ;
-                    endcase
+                    o_aluControl  = AluOp'({i_inst[30], i_inst[14:12]});
                 end
 
             default: ;

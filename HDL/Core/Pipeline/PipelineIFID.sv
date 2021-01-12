@@ -32,22 +32,27 @@ module PipelineIFID
 
 
     always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_stall, i_flush})
-            3'b1??: // RESET
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111, // RESET
+            3'b001: // FLUSH
                 begin
                     o_pc             <= InstAddr'(-4);
                     o_inst           <= Inst'(0);
                     o_instCompressed <= 1'b0;
                 end
 
-            3'b00?: // NORMAL
+            3'b000: // NORMAL
                 begin
                     o_pc             <= i_pc;
                     o_inst           <= i_inst;
                     o_instCompressed <= i_instCompressed;
                 end
 
-            3'b01?: // STALL
+            3'b010, // STALL
+            3'b011: // STALL
                 begin
                     o_pc             <= o_pc;
                     o_inst           <= o_inst;
@@ -58,23 +63,28 @@ module PipelineIFID
 
 `ifdef DEBUG
     always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_stall, i_flush})
-            3'b1??: // RESET
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111, // RESET
+            3'b001: // FLUSH
                 begin
-                    o_dbgTick <= 0;
                     o_dbgOk   <= 1'b0;
+                    o_dbgTick <= i_flush ? i_dbgTick : 0;
                 end
 
-            3'b00?: // NORMAL
+            3'b000: // NORMAL
                 begin
-                    o_dbgTick <= i_dbgTick;
                     o_dbgOk   <= i_dbgOk;
+                    o_dbgTick <= i_dbgTick;
                 end
 
-            3'b01?: // STALL
+            3'b010, // STALL
+            3'b011: // STALL
                 begin
-                    o_dbgTick <= o_dbgTick;
                     o_dbgOk   <= o_dbgOk;
+                    o_dbgTick <= o_dbgTick;
                 end
         endcase
 `endif

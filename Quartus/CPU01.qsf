@@ -370,6 +370,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ALU/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/StallController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/LoadHazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstMemoryBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataMemoryBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterBus.sv
@@ -385,7 +386,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIFID
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIDEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/HazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterFile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ProcessorPP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ForwardController.sv

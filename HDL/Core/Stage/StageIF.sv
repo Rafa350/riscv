@@ -13,6 +13,7 @@ module StageIF
 
     // Senyals de control d'execucio
     input  InstAddr      i_pcNext,         // El nou PC
+    output logic         o_hazard,         // Indica hazard
     output Inst          o_inst,           // Instruccio
     output logic         o_instCompressed, // Indica que la instruccio es comprimida
     output InstAddr      o_pc);            // PC
@@ -21,8 +22,6 @@ module StageIF
     // ------------------------------------------------------------------------
     // Obte la instruccio de la memoria, i si cal la expandeix.
     // ------------------------------------------------------------------------
-
-//`define RV32_COMPRESS
 
 `ifdef RV_EXT_C
     InstExpander
@@ -42,5 +41,7 @@ module StageIF
 
     assign o_pc           = i_pcNext;
     assign instBus.addr   = o_pc;
+
+    assign o_hazard       = 1'b0;
 
 endmodule

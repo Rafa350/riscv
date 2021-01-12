@@ -10,6 +10,7 @@ module DataMemoryAdapter
     input  logic         i_rdEnable,   // Autoritza lectura
     input  Data          i_wrData,     // Dades per escriure
     output Data          o_rdData,     // Dades lleigides
+    output logic         o_busy,       // Indica que esta ocupat
     output logic         o_alignError, // Indica error d'aliniacio
     DataMemoryBus.master bus);         // Interficie amb la memoria
 
@@ -17,6 +18,8 @@ module DataMemoryAdapter
 
         o_alignError = ((i_access == DataAccess_Word) & (i_addr[1:0] != 2'b00)) |
                        ((i_access == DataAccess_Half) & (i_addr[0] != 1'b0));
+
+        o_busy       = 1'b0;
 
         bus.addr     = i_addr;
         bus.access   = i_access;

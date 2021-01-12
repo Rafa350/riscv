@@ -1,7 +1,7 @@
 # Experimental RISCV implementation on FPGA
 
 ## CPU features
-- Base RV32I
+- Base RV32I, RV64I or RV32E
 - Optional extensions M & C
 - Clasic five pipeline stages
 - Machine mode only

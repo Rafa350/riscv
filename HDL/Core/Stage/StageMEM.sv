@@ -22,6 +22,7 @@ module StageMEM
     input  logic         i_memUnsigned,  // Lectura de memoria sense signe
 
     input  logic [1:0]   i_regWrDataSel, // Seleccio de dades per escriure en el registre
+    output logic         o_hazard,       // Indica hazard
     output Data          o_regWrData);   // Dades per escriure en el registre
 
 
@@ -31,6 +32,7 @@ module StageMEM
 
     Data  memAdapter_rdData;
     logic memAdapter_alignError;
+    logic memAdapter_busy;
 
     DataMemoryAdapter
     memAdapter (
@@ -43,8 +45,9 @@ module StageMEM
         .i_rdEnable   (i_memRdEnable),
         .i_wrData     (i_dataB),
         .o_rdData     (memAdapter_rdData),
-        .bus          (dataBus),
-        .o_alignError (memAdapter_alignError));
+        .o_busy       (memAdapter_busy),
+        .o_alignError (memAdapter_alignError),
+        .bus          (dataBus));
 
 
     /// -----------------------------------------------------------------------
@@ -81,5 +84,7 @@ module StageMEM
         .i_input2 ({{$size(Data)-$size(InstAddr){1'b0}}, adder_result}),
         .o_output (o_regWrData));
     // verilator lint_on PINMISSING
+
+    assign o_hazard = 1'b0;
 
 endmodule

@@ -51,12 +51,15 @@ module PipelineMEMWB
     output Data        o_regWrData);
 
     always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_stall, i_flush})
-            3'b1??: // RESET
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111: // RESET
                 begin
-                    o_regWrAddr   <= {$size(RegAddr){1'b0}};
+                    o_regWrAddr   <= RegAddr'(0);
                     o_regWrEnable <= 1'b0;
-                    o_regWrData   <= {$size(Data){1'b0}};
+                    o_regWrData   <= Data'(0);
                 end
 
             3'b000: // NORMAL
@@ -66,7 +69,8 @@ module PipelineMEMWB
                     o_regWrData   <= i_regWrData;
                 end
 
-            3'b01?: // STALL
+            3'b010, // STALL
+            3'b011: // STALL
                 begin
                     o_regWrAddr   <= o_regWrAddr;
                     o_regWrEnable <= o_regWrEnable;
@@ -84,10 +88,14 @@ module PipelineMEMWB
 
 `ifdef DEBUG
     always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_stall, i_flush})
-            3'b1??: //RESET
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111, // RESET
+            3'b001: // FLUSH
                 begin
-                    o_dbgTick        <= 0;
+                    o_dbgTick        <= i_flush ? i_dbgTick : 0;
                     o_dbgOk          <= 1'b0;
                     o_dbgPc          <= InstAddr'(0);
                     o_dbgInst        <= Inst'(0);
@@ -115,7 +123,8 @@ module PipelineMEMWB
                     o_dbgMemAccess   <= i_dbgMemAccess;
                 end
 
-            3'b01?: // STALL
+            3'b010, // STALL
+            3'b011: // STALL
                 begin
                     o_dbgTick        <= o_dbgTick;
                     o_dbgOk          <= o_dbgOk;
@@ -128,21 +137,6 @@ module PipelineMEMWB
                     o_dbgMemWrEnable <= o_dbgMemWrEnable;
                     o_dbgMemWrData   <= o_dbgMemWrData;
                     o_dbgMemAccess   <= o_dbgMemAccess;
-                end
-
-            3'b001: // FLUSH
-                begin
-                    o_dbgTick        <= i_dbgTick;
-                    o_dbgOk          <= 1'b0;
-                    o_dbgPc          <= InstAddr'(0);
-                    o_dbgInst        <= Inst'(0);
-                    o_dbgRegWrAddr   <= RegAddr'(0);
-                    o_dbgRegWrEnable <= 1'b0;
-                    o_dbgRegWrData   <= Data'(0);
-                    o_dbgMemWrAddr   <= DataAddr'(0);
-                    o_dbgMemWrEnable <= 1'b0;
-                    o_dbgMemWrData   <= Data'(0);
-                    o_dbgMemAccess   <= DataAccess'(0);
                 end
         endcase
 `endif

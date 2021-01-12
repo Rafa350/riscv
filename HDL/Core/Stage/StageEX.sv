@@ -11,7 +11,7 @@ module StageEX
     input  logic [1:0] i_operandASel,        // Seleccio del operand A de la ALU
     input  logic [1:0] i_operandBSel,        // Seleccio del operand B de la ALU
     input  AluOp       i_aluControl,         // Operacio a realitzar emb la ALU
-
+    output logic       o_hazard,             // Indica hazard
     output Data        o_result,             // Resultat de la ALU
     output Data        o_dataB);             // Dades B
 
@@ -56,13 +56,14 @@ module StageEX
     // Realitzacio dels calculs en la ALU
     // -------------------------------------------------------------------
 
-    ALU 
+    ALU
     alu (
         .i_op       (i_aluControl),
         .i_operandA (operandASelector_output),
         .i_operandB (operandBSelector_output),
         .o_result   (o_result));
 
-    assign o_dataB = i_dataB;
+    assign o_hazard = 1'b0;
+    assign o_dataB  = i_dataB;
 
 endmodule

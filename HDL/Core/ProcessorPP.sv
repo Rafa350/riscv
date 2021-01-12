@@ -38,9 +38,9 @@ module ProcessorPP
     StallController
     stallCtrl(
         .i_reset       (i_reset),
-        .i_ID_bubble   (ID_bubble),
-        .i_EX_bubble   (1'b0),
-        .i_MEM_bubble  (1'b0),
+        .i_ID_hazard   (ID_hazard),
+        .i_EX_hazard   (EX_hazard),
+        .i_MEM_hazard  (MEM_hazard),
         .o_IFID_stall  (stallCtrl_IFID_stall),
         .o_IFID_flush  (stallCtrl_IFID_flush),
         .o_IDEX_stall  (stallCtrl_IDEX_stall),
@@ -58,6 +58,7 @@ module ProcessorPP
     Inst     IF_inst;
     InstAddr IF_pc;
     logic    IF_instCompressed;
+    logic    IF_hazard;
 
     StageIF
     stageIF (
@@ -65,6 +66,7 @@ module ProcessorPP
         .i_reset          (i_reset),           // Reset
         .instBus          (instBus),           // Bus de la memoria d'instruccio
         .i_pcNext         (ID_pcNext),         // Adressa de salt
+        .o_hazard         (IF_hazard),         // Indica hazard
         .o_inst           (IF_inst),           // Instruccio
         .o_instCompressed (IF_instCompressed), // Indica si instruccio es comprimida
         .o_pc             (IF_pc));            // Adressa de la instruccio
@@ -87,7 +89,7 @@ module ProcessorPP
     pipelineIFID (
         .i_clock          (i_clock),
         .i_reset          (i_reset),
-        .i_stall          (ID_bubble),
+        .i_stall          (stallCtrl_IFID_stall),
         .i_flush          (1'b0),
         .i_pc             (IF_pc),
         .i_inst           (IF_inst),
@@ -124,7 +126,7 @@ module ProcessorPP
     logic [1:0] ID_operandASel;
     logic [1:0] ID_operandBSel;
     InstAddr    ID_pcNext;
-    logic       ID_bubble;
+    logic       ID_hazard;
 
     StageID
     stageID (
@@ -149,7 +151,7 @@ module ProcessorPP
         .o_dataA           (ID_dataA),            // Dades A
         .o_dataB           (ID_dataB),            // Dades B
         .o_instIMM         (ID_instIMM),
-        .o_bubble          (ID_bubble),           // Indica si cal generar bombolla
+        .o_hazard          (ID_hazard),           // Indica hazard
         .o_regWrAddr       (ID_regWrAddr),        // Registre per escriure
         .o_regWrEnable     (ID_regWrEnable),      // Habilita escriure en el registre
         .o_regWrDataSel    (ID_regWrDataSel),
@@ -195,7 +197,7 @@ module ProcessorPP
         .i_clock          (i_clock),
         .i_reset          (i_reset),
         .i_stall          (1'b0),
-        .i_flush          (ID_bubble),
+        .i_flush          (stallCtrl_IDEX_flush),
         .i_instIMM        (ID_instIMM),
         .i_dataA          (ID_dataA),
         .i_dataB          (ID_dataB),
@@ -245,8 +247,9 @@ module ProcessorPP
     // Stage EX
     // ------------------------------------------------------------------------
 
-    Data EX_result;
-    Data EX_dataB;
+    Data  EX_result;
+    Data  EX_dataB;
+    logic EX_hazard;
 
     StageEX
     stageEX (
@@ -257,6 +260,7 @@ module ProcessorPP
         .i_operandASel (IDEX_operandASel),
         .i_operandBSel (IDEX_operandBSel),
         .i_aluControl  (IDEX_aluControl),
+        .o_hazard      (EX_hazard),         // Indica hazard
         .o_result      (EX_result),
         .o_dataB       (EX_dataB));
 
@@ -330,7 +334,8 @@ module ProcessorPP
     // Stage MEM
     // ------------------------------------------------------------------------
 
-    Data MEM_regWrData;
+    Data  MEM_regWrData;
+    logic MEM_hazard;
 
     StageMEM
     stageMEM (
@@ -345,6 +350,7 @@ module ProcessorPP
         .i_memRdEnable  (EXMEM_memRdEnable),  // Autoritza la lectura de la memoria
         .i_memAccess    (EXMEM_memAccess),    // Tamany d'acces a la memoria
         .i_memUnsigned  (EXMEM_memUnsigned),  // Lectura de memoria sense signe
+        .o_hazard       (MEM_hazard),         // Indica hazard
         .o_regWrData    (MEM_regWrData));     // Dades per escriure en el registre
 
 
@@ -436,7 +442,7 @@ module ProcessorPP
     dbg(
         .i_clock       (i_clock),
         .i_reset       (i_reset),
-        .i_stall       (ID_bubble),
+        .i_stall       (ID_hazard),
         .i_tick        (MEMWB_dbgTick),
         .i_ok          (MEMWB_dbgOk),
         .i_pc          (MEMWB_dbgPc),

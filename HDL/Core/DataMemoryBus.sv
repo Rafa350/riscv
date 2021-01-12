@@ -8,6 +8,7 @@ interface DataMemoryBus;
     logic      rdEnable; // Habilita la lectura
     Data       wrData;   // Dades a escriure
     Data       rdData;   // Dades lleigides
+    logic      busy;     // Indica bus ocupat
 
     modport master(
         output addr,
@@ -15,7 +16,8 @@ interface DataMemoryBus;
         output wrEnable,
         output rdEnable,
         input  rdData,
-        output wrData);
+        output wrData,
+        input  busy);
 
     modport slave(
         input  addr,
@@ -23,6 +25,7 @@ interface DataMemoryBus;
         input  wrEnable,
         input  rdEnable,
         output rdData,
-        input  wrData);
+        input  wrData,
+        output busy);
 
 endinterface

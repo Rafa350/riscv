@@ -59,29 +59,104 @@ module PipelineIDEX
     output AluOp       o_aluControl);
 
 
-    always_ff @(posedge i_clock) begin
-        o_pc             <= i_reset ? {$size(InstAddr){1'b0}} : i_pc;
-        o_instIMM        <= i_reset ? {$size(Data){1'b0}}     : i_instIMM;
-        o_dataA          <= i_reset ? {$size(Data){1'b0}}     : i_dataA;
-        o_dataB          <= i_reset ? {$size(Data){1'b0}}     : i_dataB;
-        o_regWrAddr      <= i_reset ? {$size(RegAddr){1'b0}}  : i_regWrAddr;
-        o_regWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_regWrEnable);
-        o_regWrDataSel   <= i_reset ? 2'b0                    : i_regWrDataSel;
-        o_memWrEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memWrEnable);
-        o_memRdEnable    <= i_reset ? 1'b0                    : (i_flush ? 1'b0 : i_memRdEnable);
-        o_memAccess      <= i_reset ? DataAccess_Word         : i_memAccess;
-        o_memUnsigned    <= i_reset ? 1'b0                    : i_memUnsigned;
-        o_aluControl     <= i_reset ? AluOp_Unknown           : i_aluControl;
-        o_operandASel    <= i_reset ? 2'b0                    : i_operandASel;
-        o_operandBSel    <= i_reset ? 2'b0                    : i_operandBSel;
+    always_ff @(posedge i_clock)
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111, // RESET
+            3'b001: // FLUSH
+                begin
+                    o_pc             <= InstAddr'(0);
+                    o_instIMM        <= Inst'(0);
+                    o_dataA          <= Data'(0);
+                    o_dataB          <= Data'(0);
+                    o_regWrAddr      <= RegAddr'(0);
+                    o_regWrEnable    <= 1'b0;
+                    o_regWrDataSel   <= 2'b0;
+                    o_memWrEnable    <= 1'b0;
+                    o_memRdEnable    <= 1'b0;
+                    o_memAccess      <= DataAccess'(0);
+                    o_memUnsigned    <= 1'b0;
+                    o_aluControl     <= AluOp_ADD;
+                    o_operandASel    <= 2'b0;
+                    o_operandBSel    <= 2'b0;
+                end
+
+            3'b000: // NORMAL
+                begin
+                    o_pc             <= i_pc;
+                    o_instIMM        <= i_instIMM;
+                    o_dataA          <= i_dataA;
+                    o_dataB          <= i_dataB;
+                    o_regWrAddr      <= i_regWrAddr;
+                    o_regWrEnable    <= i_regWrEnable;
+                    o_regWrDataSel   <= i_regWrDataSel;
+                    o_memWrEnable    <= i_memWrEnable;
+                    o_memRdEnable    <= i_memRdEnable;
+                    o_memAccess      <= i_memAccess;
+                    o_memUnsigned    <= i_memUnsigned;
+                    o_aluControl     <= i_aluControl;
+                    o_operandASel    <= i_operandASel;
+                    o_operandBSel    <= i_operandBSel;
+                end
+
+            3'b010, // STALL
+            3'b011: // STALL
+                begin
+                    o_pc             <= o_pc;
+                    o_instIMM        <= o_instIMM;
+                    o_dataA          <= o_dataA;
+                    o_dataB          <= o_dataB;
+                    o_regWrAddr      <= o_regWrAddr;
+                    o_regWrEnable    <= o_regWrEnable;
+                    o_regWrDataSel   <= o_regWrDataSel;
+                    o_memWrEnable    <= o_memWrEnable;
+                    o_memRdEnable    <= o_memRdEnable;
+                    o_memAccess      <= o_memAccess;
+                    o_memUnsigned    <= o_memUnsigned;
+                    o_aluControl     <= o_aluControl;
+                    o_operandASel    <= o_operandASel;
+                    o_operandBSel    <= o_operandBSel;
+                end
+        endcase
+
 `ifdef DEBUG
-        o_dbgTick        <= i_dbgTick;
-        o_dbgOk          <= (i_reset | i_flush) ? 1'b0 : i_dbgOk;
-        o_dbgInst        <= i_dbgInst;
-        o_dbgRegWrAddr   <= i_dbgRegWrAddr;
-        o_dbgRegWrEnable <= i_dbgRegWrEnable;
+    always_ff @(posedge i_clock)
+        case ({i_reset, i_stall, i_flush})
+            3'b100, // RESET
+            3'b101, // RESET
+            3'b110, // RESET
+            3'b111, // RESET
+            3'b001: // FLUSH
+                begin
+                    o_dbgOk          <= 1'b0;
+                    o_dbgTick        <= i_flush ? i_dbgTick : 0;
+                    o_dbgInst        <= Inst'(0);
+                    o_dbgRegWrAddr   <= RegAddr'(0);
+                    o_dbgRegWrEnable <= 1'b0;
+                end
+
+            3'b000: // NORMAL
+                begin
+                    o_dbgOk          <= i_dbgOk;
+                    o_dbgTick        <= i_dbgTick;
+                    o_dbgInst        <= i_dbgInst;
+                    o_dbgRegWrAddr   <= i_dbgRegWrAddr;
+                    o_dbgRegWrEnable <= i_dbgRegWrEnable;
+                end
+
+            3'b010, // STALL
+            3'b011: // STALL
+                begin
+                    o_dbgOk          <= o_dbgOk;
+                    o_dbgTick        <= o_dbgTick;
+                    o_dbgInst        <= o_dbgInst;
+                    o_dbgRegWrAddr   <= o_dbgRegWrAddr;
+                    o_dbgRegWrEnable <= o_dbgRegWrEnable;
+                end
+        endcase
 `endif
-    end
 
 
 endmodule

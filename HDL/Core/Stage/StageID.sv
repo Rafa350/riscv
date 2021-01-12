@@ -28,7 +28,7 @@ module StageID
     output Data              o_instIMM,         // Valor inmediat de la instruccio
     output Data              o_dataA,           // Dades A (rs1)
     output Data              o_dataB,           // Dades B (rs2)
-    output logic             o_bubble,          // Indica si cal generar bombolla
+    output logic             o_hazard,          // Indica hazard
     output RegAddr           o_regWrAddr,       // Registre a escriure.
     output logic             o_regWrEnable,     // Habilita l'escriptura del registre
     output logic             o_memWrEnable,     // Habilita l'escritura en memoria
@@ -113,19 +113,19 @@ module StageID
 
 
     // ------------------------------------------------------------------------
-    // Controllador per stalling.
-    // Stall si hi ha un registre pendent de carregar amb un Load
+    // Detecta els hazards deguta a instruccions LOAD pendents
+    // En aquest cas genera una senyal per controlador del stalls del pipeline
     // ------------------------------------------------------------------------
 
-    HazardDetector
-    hazardDetector (
+    LoadHazardDetector
+    loadHD (
         .i_instRS1         (dec_instRS1),
         .i_instRS2         (dec_instRS2),
         .i_EX_memRdEnable  (i_EX_memRdEnable),
         .i_EX_regAddr      (i_EX_regWrAddr),
         .i_MEM_memRdEnable (i_MEM_memRdEnable),
         .i_MEM_regAddr     (i_MEM_regWrAddr),
-        .o_bubble          (o_bubble));
+        .o_hazard          (o_hazard));
 
 
     // ------------------------------------------------------------------------
@@ -225,8 +225,8 @@ module StageID
     assign regBus.rdAddrB = dec_instRS2;
     assign regs_dataA     = regBus.rdDataA;
     assign regs_dataB     = regBus.rdDataB;
-    
-    
+
+
     // ------------------------------------------------------------------------
     // Asignacio de les sortides
     // ------------------------------------------------------------------------
