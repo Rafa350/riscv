@@ -496,7 +496,7 @@ void Processor::executeBranch(
             break;
 
         case 0b101: // BGE
-            br = signed(r[rs1]) > signed(r[rs2]);
+            br = signed(r[rs1]) >= signed(r[rs2]);
             break;
 
         case 0b110: // BLTU
@@ -504,7 +504,7 @@ void Processor::executeBranch(
             break;
 
         case 0b111: // BGEU
-            br = unsigned(r[rs1]) == unsigned(r[rs2]);
+            br = unsigned(r[rs1]) >= unsigned(r[rs2]);
             break;
 
     }
@@ -569,7 +569,7 @@ void Processor::executeSystem(
 
     // Traçat
     //
-    if (((inst >> 12) & 0b111) != 0) 
+    if (((inst >> 12) & 0b111) != 0)
         traceReg(rd);
 }
 

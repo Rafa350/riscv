@@ -1,4 +1,7 @@
-module LoadHazardDetector
+`include "RV.svh"
+
+
+module StageID_HazardDetector
     import Types::*;
 (
     input  RegAddr i_instRS1,

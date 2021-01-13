@@ -370,7 +370,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ALU/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/StallController.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/LoadHazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstMemoryBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataMemoryBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterBus.sv
@@ -379,6 +378,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchComparer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchAlu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageIF.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID_HazardDetector.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID_ForwardController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageWB.sv
@@ -388,7 +389,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXME
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterFile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ProcessorPP.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ForwardController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DebugController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DatapathController.sv
 set_global_assignment -name SDC_FILE CPU01.sdc

@@ -102,11 +102,11 @@ module DatapathController
                     o_pcNextSel = pcOFS;
 
             {10'b???????_111, OpCode_Branch}: // BGEU
-                if (!i_isLessUnsigned & !i_isEqual)
+                if (!i_isLessUnsigned | i_isEqual)
                     o_pcNextSel = pcOFS;
 
             {10'b???????_101, OpCode_Branch}: // BGE
-                if (!i_isLessSigned & !i_isEqual)
+                if (!i_isLessSigned | i_isEqual)
                     o_pcNextSel = pcOFS;
 
             {10'b???????_000, OpCode_Load  }, // LB

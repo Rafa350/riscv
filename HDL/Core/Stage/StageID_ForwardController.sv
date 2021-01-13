@@ -1,4 +1,7 @@
-module ForwardController
+`include "RV.svh"
+
+
+module StageID_ForwardController
     import Types::*;
 (
     input  RegAddr     i_instRS1,

@@ -38,6 +38,7 @@ module ProcessorPP
     StallController
     stallCtrl(
         .i_reset       (i_reset),
+        .i_IF_hazard   (IF_hazard),
         .i_ID_hazard   (ID_hazard),
         .i_EX_hazard   (EX_hazard),
         .i_MEM_hazard  (MEM_hazard),
@@ -62,14 +63,16 @@ module ProcessorPP
 
     StageIF
     stageIF (
-        .i_clock          (i_clock),           // Clock
-        .i_reset          (i_reset),           // Reset
-        .instBus          (instBus),           // Bus de la memoria d'instruccio
-        .i_pcNext         (ID_pcNext),         // Adressa de salt
-        .o_hazard         (IF_hazard),         // Indica hazard
-        .o_inst           (IF_inst),           // Instruccio
-        .o_instCompressed (IF_instCompressed), // Indica si instruccio es comprimida
-        .o_pc             (IF_pc));            // Adressa de la instruccio
+        .i_clock           (i_clock),           // Clock
+        .i_reset           (i_reset),           // Reset
+        .instBus           (instBus),           // Bus de la memoria d'instruccio
+        .i_pcNext          (ID_pcNext),         // Adressa de salt
+        .i_MEM_memRdEnable (EXMEM_memRdEnable), // Indica operacio de lectura en MEM
+        .i_MEM_memWrEnable (EXMEM_memWrEnable), // Indica operacio d'escriptura en MEM
+        .o_hazard          (IF_hazard),         // Indica hazard
+        .o_inst            (IF_inst),           // Instruccio
+        .o_instCompressed  (IF_instCompressed), // Indica si instruccio es comprimida
+        .o_pc              (IF_pc));            // Adressa de la instruccio
 
 
     // ------------------------------------------------------------------------
@@ -137,7 +140,7 @@ module ProcessorPP
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
         .i_pc              (IFID_pc),             // Adressa de la instruccio
         .i_EX_regWrAddr    (IDEX_regWrAddr),
-        .i_EX_regWrEnable  (IDEX_regWrEnable),
+        .i_EX_regWrEnable  (IDEX_regWrEnable),    // Indica operacio d'escriptura de registres en EX
         .i_EX_regWrDataSel (IDEX_regWrDataSel),
         .i_EX_regWrData    (EX_result),
         .i_EX_memRdEnable  (IDEX_memRdEnable),    // Indica si hi ha una operacio de lectura de memoria EX

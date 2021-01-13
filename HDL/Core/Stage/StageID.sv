@@ -113,12 +113,12 @@ module StageID
 
 
     // ------------------------------------------------------------------------
-    // Detecta els hazards deguta a instruccions LOAD pendents
+    // Detecta els hazards deguts a instruccions LOAD pendents
     // En aquest cas genera una senyal per controlador del stalls del pipeline
     // ------------------------------------------------------------------------
 
-    LoadHazardDetector
-    loadHD (
+    StageID_HazardDetector
+    hazardDetector (
         .i_instRS1         (dec_instRS1),
         .i_instRS2         (dec_instRS2),
         .i_EX_memRdEnable  (i_EX_memRdEnable),
@@ -136,7 +136,7 @@ module StageID
     logic [1:0] fwdCtrl_dataASel,
                 fwdCtrl_dataBSel;
 
-    ForwardController
+    StageID_ForwardController
     fwdCtrl(
         .i_instRS1         (dec_instRS1),
         .i_instRS2         (dec_instRS2),

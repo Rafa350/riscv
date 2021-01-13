@@ -12,11 +12,24 @@ module StageIF
     InstMemoryBus.master instBus,  // Bus de la memoria d'instruccions
 
     // Senyals de control d'execucio
-    input  InstAddr      i_pcNext,         // El nou PC
-    output logic         o_hazard,         // Indica hazard
-    output Inst          o_inst,           // Instruccio
-    output logic         o_instCompressed, // Indica que la instruccio es comprimida
-    output InstAddr      o_pc);            // PC
+    input  InstAddr      i_pcNext,          // El nou PC
+    input  logic         i_MEM_memRdEnable, // Indica operacio de lectura en MEM
+    input  logic         i_MEM_memWrEnable, // Indica operacio d'escriptura en MEM
+    output logic         o_hazard,          // Indica hazard
+    output Inst          o_inst,            // Instruccio
+    output logic         o_instCompressed,  // Indica que la instruccio es comprimida
+    output InstAddr      o_pc);             // PC
+
+
+    // ------------------------------------------------------------------------
+    // Detecta els hazards deguts a accessos a memoria
+    // ------------------------------------------------------------------------
+
+    StageIF_HazardDetector
+    hazardDetector(
+        .i_MEM_memRdEnable (i_MEM_memRdEnable),
+        .i_MEM_memWrEnable (i_MEM_memWrEnable),
+        .o_hazard          (o_hazard));
 
 
     // ------------------------------------------------------------------------
