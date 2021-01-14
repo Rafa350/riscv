@@ -1,7 +1,5 @@
 module StallController
 (
-    input  logic i_reset,
-
     input  logic i_IF_hazard,
     input  logic i_ID_hazard,
     input  logic i_EX_hazard,

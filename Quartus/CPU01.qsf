@@ -377,6 +377,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataMemoryAdapter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchComparer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/BranchAlu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageIF.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageIF_HazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID_HazardDetector.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID_ForwardController.sv

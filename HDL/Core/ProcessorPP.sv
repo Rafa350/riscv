@@ -37,7 +37,6 @@ module ProcessorPP
 
     StallController
     stallCtrl(
-        .i_reset       (i_reset),
         .i_IF_hazard   (IF_hazard),
         .i_ID_hazard   (ID_hazard),
         .i_EX_hazard   (EX_hazard),

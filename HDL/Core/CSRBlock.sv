@@ -35,7 +35,16 @@ module CSRBlock
         (1'b0   << 18) |     // S - Supervisor mode implemented
         (1'b1   << 20) |     // U - User mode implemented
         (1'b0   << 23) |     // X - Non-standard extensions present
-        (2'b01  << 30);      // M-XLEN
+`ifdef RV_BASE_RV32E
+        (2'b01  << 30) |     // M-XLEN 32bit
+`endif        
+`ifdef RV_BASE_RV32I        
+        (2'b01  << 30) |     // M-XLEN 32bit
+`endif        
+`ifdef RV_BASE_RV64I        
+        (2'b10  << 30) |     // M-XLEN 64bit
+`endif        
+        0;
 
 
     localparam CSR_USTATUS  = 12'h000;
