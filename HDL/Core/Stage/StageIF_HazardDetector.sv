@@ -5,7 +5,8 @@ module StageIF_HazardDetector
 
     output logic o_hazard);
 
+    // Detecta accessos a la memoria en el stage MEM
 
-    assign o_hazard = i_MEM_memRdEnable | i_MEM_memWrEnable;
+    assign o_hazard = 1'b0; //i_MEM_memRdEnable | i_MEM_memWrEnable;
 
 endmodule

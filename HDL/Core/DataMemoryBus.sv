@@ -2,19 +2,19 @@ interface DataMemoryBus;
 
     import Types::*;
 
-    DataAddr   addr;     // Addresa en bytes
-    DataAccess access;   // Tipus d'acces (Byte, Half, Word, Dword, QWord)
-    logic      wrEnable; // Habilita l'escriptura
-    logic      rdEnable; // Habilita la lectura
-    Data       wrData;   // Dades a escriure
-    Data       rdData;   // Dades lleigides
-    logic      busy;     // Indica bus ocupat
+    DataAddr   addr;   // Addresa en bytes
+    DataAccess access; // Tipus d'acces (Byte, Half, Word, Dword)
+    logic      wr;     // Sol·licitut una operacio d'escriptura
+    logic      rd;     // Sol·licitut una operacio de lectura
+    Data       wrData; // Dades per escriure
+    Data       rdData; // Dades lleigides
+    logic      busy;   // Indica que no por realitzar l'operacio sol·licitada
 
     modport master(
         output addr,
         output access,
-        output wrEnable,
-        output rdEnable,
+        output wr,
+        output rd,
         input  rdData,
         output wrData,
         input  busy);
@@ -22,8 +22,8 @@ interface DataMemoryBus;
     modport slave(
         input  addr,
         input  access,
-        input  wrEnable,
-        input  rdEnable,
+        input  wr,
+        input  rd,
         output rdData,
         input  wrData,
         output busy);

@@ -37,6 +37,8 @@ int main() {
                         addr_t pc = proc->getPC();
                         inst_t inst = instMem->read32(pc);
 
+                        // Detecta bucle infinit al retornar de main()
+                        //
                         if (inst == 0x0000006F)
                             break;
 
@@ -52,7 +54,7 @@ int main() {
                 printf("\n");*/
 
                 printf("Data memory dump:\n");
-                dataMem->dump(RISCV_DMEM_BASE, 1024);
+                dataMem->dump(RISCV_DMEM_BASE, 128);
                 printf("\n");
 
                 delete dataMem;

@@ -27,12 +27,10 @@ module ProcessorPP
     // -----------------------------------------------------------------------
 
     logic stallCtrl_IFID_stall;
-    logic stallCtrl_IFID_flush;
     logic stallCtrl_IDEX_stall;
     logic stallCtrl_IDEX_flush;
     logic stallCtrl_EXMEM_stall;
     logic stallCtrl_EXMEM_flush;
-    logic stallCtrl_MEMWB_stall;
     logic stallCtrl_MEMWB_flush;
 
     StallController
@@ -42,12 +40,10 @@ module ProcessorPP
         .i_EX_hazard   (EX_hazard),
         .i_MEM_hazard  (MEM_hazard),
         .o_IFID_stall  (stallCtrl_IFID_stall),
-        .o_IFID_flush  (stallCtrl_IFID_flush),
         .o_IDEX_stall  (stallCtrl_IDEX_stall),
         .o_IDEX_flush  (stallCtrl_IDEX_flush),
         .o_EXMEM_stall (stallCtrl_EXMEM_stall),
         .o_EXMEM_flush (stallCtrl_EXMEM_flush),
-        .o_MEMWB_stall (stallCtrl_MEMWB_stall),
         .o_MEMWB_flush (stallCtrl_MEMWB_flush));
 
 
@@ -92,7 +88,6 @@ module ProcessorPP
         .i_clock          (i_clock),
         .i_reset          (i_reset),
         .i_stall          (stallCtrl_IFID_stall),
-        .i_flush          (1'b0),
         .i_pc             (IF_pc),
         .i_inst           (IF_inst),
         .i_instCompressed (IF_instCompressed),
@@ -383,8 +378,7 @@ module ProcessorPP
     pipelineMEMWB (
         .i_clock          (i_clock),
         .i_reset          (i_reset),
-        .i_flush          (1'b0),
-        .i_stall          (1'b0),
+        .i_flush          (stallCtrl_MEMWB_flush),
         .i_regWrAddr      (EXMEM_regWrAddr),
         .i_regWrEnable    (EXMEM_regWrEnable),
         .i_regWrData      (MEM_regWrData),
@@ -444,7 +438,7 @@ module ProcessorPP
     dbg(
         .i_clock       (i_clock),
         .i_reset       (i_reset),
-        .i_stall       (ID_hazard),
+        .i_stall       (stallCtrl_IFID_stall),
         .i_tick        (MEMWB_dbgTick),
         .i_ok          (MEMWB_dbgOk),
         .i_pc          (MEMWB_dbgPc),

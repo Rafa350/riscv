@@ -5,10 +5,10 @@ int main(
     int argc,
     char *argv[]) {
 
-    char* p = (char*) 0x100020;
+    char* p = (char*) 0x100000;
 
     for (int i = 0; i < 16; i++)
-        *p++ = i;
+        *p++ = 0xF0 + i;
 
     return 0;
 }

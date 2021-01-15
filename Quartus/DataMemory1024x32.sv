@@ -54,7 +54,7 @@ module DataMemory1024x32
     ram0(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (we[0] & bus.wrEnable),
+        .wren      (we[0] & bus.wr),
         .data      (data),
         .q         (bus.rdData[7:0]));
         
@@ -62,7 +62,7 @@ module DataMemory1024x32
     ram1(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (we[1] & bus.wrEnable),
+        .wren      (we[1] & bus.wr),
         .data      (data),
         .q         (bus.rdData[15:8]));
 
@@ -70,7 +70,7 @@ module DataMemory1024x32
     ram2(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (we[2] & bus.wrEnable),
+        .wren      (we[2] & bus.wr),
         .data      (data),
         .q         (bus.rdData[23:16]));
 
@@ -78,7 +78,7 @@ module DataMemory1024x32
     ram3(
         .clock     (i_clock),
         .address   (bus.addr[11:2]),
-        .wren      (we[3] & bus.wrEnable),
+        .wren      (we[3] & bus.wr),
         .data      (data),
         .q         (bus.rdData[31:24]));        
 

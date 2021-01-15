@@ -124,7 +124,7 @@ int main(
     CPUTestbench *tb = new CPUTestbench();
     if (tb) {
         tb->run();
-        tb->dumpDataMemory(RISCV_DMEM_BASE, 1024);
+        tb->dumpDataMemory(RISCV_DMEM_BASE, 128);
         delete tb;
     }
 

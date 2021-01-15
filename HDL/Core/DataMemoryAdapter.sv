@@ -23,8 +23,8 @@ module DataMemoryAdapter
 
         bus.addr     = i_addr;
         bus.access   = i_access;
-        bus.wrEnable = i_wrEnable & !o_alignError;
-        bus.rdEnable = i_rdEnable & !o_alignError;
+        bus.wr       = i_wrEnable & !o_alignError;
+        bus.rd       = i_rdEnable & !o_alignError;
         bus.wrData   = i_wrData;
 
         unique casez ({i_access, i_unsigned})

@@ -8,7 +8,6 @@ module PipelineIFID
     input  logic    i_clock,           // Clock
     input  logic    i_reset,           // Reset
     input  logic    i_stall,           // Retorna el mateix estat
-    input  logic    i_flush,           // Retorna el estat NOP
 
 `ifdef DEBUG
     // Senyals d'entrada de depuracio
@@ -32,27 +31,23 @@ module PipelineIFID
 
 
     always_ff @(posedge i_clock)
-        case ({i_reset, i_stall, i_flush})
-            3'b100, // RESET
-            3'b101, // RESET
-            3'b110, // RESET
-            3'b111, // RESET
-            3'b001: // FLUSH
+        case ({i_reset, i_stall})
+            2'b10, // RESET
+            2'b11: // RESET
                 begin
                     o_pc             <= InstAddr'(-4);
                     o_inst           <= Inst'(0);
                     o_instCompressed <= 1'b0;
                 end
 
-            3'b000: // NORMAL
+            2'b00: // NORMAL
                 begin
                     o_pc             <= i_pc;
                     o_inst           <= i_inst;
                     o_instCompressed <= i_instCompressed;
                 end
 
-            3'b010, // STALL
-            3'b011: // STALL
+            2'b01: // STALL
                 begin
                     o_pc             <= o_pc;
                     o_inst           <= o_inst;
@@ -63,25 +58,21 @@ module PipelineIFID
 
 `ifdef DEBUG
     always_ff @(posedge i_clock)
-        case ({i_reset, i_stall, i_flush})
-            3'b100, // RESET
-            3'b101, // RESET
-            3'b110, // RESET
-            3'b111, // RESET
-            3'b001: // FLUSH
+        case ({i_reset, i_stall})
+            2'b10, // RESET
+            2'b11: // RESET
                 begin
                     o_dbgOk   <= 1'b0;
-                    o_dbgTick <= i_flush ? i_dbgTick : 0;
+                    o_dbgTick <= 0;
                 end
 
-            3'b000: // NORMAL
+            2'b00: // NORMAL
                 begin
                     o_dbgOk   <= i_dbgOk;
                     o_dbgTick <= i_dbgTick;
                 end
 
-            3'b010, // STALL
-            3'b011: // STALL
+            2'b01: // STALL
                 begin
                     o_dbgOk   <= o_dbgOk;
                     o_dbgTick <= o_dbgTick;

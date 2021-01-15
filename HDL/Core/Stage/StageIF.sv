@@ -52,9 +52,8 @@ module StageIF
     // Control del PC
     // ------------------------------------------------------------------------
 
-    assign o_pc           = i_pcNext;
-    assign instBus.addr   = o_pc;
-
-    assign o_hazard       = 1'b0;
+    assign o_pc         = i_pcNext;
+    assign instBus.addr = o_pc;
+    assign instBus.rd   = 1'b1;
 
 endmodule

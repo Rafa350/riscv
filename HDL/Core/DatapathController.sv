@@ -155,7 +155,8 @@ module DatapathController
             {10'b0000001_101, OpCode_Op   }, // DIVU
             {10'b0000001_110, OpCode_Op   }, // REM
             {10'b0000001_111, OpCode_Op   }: // REMU
-                ;
+                begin
+                end
 `endif
 
             {10'b0000000_000, OpCode_Op    }, // ADD

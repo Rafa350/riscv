@@ -37,7 +37,7 @@ module DataMemory
     import "DPI-C" function int dpiMemRead(input longint memObj, input int addr, input int access);
 
     always_ff @(posedge i_clock)
-        if (bus.wrEnable)
+        if (bus.wr)
             dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wrData);
 
     assign bus.rdData = dpiMemRead(memObj, bus.addr, int'(bus.access));
