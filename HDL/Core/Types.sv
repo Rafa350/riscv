@@ -42,11 +42,11 @@ package Types;
         AluOp_ADD  = 4'b0_000, // -ADD
         AluOp_AND  = 4'b0_111, // -AND
         AluOp_OR   = 4'b0_110, // -OR
-        AluOp_SLL  = 4'b0_001,
-        AluOp_SLT  = 4'b0_010,
-        AluOp_SLTU = 4'b0_011,
-        AluOp_SRA  = 4'b1_101,
-        AluOp_SRL  = 4'b0_101,
+        AluOp_SLL  = 4'b0_001, // -Logic shift right
+        AluOp_SLT  = 4'b0_010, // -Set if less
+        AluOp_SLTU = 4'b0_011, // -Set if less unsigned
+        AluOp_SRA  = 4'b1_101, // -Arithmetic shift right
+        AluOp_SRL  = 4'b0_101, // -Logic shift right
         AluOp_SUB  = 4'b1_000, // -SUB
         AluOp_XOR  = 4'b0_100  // -XOR
     } AluOp;

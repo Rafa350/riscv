@@ -25,12 +25,15 @@ module ALU
             
             AluOp_XOR: 
                 o_result = i_operandA ^ i_operandB;
+                
+            AluOp_SLL:
+                o_result = i_operandA << (i_operandB & 5'b11111);
             
             AluOp_SLT: 
-                o_result = $signed(i_operandA) < $signed(i_operandB) ? {{$size(Data)-1{1'b0}}, 1'b1} : 0;
+                o_result = Data'($signed(i_operandA) < $signed(i_operandB) ? 1 : 0);
             
             AluOp_SLTU: 
-                o_result = i_operandA < i_operandB ? {{$size(Data)-1{1'b0}}, 1'b1} : 0;
+                o_result = Data'($unsigned(i_operandA) < $unsigned(i_operandB) ? 1 : 0);
             
             default: 
                 o_result = 0;

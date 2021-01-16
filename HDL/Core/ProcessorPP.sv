@@ -62,6 +62,7 @@ module ProcessorPP
         .i_reset           (i_reset),           // Reset
         .instBus           (instBus),           // Bus de la memoria d'instruccio
         .i_pcNext          (ID_pcNext),         // Adressa de salt
+        .i_MEM_isValid     (EXMEM_isValid),     // Indica operacio valida en MEM
         .i_MEM_memRdEnable (EXMEM_memRdEnable), // Indica operacio de lectura en MEM
         .i_MEM_memWrEnable (EXMEM_memWrEnable), // Indica operacio d'escriptura en MEM
         .o_hazard          (IF_hazard),         // Indica hazard
@@ -74,13 +75,13 @@ module ProcessorPP
     // Pipeline IF-ID
     // ------------------------------------------------------------------------
 
-    Inst     IFID_inst;
+    logic    IFID_isValid;
     InstAddr IFID_pc;
+    Inst     IFID_inst;
     logic    IFID_instCompressed;
 
 `ifdef DEBUG
     int      IFID_dbgTick;
-    logic    IFID_dbgOk;
 `endif
 
     PipelineIFID
@@ -88,9 +89,11 @@ module ProcessorPP
         .i_clock          (i_clock),
         .i_reset          (i_reset),
         .i_stall          (stallCtrl_IFID_stall),
+        .i_isValid        (1'b1),
         .i_pc             (IF_pc),
         .i_inst           (IF_inst),
         .i_instCompressed (IF_instCompressed),
+        .o_isValid        (IFID_isValid),
         .o_pc             (IFID_pc),
         .o_inst           (IFID_inst),
         .o_instCompressed (IFID_instCompressed)
@@ -98,9 +101,7 @@ module ProcessorPP
 `ifdef DEBUG
         ,
         .i_dbgTick (dbg_Tick),
-        .i_dbgOk   (1'b1),
-        .o_dbgTick (IFID_dbgTick),
-        .o_dbgOk   (IFID_dbgOk)
+        .o_dbgTick (IFID_dbgTick)
 `endif
     );
 
@@ -133,18 +134,21 @@ module ProcessorPP
         .i_inst            (IFID_inst),           // Instruccio
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
         .i_pc              (IFID_pc),             // Adressa de la instruccio
+        .i_EX_isValid      (IDEX_isValid),        // Indica operacio valida en EX
         .i_EX_regWrAddr    (IDEX_regWrAddr),
         .i_EX_regWrEnable  (IDEX_regWrEnable),    // Indica operacio d'escriptura de registres en EX
         .i_EX_regWrDataSel (IDEX_regWrDataSel),
         .i_EX_regWrData    (EX_result),
         .i_EX_memRdEnable  (IDEX_memRdEnable),    // Indica si hi ha una operacio de lectura de memoria EX
+        .i_MEM_isValid     (EXMEM_isValid),       // Indica opoeracio valida en MEM
         .i_MEM_regWrAddr   (EXMEM_regWrAddr),
         .i_MEM_regWrEnable (EXMEM_regWrEnable),
-        .i_MEM_regWrData   (MEM_regWrData),       // El valor a escriure en el registre
+        .i_MEM_regWrData   (MEM_regWrData),       // El valor a escriure en el registre en MEM
         .i_MEM_memRdEnable (EXMEM_memRdEnable),   // Indica si hi ha una operacio de lectura de memoria MEM
-        .i_WB_regWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escriure
-        .i_WB_regWrData    (MEMWB_regWrData),     // Dades del registre on escriure
-        .i_WB_regWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre
+        .i_WB_isValid      (MEMWB_isValid),       // Indica operacio valida en WB
+        .i_WB_regWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escrure en WB
+        .i_WB_regWrData    (MEMWB_regWrData),     // Dades del registre on escriure en WB
+        .i_WB_regWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre en WB
         .o_dataA           (ID_dataA),            // Dades A
         .o_dataB           (ID_dataB),            // Dades B
         .o_instIMM         (ID_instIMM),
@@ -166,6 +170,7 @@ module ProcessorPP
     // Pipeline ID-EX
     // ------------------------------------------------------------------------
 
+    logic       IDEX_isValid;
     InstAddr    IDEX_pc;
     Data        IDEX_dataA;
     Data        IDEX_dataB;
@@ -183,7 +188,6 @@ module ProcessorPP
 
 `ifdef DEBUG
     int         IDEX_dbgTick;
-    logic       IDEX_dbgOk;
     Inst        IDEX_dbgInst;
     RegAddr     IDEX_dbgRegWrAddr;
     logic       IDEX_dbgRegWrEnable;
@@ -195,6 +199,7 @@ module ProcessorPP
         .i_reset          (i_reset),
         .i_stall          (1'b0),
         .i_flush          (stallCtrl_IDEX_flush),
+        .i_isValid        (IFID_isValid),
         .i_instIMM        (ID_instIMM),
         .i_dataA          (ID_dataA),
         .i_dataB          (ID_dataB),
@@ -209,6 +214,7 @@ module ProcessorPP
         .i_operandBSel    (ID_operandBSel),
         .i_aluControl     (ID_aluControl),
         .i_pc             (IFID_pc),
+        .o_isValid        (IDEX_isValid),
         .o_instIMM        (IDEX_instIMM),
         .o_dataA          (IDEX_dataA),
         .o_dataB          (IDEX_dataB),
@@ -227,12 +233,10 @@ module ProcessorPP
 `ifdef DEBUG
         ,
         .i_dbgTick        (IFID_dbgTick),
-        .i_dbgOk          (IFID_dbgOk),
         .i_dbgInst        (IFID_inst),
         .i_dbgRegWrAddr   (ID_regWrAddr),
         .i_dbgRegWrEnable (ID_regWrEnable),
         .o_dbgTick        (IDEX_dbgTick),
-        .o_dbgOk          (IDEX_dbgOk),
         .o_dbgInst        (IDEX_dbgInst),
         .o_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
         .o_dbgRegWrEnable (IDEX_dbgRegWrEnable)
@@ -265,6 +269,7 @@ module ProcessorPP
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
 
+    logic       EXMEM_isValid;
     InstAddr    EXMEM_pc;
     Data        EXMEM_result;
     Data        EXMEM_dataB;
@@ -278,7 +283,6 @@ module ProcessorPP
 
 `ifdef DEBUG
     int         EXMEM_dbgTick;
-    logic       EXMEM_dbgOk;
     Inst        EXMEM_dbgInst;
     RegAddr     EXMEM_dbgRegWrAddr;
     logic       EXMEM_dbgRegWrEnable;
@@ -290,6 +294,7 @@ module ProcessorPP
         .i_reset          (i_reset),
         .i_stall          (1'b0),
         .i_flush          (1'b0),
+        .i_isValid        (IDEX_isValid),
         .i_pc             (IDEX_pc),
         .i_result         (EX_result),
         .i_dataB          (EX_dataB),
@@ -300,6 +305,7 @@ module ProcessorPP
         .i_regWrAddr      (IDEX_regWrAddr),
         .i_regWrEnable    (IDEX_regWrEnable),
         .i_regWrDataSel   (IDEX_regWrDataSel),
+        .o_isValid        (EXMEM_isValid),
         .o_pc             (EXMEM_pc),
         .o_result         (EXMEM_result),
         .o_dataB          (EXMEM_dataB),
@@ -314,12 +320,10 @@ module ProcessorPP
 `ifdef DEBUG
         ,
         .i_dbgTick        (IDEX_dbgTick),
-        .i_dbgOk          (IDEX_dbgOk),
         .i_dbgInst        (IDEX_dbgInst),
         .i_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
         .i_dbgRegWrEnable (IDEX_dbgRegWrEnable),
         .o_dbgTick        (EXMEM_dbgTick),
-        .o_dbgOk          (EXMEM_dbgOk),
         .o_dbgInst        (EXMEM_dbgInst),
         .o_dbgRegWrAddr   (EXMEM_dbgRegWrAddr),
         .o_dbgRegWrEnable (EXMEM_dbgRegWrEnable)
@@ -339,6 +343,7 @@ module ProcessorPP
         .i_clock        (i_clock),            // Clock
         .i_reset        (i_reset),            // Reseset
         .dataBus        (dataBus),            // Interficie amb la memoria de dades
+        .i_isValid      (EXMEM_isValid),      // Indica operacio valida
         .i_pc           (EXMEM_pc),           // Adressa de la instruccio
         .i_result       (EXMEM_result),       // Adressa per escriure en memoria
         .i_dataB        (EXMEM_dataB),        // Dades per escriure
@@ -355,13 +360,13 @@ module ProcessorPP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
+    logic       MEMWB_isValid;
     Data        MEMWB_regWrData;
     RegAddr     MEMWB_regWrAddr;
     logic       MEMWB_regWrEnable;
 
 `ifdef DEBUG
     int         MEMWB_dbgTick;
-    logic       MEMWB_dbgOk;
     InstAddr    MEMWB_dbgPc;
     Inst        MEMWB_dbgInst;
     RegAddr     MEMWB_dbgRegWrAddr;
@@ -379,9 +384,11 @@ module ProcessorPP
         .i_clock          (i_clock),
         .i_reset          (i_reset),
         .i_flush          (stallCtrl_MEMWB_flush),
+        .i_isValid        (EXMEM_isValid),
         .i_regWrAddr      (EXMEM_regWrAddr),
         .i_regWrEnable    (EXMEM_regWrEnable),
         .i_regWrData      (MEM_regWrData),
+        .o_isValid        (MEMWB_isValid),
         .o_regWrAddr      (MEMWB_regWrAddr),
         .o_regWrEnable    (MEMWB_regWrEnable),
         .o_regWrData      (MEMWB_regWrData)
@@ -389,7 +396,6 @@ module ProcessorPP
 `ifdef DEBUG
         ,
         .i_dbgTick        (EXMEM_dbgTick),
-        .i_dbgOk          (EXMEM_dbgOk),
         .i_dbgPc          (EXMEM_pc),
         .i_dbgInst        (EXMEM_dbgInst),
         .i_dbgRegWrAddr   (EXMEM_dbgRegWrAddr),
@@ -400,7 +406,6 @@ module ProcessorPP
         .i_dbgMemAccess   (EXMEM_memAccess),
         .i_dbgMemWrData   (dataBus.wrData),
         .o_dbgTick        (MEMWB_dbgTick),
-        .o_dbgOk          (MEMWB_dbgOk),
         .o_dbgPc          (MEMWB_dbgPc),
         .o_dbgInst        (MEMWB_dbgInst),
         .o_dbgRegWrAddr   (MEMWB_dbgRegWrAddr),
@@ -421,6 +426,7 @@ module ProcessorPP
     StageWB
     stageWB (
         .regBus        (regBus),            // Interficie amb el bloc de registres
+        .i_isValid     (MEMWB_isValid),     // Indica operacio valida
         .i_regWrAddr   (MEMWB_regWrAddr),   // Adressa del registre
         .i_regWrEnable (MEMWB_regWrEnable), // Habilila l'escriptura del registre
         .i_regWrData   (MEMWB_regWrData));  // Dades per escriure en el registre
@@ -440,7 +446,7 @@ module ProcessorPP
         .i_reset       (i_reset),
         .i_stall       (stallCtrl_IFID_stall),
         .i_tick        (MEMWB_dbgTick),
-        .i_ok          (MEMWB_dbgOk),
+        .i_isValid     (MEMWB_isValid),
         .i_pc          (MEMWB_dbgPc),
         .i_inst        (MEMWB_dbgInst),
         .i_regWrAddr   (MEMWB_dbgRegWrAddr),

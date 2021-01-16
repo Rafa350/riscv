@@ -6,8 +6,10 @@ module StageID_HazardDetector
 (
     input  RegAddr i_instRS1,
     input  RegAddr i_instRS2,
+    input  logic   i_EX_isValid,
     input  logic   i_EX_memRdEnable,
     input  RegAddr i_EX_regAddr,
+    input  logic   i_MEM_isValid,
     input  logic   i_MEM_memRdEnable,
     input  RegAddr i_MEM_regAddr,
 
@@ -18,10 +20,10 @@ module StageID_HazardDetector
     // de la memoria.
 
     assign o_hazard =
-        (i_EX_memRdEnable &
+        (i_EX_memRdEnable & i_EX_isValid &
             ((i_instRS1 != RegAddr'(0)) & ((i_instRS1 == i_EX_regAddr) | (i_instRS1 == i_MEM_regAddr)))) |
 
-        (i_MEM_memRdEnable &
+        (i_MEM_memRdEnable & i_MEM_isValid &
             ((i_instRS2 != RegAddr'(0)) & ((i_instRS2 == i_EX_regAddr) | (i_instRS2 == i_MEM_regAddr))));
 
 endmodule

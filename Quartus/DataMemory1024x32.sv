@@ -50,6 +50,7 @@ module DataMemory1024x32
         endcase
     end        
 
+    // Ram pels bits [7:0]
     ram1024x8 
     ram0(
         .clock     (i_clock),
@@ -58,6 +59,7 @@ module DataMemory1024x32
         .data      (data),
         .q         (bus.rdData[7:0]));
         
+    // Ram pels bits [15:8]
     ram1024x8 
     ram1(
         .clock     (i_clock),
@@ -66,6 +68,7 @@ module DataMemory1024x32
         .data      (data),
         .q         (bus.rdData[15:8]));
 
+    // Ram pels bits [23:16]
     ram1024x8 
     ram2(
         .clock     (i_clock),
@@ -74,6 +77,7 @@ module DataMemory1024x32
         .data      (data),
         .q         (bus.rdData[23:16]));
 
+    // Ram pels bits [31:24]
     ram1024x8 
     ram3(
         .clock     (i_clock),

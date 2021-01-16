@@ -11,7 +11,7 @@ module DebugController
 
     // Senyals d'estat de la ultima instruccio executada
     input  int         i_tick,        // Numero de tick
-    input  logic       i_ok,          // Instruccio
+    input  logic       i_isValid,     // Indica operacio valida
     input  InstAddr    i_pc,          // Adressa de la instruccio
     input  Inst        i_inst,        // Instruccio
     input  RegAddr     i_regWrAddr,   // Registre per escriure
@@ -38,7 +38,7 @@ module DebugController
     import "DPI-C" function void dpiTraceTick(input longint tracerObj, input int tick);
 
     always_ff @(posedge i_clock)
-        if (!i_reset & i_ok) begin
+        if (!i_reset & i_isValid) begin
 
             dpiTraceTick(tracerObj, i_tick);
 

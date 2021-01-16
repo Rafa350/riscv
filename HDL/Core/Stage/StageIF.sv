@@ -4,17 +4,20 @@
 module StageIF
     import Types::*;
 (
-    // Senyals de control
+    // Senyals de control i sincronitzacio
     input  logic         i_clock,  // Clock
     input  logic         i_reset,  // Reset
 
-    // Senyals d'interficie am,b la memoria/cache d'instruccions
+    // Interficie amb la memoria/cache d'instruccions
     InstMemoryBus.master instBus,  // Bus de la memoria d'instruccions
+
+    // Senyals del stage MEM per la gestio dels hazards
+    input  logic         i_MEM_isValid,     // Indica operacio valida en MEM
+    input  logic         i_MEM_memRdEnable, // Indica operacio de lectura en MEM
+    input  logic         i_MEM_memWrEnable, // Indica operacio d'escriptura en MEM
 
     // Senyals de control d'execucio
     input  InstAddr      i_pcNext,          // El nou PC
-    input  logic         i_MEM_memRdEnable, // Indica operacio de lectura en MEM
-    input  logic         i_MEM_memWrEnable, // Indica operacio d'escriptura en MEM
     output logic         o_hazard,          // Indica hazard
     output Inst          o_inst,            // Instruccio
     output logic         o_instCompressed,  // Indica que la instruccio es comprimida
@@ -27,9 +30,10 @@ module StageIF
 
     StageIF_HazardDetector
     hazardDetector(
+        .i_MEM_isValid     (i_MEM_isValid),
         .i_MEM_memRdEnable (i_MEM_memRdEnable),
         .i_MEM_memWrEnable (i_MEM_memWrEnable),
-        .o_hazard          (o_hazard));
+        .o_hazard          (o_hazard)); // Indica que s'ha detectat un hazard
 
 
     // ------------------------------------------------------------------------

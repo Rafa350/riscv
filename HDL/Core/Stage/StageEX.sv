@@ -28,8 +28,8 @@ module StageEX
     operandASelector (
         .i_select (i_operandASel),
         .i_input0 (i_dataA),
-        .i_input1 ({{$size(Data)-$size(InstAddr){1'b0}}, i_pc}),
-        .i_input2 ({DATA_WIDTH{1'b0}}),
+        .i_input1 (Data'(i_pc)),
+        .i_input2 (Data'(0)),
         .o_output (operandASelector_output));
     // verilator lint_on PINMISSING
 
@@ -42,12 +42,12 @@ module StageEX
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
+        .WIDTH ($size(Data)))
     operandBSelector (
         .i_select (i_operandBSel),
         .i_input0 (i_dataB),
         .i_input1 (i_instIMM),
-        .i_input2 (4),
+        .i_input2 (Data'(4)),
         .o_output (operandBSelector_output));
     // verilator lint_on PINMISSING
 

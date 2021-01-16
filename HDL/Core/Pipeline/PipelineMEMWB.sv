@@ -12,7 +12,6 @@ module PipelineMEMWB
 `ifdef DEBUG
     // Senyals d'entrada de depuracio
     input  int        i_dbgTick,        // Numero de tick
-    input  logic      i_dbgOk,          // Indicador d'iInstruccio executada
     input  InstAddr   i_dbgPc,          // Adressa de la instruccio
     input  Inst       i_dbgInst,        // Instruccio
     input  RegAddr    i_dbgRegWrAddr,   // Registre per escriure
@@ -25,7 +24,6 @@ module PipelineMEMWB
 
     // Senyals de sortidade depuracio
     output int        o_dbgTick,        // Numero de tick
-    output logic      o_dbgOk,          // Indicador d'instruccio executada
     output InstAddr   o_dbgPc,          // Adressa de la instruccio
     output Inst       o_dbgInst,        // Instruccio
     output RegAddr    o_dbgRegWrAddr,   // Registre per escriure
@@ -39,45 +37,41 @@ module PipelineMEMWB
 
 
     // Senyals d'entrada al pipeline
+    input  logic       i_isValid,      // Indica operacio valida
     input  RegAddr     i_regWrAddr,    // Registre per escriure
     input  logic       i_regWrEnable,  // Autoritzacio per escriure
     input  Data        i_regWrData,    // Dades per escriure
 
     // Senyal de sortida del pipeline
     //
+    output logic       o_isValid,      // Indica operacio valida
     output RegAddr     o_regWrAddr,
     output logic       o_regWrEnable,
     output Data        o_regWrData);
 
+
     always_ff @(posedge i_clock)
-        case ({i_reset, i_flush})
-            2'b10, // RESET
-            2'b11, // RESET
+        casez ({i_reset, i_flush})
+            2'b1?, // RESET
             2'b01: // FLUSH
-                begin
-                    o_regWrAddr   <= RegAddr'(0);
-                    o_regWrEnable <= 1'b0;
-                    o_regWrData   <= Data'(0);
-                end
+                o_isValid <= 0;
 
             2'b00: // NORMAL
                 begin
+                    o_isValid     <= i_isValid;
                     o_regWrAddr   <= i_regWrAddr;
                     o_regWrEnable <= i_regWrEnable;
                     o_regWrData   <= i_regWrData;
                 end
         endcase
 
-
 `ifdef DEBUG
     always_ff @(posedge i_clock)
-        case ({i_reset, i_flush})
-            2'b10, // RESET
-            2'b11, // RESET
+        casez ({i_reset, i_flush})
+            2'b1?, // RESET
             2'b01: // FLUSH
                 begin
                     o_dbgTick        <= i_flush ? i_dbgTick : 0;
-                    o_dbgOk          <= 1'b0;
                     o_dbgPc          <= InstAddr'(0);
                     o_dbgInst        <= Inst'(0);
                     o_dbgRegWrAddr   <= RegAddr'(0);
@@ -92,7 +86,6 @@ module PipelineMEMWB
             2'b00: // NORMAL
                 begin
                     o_dbgTick        <= i_dbgTick;
-                    o_dbgOk          <= i_dbgOk;
                     o_dbgPc          <= i_dbgPc;
                     o_dbgInst        <= i_dbgInst;
                     o_dbgRegWrAddr   <= i_dbgRegWrAddr;

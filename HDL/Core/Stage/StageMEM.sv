@@ -12,6 +12,7 @@ module StageMEM
     DataMemoryBus.master dataBus,        // Bus de la memoria de dades
 
     // Datapath
+    input  logic         i_isValid,      // Indica operacio valida
     input  InstAddr      i_pc,           // Adressa de la instruccio
     input  Data          i_result,       // Adressa de memoria
     input  Data          i_dataB,        // Dades per escriure
@@ -41,8 +42,8 @@ module StageMEM
         .i_addr       (i_result[$size(DataAddr)-1:0]),
         .i_unsigned   (i_memUnsigned),
         .i_access     (i_memAccess),
-        .i_wrEnable   (i_memWrEnable),
-        .i_rdEnable   (i_memRdEnable),
+        .i_wrEnable   (i_memWrEnable & i_isValid),
+        .i_rdEnable   (i_memRdEnable & i_isValid),
         .i_wrData     (i_dataB),
         .o_rdData     (memAdapter_rdData),
         .o_busy       (memAdapter_busy),

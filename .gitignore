@@ -4,6 +4,7 @@
 /Quartus/simulation
 /Quartus/dse
 /Quartus/greybox_tmp
+/Quartus/.qsys_edit
 /Verilator/build
 /Yosys/build
 /Firmware/build

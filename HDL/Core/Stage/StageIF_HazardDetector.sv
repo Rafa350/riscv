@@ -1,5 +1,6 @@
 module StageIF_HazardDetector
 (
+    input  logic i_MEM_isValid,
     input  logic i_MEM_memRdEnable,
     input  logic i_MEM_memWrEnable,
 

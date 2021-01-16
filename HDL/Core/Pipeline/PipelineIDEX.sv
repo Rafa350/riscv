@@ -13,20 +13,19 @@ module PipelineIDEX
 `ifdef DEBUG
     // Senyals d'entrada de depuracio
     input  int         i_dbgTick,        // Numero de tick
-    input  logic       i_dbgOk,          // Indicador d'iInstruccio executada
     input  Inst        i_dbgInst,        // Instruccio
     input  RegAddr     i_dbgRegWrAddr,   // Registre per escriure
     input  logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
 
     // Senyals de sortidade depuracio
     output int         o_dbgTick,        // Numero de tick
-    output logic       o_dbgOk,          // Indicador d'instruccio executada
     output Inst        o_dbgInst,        // Instruccio
     output RegAddr     o_dbgRegWrAddr,   // Registre per escriure
     output logic       o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
 `endif
 
     // Senyals d'entrada al pipeline
+    input  logic       i_isValid,        // Indica operacio valida
     input  InstAddr    i_pc,             // PC
     input  Data        i_instIMM,        // Valor inmediat de la instruccio
     input  Data        i_dataA,          // Operand A per la ALU
@@ -43,6 +42,7 @@ module PipelineIDEX
     input  AluOp       i_aluControl,     // Control de la ALU
 
     // Senyals de sortida del pipeline
+    output logic       o_isValid,        // Indica operacio valida
     output InstAddr    o_pc,
     output Data        o_instIMM,        // Valor inmediat de la instruccio
     output Data        o_dataA,
@@ -60,100 +60,56 @@ module PipelineIDEX
 
 
     always_ff @(posedge i_clock)
-        case ({i_reset, i_stall, i_flush})
-            3'b100, // RESET
-            3'b101, // RESET
-            3'b110, // RESET
-            3'b111, // RESET
+        casez ({i_reset, i_stall, i_flush})
+            3'b1??, // RESET
             3'b001: // FLUSH
-                begin
-                    o_pc             <= InstAddr'(0);
-                    o_instIMM        <= Inst'(0);
-                    o_dataA          <= Data'(0);
-                    o_dataB          <= Data'(0);
-                    o_regWrAddr      <= RegAddr'(0);
-                    o_regWrEnable    <= 1'b0;
-                    o_regWrDataSel   <= 2'b0;
-                    o_memWrEnable    <= 1'b0;
-                    o_memRdEnable    <= 1'b0;
-                    o_memAccess      <= DataAccess'(0);
-                    o_memUnsigned    <= 1'b0;
-                    o_aluControl     <= AluOp_ADD;
-                    o_operandASel    <= 2'b0;
-                    o_operandBSel    <= 2'b0;
-                end
+                o_isValid <= 1'b0;
+
+
+            3'b01?: // STALL
+                ;
 
             3'b000: // NORMAL
                 begin
-                    o_pc             <= i_pc;
-                    o_instIMM        <= i_instIMM;
-                    o_dataA          <= i_dataA;
-                    o_dataB          <= i_dataB;
-                    o_regWrAddr      <= i_regWrAddr;
-                    o_regWrEnable    <= i_regWrEnable;
-                    o_regWrDataSel   <= i_regWrDataSel;
-                    o_memWrEnable    <= i_memWrEnable;
-                    o_memRdEnable    <= i_memRdEnable;
-                    o_memAccess      <= i_memAccess;
-                    o_memUnsigned    <= i_memUnsigned;
-                    o_aluControl     <= i_aluControl;
-                    o_operandASel    <= i_operandASel;
-                    o_operandBSel    <= i_operandBSel;
-                end
-
-            3'b010, // STALL
-            3'b011: // STALL
-                begin
-                    o_pc             <= o_pc;
-                    o_instIMM        <= o_instIMM;
-                    o_dataA          <= o_dataA;
-                    o_dataB          <= o_dataB;
-                    o_regWrAddr      <= o_regWrAddr;
-                    o_regWrEnable    <= o_regWrEnable;
-                    o_regWrDataSel   <= o_regWrDataSel;
-                    o_memWrEnable    <= o_memWrEnable;
-                    o_memRdEnable    <= o_memRdEnable;
-                    o_memAccess      <= o_memAccess;
-                    o_memUnsigned    <= o_memUnsigned;
-                    o_aluControl     <= o_aluControl;
-                    o_operandASel    <= o_operandASel;
-                    o_operandBSel    <= o_operandBSel;
+                    o_isValid      <= i_isValid;
+                    o_pc           <= i_pc;
+                    o_instIMM      <= i_instIMM;
+                    o_dataA        <= i_dataA;
+                    o_dataB        <= i_dataB;
+                    o_regWrAddr    <= i_regWrAddr;
+                    o_regWrEnable  <= i_regWrEnable;
+                    o_regWrDataSel <= i_regWrDataSel;
+                    o_memWrEnable  <= i_memWrEnable;
+                    o_memRdEnable  <= i_memRdEnable;
+                    o_memAccess    <= i_memAccess;
+                    o_memUnsigned  <= i_memUnsigned;
+                    o_aluControl   <= i_aluControl;
+                    o_operandASel  <= i_operandASel;
+                    o_operandBSel  <= i_operandBSel;
                 end
         endcase
 
 `ifdef DEBUG
     always_ff @(posedge i_clock)
-        case ({i_reset, i_stall, i_flush})
-            3'b100, // RESET
-            3'b101, // RESET
-            3'b110, // RESET
-            3'b111, // RESET
+        casez ({i_reset, i_stall, i_flush})
+            3'b1??, // RESET
             3'b001: // FLUSH
                 begin
-                    o_dbgOk          <= 1'b0;
                     o_dbgTick        <= i_flush ? i_dbgTick : 0;
                     o_dbgInst        <= Inst'(0);
                     o_dbgRegWrAddr   <= RegAddr'(0);
                     o_dbgRegWrEnable <= 1'b0;
                 end
 
+            3'b01?: // STALL
+                ;
+
             3'b000: // NORMAL
                 begin
-                    o_dbgOk          <= i_dbgOk;
                     o_dbgTick        <= i_dbgTick;
                     o_dbgInst        <= i_dbgInst;
                     o_dbgRegWrAddr   <= i_dbgRegWrAddr;
                     o_dbgRegWrEnable <= i_dbgRegWrEnable;
-                end
-
-            3'b010, // STALL
-            3'b011: // STALL
-                begin
-                    o_dbgOk          <= o_dbgOk;
-                    o_dbgTick        <= o_dbgTick;
-                    o_dbgInst        <= o_dbgInst;
-                    o_dbgRegWrAddr   <= o_dbgRegWrAddr;
-                    o_dbgRegWrEnable <= o_dbgRegWrEnable;
                 end
         endcase
 `endif
