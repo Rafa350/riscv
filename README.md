@@ -2,8 +2,9 @@
 
 ## CPU features
 - Base RV32I, RV64I or RV32E
-- Optional extensions M & C
+- Optional extensions M and C
 - Clasic five pipeline stages
+- Harvard architecture
 - Machine mode only
 - CSR block
 - For use in embedded systems. No caches, use internal FPGA memory.
@@ -18,8 +19,17 @@
 - Terasic DE0-Nano (Cyclone-IV)
 
 ## Core main files
-- ProcessorPP.v : 5 stage pipeline
-- ProcessorSC.v : Single cycle processor for verification/Comparation purposes
-- Stage/*.v     : Files for stages
-- Pipeline/*.v  : Files for pipeline registers*.v 
+- ProcessorPP.sv : 5 stage pipeline
+- ProcessorSC.sv : Single cycle processor for verification and comparation purposes
+- Stage/*.sv     : Files for stages
+- Pipeline/*.sv  : Files for pipeline registers
     
+    
+## Future things
+-  L1 Instruction cache 
+-  L1 Data cache
+-  L2 Cache and SDRAM interface
+-  Peripherical bus (Wishbone ?)
+-  UART
+-  GPIO
+-  Debug interface
