@@ -9,7 +9,9 @@ module ProcessorPP
     InstMemoryBus.master instBus); // Bus de la memoria d'instruccions
 
 
-    RegisterBus regBus();
+    RegisterBus   regBus();
+    InstMemoryBus instCacheBus();
+
 
     // -----------------------------------------------------------------------
     // Bloc de registres base
@@ -20,6 +22,18 @@ module ProcessorPP
         .i_clock  (i_clock),
         .i_reset  (i_reset),
         .bus      (regBus));
+
+
+    // -------------------------------------------------------------------
+    // Cache L1 d'instruccions
+    // -------------------------------------------------------------------
+
+    InstL1Cache
+    instCache (
+        .i_clock  (i_clock),       // Clock
+        .i_reset  (i_reset),       // Reset
+        .memBus   (instBus),       // Bus de la memoria d'inmstruccions
+        .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
 
 
     // -----------------------------------------------------------------------
@@ -60,7 +74,7 @@ module ProcessorPP
     stageIF (
         .i_clock           (i_clock),           // Clock
         .i_reset           (i_reset),           // Reset
-        .instBus           (instBus),           // Bus de la memoria d'instruccio
+        .instBus           (instCacheBus),      // Bus de la memoria cache d'instruccions
         .i_pcNext          (ID_pcNext),         // Adressa de salt
         .i_MEM_isValid     (EXMEM_isValid),     // Indica operacio valida en MEM
         .i_MEM_memRdEnable (EXMEM_memRdEnable), // Indica operacio de lectura en MEM

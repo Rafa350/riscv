@@ -12,8 +12,8 @@ module top
     input         i_clock,   // Clock
     input         i_reset);  // Reset
 
-    DataMemoryBus dataBus;   // Interficie amb la memoria de dades
-    InstMemoryBus instBus;   // Interficie amb la memoria d'instruccions
+    DataMemoryBus dataBus;      // Interficie amb la memoria de dades
+    InstMemoryBus instBus;      // Interficie amb la memoria d'instruccions
 
 
     // -------------------------------------------------------------------

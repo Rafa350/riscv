@@ -78,6 +78,7 @@ verilate(${TARGET_NAME}
                  ${HDL_INCLUDE_DIR}/Base
                  ${HDL_INCLUDE_DIR}/Core
                  ${HDL_INCLUDE_DIR}/Core/ALU
+                 ${HDL_INCLUDE_DIR}/Core/Cache
                  ${HDL_INCLUDE_DIR}/Core/Stage
                  ${HDL_INCLUDE_DIR}/Core/Pipeline
     VERILATOR_ARGS

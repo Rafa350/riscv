@@ -364,6 +364,7 @@ set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
