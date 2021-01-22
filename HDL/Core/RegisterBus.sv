@@ -8,7 +8,7 @@ interface RegisterBus;
     Data    rdDataA;
     Data    rdDataB;
     Data    wrData;
-    logic   wrEnable;
+    logic   wr;
 
     modport masterReader(
         output rdAddrA,
@@ -25,11 +25,11 @@ interface RegisterBus;
     modport masterWriter(
         output  wrAddr,
         output  wrData,
-        output  wrEnable);
+        output  wr);
 
     modport slaveWriter(
         input wrAddr,
         input wrData,
-        input wrEnable);
+        input wr);
 
 endinterface

@@ -60,17 +60,17 @@ module StageID
     // d'instruccio.
     // ------------------------------------------------------------------------
 
-    OpCode    dec_instOP;
-    RegAddr   dec_instRS1;
-    RegAddr   dec_instRS2;
-    RegAddr   dec_instRD;
-    Data      dec_instIMM;
-    CSRegAddr dec_instCSR;
-    logic     dec_isIllegal;
-    logic     dec_isALU;
-    logic     dec_isECALL;
-    logic     dec_isEBREAK;
-    logic     dec_isCSR;
+    OpCode    dec_instOP;    // Codi d'operacio de la instruccio
+    RegAddr   dec_instRS1;   // Registre RS1
+    RegAddr   dec_instRS2;   // Registre RS2
+    RegAddr   dec_instRD;    // Registre RD
+    Data      dec_instIMM;   // Valor inmediat
+    CSRegAddr dec_instCSR;   // Registre CSR
+    logic     dec_isIllegal; // Indica isntruccio il·legal
+    logic     dec_isALU;     // Instruccio ALU
+    logic     dec_isECALL;   // Instruccio ECALL
+    logic     dec_isEBREAK;  // Instruccio EBREAK
+    logic     dec_isCSR;     // Instruccio CSR
 
     InstDecoder
     dec (

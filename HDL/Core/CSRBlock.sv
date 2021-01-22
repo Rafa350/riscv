@@ -8,13 +8,13 @@ module CSRBlock
     // Senyals d'acces per ISA
     input  CSRegAddr    i_addr,
     input  logic        i_wrEnable,
-    input  logic [1:0]  i_wrMode,     (WRITE, SET, CLEAR)
+    input  WriteMode    i_wrMode,
     input  Data         i_wrData,
     output Data         o_rdData
 
     // Senyals d'acces directe
-    input logic  [31:0] i_time,
-    input logic  [31:0] i_instRet);
+    input  logic [31:0] i_time,
+    input  logic [31:0] i_instRet);
 
 
     localparam Data MISA =
@@ -37,13 +37,13 @@ module CSRBlock
         (1'b0   << 23) |     // X - Non-standard extensions present
 `ifdef RV_BASE_RV32E
         (2'b01  << 30) |     // M-XLEN 32bit
-`endif        
-`ifdef RV_BASE_RV32I        
+`endif
+`ifdef RV_BASE_RV32I
         (2'b01  << 30) |     // M-XLEN 32bit
-`endif        
-`ifdef RV_BASE_RV64I        
+`endif
+`ifdef RV_BASE_RV64I
         (2'b10  << 30) |     // M-XLEN 64bit
-`endif        
+`endif
         0;
 
 
@@ -78,6 +78,23 @@ module CSRBlock
     localparam CSR_INSTRETH = 12'hC82;
 
 
+    Data mstatus;
+    Data mtvec;
+    Data medeleg;
+    Data mideleg;
+    Data mip;
+    Data mie;
+    Data mtime;
+    Data mtimecmp;
+    Data mcounteren;
+    Data scounteren;
+    Data mcoutinhibit;
+    Data mscratch;
+    Data mepc;
+    Data mcause;
+    Data mtval;
+
+
     // -------------------------------------------------------------------
     // Contador de cicles
     // -------------------------------------------------------------------
@@ -93,16 +110,12 @@ module CSRBlock
 
 
     // -------------------------------------------------------------------
-    // Access RW als registres
+    // Access als registres
     // -------------------------------------------------------------------
-
-    // CSR MSTATUS
-    Data mstatus;
-    assign mstatus = 0;
-
 
     always_ff @(posedge i_clock) begin
         if (i_reset) begin
+            mstatus <= 0;
         end
         else if (i_wrEnable) begin
             case (i_addr)
@@ -112,11 +125,15 @@ module CSRBlock
 
     always_comb begin
         case (i_addr)
-            CSR_CYCLE   : o_rdData = cicle;
-            CSR_INSTRET : o_rdData = i_instRet;
-            CSR_MISA    : o_rdData = MISA;
-            CAR_MSTATUS : o_rdData = mstatus;
-            CSR_TIME    : o_rdData = i_time;
+            CSR_CYCLE    : o_rdData = cicle;
+            CSR_INSTRET  : o_rdData = i_instRet;
+
+            CSR_MCAUSE   : o_rdData = mcause;
+            CSR_MISA     : o_rdData = MISA;
+            CSR_MSCRATCH : o_rdData = mscratch;
+            CAR_MSTATUS  : o_rdData = mstatus;
+            CSR_MTVEC    : o_rdData = mtvec;
+            CSR_TIME     : o_rdData = i_time;
         endcase
     end
 

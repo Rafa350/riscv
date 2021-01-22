@@ -29,7 +29,7 @@ module RegisterFile
             for (int i = $left(data); i <= $right(data); i++)
                 data[i] <= ZERO;
         end
-        else if (bus.slaveWriter.wrEnable & (bus.slaveWriter.wrAddr != 0))
+        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != 0))
             data[bus.slaveWriter.wrAddr] <= bus.slaveWriter.wrData;
 
     // Proces de lectura asincrona

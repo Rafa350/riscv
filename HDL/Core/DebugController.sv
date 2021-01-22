@@ -40,17 +40,17 @@ module DebugController
     always_ff @(posedge i_clock)
         if (!i_reset & i_isValid) begin
 
-            dpiTraceTick(tracerObj, i_tick);
-
-            dpiTraceInstruction(tracerObj, int'(i_pc), i_inst);
-
-            if ((i_regWrAddr != 0) & i_regWrEnable)
-                dpiTraceRegister(tracerObj, int'(i_regWrAddr), i_regWrData);
-
-            if (i_memWrEnable)
-                dpiTraceMemory(tracerObj, int'(i_memWrAddr), int'(i_memAccess), i_memWrData);
-
-            $display("");
+            if (i_inst == Inst'(32'h0000006F))
+                $finish;
+            else begin
+                dpiTraceTick(tracerObj, i_tick);
+                dpiTraceInstruction(tracerObj, int'(i_pc), i_inst);
+                if ((i_regWrAddr != 0) & i_regWrEnable)
+                    dpiTraceRegister(tracerObj, int'(i_regWrAddr), i_regWrData);
+                if (i_memWrEnable)
+                    dpiTraceMemory(tracerObj, int'(i_memWrAddr), int'(i_memAccess), i_memWrData);
+                $display("");
+            end
         end
 
     initial

@@ -23,6 +23,13 @@ package Types;
         DataAccess_DWord = 2'b11     // -64 bits (DOUBLE WORD)
     } DataAccess;
 
+    typedef enum logic [1:0] {       // Modus d'escriptura
+        WriteMode_Write,             // -Escriu la dada
+        WriteMode_Set,               // -Activa bits
+        WriteMode_Clear,             // -Borra bits
+        WriteMode_Invert             // -Inverteix bits
+    } WriteMode;
+
     typedef enum logic [6:0] {        // Codis d'operacio de les instruccions
         OpCode_Unknown = 7'b000_0000,
         OpCode_Fence   = 7'b000_1111,

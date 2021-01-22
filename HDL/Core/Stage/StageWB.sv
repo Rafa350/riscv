@@ -11,8 +11,8 @@ module StageWB
     input  RegAddr           i_regWrAddr,    // Adresa d'escriptura del registre
     input  logic             i_regWrEnable); // Habilita l'escriptuira en el registre
 
-    assign regBus.wrAddr   = i_regWrAddr;
-    assign regBus.wrData   = i_regWrData;
-    assign regBus.wrEnable = i_regWrEnable & i_isValid;
+    assign regBus.wrAddr = i_regWrAddr;
+    assign regBus.wrData = i_regWrData;
+    assign regBus.wr     = i_regWrEnable & i_isValid;
 
 endmodule

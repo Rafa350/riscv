@@ -28,12 +28,19 @@ module ProcessorPP
     // Cache L1 d'instruccions
     // -------------------------------------------------------------------
 
+`ifdef RV_ICACHE_ON
     InstL1Cache
     instCache (
         .i_clock  (i_clock),       // Clock
         .i_reset  (i_reset),       // Reset
         .memBus   (instBus),       // Bus de la memoria d'inmstruccions
         .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
+`else
+    assign instBus.addr      = instCacheBus.addr;
+    assign instBus.rd        = instCacheBus.rd;
+    assign instCacheBus.inst = instBus.inst;
+    assign instCacheBus.busy = instBus.busy;
+`endif
 
 
     // -----------------------------------------------------------------------
