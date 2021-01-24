@@ -5,15 +5,13 @@ module InstMemory
 (
     InstMemoryBus.slave bus);
 
-    localparam DATA_WIDTH = $size(Inst);
-    localparam ADDR_WIDTH = $size(InstAddr);
 
     RoMemory #(
-        .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
+        .DATA_WIDTH ($size(Inst)),
+        .ADDR_WIDTH ($size(InstAddr)),
         .FILE_NAME  (FILE_NAME))
     memory (
-        .i_addr   (bus.addr),
-        .o_rdData (bus.inst));
+        .i_addr (bus.addr),
+        .o_data (bus.inst));
 
 endmodule

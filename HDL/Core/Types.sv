@@ -1,11 +1,7 @@
-`include "RV.svh"
-
 package Types;
 
-    localparam DATA_WIDTH = `DATA_WIDTH;
-    localparam ADDR_WIDTH = `ADDR_WIDTH;
-    localparam PC_WIDTH   = `PC_WIDTH;
-    localparam REG_WIDTH  = `REG_WIDTH;
+    import Config::*;
+
 
     typedef logic [DATA_WIDTH-1:0] Data;       // Dades
     typedef logic [31:0]           Inst;       // Instruccions

@@ -15,8 +15,8 @@ module RegisterFile
     // Interficie
     RegisterBus    bus);     // Interficie
 
+
     localparam SIZE = 2**$size(RegAddr);
-    localparam ZERO = {$size(Data){1'b0}};
 
 
     Data data[1:SIZE-1];
@@ -27,16 +27,16 @@ module RegisterFile
     always_ff @(posedge i_clock)
         if (i_reset) begin
             for (int i = $left(data); i <= $right(data); i++)
-                data[i] <= ZERO;
+                data[i] <= Data'(0);
         end
-        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != 0))
+        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != RegAddr'(0)))
             data[bus.slaveWriter.wrAddr] <= bus.slaveWriter.wrData;
 
     // Proces de lectura asincrona
     //
     always_comb begin
-        bus.slaveReader.rdDataA = (i_reset | (bus.slaveReader.rdAddrA == 0)) ? ZERO : data[bus.slaveReader.rdAddrA];
-        bus.slaveReader.rdDataB = (i_reset | (bus.slaveReader.rdAddrB == 0)) ? ZERO : data[bus.slaveReader.rdAddrB];
+        bus.slaveReader.rdDataA = (i_reset | (bus.slaveReader.rdAddrA == RegAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrA];
+        bus.slaveReader.rdDataB = (i_reset | (bus.slaveReader.rdAddrB == RegAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrB];
     end
 
 

@@ -3,7 +3,7 @@
 //       Semi-sumador
 //
 //       Parametres:
-//           WIDTH      : Amplada del canal de dades
+//           WIDTH      : Amplada del canal de dades en bits
 //
 //       Entrada:
 //           i_operandA : Oparans A

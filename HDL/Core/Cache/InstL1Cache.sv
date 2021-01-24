@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module InstL1Cache
     import Types::*;
 (
@@ -9,9 +6,21 @@ module InstL1Cache
     InstMemoryBus.slave  cacheBus,
     InstMemoryBus.master memBus);
 
-    assign memBus.addr   = cacheBus.addr;
-    assign memBus.rd     = cacheBus.rd;
-    assign cacheBus.inst = memBus.inst;
-    assign cacheBus.busy = memBus.busy;
+    logic cache_busy;
+    logic cache_hit;
+
+    ICache
+    cache (
+        .i_clock    (i_clock),
+        .i_reset    (i_reset),
+        .i_mem_data (memBus.inst),
+        .o_mem_addr (memBus.addr),
+        .i_addr     (cacheBus.addr),
+        .i_rd       (cacheBus.rd),
+        .o_inst     (cacheBus.inst),
+        .o_busy     (cache_busy),
+        .o_hit      (cache_hit));
+
+    assign cacheBus.busy = cache_busy | ~cache_hit;
 
 endmodule

@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module StageID_HazardDetector
     import Types::*;
 (

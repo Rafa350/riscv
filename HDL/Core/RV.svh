@@ -2,6 +2,10 @@
 `define __RV_SVH
 
 
+// -----------------------------------------------------------------------
+// Opcions de configuracio
+// -----------------------------------------------------------------------
+
 // Opcions de procesador base
 //
 //`define RV_BASE_RV32E        // Basic enters 32 bits reduccio de registres
@@ -12,7 +16,7 @@
 // Opcions d'extensions del procesador
 //
 //`define RV_EXT_B             // Manipulacio de bits
-`define RV_EXT_C             // Instruccions comprimides
+//`define RV_EXT_C             // Instruccions comprimides
 //`define RV_EXT_D             // Operacions float doble precissio de 64 bits (Implica RV_EXT_F)
 //`define RV_EXT_F             // Operacions float simple precissio de 32 bits
 //`define RV_EXT_M             // Multiplicacio i divisio d'enters
@@ -20,7 +24,8 @@
 
 // Opcions de cache d'instruccions
 //
-//`define RV_ICACHE_ON         // Cache L1 d'instruccions
+`define RV_ICACHE_ON         // Cache L1 d'instruccions
+`define RV_ICACHE_LINES 128  // Nombre de linies de cache
 
 
 // Opcions de cache de dades
@@ -28,30 +33,16 @@
 //`define RV_DCACHE_ON          // Cache L1 de dades
 
 
-// Definicio de parametres fundamentals
+// Opcions d'elaboracio
 //
-`ifdef RV_BASE_RV32E
-`define DATA_WIDTH 32
-`define REG_WIDTH  4
+`ifdef VERILATOR
+`define RV_TARGET_VERILATOR     // Elaboracio per Verilator
+`endif
+`ifdef QUARTUS
+`define RV_TARGET_QUARTUS       // Elaboracio per quartus
 `endif
 
-`ifdef RV_BASE_RV32I
-`define DATA_WIDTH 32
-`define REG_WIDTH  5
-`endif
-
-`ifdef RV_BASE_RV64I
-`define DATA_WIDTH 64
-`define REG_WIDTH  5
-`endif
-
-`ifdef RV_BASE_RV128I
-`define DATA_WIDTH 128
-`define REG_WIDTH  5
-`endif
-
-`define ADDR_WIDTH 32
-`define PC_WIDTH   12
+// -----------------------------------------------------------------------
 
 
 // Definicio de parametres de depuracio

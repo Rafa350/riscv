@@ -1,4 +1,5 @@
 module InstDecoder
+    import Config::*;
     import Types::*;
  (
     input  Inst      i_inst,      // La instruccio a decodificar
@@ -14,6 +15,7 @@ module InstDecoder
     output logic     o_isEBREAK,  // Indica instruccio EBREAK
     output logic     o_isCSR);    // Indica que es una instruccio CSR
 
+
     Data immIValue,
          immSValue,
          immBValue,
@@ -21,12 +23,14 @@ module InstDecoder
          immJValue,
          shamtValue;
 
+
     assign immIValue  = {{21{i_inst[31]}}, i_inst[30:20]};
     assign immSValue  = {{21{i_inst[31]}}, i_inst[30:25], i_inst[11:7]};
     assign immBValue  = {{20{i_inst[31]}}, i_inst[7], i_inst[30:25], i_inst[11:8], 1'b0};
     assign immJValue  = {{12{i_inst[31]}}, i_inst[19:12], i_inst[20], i_inst[30:21], 1'b0};
     assign immUValue  = {i_inst[31:12], 12'b0};
     assign shamtValue = {{27{1'b0}}, i_inst[24:20]};
+
 
     always_comb begin
 
@@ -89,10 +93,11 @@ module InstDecoder
             {10'b0000000_111, OpCode_Op    }: // AND
                 o_isALU = 1'b1;
 
-`ifdef RV_EXT_M
             {10'b0000001_???, OpCode_Op    }: // MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU
-                o_isALU = 1'b1;
-`endif
+                if (RV_EXT_M == 1)
+                    o_isALU = 1'b1;
+                else
+                    o_isIllegal = 1'b1;
 
             {10'b???????_000, OpCode_OpIMM }, // ADDI
             {10'b???????_010, OpCode_OpIMM }, // SLTI

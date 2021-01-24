@@ -1,4 +1,5 @@
 module DatapathController
+    import Config::*;
     import Types::*;
 (
     input  Inst        i_inst,           // La instruccio
@@ -146,7 +147,6 @@ module DatapathController
                     o_aluControl  = AluOp'({1'b0, i_inst[14:12]});
                 end
 
-`ifdef RV_EXT_M
             {10'b0000001_000, OpCode_Op   }, // MUL
             {10'b0000001_001, OpCode_Op   }, // MULH
             {10'b0000001_010, OpCode_Op   }, // MULHSU
@@ -155,9 +155,9 @@ module DatapathController
             {10'b0000001_101, OpCode_Op   }, // DIVU
             {10'b0000001_110, OpCode_Op   }, // REM
             {10'b0000001_111, OpCode_Op   }: // REMU
-                begin
+                if (RV_EXT_M == 1) begin
+                    o_regWrEnable = 1'b1;
                 end
-`endif
 
             {10'b0000000_000, OpCode_Op    }, // ADD
             {10'b0100000_000, OpCode_Op    }, // SUB

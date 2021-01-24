@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module StageMEM
     import Types::*;
 (

@@ -4,7 +4,7 @@ module BranchAlu
     input  logic [1:0] i_op,      // Operacio
 
     input  InstAddr    i_pc,      // PC
-    input  Data        i_instIMM, // Valor inmediat de la isntruccio
+    input  Data        i_instIMM, // Valor inmediat de la instruccio
     input  Data        i_regData, // Valor del registre base
 
     output InstAddr    o_pc);     // El resultat

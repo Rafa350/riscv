@@ -3,7 +3,7 @@
 //       Multiplexor de 4 a 1
 //
 //       Parametres:
-//            WIDTH     : Amplada del canal de dades
+//            WIDTH     : Amplada del canal de dades en bits
 //
 //       Entrades:
 //            i_select  : Seleccio del canal d'entrada
@@ -13,7 +13,7 @@
 //            i_input3  : Canal d'entrada 3
 //
 //       Sortides:
-//            o_output  : El valor de l'entrada seleccionada.
+//            o_output  : El valor del canal seleccionat.
 //
 // -----------------------------------------------------------------------
 

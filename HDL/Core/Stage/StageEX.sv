@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module StageEX
     import Types::*;
 (

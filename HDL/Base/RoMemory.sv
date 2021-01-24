@@ -12,7 +12,7 @@
 //           i_addr     : Adresa de lectura.
 //
 //       Sortida:
-//           o_rdData   : Dades lleigides.
+//           o_data     : Dades lleigides.
 //
 // -----------------------------------------------------------------------
 
@@ -22,8 +22,9 @@ module RoMemory
     parameter ADDR_WIDTH = 32,
     parameter FILE_NAME  = "data.txt")
 (
-    input  logic [ADDR_WIDTH-1:0] i_addr,    // Adressa en bytes
-    output logic [DATA_WIDTH-1:0] o_rdData); // Dades lleigides lectura
+    input  logic [ADDR_WIDTH-1:0] i_addr,  // Adressa en bytes
+    output logic [DATA_WIDTH-1:0] o_data); // Dades lleigides lectura
+
 
     localparam SIZE = (2**ADDR_WIDTH)>>2;
 
@@ -31,8 +32,10 @@ module RoMemory
     logic [DATA_WIDTH-1:0] data[SIZE];
     logic [DATA_WIDTH-1:0] d;
 
+
     assign d = data[i_addr[ADDR_WIDTH-1:2]];
-    assign o_rdData = {d[7:0], d[15:8], d[23:16], d[31:24]};
+    assign o_data = {d[7:0], d[15:8], d[23:16], d[31:24]};
+
 
     initial
         $readmemh(FILE_NAME, data);

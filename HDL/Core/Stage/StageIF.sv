@@ -1,7 +1,5 @@
-`include "RV.svh"
-
-
 module StageIF
+    import Config::*;
     import Types::*;
 (
     // Senyals de control i sincronitzacio
@@ -25,31 +23,37 @@ module StageIF
 
 
     // ------------------------------------------------------------------------
-    // Detecta els hazards deguts a accessos a memoria
+    // Detecta els hazards deguts a accessos a memoria simultanis amb
+    // la lectura e la instruccio
     // ------------------------------------------------------------------------
 
-    StageIF_HazardDetector
-    hazardDetector(
-        .i_MEM_isValid     (i_MEM_isValid),
-        .i_MEM_memRdEnable (i_MEM_memRdEnable),
-        .i_MEM_memWrEnable (i_MEM_memWrEnable),
-        .o_hazard          (o_hazard)); // Indica que s'ha detectat un hazard
+    if (RV_ICACHE_ON)
+        assign o_hazard = instBus.busy;
+    else begin
+        StageIF_HazardDetector
+        hazardDetector(
+            .i_MEM_isValid     (i_MEM_isValid),
+            .i_MEM_memRdEnable (i_MEM_memRdEnable),
+            .i_MEM_memWrEnable (i_MEM_memWrEnable),
+            .o_hazard          (o_hazard)); // Indica que s'ha detectat un hazard
+    end
 
 
     // ------------------------------------------------------------------------
     // Obte la instruccio de la memoria, i si cal la expandeix.
     // ------------------------------------------------------------------------
 
-`ifdef RV_EXT_C
-    InstExpander
-    exp (
-        .i_inst         (instBus.inst),
-        .o_inst         (o_inst),
-        .o_isCompressed (o_instCompressed));
-`else
-      assign o_inst           = instBus.inst;
-      assign o_instCompressed = 1'b0;
-`endif
+    if (RV_EXT_C == 1) begin
+        InstExpander
+        exp (
+            .i_inst         (instBus.inst),
+            .o_inst         (o_inst),
+            .o_isCompressed (o_instCompressed));
+    end
+    else begin
+        assign o_inst           = instBus.inst;
+        assign o_instCompressed = 1'b0;
+    end
 
 
     // ------------------------------------------------------------------------

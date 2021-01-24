@@ -1,6 +1,8 @@
 `include "RV.svh"
 
+
 module ProcessorPP
+    import Config::*;
     import Types::*;
 (
     input  logic         i_clock,  // Clock
@@ -28,19 +30,20 @@ module ProcessorPP
     // Cache L1 d'instruccions
     // -------------------------------------------------------------------
 
-`ifdef RV_ICACHE_ON
-    InstL1Cache
-    instCache (
-        .i_clock  (i_clock),       // Clock
-        .i_reset  (i_reset),       // Reset
-        .memBus   (instBus),       // Bus de la memoria d'inmstruccions
-        .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
-`else
-    assign instBus.addr      = instCacheBus.addr;
-    assign instBus.rd        = instCacheBus.rd;
-    assign instCacheBus.inst = instBus.inst;
-    assign instCacheBus.busy = instBus.busy;
-`endif
+    if (RV_ICACHE_ON == 1) begin
+        InstL1Cache
+        instCache (
+            .i_clock  (i_clock),       // Clock
+            .i_reset  (i_reset),       // Reset
+            .memBus   (instBus),       // Bus de la memoria d'instruccions
+            .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
+    end
+    else begin
+        assign instBus.addr      = instCacheBus.addr;
+        assign instBus.rd        = instCacheBus.rd;
+        assign instCacheBus.inst = instBus.inst;
+        assign instCacheBus.busy = instBus.busy;
+    end
 
 
     // -----------------------------------------------------------------------
