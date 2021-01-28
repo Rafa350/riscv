@@ -8,7 +8,7 @@
 
 
 module top
-    import Types::*;
+    import Config::*, Types::*;
 (
     input         i_clock,   // Clock
     input         i_reset);  // Reset
@@ -43,16 +43,24 @@ module top
     // Procesador
     // -------------------------------------------------------------------
 
-`ifdef PIPELINE
-    ProcessorPP
-`else
-    ProcessorSC
-`endif
-    processor (
-        .i_clock (i_clock),
-        .i_reset (i_reset),
-        .instBus (instBus),
-        .dataBus (dataBus));
+    generate
+        if (RV_ARCH_CPU == "PP") begin
+            ProcessorPP
+            processor (
+                .i_clock (i_clock),
+                .i_reset (i_reset),
+                .instBus (instBus),
+                .dataBus (dataBus));
+        end
+        else if (RV_ARCH_CPU == "SC") begin
+            ProcessorSC
+            processor (
+                .i_clock (i_clock),
+                .i_reset (i_reset),
+                .instBus (instBus),
+                .dataBus (dataBus));
+        end
+    endgenerate
 
 
 endmodule

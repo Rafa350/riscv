@@ -1,7 +1,9 @@
 `include "RV.svh"
 
 
-module top(
+module top
+    import Config::*, Types::*;
+(
     input  logic        CLOCK_50,
     
     // Switches i pulsadors
@@ -38,13 +40,7 @@ module top(
     // I2C EEPROM/ACCELLEROMETER
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
-    
-    
-    parameter DATA_WIDTH = `DATA_WIDTH;
-    parameter ADDR_WIDTH = `ADDR_WIDTH;
-    parameter PC_WIDTH   = `PC_WIDTH;
-    parameter REG_WIDTH  = `REG_WIDTH;
-    
+       
     logic Clock;
     logic Reset;
     logic [7:0] leds;

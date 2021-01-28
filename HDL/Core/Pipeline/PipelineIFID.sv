@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module PipelineIFID
     import Types::*;
 (
@@ -8,14 +5,6 @@ module PipelineIFID
     input  logic    i_clock,           // Clock
     input  logic    i_reset,           // Reset
     input  logic    i_stall,           // Retorna el mateix estat
-
-`ifdef DEBUG
-    // Senyals d'entrada de depuracio
-    input  int      i_dbgTick,         // Numero de tick
-
-    // Senyals de sortidade depuracio
-    output int      o_dbgTick,         // Numero de tick
-`endif
 
     // Senyals d'entrada del pipeline
     input  logic    i_isValid,         // Indica operacio valida
@@ -57,22 +46,5 @@ module PipelineIFID
                     o_instCompressed <= o_instCompressed;
                 end
         endcase
-
-
-`ifdef DEBUG
-    always_ff @(posedge i_clock)
-        case ({i_reset, i_stall})
-            2'b10, // RESET
-            2'b11: // RESET
-                o_dbgTick <= 0;
-
-            2'b01: // STALL
-                ;
-
-            2'b00: // NORMAL
-                o_dbgTick <= i_dbgTick;
-        endcase
-`endif
-
 
 endmodule

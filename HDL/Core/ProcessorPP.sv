@@ -1,9 +1,5 @@
-`include "RV.svh"
-
-
 module ProcessorPP
-    import Config::*;
-    import Types::*;
+    import Config::*, Types::*;
 (
     input  logic         i_clock,  // Clock
     input  logic         i_reset,  // Reset
@@ -21,29 +17,31 @@ module ProcessorPP
 
     RegisterFile
     regs (
-        .i_clock  (i_clock),
-        .i_reset  (i_reset),
-        .bus      (regBus));
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .bus     (regBus));
 
 
     // -------------------------------------------------------------------
     // Cache L1 d'instruccions
     // -------------------------------------------------------------------
 
-    if (RV_ICACHE_ON == 1) begin
-        InstL1Cache
-        instCache (
-            .i_clock  (i_clock),       // Clock
-            .i_reset  (i_reset),       // Reset
-            .memBus   (instBus),       // Bus de la memoria d'instruccions
-            .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
-    end
-    else begin
-        assign instBus.addr      = instCacheBus.addr;
-        assign instBus.rd        = instCacheBus.rd;
-        assign instCacheBus.inst = instBus.inst;
-        assign instCacheBus.busy = instBus.busy;
-    end
+    generate
+        if (RV_ICACHE_ON == 1) begin
+            InstL1Cache
+            instCache (
+                .i_clock  (i_clock),       // Clock
+                .i_reset  (i_reset),       // Reset
+                .memBus   (instBus),       // Bus de la memoria d'instruccions
+                .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
+        end
+        else begin
+            assign instBus.addr      = instCacheBus.addr;
+            assign instBus.rd        = instCacheBus.rd;
+            assign instCacheBus.inst = instBus.inst;
+            assign instCacheBus.busy = instBus.busy;
+        end
+    endgenerate
 
 
     // -----------------------------------------------------------------------
@@ -104,10 +102,6 @@ module ProcessorPP
     Inst     IFID_inst;
     logic    IFID_instCompressed;
 
-`ifdef DEBUG
-    int      IFID_dbgTick;
-`endif
-
     PipelineIFID
     pipelineIFID (
         .i_clock          (i_clock),
@@ -120,14 +114,7 @@ module ProcessorPP
         .o_isValid        (IFID_isValid),
         .o_pc             (IFID_pc),
         .o_inst           (IFID_inst),
-        .o_instCompressed (IFID_instCompressed)
-
-`ifdef DEBUG
-        ,
-        .i_dbgTick (dbg_Tick),
-        .o_dbgTick (IFID_dbgTick)
-`endif
-    );
+        .o_instCompressed (IFID_instCompressed));
 
 
     // ------------------------------------------------------------------------
@@ -210,13 +197,6 @@ module ProcessorPP
     logic [1:0] IDEX_operandASel;
     logic [1:0] IDEX_operandBSel;
 
-`ifdef DEBUG
-    int         IDEX_dbgTick;
-    Inst        IDEX_dbgInst;
-    RegAddr     IDEX_dbgRegWrAddr;
-    logic       IDEX_dbgRegWrEnable;
-`endif
-
     PipelineIDEX
     pipelineIDEX (
         .i_clock          (i_clock),
@@ -252,20 +232,7 @@ module ProcessorPP
         .o_aluControl     (IDEX_aluControl),
         .o_operandASel    (IDEX_operandASel),
         .o_operandBSel    (IDEX_operandBSel),
-        .o_pc             (IDEX_pc)
-
-`ifdef DEBUG
-        ,
-        .i_dbgTick        (IFID_dbgTick),
-        .i_dbgInst        (IFID_inst),
-        .i_dbgRegWrAddr   (ID_regWrAddr),
-        .i_dbgRegWrEnable (ID_regWrEnable),
-        .o_dbgTick        (IDEX_dbgTick),
-        .o_dbgInst        (IDEX_dbgInst),
-        .o_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
-        .o_dbgRegWrEnable (IDEX_dbgRegWrEnable)
-`endif
-    );
+        .o_pc             (IDEX_pc));
 
 
     // ------------------------------------------------------------------------
@@ -289,6 +256,7 @@ module ProcessorPP
         .o_result      (EX_result),
         .o_dataB       (EX_dataB));
 
+
     // ------------------------------------------------------------------------
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
@@ -304,13 +272,6 @@ module ProcessorPP
     logic       EXMEM_memRdEnable;
     DataAccess  EXMEM_memAccess;
     logic       EXMEM_memUnsigned;
-
-`ifdef DEBUG
-    int         EXMEM_dbgTick;
-    Inst        EXMEM_dbgInst;
-    RegAddr     EXMEM_dbgRegWrAddr;
-    logic       EXMEM_dbgRegWrEnable;
-`endif
 
     PipelineEXMEM
     pipelineEXMEM (
@@ -339,20 +300,7 @@ module ProcessorPP
         .o_memUnsigned    (EXMEM_memUnsigned),
         .o_regWrAddr      (EXMEM_regWrAddr),
         .o_regWrEnable    (EXMEM_regWrEnable),
-        .o_regWrDataSel   (EXMEM_regWrDataSel)
-
-`ifdef DEBUG
-        ,
-        .i_dbgTick        (IDEX_dbgTick),
-        .i_dbgInst        (IDEX_dbgInst),
-        .i_dbgRegWrAddr   (IDEX_dbgRegWrAddr),
-        .i_dbgRegWrEnable (IDEX_dbgRegWrEnable),
-        .o_dbgTick        (EXMEM_dbgTick),
-        .o_dbgInst        (EXMEM_dbgInst),
-        .o_dbgRegWrAddr   (EXMEM_dbgRegWrAddr),
-        .o_dbgRegWrEnable (EXMEM_dbgRegWrEnable)
-`endif
-    );
+        .o_regWrDataSel   (EXMEM_regWrDataSel));
 
 
     // ------------------------------------------------------------------------
@@ -389,20 +337,6 @@ module ProcessorPP
     RegAddr     MEMWB_regWrAddr;
     logic       MEMWB_regWrEnable;
 
-`ifdef DEBUG
-    int         MEMWB_dbgTick;
-    InstAddr    MEMWB_dbgPc;
-    Inst        MEMWB_dbgInst;
-    RegAddr     MEMWB_dbgRegWrAddr;
-    logic       MEMWB_dbgRegWrEnable;
-    Data        MEMWB_dbgRegWrData;
-    DataAddr    MEMWB_dbgMemWrAddr;
-    logic       MEMWB_dbgMemWrEnable;
-    Data        MEMWB_dbgMemWrData;
-    DataAccess  MEMWB_dbgMemAccess;
-
-`endif
-
     PipelineMEMWB
     pipelineMEMWB (
         .i_clock          (i_clock),
@@ -415,32 +349,7 @@ module ProcessorPP
         .o_isValid        (MEMWB_isValid),
         .o_regWrAddr      (MEMWB_regWrAddr),
         .o_regWrEnable    (MEMWB_regWrEnable),
-        .o_regWrData      (MEMWB_regWrData)
-
-`ifdef DEBUG
-        ,
-        .i_dbgTick        (EXMEM_dbgTick),
-        .i_dbgPc          (EXMEM_pc),
-        .i_dbgInst        (EXMEM_dbgInst),
-        .i_dbgRegWrAddr   (EXMEM_dbgRegWrAddr),
-        .i_dbgRegWrEnable (EXMEM_dbgRegWrEnable),
-        .i_dbgRegWrData   (MEM_regWrData),
-        .i_dbgMemWrAddr   (dataBus.addr),
-        .i_dbgMemWrEnable (EXMEM_memWrEnable),
-        .i_dbgMemAccess   (EXMEM_memAccess),
-        .i_dbgMemWrData   (dataBus.wrData),
-        .o_dbgTick        (MEMWB_dbgTick),
-        .o_dbgPc          (MEMWB_dbgPc),
-        .o_dbgInst        (MEMWB_dbgInst),
-        .o_dbgRegWrAddr   (MEMWB_dbgRegWrAddr),
-        .o_dbgRegWrEnable (MEMWB_dbgRegWrEnable),
-        .o_dbgRegWrData   (MEMWB_dbgRegWrData),
-        .o_dbgMemWrAddr   (MEMWB_dbgMemWrAddr),
-        .o_dbgMemWrEnable (MEMWB_dbgMemWrEnable),
-        .o_dbgMemAccess   (MEMWB_dbgMemAccess),
-        .o_dbgMemWrData   (MEMWB_dbgMemWrData)
-`endif
-    );
+        .o_regWrData      (MEMWB_regWrData));
 
 
     // ------------------------------------------------------------------------
@@ -459,29 +368,105 @@ module ProcessorPP
     // ------------------------------------------------------------------------
     // Trace
     // Traçat de l'ultima intruccio executada.
+    // Utilitza un pipeline separat, per simplificar, pero que opera
+    // amb paralel amb el pprinmcipal
     // ------------------------------------------------------------------------
 
-`ifdef DEBUG
-    int dbg_Tick;
+    generate
+        if (RV_DEBUG_ON == 1) begin
 
-    DebugController
-    dbg(
-        .i_clock       (i_clock),
-        .i_reset       (i_reset),
-        .i_stall       (stallCtrl_IFID_stall),
-        .i_tick        (MEMWB_dbgTick),
-        .i_isValid     (MEMWB_isValid),
-        .i_pc          (MEMWB_dbgPc),
-        .i_inst        (MEMWB_dbgInst),
-        .i_regWrAddr   (MEMWB_dbgRegWrAddr),
-        .i_regWrEnable (MEMWB_dbgRegWrEnable),
-        .i_regWrData   (MEMWB_dbgRegWrData),
-        .i_memWrAddr   (MEMWB_dbgMemWrAddr),
-        .i_memWrEnable (MEMWB_dbgMemWrEnable),
-        .i_memWrData   (MEMWB_dbgMemWrData),
-        .i_memAccess   (MEMWB_dbgMemAccess),
-        .o_tick        (dbg_Tick));
-`endif
+            int dbgIFID_dbgTick;
+
+            DebugPipelineIFID
+            dbgPipelineIFID(
+                .i_clock   (i_clock),
+                .i_reset   (i_reset),
+                .i_stall   (stallCtrl_IFID_stall),
+                .i_dbgTick (dbgCtrl_tick),
+                .o_dbgTick (dbgIFID_dbgTick));
+
+
+            int  dbgIDEX_dbgTick;
+            Inst dbgIDEX_dbgInst;
+
+            DebugPipelineIDEX
+            dbfPipelineIDEX(
+                .i_clock          (i_clock),
+                .i_reset          (i_reset),
+                .i_stall          (1'b0),
+                .i_flush          (stallCtrl_IDEX_flush),
+                .i_dbgTick        (dbgIFID_dbgTick),
+                .i_dbgInst        (IFID_inst),
+                .o_dbgTick        (dbgIDEX_dbgTick),
+                .o_dbgInst        (dbgIDEX_dbgInst));
+
+
+            int  dbgEXMEM_dbgTick;
+            Inst dbgEXMEM_dbgInst;
+
+            DebugPipelineEXMEM
+            dbgPipelineEXMEM(
+                .i_clock          (i_clock),
+                .i_reset          (i_reset),
+                .i_stall          (1'b0),
+                .i_flush          (1'b0),
+                .i_dbgTick        (dbgIDEX_dbgTick),
+                .i_dbgInst        (dbgIDEX_dbgInst),
+                .o_dbgTick        (dbgEXMEM_dbgTick),
+                .o_dbgInst        (dbgEXMEM_dbgInst));
+
+
+            int        dbgMEMWB_dbgTick;
+            InstAddr   dbgMEMWB_dbgPc;
+            Inst       dbgMEMWB_dbgInst;
+            DataAddr   dbgMEMWB_dbgMemWrAddr;
+            logic      dbgMEMWB_dbgMemWrEnable;
+            Data       dbgMEMWB_dbgMemWrData;
+            DataAccess dbgMEMWB_dbgMemAccess;
+
+            DebugPipelineMEMWB
+            dbgMPipelineMEMWB(
+                .i_clock          (i_clock),
+                .i_reset          (i_reset),
+                .i_flush          (stallCtrl_MEMWB_flush),
+                .i_dbgTick        (dbgEXMEM_dbgTick),
+                .i_dbgPc          (EXMEM_pc),
+                .i_dbgInst        (dbgEXMEM_dbgInst),
+                .i_dbgMemWrAddr   (dataBus.addr),
+                .i_dbgMemWrEnable (EXMEM_memWrEnable),
+                .i_dbgMemAccess   (EXMEM_memAccess),
+                .i_dbgMemWrData   (dataBus.wrData),
+                .o_dbgTick        (dbgMEMWB_dbgTick),
+                .o_dbgPc          (dbgMEMWB_dbgPc),
+                .o_dbgInst        (dbgMEMWB_dbgInst),
+                .o_dbgMemWrAddr   (dbgMEMWB_dbgMemWrAddr),
+                .o_dbgMemWrEnable (dbgMEMWB_dbgMemWrEnable),
+                .o_dbgMemAccess   (dbgMEMWB_dbgMemAccess),
+                .o_dbgMemWrData   (dbgMEMWB_dbgMemWrData));
+
+
+            int dbgCtrl_tick;
+
+            DebugController
+            dbgCtrl(
+                .i_clock       (i_clock),
+                .i_reset       (i_reset),
+                .i_stall       (stallCtrl_IFID_stall),
+                .i_tick        (dbgMEMWB_dbgTick),
+                .i_isValid     (MEMWB_isValid),
+                .i_pc          (dbgMEMWB_dbgPc),
+                .i_inst        (dbgMEMWB_dbgInst),
+                .i_regWrAddr   (MEMWB_regWrAddr),
+                .i_regWrEnable (MEMWB_regWrEnable),
+                .i_regWrData   (MEMWB_regWrData),
+                .i_memWrAddr   (dbgMEMWB_dbgMemWrAddr),
+                .i_memWrEnable (dbgMEMWB_dbgMemWrEnable),
+                .i_memWrData   (dbgMEMWB_dbgMemWrData),
+                .i_memAccess   (dbgMEMWB_dbgMemAccess),
+                .o_tick        (dbgCtrl_tick));
+
+        end
+    endgenerate
 
 
 endmodule

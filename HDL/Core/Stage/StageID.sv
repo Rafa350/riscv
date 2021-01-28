@@ -67,6 +67,7 @@ module StageID
     logic     dec_isALU;     // Instruccio ALU
     logic     dec_isECALL;   // Instruccio ECALL
     logic     dec_isEBREAK;  // Instruccio EBREAK
+    logic     dec_isMRET;    // Instruccio MRET
     logic     dec_isCSR;     // Instruccio CSR
 
     InstDecoder
@@ -82,6 +83,7 @@ module StageID
         .o_isALU     (dec_isALU),
         .o_isECALL   (dec_isECALL),
         .o_isEBREAK  (dec_isEBREAK),
+        .o_isMRET    (dec_isMRET),
         .o_isCSR     (dec_isCSR));
 
 

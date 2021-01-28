@@ -1,11 +1,11 @@
 module CSRBlock
-    import Types::*;
+    import Config::*, Types::*;
 (
     // Senyals de control
     input  logic        i_clock,
     input  logic        i_reset,
 
-    // Senyals d'acces als registres 
+    // Senyals d'acces als registres
     input  CSRegAddr    i_addr,
     input  logic        i_wrEnable,
     input  WriteMode    i_wrMode,
@@ -18,18 +18,14 @@ module CSRBlock
 
     localparam Data MISA =
         (1'b0   <<  0) |     // A - Atomic Instructions extension
-`ifdef RV_EXT_C
-        (1'b1   <<  2) |     // C - Compressed extension
-`endif
-        (1'b0   <<  3) |     // D - Double precision floating-point extension
+        (RV_EXT_C  <<  2) |  // C - Compressed extension
+        (RV_EXT_D  <<  3) |  // D - Double precision floating-point extension
 `ifdef RV_BASE_RV32E
         (1'b1   <<  4) |     // E - RV32E base ISA
 `endif
-        (1'b0   <<  5) |     // F - Single precision floating-point extension
+        (RV_EXT_F <<  5) |   // F - Single precision floating-point extension
         (1'b1   <<  8) |     // I - RV32I/64I/128I base ISA
-`ifdef RV_EXT_M
-        (1'b1   << 12) |     // M - Integer Multiply/Divide extension
-`endif
+        (RV_EXT_M << 12) |   // M - Integer Multiply/Divide extension
         (1'b0   << 13) |     // N - User level interrupts supported
         (1'b0   << 18) |     // S - Supervisor mode implemented
         (1'b1   << 20) |     // U - User mode implemented
@@ -83,7 +79,7 @@ module CSRBlock
     localparam CSR_TIMEH    = 12'hC81;
     localparam CSR_INSTRETH = 12'hC82;
 
-    
+
     Data cycle;    // Contador de cicles
     Data instret;  // Contador d'instruccions
 
@@ -104,7 +100,7 @@ module CSRBlock
 
 
     // -------------------------------------------------------------------
-    // Actualitza contadors 
+    // Actualitza contadors
     // -------------------------------------------------------------------
 
     always_ff @(posedge i_clock) begin
@@ -114,7 +110,7 @@ module CSRBlock
         end
         else begin
             cycle <= cicle + 1;
-            if (i_instRet) 
+            if (i_instRet)
                 instret <= instret + 1;
         end
     end
@@ -149,7 +145,7 @@ module CSRBlock
             CAR_MSTATUS : o_rdData = mstatus;
             CSR_MTVEC   : o_rdData = mtvec;
             CSR_TIME    : o_rdData = i_time;
-            
+
             default     : o_rdData = Data'(0);
         endcase
     end

@@ -3,7 +3,7 @@
 ## CPU features
 - Base RV32I, RV64I or RV32E
 - Optional extensions M and C
-- Clasic five pipeline stages
+- Classic five pipeline stages
 - Harvard architecture
 - Machine mode only
 - CSR block
@@ -23,10 +23,10 @@
 - ProcessorSC.sv : Single cycle processor for verification and comparation purposes
 - Stage/*.sv     : Files for stages
 - Pipeline/*.sv  : Files for pipeline registers
-    
-    
+
+
 ## Future things
--  L1 Instruction cache 
+-  L1 Instruction cache
 -  L1 Data cache
 -  L2 Cache and SDRAM interface
 -  Peripherical bus (Wishbone ?)

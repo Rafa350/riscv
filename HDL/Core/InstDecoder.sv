@@ -1,6 +1,5 @@
 module InstDecoder
-    import Config::*;
-    import Types::*;
+    import Config::*, Types::*;
  (
     input  Inst      i_inst,      // La instruccio a decodificar
     output OpCode    o_instOP,    // El codi d'operacio
@@ -13,6 +12,7 @@ module InstDecoder
     output logic     o_isALU,     // Indica que es una instruccio ALU
     output logic     o_isECALL,   // Indica instruccio ECALL
     output logic     o_isEBREAK,  // Indica instruccio EBREAK
+    output logic     o_isMRET,    // Indica instruccio MRET
     output logic     o_isCSR);    // Indica que es una instruccio CSR
 
 
@@ -45,6 +45,7 @@ module InstDecoder
         o_isALU     = 1'b0;
         o_isEBREAK  = 1'b0;
         o_isECALL   = 1'b0;
+        o_isMRET    = 1'b0;
         o_isCSR     = 1'b0;
 
         unique casez ({i_inst[31:25], i_inst[14:12], i_inst[6:0]})
@@ -115,16 +116,28 @@ module InstDecoder
             {10'b???????_010, OpCode_Store }: // SW
                 o_instIMM = immSValue;
 
-            {10'b???????_00?, OpCode_Fence }:
+            {10'b0000???_000, OpCode_Fence }: // FENCE
                 o_isIllegal = 1'b1;
 
-            {10'b???????_000, OpCode_System}:
+            {10'b0000000_001, OpCode_Fence }: // FENCE.I
+                o_isIllegal = 1'b1;
+
+            {10'b0000000_000, OpCode_System}:
                 case (i_inst[24:20])
                     5'b0000:                  // EBREAK
                         o_isEBREAK = 1'b1;
 
                     5'b0001:                  // ECALL
                         o_isECALL = 1'b1;
+
+                    default:
+                        o_isIllegal = 1'b1;
+                endcase
+
+            {10'b0011000_000, OpCode_System}:
+                case (i_inst[24:20])
+                    5'b0010:                  // MRET
+                        o_isMRET = 1'b1;
 
                     default:
                         o_isIllegal = 1'b1;

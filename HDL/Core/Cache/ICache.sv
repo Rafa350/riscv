@@ -1,6 +1,5 @@
 module ICache
-    import Config::*;
-    import Types::*;
+    import Config::*, Types::*;
 (
     input  logic    i_clock,     // Senyal de rellotge
     input  logic    i_reset,     // Senyal de reset

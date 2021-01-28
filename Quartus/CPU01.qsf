@@ -363,12 +363,18 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_RAS
 set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
+set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Config.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/ICache.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheSet.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheMem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ALU/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/StallController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstMemoryBus.sv
@@ -385,6 +391,10 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageID_Forward
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Stage/StageWB.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/DebugPipelineMEMWB.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/DebugPipelineIFID.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/DebugPipelineIDEX.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/DebugPipelineEXMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIFID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIDEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXMEM.sv

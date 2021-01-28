@@ -1,6 +1,5 @@
 module StageIF
-    import Config::*;
-    import Types::*;
+    import Config::*, Types::*;
 (
     // Senyals de control i sincronitzacio
     input  logic         i_clock,  // Clock
@@ -27,6 +26,7 @@ module StageIF
     // la lectura e la instruccio
     // ------------------------------------------------------------------------
 
+    generate
     if (RV_ICACHE_ON)
         assign o_hazard = instBus.busy;
     else begin
@@ -37,12 +37,14 @@ module StageIF
             .i_MEM_memWrEnable (i_MEM_memWrEnable),
             .o_hazard          (o_hazard)); // Indica que s'ha detectat un hazard
     end
+    endgenerate
 
 
     // ------------------------------------------------------------------------
     // Obte la instruccio de la memoria, i si cal la expandeix.
     // ------------------------------------------------------------------------
 
+    generate
     if (RV_EXT_C == 1) begin
         InstExpander
         exp (
@@ -54,6 +56,7 @@ module StageIF
         assign o_inst           = instBus.inst;
         assign o_instCompressed = 1'b0;
     end
+    endgenerate
 
 
     // ------------------------------------------------------------------------

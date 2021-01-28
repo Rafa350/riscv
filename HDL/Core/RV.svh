@@ -13,21 +13,6 @@
 //`define RV_BASE_RV64I        // Basic enters 64 bits
 
 
-// Opcions d'extensions del procesador
-//
-//`define RV_EXT_B             // Manipulacio de bits
-//`define RV_EXT_C             // Instruccions comprimides
-//`define RV_EXT_D             // Operacions float doble precissio de 64 bits (Implica RV_EXT_F)
-//`define RV_EXT_F             // Operacions float simple precissio de 32 bits
-//`define RV_EXT_M             // Multiplicacio i divisio d'enters
-
-
-// Opcions de cache d'instruccions
-//
-`define RV_ICACHE_ON         // Cache L1 d'instruccions
-`define RV_ICACHE_LINES 128  // Nombre de linies de cache
-
-
 // Opcions de cache de dades
 //
 //`define RV_DCACHE_ON          // Cache L1 de dades
@@ -36,10 +21,10 @@
 // Opcions d'elaboracio
 //
 `ifdef VERILATOR
-`define RV_TARGET_VERILATOR     // Elaboracio per Verilator
+`define RV_COMPILER_VERILATOR   // Elaboracio per Verilator
 `endif
 `ifdef QUARTUS
-`define RV_TARGET_QUARTUS       // Elaboracio per quartus
+`define RV_COMPILER_QUARTUS     // Elaboracio per quartus
 `endif
 
 // -----------------------------------------------------------------------
@@ -48,14 +33,6 @@
 // Definicio de parametres de depuracio
 //
 `define FIRMWARE   "firmware.txt"
-`define PIPELINE
-`define DEBUG
-
-
-// Adresses dels vectors d'interrupcio
-//
-`define RV_VECTOR_RESET  32'h0
-`define RV_VECTOR_NMI    32'h4
 
 
 // Adresses dels blocs de memoria

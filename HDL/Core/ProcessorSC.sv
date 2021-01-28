@@ -1,4 +1,3 @@
-`include "RV.svh"
 
 module ProcessorSC
     import Types::*;
@@ -33,7 +32,7 @@ module ProcessorSC
         .i_clock        (i_clock),
         .i_reset        (i_reset),
         .i_stall        (0),
-        .i_ok           (1),
+        .i_isValid      (1),
         .i_tick         (dbgCtrl_tick),
         .i_pc           (instBus.addr),
         .i_inst         (instBus.inst),
@@ -132,26 +131,26 @@ module ProcessorSC
         .i_reset    (i_reset),
         .bus        (regBus));
 
-    assign regs_rdDataA                 = regBus.masterReader.rdDataA;
-    assign regs_rdDataB                 = regBus.masterReader.rdDataB;
-    assign regBus.masterWriter.wrAddr   = dec_instRD;
-    assign regBus.masterWriter.wrData   = sel3_output;
-    assign regBus.masterWriter.wrEnable = dpCtrl_regWrEnable;
+    assign regs_rdDataA               = regBus.masterReader.rdDataA;
+    assign regs_rdDataB               = regBus.masterReader.rdDataB;
+    assign regBus.masterWriter.wrAddr = dec_instRD;
+    assign regBus.masterWriter.wrData = sel3_output;
+    assign regBus.masterWriter.wr     = dpCtrl_regWrEnable;
 
 
     // ------------------------------------------------------------------------
     // Selecciona les dades d'entrada A de la alu
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] operandASelector_output;
+    logic [$size(Data)-1:0] operandASelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
+        .WIDTH ($size(Data)))
     operandASelector (
         .i_select (dpCtrl_operandASel),
         .i_input0 (regs_rdDataA),
-        .i_input1 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, pc}),
+        .i_input1 (Data'(pc)),
         .i_input2 ('d0),
         .o_output (operandASelector_output));
     // verilator lint_on PINMISSING
@@ -161,16 +160,16 @@ module ProcessorSC
     // Selecciona les dades d'entrada B de la ALU
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] operandBSelector_output;
+    logic [$size(Data)-1:0] operandBSelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
+        .WIDTH ($size(Data)))
     operandBSelector (
         .i_select (dpCtrl_operandBSel),
         .i_input0 (regs_rdDataB),
         .i_input1 (dec_instIMM),
-        .i_input2 ('d4),
+        .i_input2 (Data'(4)),
         .o_output (operandBSelector_output));
     // verilator lint_on PINMISSING
 
@@ -179,16 +178,16 @@ module ProcessorSC
     // Selecciona les dades per escriure en el registre
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] sel3_output;
+    logic [$size(Data)-1:0] sel3_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH  (DATA_WIDTH))
+        .WIDTH ($size(Data)))
     sel3 (
         .i_select (dpCtrl_regWrDataSel),
-        .i_input0 (alu_result),             // Escriu el resultat de la ALU
-        .i_input1 (dataBus.rdData),            // Escriu el valor lleigit de la memoria
-        .i_input2 ({{DATA_WIDTH-PC_WIDTH{1'b0}}, pcPlus4}), // Escriu el valor de PC+4
+        .i_input0 (alu_result),      // Escriu el resultat de la ALU
+        .i_input1 (dataBus.rdData),  // Escriu el valor lleigit de la memoria
+        .i_input2 (Data'(pcPlus4)),  // Escriu el valor de PC+4
         .o_output (sel3_output));
     // verilator lint_on PINMISSING
 
@@ -197,7 +196,7 @@ module ProcessorSC
     // ALU
     // ------------------------------------------------------------------------
 
-    logic [DATA_WIDTH-1:0] alu_result;
+    logic [$size(Data)-1:0] alu_result;
 
     ALU
     alu (
@@ -210,7 +209,7 @@ module ProcessorSC
     // Evalua PC = PC + 4
     //
     HalfAdder #(
-        .WIDTH (PC_WIDTH))
+        .WIDTH ($size(InstAddr)))
     adder1 (
         .i_operandA (pc),
         .i_operandB (4),
@@ -222,22 +221,22 @@ module ProcessorSC
     InstAddr pcPlusOffset;
 
     HalfAdder #(
-        .WIDTH (PC_WIDTH))
+        .WIDTH ($size(InstAddr)))
     Adder2 (
         .i_operandA (pc),
-        .i_operandB (dec_instIMM[PC_WIDTH-1:0]),
+        .i_operandB (dec_instIMM[$size(InstAddr)-1:0]),
         .o_result   (pcPlusOffset));
 
 
     // Evalua PC = [rs1] + offset
     //
-    logic [PC_WIDTH-1:0] pcPlusOffsetAndRS1;
+    logic [$size(InstAddr)-1:0] pcPlusOffsetAndRS1;
 
     HalfAdder #(
-        .WIDTH (PC_WIDTH))
+        .WIDTH ($size(InstAddr)))
     adder3 (
-        .i_operandA (dec_instIMM[PC_WIDTH-1:0]),
-        .i_operandB (regs_rdDataA[PC_WIDTH-1:0]),
+        .i_operandA (dec_instIMM[$size(InstAddr)-1:0]),
+        .i_operandB (regs_rdDataA[$size(InstAddr)-1:0]),
         .o_result   (pcPlusOffsetAndRS1));
 
 
@@ -257,21 +256,21 @@ module ProcessorSC
     //
     Register #(
         .WIDTH ($size(InstAddr)),
-        .INIT  ({PC_WIDTH{1'b0}}))
+        .INIT  (InstAddr'(0)))
     PCReg (
-        .i_clock    (i_clock),
-        .i_reset    (i_reset),
-        .i_wrEnable (1),
-        .i_wrData   (pcNext),
-        .o_rdData   (pc));
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .i_wr    (1),
+        .i_data  (pcNext),
+        .o_data  (pc));
 
 
     // Interface amb la memoria RAM
     //
     always_comb begin
-        dataBus.addr     = alu_result[$size(DataAddr)-1:0];
-        dataBus.wrEnable = dpCtrl_memWrEnable;
-        dataBus.wrData   = regs_rdDataB;
+        dataBus.addr   = alu_result[$size(DataAddr)-1:0];
+        dataBus.wr     = dpCtrl_memWrEnable;
+        dataBus.wrData = regs_rdDataB;
     end
 
 

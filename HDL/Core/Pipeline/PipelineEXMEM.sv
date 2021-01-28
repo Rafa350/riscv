@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module PipelineEXMEM
     import Types::*;
 (
@@ -9,20 +6,6 @@ module PipelineEXMEM
     input  logic       i_reset,        // Reset
     input  logic       i_stall,        // Retorna el mateix estat. Te prioritat sobre flush
     input  logic       i_flush,        // Retorna l'estat NOP
-
-`ifdef DEBUG
-    // Senyals d'entrada de depuracio
-    input  int         i_dbgTick,        // Numero de tick
-    input  Inst        i_dbgInst,        // Instruccio
-    input  RegAddr     i_dbgRegWrAddr,   // Registre per escriure
-    input  logic       i_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
-
-    // Senyals de sortidade depuracio
-    output int         o_dbgTick,        // Numero de tick
-    output Inst        o_dbgInst,        // Instruccio
-    output RegAddr     o_dbgRegWrAddr,   // Registre per escriure
-    output logic       o_dbgRegWrEnable, // Autoritzacio d'escriptura en registre
-`endif
 
     // Senyals d'entrada al pipeline
     input  logic       i_isValid,        // Indica operacio valida
@@ -75,31 +58,6 @@ module PipelineEXMEM
                     o_regWrDataSel <= i_regWrDataSel;
                 end
         endcase
-
-`ifdef DEBUG
-    always_ff @(posedge i_clock)
-        casez ({i_reset, i_stall, i_flush})
-            3'b1??, // RESET
-            3'b001: // FLUSH
-                begin
-                    o_dbgTick        <= i_flush ? i_dbgTick : 0;
-                    o_dbgInst        <= Inst'(0);
-                    o_dbgRegWrAddr   <= RegAddr'(0);
-                    o_dbgRegWrEnable <= 1'b0;
-                end
-
-            3'b01?: // STALL
-                ;
-
-            3'b000: // NORMAL
-                begin
-                    o_dbgTick        <= i_dbgTick;
-                    o_dbgInst        <= i_dbgInst;
-                    o_dbgRegWrAddr   <= i_dbgRegWrAddr;
-                    o_dbgRegWrEnable <= i_dbgRegWrEnable;
-                end
-        endcase
-`endif
 
 
 endmodule

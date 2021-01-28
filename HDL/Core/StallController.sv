@@ -13,6 +13,9 @@ module StallController
     output logic o_MEMWB_flush);
 
 
+    // TODO optimitzar amb isValid de cada etapa
+
+
     assign o_IFID_stall = i_ID_hazard | i_IF_hazard | o_IDEX_stall;
 
     assign o_IDEX_stall = i_EX_hazard | o_EXMEM_stall;
