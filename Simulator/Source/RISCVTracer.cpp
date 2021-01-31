@@ -8,8 +8,9 @@
 using namespace RISCV;
 
 
-static const char* getRegName(uint32_t reg);
-//static const char* getFpRegName(uint32_t reg);
+static const char* getGPRegName(gpr_t reg);
+static const char* getCSRegName(csr_t reg);
+//static const char* getFPRegName(uint32_t reg);
 
 
 /// ----------------------------------------------------------------------
@@ -33,9 +34,9 @@ void Tracer::traceInst(
     unsigned fn3 = (inst >> 12) & 0x07;
     unsigned fn7 = (inst >> 25) & 0x7F;
     const char *name = "???";
-    const char *rs1 = getRegName((inst >> 15) & 0x1F);
-    const char *rs2 = getRegName((inst >> 20) & 0x1F);
-    const char *rd  = getRegName((inst >> 7) & 0x1F);
+    const char *rs1 = getGPRegName((inst >> 15) & 0x1F);
+    const char *rs2 = getGPRegName((inst >> 20) & 0x1F);
+    const char *rd  = getGPRegName((inst >> 7) & 0x1F);
 
     printf("I: %8.8X  %8.8X:  ", addr, inst);
 
@@ -195,8 +196,34 @@ void Tracer::traceInst(
             break;
         }
 
-        case OpCode::System:
+        case OpCode::System: {
+            switch (fn3) {
+                case 0b001:
+                case 0b101:
+                    name = "csrrv";
+                    break;
+
+                case 0b010:
+                case 0b110:
+                    name = "csrrs";
+                    break;
+
+                case 0b011:
+                case 0b111:
+                    name = "csrrc";
+                    break;
+            }
+            if (fn3 != 0b000) {
+                csr_t csr = (inst >> 20) & 0x00000FFF;
+                const char* csrName = getCSRegName(csr);
+                uint32_t imm = (inst >> 15) & 0x1F;
+                if ((fn3 & 0b100) == 0b100)
+                    printf("%si %s, %s, %2.2X", name, rd, csrName, imm);
+                else
+                    printf("%s  %s, %s, %s", name, rd, csrName, rs1);
+            }
             break;
+        }
 
         case OpCode::AUIPC: {
             data_t imm =
@@ -254,11 +281,11 @@ void Tracer::traceTick(
 /// \param    data: El valor del registre
 ///
 void Tracer::traceReg(
-    reg_t reg,
+    gpr_t reg,
     data_t data) {
 
     if (reg) {
-        const char *regName = getRegName(reg);
+        const char *regName = getGPRegName(reg);
 
         printf("R: %s = %8.8X  (%d)\n", regName, data, data);
     }
@@ -288,12 +315,13 @@ void Tracer::traceMem(
 
 /// ----------------------------------------------------------------------
 /// \brief    Obte el nom del registre.
-/// \param    addr: Adressa del registre.
-/// \return
-static const char* getRegName(
-    reg_t regAddr) {
+/// \param    reg: Adressa del registre.
+/// \return   El nom del registre
+///
+static const char* getGPRegName(
+    gpr_t reg) {
 
-    switch (regAddr) {
+    switch (reg) {
         case 0: return "zero";
         case 1: return "ra";
         case 2: return "sp";
@@ -331,8 +359,38 @@ static const char* getRegName(
 }
 
 
-/*static const char* getFpRegName(
-    reg_t regAddr) {
+/// ----------------------------------------------------------------------
+/// \brief    Obte el nom d'un registre CSR
+/// \param    reg: Adressa del registre
+/// \return   El nom del registre
+///
+static const char* getCSRegName(
+    csr_t reg) {
+
+    switch (reg) {
+        case 0x300: return "mstatus";
+        case 0x301: return "misa";
+        case 0x302: return "medeleg";
+        case 0x303: return "mideleg";
+        case 0x304: return "mie";
+        case 0x305: return "mtvec";
+        case 0x306: return "mcounteren";
+        case 0x320: return "mcountinhibit";
+        case 0x340: return "mscratch";
+        case 0x341: return "mepc";
+        case 0x342: return "mcause";
+        case 0x343: return "mtval";
+        case 0x344: return "mip";
+        case 0xB00: return "mcycle";
+        case 0xB02: return "minstret";
+        default   : return "???";
+    }
+}
+
+
+
+/*static const char* getFPRegName(
+    reg_t reg) {
 
     return "fpX";
 }*/

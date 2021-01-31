@@ -10,26 +10,26 @@ module PipelineEXMEM
     // Senyals d'entrada al pipeline
     input  logic       i_isValid,        // Indica operacio valida
     input  InstAddr    i_pc,             // Adressa de la instruccio
-    input  Data        i_result,
-    input  Data        i_dataB,
+    input  Data        i_dataR,          // Dades del resultat
+    input  Data        i_dataB,          // Dades B
     input  logic       i_memWrEnable,    // Autoritza l'escriptura en la memoria
     input  logic       i_memRdEnable,    // Habilita la lectura de la memoria
     input  DataAccess  i_memAccess,      // Tamany del access a la memoria
     input  logic       i_memUnsigned,    // Lectura de memoria sense signe
-    input  RegAddr     i_regWrAddr,
+    input  GPRAddr     i_regWrAddr,
     input  logic       i_regWrEnable,    // Autoritza l'escriptura en els registres
     input  logic [1:0] i_regWrDataSel,
 
     // Senyals de sortida del pipeline
     output logic       o_isValid,        // Indica operacio valida
     output InstAddr    o_pc,
-    output Data        o_result,
+    output Data        o_dataR,
     output Data        o_dataB,
     output logic       o_memWrEnable,  // Autoritza l'escriptura en memoria
     output logic       o_memRdEnable,  // Autoritza la lectura de la memoria
     output DataAccess  o_memAccess,    // Tamany del acces a la memoria
     output logic       o_memUnsigned,  // Lectura de memoria sense signe
-    output RegAddr     o_regWrAddr,
+    output GPRAddr     o_regWrAddr,
     output logic       o_regWrEnable,
     output logic [1:0] o_regWrDataSel);
 
@@ -47,7 +47,7 @@ module PipelineEXMEM
                 begin
                     o_isValid      <= i_isValid;
                     o_pc           <= i_pc;
-                    o_result       <= i_result;
+                    o_dataR        <= i_dataR;
                     o_dataB        <= i_dataB;
                     o_memWrEnable  <= i_memWrEnable;
                     o_memRdEnable  <= i_memRdEnable;

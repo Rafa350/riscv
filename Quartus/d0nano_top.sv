@@ -1,6 +1,3 @@
-`include "RV.svh"
-
-
 module top
     import Config::*, Types::*;
 (
@@ -41,12 +38,12 @@ module top
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
        
-    logic Clock;
-    logic Reset;
+    logic clock;
+    logic reset;
     logic [7:0] leds;
 
-    assign Clock = CLOCK_50;
-    assign Reset = ~KEY[0];
+    assign clock = CLOCK_50;
+    assign reset = ~KEY[0];
 
 
     DataMemoryBus dataBus();        
@@ -56,7 +53,7 @@ module top
     // Port IO LEDSA
     // ------------------------------------------------------------------------
     
-    always_ff @(posedge Clock)
+    always_ff @(posedge clock)
         if (dataBus.wrData & dataBus.addr == 10'h0200)
             LED <= dataBus.wrData[7:0];
 
@@ -67,7 +64,7 @@ module top
     
     DataMemory1024x32
     DataMem (
-        .i_clock (Clock),
+        .i_clock (clock),
         .bus     (dataBus));
 
       
@@ -84,15 +81,24 @@ module top
     // CPU
     // ------------------------------------------------------------------------
     
-`ifdef PIPELINE
-    ProcessorPP
-`else    
-    ProcessorSC
-`endif    
-    Cpu (
-        .i_clock (Clock),
-        .i_reset (Reset),
-        .instBus (instBus),
-        .dataBus (dataBus));
+    generate
+        if (RV_ARCH_CPU == "PP") begin
+            ProcessorPP
+            processor (
+                .i_clock (clock),
+                .i_reset (reset),
+                .instBus (instBus),
+                .dataBus (dataBus));
+       end
+       
+       else if (RV_ARCH_CPU == "SC") begin
+            ProcessorSC
+            processor (
+                .i_clock (clock),
+                .i_reset (reset),
+                .instBus (instBus),
+                .dataBus (dataBus));
+       end
+    endgenerate
        
 endmodule

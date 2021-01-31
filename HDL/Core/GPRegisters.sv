@@ -5,7 +5,7 @@
 // -El registre 0 sempre val zero
 // -Durant el reset, tots els registres s'asignen al valor zero.
 //
-module RegisterFile
+module GPRegisters
     import Types::*;
 (
     // Control
@@ -13,10 +13,10 @@ module RegisterFile
     input  logic   i_reset,  // Reset
 
     // Interficie
-    RegisterBus    bus);     // Interficie
+    GPRegistersBus bus);     // Interficie
 
 
-    localparam SIZE = 2**$size(RegAddr);
+    localparam SIZE = 2**$size(GPRAddr);
 
 
     Data data[1:SIZE-1];
@@ -29,14 +29,14 @@ module RegisterFile
             for (int i = $left(data); i <= $right(data); i++)
                 data[i] <= Data'(0);
         end
-        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != RegAddr'(0)))
+        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != GPRAddr'(0)))
             data[bus.slaveWriter.wrAddr] <= bus.slaveWriter.wrData;
 
     // Proces de lectura asincrona
     //
     always_comb begin
-        bus.slaveReader.rdDataA = (i_reset | (bus.slaveReader.rdAddrA == RegAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrA];
-        bus.slaveReader.rdDataB = (i_reset | (bus.slaveReader.rdAddrB == RegAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrB];
+        bus.slaveReader.rdDataA = (i_reset | (bus.slaveReader.rdAddrA == GPRAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrA];
+        bus.slaveReader.rdDataB = (i_reset | (bus.slaveReader.rdAddrB == GPRAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrB];
     end
 
 

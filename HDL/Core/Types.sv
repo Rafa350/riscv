@@ -3,14 +3,14 @@ package Types;
     import Config::*;
 
 
-    typedef logic [DATA_WIDTH-1:0] Data;       // Dades
-    typedef logic [31:0]           Inst;       // Instruccions
+    typedef logic [DATA_WIDTH-1:0] Data;     // Dades
+    typedef logic [31:0]           Inst;     // Instruccions
 
-    typedef logic [ADDR_WIDTH-1:0] DataAddr;   // Adressa de dades
-    typedef logic [PC_WIDTH-1:0]   InstAddr;   // Adressa d'instruccio
-    typedef logic [REG_WIDTH-1:0]  RegAddr;    // Adressa de registre int
-    typedef logic [4:0]            FRegAddr;   // Adressa de registre float
-    typedef logic [11:0]           CSRegAddr;  // Adressa de registre CSR
+    typedef logic [ADDR_WIDTH-1:0] DataAddr; // Adressa de dades
+    typedef logic [PC_WIDTH-1:0]   InstAddr; // Adressa d'instruccio
+    typedef logic [REG_WIDTH-1:0]  GPRAddr;  // Adressa de registre GPR (General Purpouse Register)
+    typedef logic [4:0]            FPRAddr;  // Adressa de registre FPR (Floating Point >Register)
+    typedef logic [11:0]           CSRAddr;  // Adressa de registre CSR (Control & Status Regiuster)
 
     typedef enum logic [1:0] {       // Modus d'acces a la memoria
         DataAccess_Byte  = 2'b00,    // -8 bits (BYTE)
@@ -19,12 +19,12 @@ package Types;
         DataAccess_DWord = 2'b11     // -64 bits (DOUBLE WORD)
     } DataAccess;
 
-    typedef enum logic [1:0] {       // Modus d'escriptura
-        WriteMode_Write,             // -Escriu la dada
-        WriteMode_Set,               // -Activa bits
-        WriteMode_Clear,             // -Borra bits
-        WriteMode_Invert             // -Inverteix bits
-    } WriteMode;
+    typedef enum logic [1:0] {       // Modus d'execucio
+        RunMode_User       = 2'b00,  // -Usuari
+        RunMode_Supervisor = 2'b01,  // -Supervisor
+        RunMode_Hipervisor = 2'b10,  // -Hipervisor
+        RunMode_Machine    = 2'b11   // -Maquina
+    } RunMode;
 
     typedef enum logic [6:0] {        // Codis d'operacio de les instruccions
         OpCode_Unknown = 7'b000_0000,
@@ -65,5 +65,24 @@ package Types;
         MduOp_REMU   = 3'b111  // -REMU
     } MduOp;
 
+    typedef enum logic [1:0] { // Operacions amb el bloc CSR
+        CsrOp_NOP   = 2'b00,   // -No operation
+        CsrOp_WRITE = 2'b01,   // -Write
+        CsrOp_SET   = 2'b10,   // -Set bits
+        CsrOp_CLEAR = 2'b11    // -Clear bits
+    } CsrOp;
+
+    typedef enum logic [1:0] { // Seleccio de dades A
+        DataASel_REG = 2'b00,  // -Valor del registre rs1
+        DataASel_IMM = 2'b01,  // -Valor inmediat
+        DataASel_V0  = 2'b10,  // -Valor 0
+        DataASel_PC  = 2'b11   // -Valor del PC
+    } DataASel;
+
+    typedef enum logic [1:0] { // Seleccio de dades B
+        DataBSel_REG = 2'b00,  // -Valor del registre rs2
+        DataBSel_IMM = 2'b01,  // -Valor inmediat
+        DataBSel_V4  = 2'b10   // -Valor 4
+    } DataBSel;
 
 endpackage

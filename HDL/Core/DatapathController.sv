@@ -11,28 +11,22 @@ module DatapathController
     output logic       o_memRdEnable,    // Habilita la lectura de la memoria
     output DataAccess  o_memAccess,      // Tamany d'acces a la memoria
     output logic       o_memUnsigned,    // Lectura de memoria sense signe
+
     output logic [1:0] o_pcNextSel,      // Selecciona el seguent valor del PC
 
-    output AluOp       o_aluControl,     // Selecciona l'operacio en la ALU
-`ifdef RV_EXT_M
-    output MduOp       o_mduControl,     // Selecciona l'operacio de la MDU
-`endif
-    output logic [1:0] o_operandASel,    // Selecciona l'operand A
-    output logic [1:0] o_operandBSel,    // Selecciona l'operand B
+    output AluOp       o_aluControl,     // Selecciona l'operacio en la unitat ALU
+    output CsrOp       o_csrControl,     // Selecciona l'operacio en la unitat CSR
+    output MduOp       o_mduControl,     // Selecciona l'operacio de la unitat MDU
+
+    output DataASel    o_operandASel,    // Selecciona l'operand A
+    output DataBSel    o_operandBSel,    // Selecciona l'operand B
+    output logic [1:0] o_resultSel,      // Seleccio del resultat
 
     output logic       o_regWrEnable,    // Habilita l'escriptura en els registres
     output logic [1:0] o_regWrDataSel);  // Selecciona les dades per escriure en el registre
 
 
-    localparam  asREG = 2'b00;  // Selecciona el valor del registre
-    localparam  asPC  = 2'b01;  // Selecciona el valor del PC
-    localparam  asV0  = 2'b10;  // Selecciona el valor 0
-
-    localparam  bsREG = 2'b00;  // Selecciona el valor del registre
-    localparam  bsIMM = 2'b01;  // Selecciona el valor IMM
-    localparam  bsV4  = 2'b10;  // Selecciona el valor 4
-
-    localparam  wrALU = 2'b00;  // Escriu el valor de la ALU
+    localparam  wrALU = 2'b00;  // Escriu el valor del resultat
     localparam  wrMEM = 2'b01;  // Escriu el valor de la memoria
     localparam  wrPC4 = 2'b10;  // Escriu el valor de PC+4
 
@@ -44,8 +38,11 @@ module DatapathController
     always_comb begin
 
         o_aluControl   = AluOp_ADD;
-        o_operandASel  = asREG;
-        o_operandBSel  = bsREG;
+        o_csrControl   = CsrOp_NOP;
+        o_mduControl   = MduOp_MUL;
+        o_operandASel  = DataASel_REG;
+        o_operandBSel  = DataBSel_REG;
+        o_resultSel    = 2'b00;
         o_pcNextSel    = pcPP4;
         o_memWrEnable  = 1'b0;
         o_memRdEnable  = 1'b0;
@@ -58,16 +55,16 @@ module DatapathController
             {10'b???????_???, OpCode_LUI   }: // LUI
                 begin
                     o_aluControl  = AluOp_ADD;
-                    o_operandASel = asV0;
-                    o_operandBSel = bsIMM;
+                    o_operandASel = DataASel_V0;
+                    o_operandBSel = DataBSel_IMM;
                     o_regWrEnable = 1'b1;
                 end
 
             {10'b???????_???, OpCode_AUIPC }: // AUIPC
                 begin
                     o_aluControl  = AluOp_ADD;
-                    o_operandASel = asPC;
-                    o_operandBSel = bsIMM;
+                    o_operandASel = DataASel_PC;
+                    o_operandBSel = DataBSel_IMM;
                     o_regWrEnable = 1'b1;
                 end
 
@@ -116,7 +113,7 @@ module DatapathController
             {10'b???????_101, OpCode_Load  }: // LHU
                 begin
                     o_aluControl   = AluOp_ADD;
-                    o_operandBSel  = bsIMM;
+                    o_operandBSel  = DataBSel_IMM;
                     o_regWrDataSel = wrMEM;
                     o_regWrEnable  = 1'b1;
                     o_memRdEnable  = 1'b1;
@@ -129,7 +126,7 @@ module DatapathController
             {10'b???????_010, OpCode_Store }: // SW
                 begin
                     o_aluControl  = AluOp_ADD;
-                    o_operandBSel = bsIMM;
+                    o_operandBSel = DataBSel_IMM;
                     o_memWrEnable = 1'b1;
                     o_memAccess   = DataAccess'(i_inst[13:12]);
                 end
@@ -141,7 +138,7 @@ module DatapathController
             {10'b???????_110, OpCode_OpIMM }, // ORI
             {10'b???????_111, OpCode_OpIMM }: // ANDI
                 begin
-                    o_operandBSel = bsIMM;
+                    o_operandBSel = DataBSel_IMM;
                     o_regWrEnable = 1'b1;
                     o_aluControl  = AluOp'({1'b0, i_inst[14:12]});
                 end
@@ -156,6 +153,7 @@ module DatapathController
             {10'b0000001_111, OpCode_Op   }: // REMU
                 if (RV_EXT_M == 1) begin
                     o_regWrEnable = 1'b1;
+                    o_mduControl = MduOp'(i_inst[14:12]);
                 end
 
             {10'b0000000_000, OpCode_Op    }, // ADD
@@ -173,7 +171,27 @@ module DatapathController
                     o_aluControl  = AluOp'({i_inst[30], i_inst[14:12]});
                 end
 
-            default: ;
+            {10'b???????_001, OpCode_System}, // CSRRW
+            {10'b???????_010, OpCode_System}, // CRRRS
+            {10'b???????_011, OpCode_System}: // CSRRC
+                begin
+                    o_regWrEnable = 1'b1;
+                    o_resultSel   = 2'b01;
+                    o_csrControl  = CsrOp'(i_inst[13:12]);
+                end
+
+            {10'b???????_101, OpCode_System}, // CSRRWI
+            {10'b???????_110, OpCode_System}, // CSRRSI
+            {10'b???????_111, OpCode_System}: // CSRRCI
+                begin
+                    o_operandASel = DataASel_IMM;
+                    o_regWrEnable = 1'b1;
+                    o_resultSel   = 2'b01;
+                    o_csrControl = CsrOp'(i_inst[13:12]);
+                end
+
+            default:
+                ;
 
         endcase
     end

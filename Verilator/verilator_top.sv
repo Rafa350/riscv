@@ -22,6 +22,8 @@ module top
     // -------------------------------------------------------------------
 
     InstMemory #(
+        .BASE (`RV_IMEM_BASE),
+        .SIZE (`RV_IMEM_SIZE),
         .FILE_NAME (`FIRMWARE))
     instMem (
         .bus (instBus));

@@ -11,7 +11,7 @@ module StageMEM
     // Datapath
     input  logic         i_isValid,      // Indica operacio valida
     input  InstAddr      i_pc,           // Adressa de la instruccio
-    input  Data          i_result,       // Adressa de memoria
+    input  Data          i_dataR,        // Dades del resultst
     input  Data          i_dataB,        // Dades per escriure
 
     input  logic         i_memWrEnable,  // Habilita escriptura en memoria
@@ -36,7 +36,7 @@ module StageMEM
     memAdapter (
         .i_clock      (i_clock),
         .i_reset      (i_reset),
-        .i_addr       (i_result[$size(DataAddr)-1:0]),
+        .i_addr       (i_dataR[$size(DataAddr)-1:0]),
         .i_unsigned   (i_memUnsigned),
         .i_access     (i_memAccess),
         .i_wrEnable   (i_memWrEnable & i_isValid),
@@ -77,7 +77,7 @@ module StageMEM
         .WIDTH ($size(Data)))
     regWrDataSelector (
         .i_select (i_regWrDataSel),
-        .i_input0 (i_result),
+        .i_input0 (i_dataR),
         .i_input1 (memAdapter_rdData),
         .i_input2 ({{$size(Data)-$size(InstAddr){1'b0}}, adder_result}),
         .o_output (o_regWrData));

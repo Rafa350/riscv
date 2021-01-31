@@ -1,31 +1,33 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Sun Jan 24 14:03:17 2021
+[*] Sun Jan 31 18:10:58 2021
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.fst"
-[dumpfile_mtime] "Sun Jan 24 13:57:01 2021"
-[dumpfile_size] 31700
+[dumpfile_mtime] "Sun Jan 31 17:51:52 2021"
+[dumpfile_size] 45226
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.gtkw"
-[timestart] 1680
+[timestart] 5687
 [size] 1920 1017
 [pos] -1 -1
-*-3.930773 650 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-3.930773 5735 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
-[treeopen] TOP.top.processor.
-[treeopen] TOP.top.processor.genblk1.
-[treeopen] TOP.top.processor.genblk1.instCache.
-[treeopen] TOP.top.processor.genblk1.instCache.cache.
-[treeopen] TOP.top.processor.pipelineIDEX.
+[treeopen] TOP.top.genblk1.
+[treeopen] TOP.top.genblk1.processor.
+[treeopen] TOP.top.genblk1.processor.genblk1.
+[treeopen] TOP.top.genblk1.processor.genblk1.instCache.
+[treeopen] TOP.top.genblk1.processor.genblk1.instCache.cache.
+[treeopen] TOP.top.genblk1.processor.stageIF.
+[treeopen] TOP.top.instMem.
 [sst_width] 276
-[signals_width] 354
+[signals_width] 316
 [sst_expanded] 1
 [sst_vpaned_height] 638
 @200
 -System clock
 @28
-TOP.top.processor.i_clock
-TOP.top.processor.i_reset
+[color] 1
+TOP.top.i_clock
 @200
 -
 -Data Memory
@@ -45,6 +47,7 @@ TOP.top.dataBus.busy
 -
 -Program Memory
 @22
+TOP.top.instMem.bus.addr[15:0]
 TOP.top.instBus.inst[31:0]
 @28
 TOP.top.instBus.busy
@@ -52,158 +55,152 @@ TOP.top.instBus.busy
 -
 -REG file
 @22
-TOP.top.processor.regBus.rdAddrA[4:0]
-TOP.top.processor.regBus.rdDataA[31:0]
-TOP.top.processor.regBus.rdAddrB[4:0]
-TOP.top.processor.regBus.rdDataB[31:0]
-TOP.top.processor.regBus.wrAddr[4:0]
-TOP.top.processor.regBus.wrData[31:0]
+TOP.top.genblk1.processor.regBus.rdAddrA[4:0]
+@2022
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\inst_op_filter.txt
+TOP.top.genblk1.processor.regBus.rdDataA[31:0]
+@22
+TOP.top.genblk1.processor.regBus.rdAddrB[4:0]
+TOP.top.genblk1.processor.regBus.rdDataB[31:0]
+@28
+TOP.top.genblk1.processor.regBus.wr
+@22
+TOP.top.genblk1.processor.regBus.wrAddr[4:0]
+TOP.top.genblk1.processor.regBus.wrData[31:0]
 @200
 -
 -ICache
-@100000028
-TOP.top.processor.genblk1.instCache.cache.cacheCtrl.state[1:0]
 @22
-TOP.top.processor.genblk1.instCache.cache.cacheCtrl.o_tag[5:0]
-TOP.top.processor.genblk1.instCache.cache.cacheCtrl.o_index[5:0]
+TOP.top.genblk1.processor.genblk1.instCache.cache.addr[13:0]
+@100000028
+TOP.top.genblk1.processor.genblk1.instCache.cache.cacheCtrl.state[1:0]
+@22
+TOP.top.genblk1.processor.genblk1.instCache.cache.tag[4:0]
+TOP.top.genblk1.processor.genblk1.instCache.cache.index[6:0]
+TOP.top.genblk1.processor.genblk1.instCache.cache.cacheCtrl.o_block[1:0]
 @29
-TOP.top.processor.genblk1.instCache.cache.cacheCtrl.o_block[1:0]
+TOP.top.genblk1.processor.genblk1.instCache.cache.o_hit
 @28
-TOP.top.processor.genblk1.instCache.cache.o_hit
-TOP.top.processor.genblk1.instCache.cache.o_busy
+TOP.top.genblk1.processor.genblk1.instCache.cache.o_busy
+@22
+TOP.top.genblk1.processor.genblk1.instCache.cache.o_inst[31:0]
 @200
 -
 -IF stage
+@22
+TOP.top.genblk1.processor.stageIF.instBus.addr[15:0]
+TOP.top.genblk1.processor.stageIF.instBus.inst[31:0]
 @28
-TOP.top.processor.stageIF.o_hazard
+TOP.top.genblk1.processor.stageIF.o_hazard
 @200
 -
 -IFID pipeline
 @24
 [color] 2
-TOP.top.processor.pipelineIFID.o_dbgTick[31:0]
+TOP.top.genblk1.processor.genblk3.dbgPipelineIFID.i_dbgTick[31:0]
 @28
-TOP.top.processor.pipelineIFID.i_stall
-[color] 1
-TOP.top.processor.pipelineIFID.o_isValid
+TOP.top.genblk1.processor.pipelineIFID.i_stall
+TOP.top.genblk1.processor.pipelineIFID.o_isValid
+@22
+TOP.top.genblk1.processor.pipelineIFID.o_pc[15:0]
+TOP.top.genblk1.processor.pipelineIFID.o_inst[31:0]
 @200
 -
 -ID stage
-@22
-TOP.top.processor.stageID.i_inst[31:0]
+@28
+TOP.top.genblk1.processor.stageID.o_hazard
 @100002028
 ^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\inst_op_filter.txt
-TOP.top.processor.stageID.dec_instOP[6:0]
-@28
-[color] 3
-TOP.top.processor.stageID.fwdCtrl_dataASel[1:0]
-[color] 3
-TOP.top.processor.stageID.fwdCtrl_dataBSel[1:0]
-@24
-TOP.top.processor.stageID.fwdDataASelector_output[31:0]
-TOP.top.processor.stageID.fwdDataBSelector_output[31:0]
+TOP.top.genblk1.processor.stageID.dec_instOP[6:0]
 @22
-TOP.top.processor.stageID.o_dataA[31:0]
-TOP.top.processor.stageID.o_dataB[31:0]
-TOP.top.processor.stageID.o_instIMM[31:0]
-@28
-TOP.top.processor.stageID.o_memRdEnable
-TOP.top.processor.stageID.o_memWrEnable
-TOP.top.processor.stageID.o_regWrEnable
-TOP.top.processor.stageID.o_hazard
+TOP.top.genblk1.processor.stageID.dec_instRS1[4:0]
+TOP.top.genblk1.processor.stageID.dec_instRS2[4:0]
 @200
 -
 -IDEX pipeline
 @24
 [color] 2
-TOP.top.processor.pipelineIDEX.o_dbgTick[31:0]
+TOP.top.genblk1.processor.genblk3.dbfPipelineIDEX.i_dbgTick[31:0]
 @28
-TOP.top.processor.pipelineIDEX.i_stall
-TOP.top.processor.pipelineIDEX.i_flush
-[color] 1
-TOP.top.processor.pipelineIDEX.o_isValid
-TOP.top.processor.pipelineIDEX.o_memRdEnable
-TOP.top.processor.pipelineIDEX.o_memWrEnable
-@2024
-^2 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
-TOP.top.processor.pipelineIDEX.o_regWrAddr[4:0]
+TOP.top.genblk1.processor.pipelineIDEX.i_stall
+TOP.top.genblk1.processor.pipelineIDEX.i_flush
+TOP.top.genblk1.processor.pipelineIDEX.o_isValid
+@22
+TOP.top.genblk1.processor.pipelineIDEX.o_pc[15:0]
+@100000028
+TOP.top.genblk1.processor.pipelineIDEX.o_memAccess[1:0]
 @28
-TOP.top.processor.pipelineIDEX.o_regWrEnable
+TOP.top.genblk1.processor.pipelineIDEX.o_memRdEnable
+TOP.top.genblk1.processor.pipelineIDEX.o_memUnsigned
+TOP.top.genblk1.processor.pipelineIDEX.o_memWrEnable
+TOP.top.genblk1.processor.pipelineIDEX.o_operandASel[1:0]
+TOP.top.genblk1.processor.pipelineIDEX.o_operandBSel[1:0]
+@22
+TOP.top.genblk1.processor.pipelineIDEX.o_regWrAddr[4:0]
+@28
+TOP.top.genblk1.processor.pipelineIDEX.o_regWrDataSel[1:0]
+TOP.top.genblk1.processor.pipelineIDEX.o_regWrEnable
 @200
 -
 -EX stage
-@100002028
-^3 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\alu_op_filter.txt
-TOP.top.processor.stageEX.i_aluControl[3:0]
-@22
-TOP.top.processor.stageEX.i_dataA[31:0]
-TOP.top.processor.stageEX.i_dataB[31:0]
-TOP.top.processor.stageEX.i_instIMM[31:0]
-TOP.top.processor.stageEX.o_dataB[31:0]
-TOP.top.processor.stageEX.o_result[31:0]
 @28
-TOP.top.processor.stageEX.o_hazard
+TOP.top.genblk1.processor.stageEX.o_hazard
 @200
 -
 -EXMEM pipeline
 @24
 [color] 2
-TOP.top.processor.pipelineEXMEM.o_dbgTick[31:0]
+TOP.top.genblk1.processor.genblk3.dbgPipelineEXMEM.i_dbgTick[31:0]
 @28
-TOP.top.processor.pipelineEXMEM.i_flush
-TOP.top.processor.pipelineEXMEM.i_stall
-[color] 1
-TOP.top.processor.pipelineEXMEM.o_isValid
-@2024
-^2 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
-TOP.top.processor.pipelineEXMEM.o_regWrAddr[4:0]
+TOP.top.genblk1.processor.pipelineEXMEM.i_stall
+TOP.top.genblk1.processor.pipelineEXMEM.i_flush
+TOP.top.genblk1.processor.pipelineEXMEM.o_isValid
+@22
+TOP.top.genblk1.processor.pipelineEXMEM.o_pc[15:0]
+@100000028
+TOP.top.genblk1.processor.pipelineEXMEM.o_memAccess[1:0]
 @28
-TOP.top.processor.pipelineEXMEM.o_regWrEnable
-TOP.top.processor.pipelineEXMEM.o_regWrDataSel[1:0]
+TOP.top.genblk1.processor.pipelineEXMEM.o_memRdEnable
+TOP.top.genblk1.processor.pipelineEXMEM.o_memWrEnable
+TOP.top.genblk1.processor.pipelineEXMEM.o_memUnsigned
+@22
+TOP.top.genblk1.processor.pipelineEXMEM.o_regWrAddr[4:0]
+@28
+TOP.top.genblk1.processor.pipelineEXMEM.o_regWrDataSel[1:0]
+TOP.top.genblk1.processor.pipelineEXMEM.o_regWrEnable
 @200
 -
 -MEM stage
-@22
-TOP.top.processor.stageMEM.i_dataB[31:0]
-TOP.top.processor.stageMEM.i_result[31:0]
 @28
-TOP.top.processor.stageMEM.i_memWrEnable
-TOP.top.processor.stageMEM.i_regWrDataSel[1:0]
-TOP.top.processor.stageMEM.memAdapter_alignError
-TOP.top.processor.stageMEM.o_hazard
+TOP.top.genblk1.processor.stageMEM.o_hazard
 @200
 -
 -MEMWB pipeline
 @24
 [color] 2
-TOP.top.processor.pipelineMEMWB.o_dbgTick[31:0]
+TOP.top.genblk1.processor.genblk3.dbgMPipelineMEMWB.i_dbgTick[31:0]
 @28
-TOP.top.processor.pipelineMEMWB.i_flush
-[color] 1
-TOP.top.processor.pipelineMEMWB.o_isValid
-@2024
-^2 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
-TOP.top.processor.pipelineMEMWB.o_regWrAddr[4:0]
-@28
-TOP.top.processor.pipelineMEMWB.o_regWrEnable
+TOP.top.genblk1.processor.pipelineMEMWB.i_flush
+TOP.top.genblk1.processor.pipelineMEMWB.o_isValid
 @22
-TOP.top.processor.pipelineMEMWB.o_regWrData[31:0]
-TOP.top.processor.pipelineMEMWB.o_dbgInst[31:0]
+TOP.top.genblk1.processor.pipelineMEMWB.o_regWrAddr[4:0]
+TOP.top.genblk1.processor.pipelineMEMWB.o_regWrData[31:0]
+@28
+TOP.top.genblk1.processor.pipelineMEMWB.o_regWrEnable
 @200
 -
 -WB Stage
+@28
+TOP.top.genblk1.processor.stageWB.o_hazard
+@200
 -
 -StallController
 @28
-TOP.top.processor.stallCtrl.i_IF_hazard
-TOP.top.processor.stallCtrl.i_ID_hazard
-TOP.top.processor.stallCtrl.i_EX_hazard
-TOP.top.processor.stallCtrl.i_MEM_hazard
-TOP.top.processor.stallCtrl.o_IFID_stall
-TOP.top.processor.stallCtrl.o_IDEX_stall
-TOP.top.processor.stallCtrl.o_IDEX_flush
-TOP.top.processor.stallCtrl.o_EXMEM_stall
-TOP.top.processor.stallCtrl.o_EXMEM_flush
-TOP.top.processor.stallCtrl.o_MEMWB_flush
+TOP.top.genblk1.processor.stallCtrl.o_IFID_stall
+TOP.top.genblk1.processor.stallCtrl.o_IDEX_stall
+TOP.top.genblk1.processor.stallCtrl.o_IDEX_flush
+TOP.top.genblk1.processor.stallCtrl.o_EXMEM_stall
+TOP.top.genblk1.processor.stallCtrl.o_EXMEM_flush
+TOP.top.genblk1.processor.stallCtrl.o_MEMWB_flush
 [pattern_trace] 1
 [pattern_trace] 0

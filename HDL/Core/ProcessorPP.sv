@@ -7,16 +7,16 @@ module ProcessorPP
     InstMemoryBus.master instBus); // Bus de la memoria d'instruccions
 
 
-    RegisterBus   regBus();
-    InstMemoryBus instCacheBus();
+    GPRegistersBus regBus();
+    InstMemoryBus  instCacheBus();
 
 
     // -----------------------------------------------------------------------
     // Bloc de registres base
     // -----------------------------------------------------------------------
 
-    RegisterFile
-    regs (
+    GPRegisters
+    gpr (
         .i_clock (i_clock),
         .i_reset (i_reset),
         .bus     (regBus));
@@ -57,16 +57,21 @@ module ProcessorPP
 
     StallController
     stallCtrl(
-        .i_IF_hazard   (IF_hazard),
-        .i_ID_hazard   (ID_hazard),
-        .i_EX_hazard   (EX_hazard),
-        .i_MEM_hazard  (MEM_hazard),
-        .o_IFID_stall  (stallCtrl_IFID_stall),
-        .o_IDEX_stall  (stallCtrl_IDEX_stall),
-        .o_IDEX_flush  (stallCtrl_IDEX_flush),
-        .o_EXMEM_stall (stallCtrl_EXMEM_stall),
-        .o_EXMEM_flush (stallCtrl_EXMEM_flush),
-        .o_MEMWB_flush (stallCtrl_MEMWB_flush));
+        .i_IF_hazard     (IF_hazard),
+        .i_ID_hazard     (ID_hazard),
+        .i_EX_hazard     (EX_hazard),
+        .i_MEM_hazard    (MEM_hazard),
+        .i_WB_hazard     (WB_hazard),
+        .i_IFID_isValid  (IFID_isValid),
+        .i_IDEX_isValid  (IDEX_isValid),
+        .i_EXMEM_isValid (EXMEM_isValid),
+        .i_MEMWB_isValid (MEMWB_isValid),
+        .o_IFID_stall    (stallCtrl_IFID_stall),
+        .o_IDEX_stall    (stallCtrl_IDEX_stall),
+        .o_IDEX_flush    (stallCtrl_IDEX_flush),
+        .o_EXMEM_stall   (stallCtrl_EXMEM_stall),
+        .o_EXMEM_flush   (stallCtrl_EXMEM_flush),
+        .o_MEMWB_flush   (stallCtrl_MEMWB_flush));
 
 
     // ------------------------------------------------------------------------
@@ -121,10 +126,11 @@ module ProcessorPP
     // Stage ID
     // ------------------------------------------------------------------------
 
-    Data        ID_dataA;
-    Data        ID_dataB;
+    Data        ID_dataRS1;
+    Data        ID_dataRS2;
     Data        ID_instIMM;
-    RegAddr     ID_regWrAddr;
+    CSRAddr     ID_instCSR;
+    GPRAddr     ID_regWrAddr;
     logic       ID_regWrEnable;
     logic [1:0] ID_regWrDataSel;
     logic       ID_memWrEnable;
@@ -132,15 +138,17 @@ module ProcessorPP
     DataAccess  ID_memAccess;
     logic       ID_memUnsigned;
     AluOp       ID_aluControl;
-    logic [1:0] ID_operandASel;
-    logic [1:0] ID_operandBSel;
+    CsrOp       ID_csrControl;
+    DataASel    ID_operandASel;
+    DataBSel    ID_operandBSel;
+    logic [1:0] ID_resultSel;
     InstAddr    ID_pcNext;
     logic       ID_hazard;
 
     StageID
     stageID (
-        .i_clock           (i_clock),             // Clock
-        .i_reset           (i_reset),             // Reset
+        .i_clock           (i_clock),
+        .i_reset           (i_reset),
         .regBus            (regBus),              // Interficie amb els registres
         .i_inst            (IFID_inst),           // Instruccio
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
@@ -149,7 +157,7 @@ module ProcessorPP
         .i_EX_regWrAddr    (IDEX_regWrAddr),
         .i_EX_regWrEnable  (IDEX_regWrEnable),    // Indica operacio d'escriptura de registres en EX
         .i_EX_regWrDataSel (IDEX_regWrDataSel),
-        .i_EX_regWrData    (EX_result),
+        .i_EX_regWrData    (EX_dataR),
         .i_EX_memRdEnable  (IDEX_memRdEnable),    // Indica si hi ha una operacio de lectura de memoria EX
         .i_MEM_isValid     (EXMEM_isValid),       // Indica opoeracio valida en MEM
         .i_MEM_regWrAddr   (EXMEM_regWrAddr),
@@ -160,9 +168,10 @@ module ProcessorPP
         .i_WB_regWrAddr    (MEMWB_regWrAddr),     // Adressa del registre on escrure en WB
         .i_WB_regWrData    (MEMWB_regWrData),     // Dades del registre on escriure en WB
         .i_WB_regWrEnable  (MEMWB_regWrEnable),   // Habilita escriure en el registre en WB
-        .o_dataA           (ID_dataA),            // Dades A
-        .o_dataB           (ID_dataB),            // Dades B
-        .o_instIMM         (ID_instIMM),
+        .o_dataRS1         (ID_dataRS1),          // Valor de RS1
+        .o_dataRS2         (ID_dataRS2),          // Valor de RS2
+        .o_instIMM         (ID_instIMM),          // Valor IMM
+        .o_instCSR         (ID_instCSR),          // Valor CSR
         .o_hazard          (ID_hazard),           // Indica hazard
         .o_regWrAddr       (ID_regWrAddr),        // Registre per escriure
         .o_regWrEnable     (ID_regWrEnable),      // Habilita escriure en el registre
@@ -172,8 +181,10 @@ module ProcessorPP
         .o_memAccess       (ID_memAccess),        // Tamany d'acces a la memoria
         .o_memUnsigned     (ID_memUnsigned),      // Lectura en memoria sense signe
         .o_aluControl      (ID_aluControl),
+        .o_csrControl      (ID_csrControl),
         .o_operandASel     (ID_operandASel),
         .o_operandBSel     (ID_operandBSel),
+        .o_resultSel       (ID_resultSel),
         .o_pcNext          (ID_pcNext));          // Adressa de la propera instruccio
 
 
@@ -183,10 +194,11 @@ module ProcessorPP
 
     logic       IDEX_isValid;
     InstAddr    IDEX_pc;
-    Data        IDEX_dataA;
-    Data        IDEX_dataB;
+    Data        IDEX_dataRS1;
+    Data        IDEX_dataRS2;
     Data        IDEX_instIMM;
-    RegAddr     IDEX_regWrAddr;
+    CSRAddr     IDEX_instCSR;
+    GPRAddr     IDEX_regWrAddr;
     logic       IDEX_regWrEnable;
     logic [1:0] IDEX_regWrDataSel;
     logic       IDEX_memWrEnable;
@@ -194,66 +206,80 @@ module ProcessorPP
     DataAccess  IDEX_memAccess;
     logic       IDEX_memUnsigned;
     AluOp       IDEX_aluControl;
-    logic [1:0] IDEX_operandASel;
-    logic [1:0] IDEX_operandBSel;
+    CsrOp       IDEX_csrControl;
+    DataASel    IDEX_operandASel;
+    DataBSel    IDEX_operandBSel;
+    logic [1:0] IDEX_resultSel;
 
     PipelineIDEX
     pipelineIDEX (
-        .i_clock          (i_clock),
-        .i_reset          (i_reset),
-        .i_stall          (1'b0),
-        .i_flush          (stallCtrl_IDEX_flush),
-        .i_isValid        (IFID_isValid),
-        .i_instIMM        (ID_instIMM),
-        .i_dataA          (ID_dataA),
-        .i_dataB          (ID_dataB),
-        .i_regWrAddr      (ID_regWrAddr),
-        .i_regWrEnable    (ID_regWrEnable),
-        .i_regWrDataSel   (ID_regWrDataSel),
-        .i_memWrEnable    (ID_memWrEnable),
-        .i_memRdEnable    (ID_memRdEnable),
-        .i_memAccess      (ID_memAccess),
-        .i_memUnsigned    (ID_memUnsigned),
-        .i_operandASel    (ID_operandASel),
-        .i_operandBSel    (ID_operandBSel),
-        .i_aluControl     (ID_aluControl),
-        .i_pc             (IFID_pc),
-        .o_isValid        (IDEX_isValid),
-        .o_instIMM        (IDEX_instIMM),
-        .o_dataA          (IDEX_dataA),
-        .o_dataB          (IDEX_dataB),
-        .o_regWrAddr      (IDEX_regWrAddr),
-        .o_regWrEnable    (IDEX_regWrEnable),
-        .o_regWrDataSel   (IDEX_regWrDataSel),
-        .o_memWrEnable    (IDEX_memWrEnable),
-        .o_memRdEnable    (IDEX_memRdEnable),
-        .o_memAccess      (IDEX_memAccess),
-        .o_memUnsigned    (IDEX_memUnsigned),
-        .o_aluControl     (IDEX_aluControl),
-        .o_operandASel    (IDEX_operandASel),
-        .o_operandBSel    (IDEX_operandBSel),
-        .o_pc             (IDEX_pc));
+        .i_clock        (i_clock),
+        .i_reset        (i_reset),
+        .i_stall        (stallCtrl_IDEX_stall),
+        .i_flush        (stallCtrl_IDEX_flush),
+        .i_isValid      (IFID_isValid),
+        .i_instIMM      (ID_instIMM),
+        .i_instCSR      (ID_instCSR),
+        .i_dataRS1      (ID_dataRS1),
+        .i_dataRS2      (ID_dataRS2),
+        .i_regWrAddr    (ID_regWrAddr),
+        .i_regWrEnable  (ID_regWrEnable),
+        .i_regWrDataSel (ID_regWrDataSel),
+        .i_memWrEnable  (ID_memWrEnable),
+        .i_memRdEnable  (ID_memRdEnable),
+        .i_memAccess    (ID_memAccess),
+        .i_memUnsigned  (ID_memUnsigned),
+        .i_operandASel  (ID_operandASel),
+        .i_operandBSel  (ID_operandBSel),
+        .i_resultSel    (ID_resultSel),
+        .i_aluControl   (ID_aluControl),
+        .i_csrControl   (ID_csrControl),
+        .i_pc           (IFID_pc),
+        .o_isValid      (IDEX_isValid),
+        .o_instIMM      (IDEX_instIMM),
+        .o_instCSR      (IDEX_instCSR),
+        .o_dataRS1      (IDEX_dataRS1),
+        .o_dataRS2      (IDEX_dataRS2),
+        .o_regWrAddr    (IDEX_regWrAddr),
+        .o_regWrEnable  (IDEX_regWrEnable),
+        .o_regWrDataSel (IDEX_regWrDataSel),
+        .o_memWrEnable  (IDEX_memWrEnable),
+        .o_memRdEnable  (IDEX_memRdEnable),
+        .o_memAccess    (IDEX_memAccess),
+        .o_memUnsigned  (IDEX_memUnsigned),
+        .o_aluControl   (IDEX_aluControl),
+        .o_csrControl   (IDEX_csrControl),
+        .o_operandASel  (IDEX_operandASel),
+        .o_operandBSel  (IDEX_operandBSel),
+        .o_resultSel    (IDEX_resultSel),
+        .o_pc           (IDEX_pc));
 
 
     // ------------------------------------------------------------------------
     // Stage EX
     // ------------------------------------------------------------------------
 
-    Data  EX_result;
+    Data  EX_dataR;
     Data  EX_dataB;
     logic EX_hazard;
 
     StageEX
     stageEX (
-        .i_dataA       (IDEX_dataA),
-        .i_dataB       (IDEX_dataB),
+        .i_clock       (i_clock),
+        .i_reset       (i_reset),
+        .i_dataRS1     (IDEX_dataRS1),
+        .i_dataRS2     (IDEX_dataRS2),
         .i_instIMM     (IDEX_instIMM),
+        .i_instCSR     (IDEX_instCSR),
         .i_pc          (IDEX_pc),
         .i_operandASel (IDEX_operandASel),
         .i_operandBSel (IDEX_operandBSel),
+        .i_resultSel   (IDEX_resultSel),
         .i_aluControl  (IDEX_aluControl),
+        .i_csrControl  (IDEX_csrControl),
+        .i_instRet     (WB_instRet),
         .o_hazard      (EX_hazard),         // Indica hazard
-        .o_result      (EX_result),
+        .o_dataR       (EX_dataR),
         .o_dataB       (EX_dataB));
 
 
@@ -263,9 +289,9 @@ module ProcessorPP
 
     logic       EXMEM_isValid;
     InstAddr    EXMEM_pc;
-    Data        EXMEM_result;
+    Data        EXMEM_dataR;
     Data        EXMEM_dataB;
-    RegAddr     EXMEM_regWrAddr;
+    GPRAddr     EXMEM_regWrAddr;
     logic       EXMEM_regWrEnable;
     logic [1:0] EXMEM_regWrDataSel;
     logic       EXMEM_memWrEnable;
@@ -275,32 +301,32 @@ module ProcessorPP
 
     PipelineEXMEM
     pipelineEXMEM (
-        .i_clock          (i_clock),
-        .i_reset          (i_reset),
-        .i_stall          (1'b0),
-        .i_flush          (1'b0),
-        .i_isValid        (IDEX_isValid),
-        .i_pc             (IDEX_pc),
-        .i_result         (EX_result),
-        .i_dataB          (EX_dataB),
-        .i_memWrEnable    (IDEX_memWrEnable),
-        .i_memRdEnable    (IDEX_memRdEnable),
-        .i_memAccess      (IDEX_memAccess),
-        .i_memUnsigned    (IDEX_memUnsigned),
-        .i_regWrAddr      (IDEX_regWrAddr),
-        .i_regWrEnable    (IDEX_regWrEnable),
-        .i_regWrDataSel   (IDEX_regWrDataSel),
-        .o_isValid        (EXMEM_isValid),
-        .o_pc             (EXMEM_pc),
-        .o_result         (EXMEM_result),
-        .o_dataB          (EXMEM_dataB),
-        .o_memWrEnable    (EXMEM_memWrEnable),
-        .o_memRdEnable    (EXMEM_memRdEnable),
-        .o_memAccess      (EXMEM_memAccess),
-        .o_memUnsigned    (EXMEM_memUnsigned),
-        .o_regWrAddr      (EXMEM_regWrAddr),
-        .o_regWrEnable    (EXMEM_regWrEnable),
-        .o_regWrDataSel   (EXMEM_regWrDataSel));
+        .i_clock        (i_clock),
+        .i_reset        (i_reset),
+        .i_stall        (stallCtrl_EXMEM_flush),
+        .i_flush        (stallCtrl_EXMEM_stall),
+        .i_isValid      (IDEX_isValid),
+        .i_pc           (IDEX_pc),
+        .i_dataR        (EX_dataR),
+        .i_dataB        (EX_dataB),
+        .i_memWrEnable  (IDEX_memWrEnable),
+        .i_memRdEnable  (IDEX_memRdEnable),
+        .i_memAccess    (IDEX_memAccess),
+        .i_memUnsigned  (IDEX_memUnsigned),
+        .i_regWrAddr    (IDEX_regWrAddr),
+        .i_regWrEnable  (IDEX_regWrEnable),
+        .i_regWrDataSel (IDEX_regWrDataSel),
+        .o_isValid      (EXMEM_isValid),
+        .o_pc           (EXMEM_pc),
+        .o_dataR        (EXMEM_dataR),
+        .o_dataB        (EXMEM_dataB),
+        .o_memWrEnable  (EXMEM_memWrEnable),
+        .o_memRdEnable  (EXMEM_memRdEnable),
+        .o_memAccess    (EXMEM_memAccess),
+        .o_memUnsigned  (EXMEM_memUnsigned),
+        .o_regWrAddr    (EXMEM_regWrAddr),
+        .o_regWrEnable  (EXMEM_regWrEnable),
+        .o_regWrDataSel (EXMEM_regWrDataSel));
 
 
     // ------------------------------------------------------------------------
@@ -317,7 +343,7 @@ module ProcessorPP
         .dataBus        (dataBus),            // Interficie amb la memoria de dades
         .i_isValid      (EXMEM_isValid),      // Indica operacio valida
         .i_pc           (EXMEM_pc),           // Adressa de la instruccio
-        .i_result       (EXMEM_result),       // Adressa per escriure en memoria
+        .i_dataR        (EXMEM_dataR),        // Adressa per escriure en memoria
         .i_dataB        (EXMEM_dataB),        // Dades per escriure
         .i_regWrDataSel (EXMEM_regWrDataSel), // Seleccio de dades d'escriptura en el registre
         .i_memWrEnable  (EXMEM_memWrEnable),  // Autoritzacio d'escriptura en memoria
@@ -332,37 +358,44 @@ module ProcessorPP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
-    logic       MEMWB_isValid;
-    Data        MEMWB_regWrData;
-    RegAddr     MEMWB_regWrAddr;
-    logic       MEMWB_regWrEnable;
+    logic   MEMWB_isValid;
+    Data    MEMWB_regWrData;
+    GPRAddr MEMWB_regWrAddr;
+    logic   MEMWB_regWrEnable;
 
     PipelineMEMWB
     pipelineMEMWB (
-        .i_clock          (i_clock),
-        .i_reset          (i_reset),
-        .i_flush          (stallCtrl_MEMWB_flush),
-        .i_isValid        (EXMEM_isValid),
-        .i_regWrAddr      (EXMEM_regWrAddr),
-        .i_regWrEnable    (EXMEM_regWrEnable),
-        .i_regWrData      (MEM_regWrData),
-        .o_isValid        (MEMWB_isValid),
-        .o_regWrAddr      (MEMWB_regWrAddr),
-        .o_regWrEnable    (MEMWB_regWrEnable),
-        .o_regWrData      (MEMWB_regWrData));
+        .i_clock       (i_clock),
+        .i_reset       (i_reset),
+        .i_flush       (stallCtrl_MEMWB_flush),
+        .i_isValid     (EXMEM_isValid),
+        .i_regWrAddr   (EXMEM_regWrAddr),
+        .i_regWrEnable (EXMEM_regWrEnable),
+        .i_regWrData   (MEM_regWrData),
+        .o_isValid     (MEMWB_isValid),
+        .o_regWrAddr   (MEMWB_regWrAddr),
+        .o_regWrEnable (MEMWB_regWrEnable),
+        .o_regWrData   (MEMWB_regWrData));
 
 
     // ------------------------------------------------------------------------
     // Stage WB
     // ------------------------------------------------------------------------
 
+    logic WB_hazard;
+    logic WB_instRet;
+
     StageWB
     stageWB (
+        .i_clock       (i_clock),
+        .i_reset       (i_reset),
         .regBus        (regBus),            // Interficie amb el bloc de registres
         .i_isValid     (MEMWB_isValid),     // Indica operacio valida
         .i_regWrAddr   (MEMWB_regWrAddr),   // Adressa del registre
         .i_regWrEnable (MEMWB_regWrEnable), // Habilila l'escriptura del registre
-        .i_regWrData   (MEMWB_regWrData));  // Dades per escriure en el registre
+        .i_regWrData   (MEMWB_regWrData),   // Dades per escriure en el registre
+        .o_hazard      (WB_hazard),
+        .o_instRet     (WB_instRet));
 
 
     // ------------------------------------------------------------------------
@@ -391,14 +424,14 @@ module ProcessorPP
 
             DebugPipelineIDEX
             dbfPipelineIDEX(
-                .i_clock          (i_clock),
-                .i_reset          (i_reset),
-                .i_stall          (1'b0),
-                .i_flush          (stallCtrl_IDEX_flush),
-                .i_dbgTick        (dbgIFID_dbgTick),
-                .i_dbgInst        (IFID_inst),
-                .o_dbgTick        (dbgIDEX_dbgTick),
-                .o_dbgInst        (dbgIDEX_dbgInst));
+                .i_clock   (i_clock),
+                .i_reset   (i_reset),
+                .i_stall   (stallCtrl_IDEX_stall),
+                .i_flush   (stallCtrl_IDEX_flush),
+                .i_dbgTick (dbgIFID_dbgTick),
+                .i_dbgInst (IFID_inst),
+                .o_dbgTick (dbgIDEX_dbgTick),
+                .o_dbgInst (dbgIDEX_dbgInst));
 
 
             int  dbgEXMEM_dbgTick;
@@ -406,14 +439,14 @@ module ProcessorPP
 
             DebugPipelineEXMEM
             dbgPipelineEXMEM(
-                .i_clock          (i_clock),
-                .i_reset          (i_reset),
-                .i_stall          (1'b0),
-                .i_flush          (1'b0),
-                .i_dbgTick        (dbgIDEX_dbgTick),
-                .i_dbgInst        (dbgIDEX_dbgInst),
-                .o_dbgTick        (dbgEXMEM_dbgTick),
-                .o_dbgInst        (dbgEXMEM_dbgInst));
+                .i_clock   (i_clock),
+                .i_reset   (i_reset),
+                .i_stall   (stallCtrl_EXMEM_stall),
+                .i_flush   (stallCtrl_EXMEM_flush),
+                .i_dbgTick (dbgIDEX_dbgTick),
+                .i_dbgInst (dbgIDEX_dbgInst),
+                .o_dbgTick (dbgEXMEM_dbgTick),
+                .o_dbgInst (dbgEXMEM_dbgInst));
 
 
             int        dbgMEMWB_dbgTick;

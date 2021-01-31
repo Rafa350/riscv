@@ -2,14 +2,14 @@
 module ProcessorSC
     import Types::*;
 (
-    input  logic         i_clock, // Clock
-    input  logic         i_reset, // Reset
+    input  logic         i_clock,  // Clock
+    input  logic         i_reset,  // Reset
 
-    DataMemoryBus.master dataBus,    // Bus de dades
-    InstMemoryBus.master instBus);   // Bus d'instruccions
+    DataMemoryBus.master dataBus,  // Bus de dades
+    InstMemoryBus.master instBus); // Bus d'instruccions
 
 
-    RegisterBus regBus();
+    GPRegistersBus regBus();
 
 
     // ------------------------------------------------------------------------
@@ -50,7 +50,9 @@ module ProcessorSC
     // Control del datapath. Genera les senyals de control
     // ------------------------------------------------------------------------
 
-    AluOp       dpCtrl_aluControl;   // Operacio de la ALU
+    AluOp       dpCtrl_aluControl;   // Operacio de la unitat ALU
+    MduOp       dpCtrl_mduControl;   // Operacio de la unitat MDU
+    CsrOp       dpCtrl_csrControl;   // Operacio en la unitat CSR
     logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
     logic       dpCtrl_memWrEnable;  // Autoritza escritura en memoria
     logic       dpCtrl_memRdEnable;
@@ -58,8 +60,9 @@ module ProcessorSC
     logic       dpCtrl_memUnsigned;
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
     logic [1:0] dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
-    logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
-    logic [1:0] dpCtrl_operandBSel;  // Seleccio del operand B de la ALU
+    logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A
+    logic [1:0] dpCtrl_operandBSel;  // Seleccio del operand B
+    logic [1:0] dpCtrl_resultSel;    // Selñeccio del resultat
 
     DatapathController
     dpCtrl (
@@ -68,6 +71,8 @@ module ProcessorSC
         .i_isLessSigned   (brComp_isLessSigned),
         .i_isLessUnsigned (brComp_isLessUnsigned),
         .o_aluControl     (dpCtrl_aluControl),
+        .o_mduControl     (dpCtrl_mduControl),
+        .o_csrControl     (dpCtrl_aluControl),
         .o_memWrEnable    (dpCtrl_memWrEnable),
         .o_memRdEnable    (dpCtrl_memRdEnable),
         .o_memAccess      (dpCtrl_memAccess),
@@ -75,6 +80,7 @@ module ProcessorSC
         .o_regWrEnable    (dpCtrl_regWrEnable),
         .o_operandASel    (dpCtrl_operandASel),
         .o_operandBSel    (dpCtrl_operandBSel),
+        .o_resultSel      (dpCtrl_resultSel),
         .o_regWrDataSel   (dpCtrl_regWrDataSel),
         .o_pcNextSel      (dpCtrl_pcNextSel));
 
@@ -84,9 +90,9 @@ module ProcessorSC
     // ------------------------------------------------------------------------
 
     Data    dec_instIMM;
-    RegAddr dec_instRS1;
-    RegAddr dec_instRS2;
-    RegAddr dec_instRD;
+    GPRAddr dec_instRS1;
+    GPRAddr dec_instRS2;
+    GPRAddr dec_instRD;
 
     // verilator lint_off PINMISSING
     InstDecoder
@@ -110,8 +116,8 @@ module ProcessorSC
     // verilator lint_off PINMISSING
     BranchComparer
     brComp (
-        .i_dataA          (regs_rdDataA),
-        .i_dataB          (regs_rdDataB),
+        .i_dataRS1        (gpr_rdDataA),
+        .i_dataRS2        (gpr_rdDataB),
         .o_isEqual        (brComp_isEqual),
         .o_isLessSigned   (brComp_isLessSigned),
         .o_isLessUnsigned (brComp_isLessUnsigned));
@@ -122,17 +128,17 @@ module ProcessorSC
     // Bloc de registres
     // ------------------------------------------------------------------------
 
-    Data regs_rdDataA, // Dades de lectura A
-         regs_rdDataB; // Dades de lectura B
+    Data gpr_rdDataA, // Dades de lectura A
+         gpr_rdDataB; // Dades de lectura B
 
-    RegisterFile
-    regs (
-        .i_clock    (i_clock),
-        .i_reset    (i_reset),
-        .bus        (regBus));
+    GPRegisters
+    gpr (
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .bus     (regBus));
 
-    assign regs_rdDataA               = regBus.masterReader.rdDataA;
-    assign regs_rdDataB               = regBus.masterReader.rdDataB;
+    assign gpr_rdDataA                = regBus.masterReader.rdDataA;
+    assign gpr_rdDataB                = regBus.masterReader.rdDataB;
     assign regBus.masterWriter.wrAddr = dec_instRD;
     assign regBus.masterWriter.wrData = sel3_output;
     assign regBus.masterWriter.wr     = dpCtrl_regWrEnable;
@@ -149,7 +155,7 @@ module ProcessorSC
         .WIDTH ($size(Data)))
     operandASelector (
         .i_select (dpCtrl_operandASel),
-        .i_input0 (regs_rdDataA),
+        .i_input0 (gpr_rdDataA),
         .i_input1 (Data'(pc)),
         .i_input2 ('d0),
         .o_output (operandASelector_output));
@@ -167,7 +173,7 @@ module ProcessorSC
         .WIDTH ($size(Data)))
     operandBSelector (
         .i_select (dpCtrl_operandBSel),
-        .i_input0 (regs_rdDataB),
+        .i_input0 (gpr_rdDataB),
         .i_input1 (dec_instIMM),
         .i_input2 (Data'(4)),
         .o_output (operandBSelector_output));
@@ -236,7 +242,7 @@ module ProcessorSC
         .WIDTH ($size(InstAddr)))
     adder3 (
         .i_operandA (dec_instIMM[$size(InstAddr)-1:0]),
-        .i_operandB (regs_rdDataA[$size(InstAddr)-1:0]),
+        .i_operandB (gpr_rdDataA[$size(InstAddr)-1:0]),
         .o_result   (pcPlusOffsetAndRS1));
 
 
@@ -270,7 +276,7 @@ module ProcessorSC
     always_comb begin
         dataBus.addr   = alu_result[$size(DataAddr)-1:0];
         dataBus.wr     = dpCtrl_memWrEnable;
-        dataBus.wrData = regs_rdDataB;
+        dataBus.wrData = gpr_rdDataB;
     end
 
 

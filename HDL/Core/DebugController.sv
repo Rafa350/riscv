@@ -14,7 +14,7 @@ module DebugController
     input  logic       i_isValid,     // Indica operacio valida
     input  InstAddr    i_pc,          // Adressa de la instruccio
     input  Inst        i_inst,        // Instruccio
-    input  RegAddr     i_regWrAddr,   // Registre per escriure
+    input  GPRAddr     i_regWrAddr,   // Registre per escriure
     input  logic       i_regWrEnable, // Autoritzacio d'escritura en el registre
     input  Data        i_regWrData,   // Dades per escriure en el registre
     input  DataAddr    i_memWrAddr,   // Adressa de memoria per escriure

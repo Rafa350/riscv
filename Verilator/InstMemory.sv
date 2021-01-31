@@ -1,29 +1,27 @@
 // -----------------------------------------------------------------------
 //
-//       Memoria de dades 32 bits, direccionable en bytes.
+//       Memoria d'instruccions 32 bits, direccionable en bytes.
 //       La memoria es emulada en una llibreria DPI per la
 //       seva utilitzacio en Verilator
 //
 //       Parametres:
 //            BASE      : Adresa de memoria base
 //            SIZE      : Tamany de la memoria en bytes
-//
-//       Entrades:
-//            i_clock   : Senyal de rellotge
+//            FILE_NAME : El fitxer de dades per carregar
 //
 //       Bus:
-//            bus       : Bus de memoria de dades
+//            bus       : Bus de memoria d'instruccions
 //
 // -----------------------------------------------------------------------
 
-module DataMemory
+module InstMemory
     import Types::*;
 #(
-    parameter BASE = 0,
-    parameter SIZE = 1024)
+    parameter BASE      = 0,
+    parameter SIZE      = 1024,
+    parameter FILE_NAME = "data.txt")
 (
-    input  logic        i_clock,
-    DataMemoryBus.slave bus);
+    InstMemoryBus.slave bus);
 
     localparam DATA_WIDTH = $size(Data);
 
@@ -33,15 +31,11 @@ module DataMemory
     //
     import "DPI-C" function int dpiMemCreate(input int base, input int size, output longint memObj);
     import "DPI-C" function int dpiMemDestroy(input longint memObj);
-    import "DPI-C" function void dpiMemWrite(input longint memObj, input int addr, input int access, input int data);
+    import "DPI-C" function int dpiMemLoad(input longint memObj, input string fileName);
     import "DPI-C" function int dpiMemRead(input longint memObj, input int addr, input int access);
 
 
-    always_ff @(posedge i_clock)
-        if (bus.wr)
-            dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wrData);
-
-    assign bus.rdData = dpiMemRead(memObj, bus.addr, int'(bus.access));
+    assign bus.inst = dpiMemRead(memObj, int'(bus.addr), int'(2'b10));
 
 
     initial begin
@@ -50,7 +44,12 @@ module DataMemory
             $finish();
         end
 
-        $display("Emulated RAM memory %0d bits:", DATA_WIDTH);
+        if (dpiMemLoad(memObj, FILE_NAME) != 0) begin
+            $display("Load file error.");
+            $finish();
+        end
+
+        $display("Emulated ROM memory %0d bits:", DATA_WIDTH);
         $display("    Base addr     : %X", BASE);
         $display("    Size in bytes : %0d", SIZE);
         $display("");

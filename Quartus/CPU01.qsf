@@ -368,8 +368,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Config.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Types.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CSRBlock.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/ICache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheSet.sv
@@ -400,6 +401,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIDEX
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RegisterFile.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ProcessorSC.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ProcessorPP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DebugController.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DatapathController.sv

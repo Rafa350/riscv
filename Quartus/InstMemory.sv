@@ -4,7 +4,7 @@ module InstMemory
     InstMemoryBus.slave bus);
 
 
-    localparam SIZE = 33;
+    localparam SIZE = 40;
 
 
     Inst data[0:SIZE-1];

@@ -33,8 +33,9 @@ module RoMemory
     logic [DATA_WIDTH-1:0] d;
 
 
-    assign d = data[i_addr[ADDR_WIDTH-1:2]];
-    assign o_data = {d[7:0], d[15:8], d[23:16], d[31:24]};
+    //assign d = data[i_addr[ADDR_WIDTH-1:2]];
+    //assign o_data = {d[7:0], d[15:8], d[23:16], d[31:24]};
+    assign o_data = data[i_addr[ADDR_WIDTH-1:2]];
 
 
     initial

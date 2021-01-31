@@ -6,11 +6,11 @@ module StageID
     input  logic             i_reset,           // Reset
 
     // Interficie amb el bloc de registres
-    RegisterBus.masterReader regBus,            // Bus d'acces als registres per lectura
+    GPRegistersBus.masterReader regBus,            // Bus d'acces als registres per lectura
 
     // Senyals del stage EX per la gestio dels hazards
     input  logic             i_EX_isValid,      // Indica operacio valida en EX
-    input  RegAddr           i_EX_regWrAddr,    // Registre per escriure en EX
+    input  GPRAddr           i_EX_regWrAddr,    // Registre per escriure en EX
     input  logic             i_EX_regWrEnable,  // Habilita l'escriptura en el registre en EX
     input  logic [1:0]       i_EX_regWrDataSel, // Seleccio de dades en EX
     input  Data              i_EX_regWrData,    // Dades a escriure en el registre en EX
@@ -18,14 +18,14 @@ module StageID
 
     // Senyals del stage MEM per la gestio dels hazards
     input  logic             i_MEM_isValid,     // Indica operacio valida en MEM
-    input  RegAddr           i_MEM_regWrAddr,   // Registre per escriure en MEM
+    input  GPRAddr           i_MEM_regWrAddr,   // Registre per escriure en MEM
     input  logic             i_MEM_regWrEnable, // Habilita l'escriptura en MEM
     input  Data              i_MEM_regWrData,   // Dades a escriure en MEM
     input  logic             i_MEM_memRdEnable, // Habilita la lectura de memoria en MEM
 
     // Senyals del stage WB per la gestio dels hazards
     input  logic             i_WB_isValid,      // Indica operacio valida en WB
-    input  RegAddr           i_WB_regWrAddr,    // Registre a escriure en WB
+    input  GPRAddr           i_WB_regWrAddr,    // Registre a escriure en WB
     input  logic             i_WB_regWrEnable,  // Autoritzacio d'escriptura del registre wn WB
     input  Data              i_WB_regWrData,    // El resultat a escriure en WB
 
@@ -33,20 +33,23 @@ module StageID
     input  Inst              i_inst,            // Instruccio
     input  logic             i_instCompressed,  // Indica que es una instruccio comprimida
     input  InstAddr          i_pc,              // Adressa de la instruccio
-    output Data              o_instIMM,         // Valor inmediat de la instruccio
-    output Data              o_dataA,           // Dades A (rs1)
-    output Data              o_dataB,           // Dades B (rs2)
+    output Data              o_instIMM,         // Valor IMM de la instruccio
+    output CSRAddr           o_instCSR,         // Valor CSR de la instruccio
+    output Data              o_dataRS1,         // Valor del registre X[RS1]
+    output Data              o_dataRS2,         // Valor del registre X[RS2]
     output logic             o_hazard,          // Indica hazard
-    output RegAddr           o_regWrAddr,       // Registre a escriure.
+    output GPRAddr           o_regWrAddr,       // Registre a escriure (rd)
     output logic             o_regWrEnable,     // Habilita l'escriptura del registre
     output logic             o_memWrEnable,     // Habilita l'escritura en memoria
     output logic             o_memRdEnable,     // Habilita la lectura de la memoria
     output DataAccess        o_memAccess,       // Tamany d'acces a la memoria
     output logic             o_memUnsigned,     // Lectura de memoria sense signe
     output logic [1:0]       o_regWrDataSel,    // Seleccio de les dades per escriure en el registre (rd)
-    output logic [1:0]       o_operandASel,     // Seleccio del valor A de la ALU
-    output logic [1:0]       o_operandBSel,     // Seleccio del valor B de la ALU
-    output AluOp             o_aluControl,      // Codi de control de la ALU
+    output DataASel          o_operandASel,     // Seleccio del valor A
+    output DataBSel          o_operandBSel,     // Seleccio del valor B
+    output logic [1:0]       o_resultSel,       // Seleccio del resultat
+    output AluOp             o_aluControl,      // Selecciona l'operacio de la unitat ALU
+    output CsrOp             o_csrControl,      // Selecciona l'operacio en la unitat CSR
     output InstAddr          o_pcNext);         // Nou valor de PC
 
 
@@ -57,18 +60,16 @@ module StageID
     // d'instruccio.
     // ------------------------------------------------------------------------
 
-    OpCode    dec_instOP;    // Codi d'operacio de la instruccio
-    RegAddr   dec_instRS1;   // Registre RS1
-    RegAddr   dec_instRS2;   // Registre RS2
-    RegAddr   dec_instRD;    // Registre RD
-    Data      dec_instIMM;   // Valor inmediat
-    CSRegAddr dec_instCSR;   // Registre CSR
-    logic     dec_isIllegal; // Indica isntruccio il·legal
-    logic     dec_isALU;     // Instruccio ALU
-    logic     dec_isECALL;   // Instruccio ECALL
-    logic     dec_isEBREAK;  // Instruccio EBREAK
-    logic     dec_isMRET;    // Instruccio MRET
-    logic     dec_isCSR;     // Instruccio CSR
+    OpCode  dec_instOP;    // Codi d'operacio de la instruccio
+    GPRAddr dec_instRS1;   // Registre RS1
+    GPRAddr dec_instRS2;   // Registre RS2
+    Data    dec_instIMM;   // Valor inmediat
+    logic   dec_isIllegal; // Indica instruccio il·legal
+    logic   dec_isALU;     // Instruccio ALU
+    logic   dec_isCSR;     // Instruccio CSR
+    logic   dec_isECALL;   // Instruccio ECALL
+    logic   dec_isEBREAK;  // Instruccio EBREAK
+    logic   dec_isMRET;    // Instruccio MRET
 
     InstDecoder
     dec (
@@ -76,9 +77,9 @@ module StageID
         .o_instOP    (dec_instOP),
         .o_instRS1   (dec_instRS1),
         .o_instRS2   (dec_instRS2),
-        .o_instRD    (dec_instRD),
+        .o_instRD    (o_regWrAddr),
         .o_instIMM   (dec_instIMM),
-        .o_instCSR   (dec_instCSR),
+        .o_instCSR   (o_instCSR),
         .o_isIllegal (dec_isIllegal),
         .o_isALU     (dec_isALU),
         .o_isECALL   (dec_isECALL),
@@ -92,17 +93,9 @@ module StageID
     // Genera les senyals de control de les rutes de dades.
     // ------------------------------------------------------------------------
 
-    AluOp       dpCtrl_aluControl;   // Operacio de la ALU
-    logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
-    logic       dpCtrl_memWrEnable;  // Autoritza l'escritura en memoria
-    logic       dpCtrl_memRdEnable;  // Autoritza la lectura de la memoria
-    DataAccess  dpCtrl_memAccess;    // Tamany d'access a la memoria
-    logic       dpCtrl_memUnsigned;  // Lectura de memoria sense signe
+    MduOp       dpCtrl_mduControl;   // Operacio en la unitat MDU
     logic       dpCtrl_cmpUnsigned;  // Comparacio sense signe
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
-    logic [1:0] dpCtrl_dataToRegSel; // Selector del les dades d'escriptura en el registre
-    logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A de la ALU
-    logic [1:0] dpCtrl_operandBSel;  // Seleccio del operand B de la ALU
 
     DatapathController
     dpCtrl (
@@ -110,15 +103,18 @@ module StageID
         .i_isEqual        (brComp_isEqual),        // Indicador r1 == r2
         .i_isLessSigned   (brComp_isLessSigned),   // Indicador r1 < r2 amb signe
         .i_isLessUnsigned (brComp_isLessUnsigned), // Indicador r1 < r2 amb signe
-        .o_memWrEnable    (dpCtrl_memWrEnable),
-        .o_memAccess      (dpCtrl_memAccess),      // Tamany d'acces a la memoria
-        .o_memUnsigned    (dpCtrl_memUnsigned),    // Lectura de memoria sense signe
-        .o_memRdEnable    (dpCtrl_memRdEnable),
-        .o_regWrEnable    (dpCtrl_regWrEnable),
-        .o_regWrDataSel   (dpCtrl_dataToRegSel),
-        .o_aluControl     (dpCtrl_aluControl),
-        .o_operandASel    (dpCtrl_operandASel),
-        .o_operandBSel    (dpCtrl_operandBSel),
+        .o_memWrEnable    (o_memWrEnable),
+        .o_memAccess      (o_memAccess),           // Tamany d'acces a la memoria
+        .o_memUnsigned    (o_memUnsigned),         // Lectura de memoria sense signe
+        .o_memRdEnable    (o_memRdEnable),
+        .o_regWrEnable    (o_regWrEnable),
+        .o_regWrDataSel   (o_regWrDataSel),
+        .o_aluControl     (o_aluControl),
+        .o_mduControl     (dpCtrl_mduControl),
+        .o_csrControl     (o_csrControl),
+        .o_operandASel    (o_operandASel),
+        .o_operandBSel    (o_operandBSel),
+        .o_resultSel      (o_resultSel),
         .o_pcNextSel      (dpCtrl_pcNextSel));
 
 
@@ -145,8 +141,8 @@ module StageID
     // actualitzats, en les etapes posteriors del pipeline.
     // ------------------------------------------------------------------------
 
-    logic [1:0] fwdCtrl_dataASel,
-                fwdCtrl_dataBSel;
+    logic [1:0] fwdCtrl_dataRS1Sel,
+                fwdCtrl_dataRS2Sel;
 
     StageID_ForwardController
     fwdCtrl(
@@ -162,36 +158,36 @@ module StageID
         .i_WB_isValid      (i_WB_isValid),
         .i_WB_regWrAddr    (i_WB_regWrAddr),
         .i_WB_regWrEnable  (i_WB_regWrEnable),
-        .o_dataASel        (fwdCtrl_dataASel),   // Obte l'origen de les dades A
-        .o_dataBSel        (fwdCtrl_dataBSel));  // Obte l'origen de les dades B
+        .o_dataRS1Sel      (fwdCtrl_dataRS1Sel),  // Origen de les dades de RS1
+        .o_dataRS2Sel      (fwdCtrl_dataRS2Sel)); // Origen de les dades de RS2
 
 
     // -----------------------------------------------------------------------
     // Seleccio de les dades del registre o de les etapes posteriors.
     // -----------------------------------------------------------------------
 
-    Data fwdDataASelector_output;
-    Data fwdDataBSelector_output;
+    Data fwdDataRS1Selector_output;
+    Data fwdDataRS2Selector_output;
 
     Mux4To1 #(
         .WIDTH ($size(Data)))
-    fwdDataASelector (
-        .i_select (fwdCtrl_dataASel),
+    fwdDataRS1Selector (
+        .i_select (fwdCtrl_dataRS1Sel),
         .i_input0 (regs_dataA),
         .i_input1 (i_EX_regWrData),
         .i_input2 (i_MEM_regWrData),
         .i_input3 (i_WB_regWrData),
-        .o_output (fwdDataASelector_output)); // Obte el valor de des dades A
+        .o_output (fwdDataRS1Selector_output)); // Valor del registre RS1
 
     Mux4To1 #(
         .WIDTH ($size(Data)))
-    fwdDataBSelector (
-        .i_select (fwdCtrl_dataBSel),
+    fwdDataRS2Selector (
+        .i_select (fwdCtrl_dataRS2Sel),
         .i_input0 (regs_dataB),
         .i_input1 (i_EX_regWrData),
         .i_input2 (i_MEM_regWrData),
         .i_input3 (i_WB_regWrData),
-        .o_output (fwdDataBSelector_output)); // Obte el valor de les dades B
+        .o_output (fwdDataRS2Selector_output)); // Valor del registre RS2
 
 
     // ------------------------------------------------------------------------
@@ -207,8 +203,8 @@ module StageID
 
     BranchComparer
     brComp(
-        .i_dataA          (fwdDataASelector_output),
-        .i_dataB          (fwdDataBSelector_output),
+        .i_dataRS1        (fwdDataRS1Selector_output),
+        .i_dataRS2        (fwdDataRS2Selector_output),
         .o_isEqual        (brComp_isEqual),
         .o_isLessSigned   (brComp_isLessSigned),
         .o_isLessUnsigned (brComp_isLessUnsigned));
@@ -218,15 +214,13 @@ module StageID
     // Evaluacio de l'adressa de salt
     // ------------------------------------------------------------------------
 
-    InstAddr brAlu_pc;
-
     BranchAlu
     brAlu(
         .i_op      (dpCtrl_pcNextSel),
         .i_pc      (i_pc),
         .i_instIMM (dec_instIMM),
         .i_regData (regs_dataA),
-        .o_pc      (brAlu_pc));
+        .o_pc      (o_pcNext));
 
 
     // ------------------------------------------------------------------------
@@ -246,22 +240,9 @@ module StageID
     // Asignacio de les sortides
     // ------------------------------------------------------------------------
 
-    always_comb begin
-        o_instIMM      = dec_instIMM;
-        o_dataA        = fwdDataASelector_output;
-        o_dataB        = fwdDataBSelector_output;
-        o_regWrAddr    = dec_instRD;
-        o_regWrEnable  = dpCtrl_regWrEnable;
-        o_regWrDataSel = dpCtrl_dataToRegSel;
-        o_memWrEnable  = dpCtrl_memWrEnable;
-        o_memRdEnable  = dpCtrl_memRdEnable;
-        o_memAccess    = dpCtrl_memAccess;
-        o_memUnsigned  = dpCtrl_memUnsigned;
-        o_operandASel  = dpCtrl_operandASel;
-        o_operandBSel  = dpCtrl_operandBSel;
-        o_aluControl   = dpCtrl_aluControl;
-        o_pcNext       = brAlu_pc;
-    end
+    assign o_instIMM = dec_instIMM;
+    assign o_dataRS1 = fwdDataRS1Selector_output;
+    assign o_dataRS2 = fwdDataRS2Selector_output;
 
 
 endmodule

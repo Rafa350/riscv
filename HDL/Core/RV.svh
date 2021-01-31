@@ -37,8 +37,10 @@
 
 // Adresses dels blocs de memoria
 //
+`define RV_IMEM_BASE     32'h000000   // Adressa base de la memoria d'instruccions
+`define RV_IMEM_SIZE     32'd1024     // Tamany de la memoria d'instruccions en bytes
 `define RV_DMEM_BASE     32'h100000   // Adressa base de la memoria de dades
-`define RV_DMEM_SIZE     32'd1024     // Tam,any de la memoria de dades en bytes
+`define RV_DMEM_SIZE     32'd1024     // Tamany de la memoria de dades en bytes
 
 
 `endif

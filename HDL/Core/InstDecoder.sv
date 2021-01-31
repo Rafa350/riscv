@@ -1,19 +1,19 @@
 module InstDecoder
     import Config::*, Types::*;
  (
-    input  Inst      i_inst,      // La instruccio a decodificar
-    output OpCode    o_instOP,    // El codi d'operacio
-    output RegAddr   o_instRS1,   // El registre origen 1 (rs1)
-    output RegAddr   o_instRS2,   // El registre origen 2 (rs2)
-    output RegAddr   o_instRD,    // El registre desti (rd)
-    output CSRegAddr o_instCSR,   // El registre CSR
-    output Data      o_instIMM,   // El valor inmediat
-    output logic     o_isIllegal, // Indica instruccio ilegal
-    output logic     o_isALU,     // Indica que es una instruccio ALU
-    output logic     o_isECALL,   // Indica instruccio ECALL
-    output logic     o_isEBREAK,  // Indica instruccio EBREAK
-    output logic     o_isMRET,    // Indica instruccio MRET
-    output logic     o_isCSR);    // Indica que es una instruccio CSR
+    input  Inst    i_inst,      // La instruccio a decodificar
+    output OpCode  o_instOP,    // El codi d'operacio
+    output GPRAddr o_instRS1,   // El registre origen 1 (rs1)
+    output GPRAddr o_instRS2,   // El registre origen 2 (rs2)
+    output GPRAddr o_instRD,    // El registre desti (rd)
+    output CSRAddr o_instCSR,   // El registre CSR
+    output Data    o_instIMM,   // El valor inmediat
+    output logic   o_isIllegal, // Indica instruccio ilegal
+    output logic   o_isALU,     // Indica que es una instruccio ALU
+    output logic   o_isECALL,   // Indica instruccio ECALL
+    output logic   o_isEBREAK,  // Indica instruccio EBREAK
+    output logic   o_isMRET,    // Indica instruccio MRET
+    output logic   o_isCSR);    // Indica que es una instruccio CSR
 
 
     Data immIValue,
@@ -21,7 +21,8 @@ module InstDecoder
          immBValue,
          immUValue,
          immJValue,
-         shamtValue;
+         shamtValue,
+         csrValue;
 
 
     assign immIValue  = {{21{i_inst[31]}}, i_inst[30:20]};
@@ -30,6 +31,7 @@ module InstDecoder
     assign immJValue  = {{12{i_inst[31]}}, i_inst[19:12], i_inst[20], i_inst[30:21], 1'b0};
     assign immUValue  = {i_inst[31:12], 12'b0};
     assign shamtValue = {{27{1'b0}}, i_inst[24:20]};
+    assign csrValue   = {{27{1'b0}}, i_inst[19:15]};
 
 
     always_comb begin
@@ -123,11 +125,11 @@ module InstDecoder
                 o_isIllegal = 1'b1;
 
             {10'b0000000_000, OpCode_System}:
-                case (i_inst[24:20])
-                    5'b0000:                  // EBREAK
+                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                    15'b00000_00000_00000:    // EBREAK
                         o_isEBREAK = 1'b1;
 
-                    5'b0001:                  // ECALL
+                    15'b00001_00000_00000:    // ECALL
                         o_isECALL = 1'b1;
 
                     default:
@@ -151,7 +153,10 @@ module InstDecoder
             {10'b???????_101, OpCode_System}, // CSRRWI
             {10'b???????_110, OpCode_System}, // CSRRSI
             {10'b???????_111, OpCode_System}: // CSRRCI
-                o_isCSR = 1'b1;
+                begin
+                    o_instIMM = csrValue;
+                    o_isCSR = 1'b1;
+                end
 
             default:
                 o_isIllegal = 1'b1;

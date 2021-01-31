@@ -78,7 +78,7 @@ add_custom_command(
     TARGET main.elf
     POST_BUILD
     COMMAND ${CMD_OBJDUMP}
-    ARGS -M no-aliases -t -s -d -j .text -j .rodata main.elf > firmware.lst)
+    ARGS -M no-aliases -t -s -d -j .vectors -j .text -j .rodata main.elf > firmware.lst)
 
 
 # Genera el llistat de memoria en format verilog
@@ -88,7 +88,8 @@ add_custom_command(
     COMMAND ${CMD_OBJCOPY}
     ARGS --output-target=verilog
          --verilog-data-width=4
-         --only-section=.text
+         --reverse-bytes=4
+         -j .vectors -j .text
          main.elf firmware.txt)
 
 # Instalacio en la carpeta Run

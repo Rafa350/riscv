@@ -9,16 +9,25 @@ _min_stack   = 128;
 _stack_len   = LENGTH(stack);
 _stack_start = ORIGIN(stack) + LENGTH(stack);
 
-ENTRY(_reset_handler)
+_entry_point = _vectors_start + 0x80;
+ENTRY(_entry_point)
 
 SECTIONS
 {
+    .vectors :
+    {
+        . = ALIGN(4);
+		_vectors_start = .;
+        KEEP(*(.vectors))
+		_vectors_end = .;
+    } > rom
+
     .text :
     {
         . = ALIGN(4);
         _stext = .;
 
-        *(.text*)
+        *(.text)
         *(.text.*)
 
         . = ALIGN(4);
@@ -56,7 +65,7 @@ SECTIONS
         . = ALIGN(4);
         _bss_start = .;
 
-        *(.bss*)
+        *(.bss)
         *(.bss.*)
         *(.sbss)
         *(.sbss.*)

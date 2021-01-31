@@ -32,7 +32,7 @@ int main() {
                 Processor *proc = new Processor(tracer, dataMem, nullptr);
                 if (proc) {
 
-                    for (int i = 0; i < 1000; i++) {
+                    for (int i = 0; i < 2000; i++) {
 
                         addr_t pc = proc->getPC();
                         inst_t inst = instMem->read32(pc);

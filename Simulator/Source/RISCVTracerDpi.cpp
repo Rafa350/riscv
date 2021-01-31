@@ -70,7 +70,7 @@ extern "C" void dpiTraceRegister(
     int data) {
 
     Tracer *tracer = (Tracer*) tracerObj;
-    tracer->traceReg(reg_t(addr), data_t(data));
+    tracer->traceReg(gpr_t(addr), data_t(data));
 }
 
 

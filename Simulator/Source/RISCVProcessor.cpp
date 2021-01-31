@@ -36,7 +36,7 @@ void Processor::reset() {
     // Inicialitza els registres
     //
     pc = 0;
-    for (reg_t i = 0; i < sizeof(r) / sizeof(r[0]); i++)
+    for (gpr_t i = 0; i < sizeof(r) / sizeof(r[0]); i++)
         r[i] = 0;
 
     // Inicialitza el contador de tics
@@ -104,6 +104,10 @@ void Processor::execute(
         case OpCode::System:
             executeSystem(inst);
             break;
+
+        default:
+            pc += 4;
+            break;
     }
 
     // Incrementa el contador de tics
@@ -125,7 +129,7 @@ void Processor::executeAUIPC(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
     data_t imm = inst & 0xFFFFF000;
 
     // Execucio
@@ -153,7 +157,7 @@ void Processor::executeLUI(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
     data_t imm = inst & 0xFFFFF000;
 
     // Execucio
@@ -181,7 +185,7 @@ void Processor::executeJAL(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
     data_t imm =
         (((inst >> 21) & 0x000003FF) << 1) |
         (((inst >> 20) & 0x00000001) << 11) |
@@ -212,8 +216,8 @@ void Processor::executeJALR(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
-    reg_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
     data_t imm =
         ((inst >> 20) & 1) |
         (inst & 0x80000000 ? 0xFFFFF000 : 0x00000000);
@@ -243,9 +247,9 @@ void Processor::executeOp(
 
     // Decodificacio
     //
-    reg_t rd  = (inst >> 7) & 0x1F;
-    reg_t rs1 = (inst >> 15) & 0x1F;
-    reg_t rs2 = (inst >> 20) & 0x1F;
+    gpr_t rd  = (inst >> 7) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rs2 = (inst >> 20) & 0x1F;
 
     // Execucio
     //
@@ -323,8 +327,8 @@ void Processor::executeOpIMM(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
-    reg_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
     data_t imm =
         ((inst >> 20) & 0x00000FFF) |
         ((inst & 0x80000000) ? 0xFFFFF000 : 0);
@@ -370,8 +374,8 @@ void Processor::executeLoad(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
-    reg_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
     data_t offset =
         ((inst >> 20) & 0x00000FFF) |
         ((inst & 0x80000000) ? 0xFFFFF000 : 0);
@@ -429,8 +433,8 @@ void Processor::executeStore(
 
     // Decodificacio
     //
-    reg_t rs1 = (inst >> 15) & 0x1F;
-    reg_t rs2 = (inst >> 20) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rs2 = (inst >> 20) & 0x1F;
     data_t offset =
         (((inst & 0xFE000000) >> 25) << 5) |
         ((inst & 0x00000F80) >> 7) |
@@ -476,8 +480,8 @@ void Processor::executeBranch(
 
     // Decodificacio
     //
-    reg_t rs1 = (inst >> 15) & 0x1F;
-    reg_t rs2 = (inst >> 20) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rs2 = (inst >> 20) & 0x1F;
     data_t offset =
         (((inst >> 7) & 0x00000001) << 11) |
         (((inst >> 8) & 0x0000000F) << 1) |
@@ -531,9 +535,10 @@ void Processor::executeSystem(
 
     // Decodificacio
     //
-    reg_t rd = (inst >> 7) & 0x1F;
-    reg_t rs1 = (inst >> 15) & 0x1F;
+    gpr_t rd = (inst >> 7) & 0x1F;
+    gpr_t rs1 = (inst >> 15) & 0x1F;
     unsigned cs = (inst >> 20) & 0xFFF;
+    unsigned imm = (inst >> 15) & 0x1F;
 
     // Execucio
     //
@@ -553,19 +558,19 @@ void Processor::executeSystem(
 
             case 0b011: // CSRRC
                 r[rd]   = csr[cs];
-                csr[cs] = csr[cs] & r[rs1];
+                csr[cs] = csr[cs] & ~r[rs1];
                 break;
 
             case 0b101: // CSRRWI
-                r[rd] = csr[cs];
+                r[rd] = (csr[cs] & 0x1F) | imm;
                 break;
 
             case 0b110: // CSRRSI
-                r[rd] = csr[cs];
+                r[rd] = csr[cs] | imm;
                 break;
 
             case 0b111: // CSRRCI
-                r[rd] = csr[cs];
+                r[rd] = csr[cs] & ~imm;
                 break;
         }
     }
@@ -600,7 +605,7 @@ void Processor::traceInst(
 
 
 void Processor::traceReg(
-    reg_t reg) {
+    gpr_t reg) {
 
     if (tracer)
         tracer->traceReg(reg, r[reg]);

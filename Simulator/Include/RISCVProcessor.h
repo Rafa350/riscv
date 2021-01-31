@@ -18,7 +18,7 @@ namespace RISCV {
             Memory *instMem;
             uint32_t tick;      // Contador de tics
             addr_t pc;          // Contador de programa
-            data_t r[32];       // Registres base 
+            data_t r[32];       // Registres base
             data_t csr[4096];   // Registres de control
 
         private:
@@ -37,7 +37,7 @@ namespace RISCV {
 
             void traceTick();
             void traceInst(inst_t inst);
-            void traceReg(reg_t reg);
+            void traceReg(gpr_t reg);
             void traceMem(addr_t addr, int access);
 
         public:

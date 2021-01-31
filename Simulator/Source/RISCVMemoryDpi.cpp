@@ -49,6 +49,26 @@ extern "C" int dpiMemDestroy(
 
 
 /// ----------------------------------------------------------------------
+/// \brief    Llegeix dades d'un fitxer en format verilog
+/// \param    memObj: L'objecte Memory
+/// \param    fileName: El nom del fitxer
+/// \return   0 si tot es correcte.
+///
+extern "C" int dpiMemLoad(
+    const long long memObj,
+    const char* fileName) {
+
+    Memory *mem = (Memory*) memObj;
+    if (mem != nullptr) {
+        mem->load(fileName);
+        return 0;
+    }
+
+    return 1;
+}
+
+
+/// ----------------------------------------------------------------------
 /// \brief    Escriu en la memoria
 /// \param    memObj: L'objecte Memory
 /// \param    addr: Adressa de memoria

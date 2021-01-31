@@ -58,7 +58,7 @@ target_sources(
             ${SIMULATOR_SOURCE_DIR}/RISCVMemoryDpi.cpp)
 target_compile_options(
     ${TARGET_NAME}
-    PRIVATE -Wall -O3
+    PRIVATE -O3
             -ffreestanding -ffunction-sections -fdata-sections
             -Wl,--gc-sections -Wl,--print-gc-sections
 )

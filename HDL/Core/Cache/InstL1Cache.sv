@@ -6,8 +6,10 @@ module InstL1Cache
     InstMemoryBus.slave  cacheBus,
     InstMemoryBus.master memBus);
 
+
     logic cache_busy;
     logic cache_hit;
+
 
     ICache
     cache (

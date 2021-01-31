@@ -1,10 +1,10 @@
-interface RegisterBus;
+interface GPRegistersBus;
 
     import Types::*;
 
-    RegAddr rdAddrA;
-    RegAddr rdAddrB;
-    RegAddr wrAddr;
+    GPRAddr rdAddrA;
+    GPRAddr rdAddrB;
+    GPRAddr wrAddr;
     Data    rdDataA;
     Data    rdDataB;
     Data    wrData;
