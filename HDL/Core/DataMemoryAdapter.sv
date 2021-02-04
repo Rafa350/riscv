@@ -1,18 +1,18 @@
 module DataMemoryAdapter
     import Types::*;
 (
-    input  logic      i_clock,      // Clock
-    input  logic      i_reset,      // Reset
-    input  DataAddr   i_addr,       // Adressa en bytes
-    input  DataAccess i_access,     // Modus d'access (byte, half o word)
-    input  logic      i_unsigned,   // Lectura en modus sense signe
-    input  logic      i_wrEnable,   // Autoritza escriptura
-    input  logic      i_rdEnable,   // Autoritza lectura
-    input  Data       i_wrData,     // Dades per escriure
-    output Data       o_rdData,     // Dades lleigides
-    output logic      o_busy,       // Indica que esta ocupat
-    output logic      o_alignError, // Indica error d'aliniacio
-    DataBus.master    bus);         // Interficie amb la memoria
+    input  logic       i_clock,      // Clock
+    input  logic       i_reset,      // Reset
+    input  DataAddr    i_addr,       // Adressa en bytes
+    input  DataAccess  i_access,     // Modus d'access (byte, half o word)
+    input  logic       i_unsigned,   // Lectura en modus sense signe
+    input  logic       i_wrEnable,   // Autoritza escriptura
+    input  logic       i_rdEnable,   // Autoritza lectura
+    input  Data        i_wrData,     // Dades per escriure
+    output Data        o_rdData,     // Dades lleigides
+    output logic       o_busy,       // Indica que esta ocupat
+    output logic       o_alignError, // Indica error d'aliniacio
+    DataCoreBus.master bus);         // Interficie amb la memoria
 
     always_comb begin
 
@@ -24,7 +24,7 @@ module DataMemoryAdapter
         bus.access = i_access;
         bus.we     = i_wrEnable & !o_alignError;
         bus.re     = i_rdEnable & !o_alignError;
-        bus.wdata = i_wrData;
+        bus.wdata  = i_wrData;
 
         unique casez ({i_access, i_unsigned})
             {DataAccess_Byte, 1'b0}:

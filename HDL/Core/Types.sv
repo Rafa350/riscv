@@ -72,17 +72,28 @@ package Types;
         CsrOp_CLEAR = 2'b11    // -Clear bits
     } CsrOp;
 
+
     typedef enum logic [1:0] { // Seleccio de dades A
         DataASel_REG = 2'b00,  // -Valor del registre rs1
-        DataASel_IMM = 2'b01,  // -Valor inmediat
+        DataASel_IMM = 2'b01,  // -Valor immediat
         DataASel_V0  = 2'b10,  // -Valor 0
         DataASel_PC  = 2'b11   // -Valor del PC
     } DataASel;
 
     typedef enum logic [1:0] { // Seleccio de dades B
         DataBSel_REG = 2'b00,  // -Valor del registre rs2
-        DataBSel_IMM = 2'b01,  // -Valor inmediat
+        DataBSel_IMM = 2'b01,  // -Valor immediat
         DataBSel_V4  = 2'b10   // -Valor 4
     } DataBSel;
+
+    typedef enum logic [1:0] { // Seleccion del resultat
+        ResultSel_ALU = 2'b00, // -Resultat de la operacio ALU
+        ResultSel_CSR = 2'b01  // -Resultat de la sortida de CSR
+    } ResultSel;
+
+    typedef enum logic {       // Selecciona les dades per escriure en RD
+        WrDataSel_CALC = 1'b0, // -Valor calculat
+        WrDataSel_LOAD = 1'b1  // -Valor lleigit
+    } WrDataSel;
 
 endpackage

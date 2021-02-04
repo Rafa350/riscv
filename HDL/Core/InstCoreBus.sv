@@ -1,4 +1,4 @@
-interface InstBus;
+interface InstCoreBus;
 
     import Types::*;
 

@@ -1,11 +1,11 @@
 module Counter
 #(
     parameter WIDTH = 32,
-    parameter INIT 32'd0)
+    parameter INIT  = 32'd0)
 (
     input  logic             i_clock,
     input  logic             i_reset,
-    input  logic             i_ce,   
+    input  logic             i_ce,
     output logic [WIDTH-1:0] o_count);
 
 

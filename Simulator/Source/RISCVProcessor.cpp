@@ -346,6 +346,10 @@ void Processor::executeOpIMM(
             data = r[rs1] | imm;
             break;
 
+        case 0b100: // XORI
+            data = r[rs1] ^ imm;
+            break;
+
         case 0b111: // ANDI
             data = r[rs1] & imm;
             break;

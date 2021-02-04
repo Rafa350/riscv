@@ -6,7 +6,7 @@ module StageID_ForwardController
     input  logic       i_EX_isValid,
     input  GPRAddr     i_EX_regWrAddr,
     input  logic       i_EX_regWrEnable,
-    input  logic [1:0] i_EX_regWrDataSel,
+    input  WrDataSel   i_EX_regWrDataSel,
     input  logic       i_MEM_isValid,
     input  GPRAddr     i_MEM_regWrAddr,
     input  logic       i_MEM_regWrEnable,
@@ -19,7 +19,7 @@ module StageID_ForwardController
 
     always_comb begin
 
-        if ((i_instRS1 != GPRAddr'(0)) & (i_instRS1 == i_EX_regWrAddr) & (i_EX_regWrDataSel == 2'b00) & i_EX_regWrEnable & i_EX_isValid)
+        if ((i_instRS1 != GPRAddr'(0)) & (i_instRS1 == i_EX_regWrAddr) & (i_EX_regWrDataSel == WrDataSel_CALC) & i_EX_regWrEnable & i_EX_isValid)
             o_dataRS1Sel = 2'd1;
         else if ((i_instRS1 != GPRAddr'(0)) & (i_instRS1 == i_MEM_regWrAddr) & i_MEM_regWrEnable & i_MEM_isValid)
             o_dataRS1Sel = 2'd2;
@@ -28,7 +28,7 @@ module StageID_ForwardController
         else
             o_dataRS1Sel = 2'd0;
 
-        if ((i_instRS2 != GPRAddr'(0)) & (i_instRS2 == i_EX_regWrAddr) & (i_EX_regWrDataSel == 2'b00) & i_EX_regWrEnable & i_EX_isValid)
+        if ((i_instRS2 != GPRAddr'(0)) & (i_instRS2 == i_EX_regWrAddr) & (i_EX_regWrDataSel == WrDataSel_CALC) & i_EX_regWrEnable & i_EX_isValid)
             o_dataRS2Sel = 2'd1;
         else if ((i_instRS2 != GPRAddr'(0)) & (i_instRS2 == i_MEM_regWrAddr) & i_MEM_regWrEnable & i_MEM_isValid)
             o_dataRS2Sel = 2'd2;

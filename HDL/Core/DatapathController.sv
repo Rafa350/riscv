@@ -17,18 +17,13 @@ module DatapathController
     output AluOp       o_aluControl,     // Selecciona l'operacio en la unitat ALU
     output CsrOp       o_csrControl,     // Selecciona l'operacio en la unitat CSR
     output MduOp       o_mduControl,     // Selecciona l'operacio de la unitat MDU
-
     output DataASel    o_operandASel,    // Selecciona l'operand A
     output DataBSel    o_operandBSel,    // Selecciona l'operand B
-    output logic [1:0] o_resultSel,      // Seleccio del resultat
+    output ResultSel   o_resultSel,      // Selecciona el resultat
 
     output logic       o_regWrEnable,    // Habilita l'escriptura en els registres
-    output logic [1:0] o_regWrDataSel);  // Selecciona les dades per escriure en el registre
+    output WrDataSel   o_regWrDataSel);  // Selecciona les dades per escriure en el registre
 
-
-    localparam  wrALU = 2'b00;  // Escriu el valor del resultat
-    localparam  wrMEM = 2'b01;  // Escriu el valor de la memoria
-    localparam  wrPC4 = 2'b10;  // Escriu el valor de PC+4
 
     localparam  pcPP4 = 2'b00;  // PC = PC + 4
     localparam  pcOFS = 2'b01;  // PC = PC + offset
@@ -42,19 +37,18 @@ module DatapathController
         o_mduControl   = MduOp_MUL;
         o_operandASel  = DataASel_REG;
         o_operandBSel  = DataBSel_REG;
-        o_resultSel    = 2'b00;
+        o_resultSel    = ResultSel_ALU;
         o_pcNextSel    = pcPP4;
         o_memWrEnable  = 1'b0;
         o_memRdEnable  = 1'b0;
         o_memAccess    = DataAccess_Word;
         o_memUnsigned  = 1'b0;
         o_regWrEnable  = 1'b0;
-        o_regWrDataSel = wrALU;
+        o_regWrDataSel = WrDataSel_CALC;
 
         unique casez ({i_inst[31:25], i_inst[14:12], i_inst[6:0]})
             {10'b???????_???, OpCode_LUI   }: // LUI
                 begin
-                    o_aluControl  = AluOp_ADD;
                     o_operandASel = DataASel_V0;
                     o_operandBSel = DataBSel_IMM;
                     o_regWrEnable = 1'b1;
@@ -62,7 +56,6 @@ module DatapathController
 
             {10'b???????_???, OpCode_AUIPC }: // AUIPC
                 begin
-                    o_aluControl  = AluOp_ADD;
                     o_operandASel = DataASel_PC;
                     o_operandBSel = DataBSel_IMM;
                     o_regWrEnable = 1'b1;
@@ -70,14 +63,16 @@ module DatapathController
 
             {10'b???????_???, OpCode_JAL   }: // JAL
                 begin
-                    o_regWrDataSel = wrPC4;
-                    o_regWrEnable  = 1'b1;
-                    o_pcNextSel    = pcOFS;
+                    o_operandASel = DataASel_PC;
+                    o_operandBSel = DataBSel_V4;
+                    o_regWrEnable = 1'b1;
+                    o_pcNextSel   = pcOFS;
                 end
 
             {10'b???????_000, OpCode_JALR  }: // JALR
                 begin
-                    o_regWrDataSel = wrPC4;
+                    o_operandASel = DataASel_PC;
+                    o_operandBSel = DataBSel_V4;
                     o_regWrEnable = 1'b1;
                     o_pcNextSel   = pcIND;
                 end
@@ -112,9 +107,8 @@ module DatapathController
             {10'b???????_100, OpCode_Load  }, // LBU
             {10'b???????_101, OpCode_Load  }: // LHU
                 begin
-                    o_aluControl   = AluOp_ADD;
                     o_operandBSel  = DataBSel_IMM;
-                    o_regWrDataSel = wrMEM;
+                    o_regWrDataSel = WrDataSel_LOAD;
                     o_regWrEnable  = 1'b1;
                     o_memRdEnable  = 1'b1;
                     o_memUnsigned  = i_inst[14];
@@ -125,7 +119,6 @@ module DatapathController
             {10'b???????_001, OpCode_Store }, // SH
             {10'b???????_010, OpCode_Store }: // SW
                 begin
-                    o_aluControl  = AluOp_ADD;
                     o_operandBSel = DataBSel_IMM;
                     o_memWrEnable = 1'b1;
                     o_memAccess   = DataAccess'(i_inst[13:12]);
@@ -176,7 +169,7 @@ module DatapathController
             {10'b???????_011, OpCode_System}: // CSRRC
                 begin
                     o_regWrEnable = 1'b1;
-                    o_resultSel   = 2'b01;
+                    o_resultSel   = ResultSel_CSR;
                     o_csrControl  = CsrOp'(i_inst[13:12]);
                 end
 
@@ -186,7 +179,7 @@ module DatapathController
                 begin
                     o_operandASel = DataASel_IMM;
                     o_regWrEnable = 1'b1;
-                    o_resultSel   = 2'b01;
+                    o_resultSel   = ResultSel_CSR;
                     o_csrControl = CsrOp'(i_inst[13:12]);
                 end
 

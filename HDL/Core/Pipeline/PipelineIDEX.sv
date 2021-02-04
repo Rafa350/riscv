@@ -2,49 +2,49 @@ module PipelineIDEX
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,          // Clock
-    input  logic       i_reset,          // Reset
-    input  logic       i_stall,          // Retorna el mateix estat. Te prioritat sobre flush
-    input  logic       i_flush,          // Retorna l'estat NOP
+    input  logic       i_clock,        // Clock
+    input  logic       i_reset,        // Reset
+    input  logic       i_stall,        // Retorna el mateix estat. Te prioritat sobre flush
+    input  logic       i_flush,        // Retorna l'estat NOP
 
     // Senyals d'entrada al pipeline
-    input  logic       i_isValid,        // Indica operacio valida
-    input  InstAddr    i_pc,             // PC
-    input  Data        i_instIMM,        // Valor IMM de la instruccio
-    input  CSRAddr     i_instCSR,        // Valor CSR de la instruccio
-    input  Data        i_dataRS1,        // Valor del registre RS1
-    input  Data        i_dataRS2,        // Valor del registre RS2
-    input  GPRAddr     i_regWrAddr,      // Registre per escriure
-    input  logic       i_regWrEnable,    // Habilita l'escriptura en el registres
-    input  logic [1:0] i_regWrDataSel,   // Seleccio de dades per escriure en els registre
-    input  logic       i_memWrEnable,    // Habilita la escriptura en memoria
-    input  logic       i_memRdEnable,    // Habilida el lecturad e la memoria
-    input  DataAccess  i_memAccess,      // Tamany del acces a la memoria
-    input  logic       i_memUnsigned,    // Lectura de memoria sense signe
-    input  DataASel    i_operandASel,    // Seleccio de l'operand A
-    input  DataBSel    i_operandBSel,    // Seleccio de l'operand B
-    input  logic [1:0] i_resultSel,      // Seleccio del resultat
-    input  AluOp       i_aluControl,     // Operacio en la unitat ALU
-    input  MduOp       i_mduControl,     // Operacio en la unitat MDU
-    input  CsrOp       i_csrControl,     // Operacio en la unitat CSR
+    input  logic       i_isValid,      // Indica operacio valida
+    input  InstAddr    i_pc,           // PC
+    input  Data        i_instIMM,      // Valor IMM de la instruccio
+    input  CSRAddr     i_instCSR,      // Valor CSR de la instruccio
+    input  Data        i_dataRS1,      // Valor del registre RS1
+    input  Data        i_dataRS2,      // Valor del registre RS2
+    input  GPRAddr     i_regWrAddr,    // Registre per escriure
+    input  logic       i_regWrEnable,  // Habilita l'escriptura en el registres
+    input  WrDataSel   i_regWrDataSel, // Seleccio de dades per escriure en els registre
+    input  logic       i_memWrEnable,  // Habilita la escriptura en memoria
+    input  logic       i_memRdEnable,  // Habilida el lecturad e la memoria
+    input  DataAccess  i_memAccess,    // Tamany del acces a la memoria
+    input  logic       i_memUnsigned,  // Lectura de memoria sense signe
+    input  DataASel    i_operandASel,  // Seleccio de l'operand A
+    input  DataBSel    i_operandBSel,  // Seleccio de l'operand B
+    input  ResultSel   i_resultSel,    // Seleccio del resultat
+    input  AluOp       i_aluControl,   // Operacio en la unitat ALU
+    input  MduOp       i_mduControl,   // Operacio en la unitat MDU
+    input  CsrOp       i_csrControl,   // Operacio en la unitat CSR
 
     // Senyals de sortida del pipeline
-    output logic       o_isValid,        // Indica operacio valida
+    output logic       o_isValid,      // Indica operacio valida
     output InstAddr    o_pc,
-    output Data        o_instIMM,        // Valor IMM de la instruccio
-    output CSRAddr     o_instCSR,        // Valor CSR de la instruccio
+    output Data        o_instIMM,      // Valor IMM de la instruccio
+    output CSRAddr     o_instCSR,      // Valor CSR de la instruccio
     output Data        o_dataRS1,
     output Data        o_dataRS2,
     output GPRAddr     o_regWrAddr,
     output logic       o_regWrEnable,
-    output logic [1:0] o_regWrDataSel,
-    output logic       o_memWrEnable,    // Habilita la escriptura en memoria
-    output logic       o_memRdEnable,    // Habilita la lectura de la memoria
-    output DataAccess  o_memAccess,      // Tamany del acces la memoria
-    output logic       o_memUnsigned,    // Lectura de memoria sense signe
+    output WrDataSel   o_regWrDataSel,
+    output logic       o_memWrEnable,  // Habilita la escriptura en memoria
+    output logic       o_memRdEnable,  // Habilita la lectura de la memoria
+    output DataAccess  o_memAccess,    // Tamany del acces la memoria
+    output logic       o_memUnsigned,  // Lectura de memoria sense signe
     output DataASel    o_operandASel,
     output DataBSel    o_operandBSel,
-    output logic [1:0] o_resultSel,
+    output ResultSel   o_resultSel,
     output AluOp       o_aluControl,
     output MduOp       o_mduControl,
     output CsrOp       o_csrControl);

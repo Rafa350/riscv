@@ -43,6 +43,7 @@ package Config;
 
     // Configuracio de la arquitectura
     //
+    localparam RV_CORES    = 1;    // Nombre de cores
     localparam RV_ARCH_CPU = "PP"; // (PP: Pipeline, SC: Single cycle; MC: Multicicle)
 
 
@@ -51,7 +52,7 @@ package Config;
 `ifdef RV_COMPILER_VERILATOR
     localparam RV_DEBUG_ON = 1; // Habilita la depuracio
 `else
-    localparam RV_DEBUG_ON = 1; // Deshabilita la depuracio
+    localparam RV_DEBUG_ON = 0; // Deshabilita la depuracio
 `endif
 
 

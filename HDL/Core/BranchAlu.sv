@@ -9,37 +9,12 @@ module BranchAlu
 
     output InstAddr    o_pc);     // El resultat
 
-    // Selecciona el valor base
-    //
-    InstAddr selBase_output;
-
-    Mux2To1 #(
-        .WIDTH ($size(InstAddr)))
-    selBase (
-        .i_select (i_op[1]),
-        .i_input0 (i_pc),
-        .i_input1 (i_regData[$size(InstAddr)-1:0]),
-        .o_output (selBase_output));
-
-    // Selecciona el offset
-    //
-    InstAddr selOffset_output;
-
-    Mux2To1 #(
-        .WIDTH ($size(InstAddr)))
-    selOffset (
-        .i_select (i_op[0]),
-        .i_input0 (4),
-        .i_input1 (i_instIMM[$size(InstAddr)-1:0]),
-        .o_output (selOffset_output));
-
-    // Suma els dos valors
-    //
-    HalfAdder #(
-        .WIDTH ($size(InstAddr)))
-    adder (
-        .i_inputA (selBase_output),
-        .i_inputB (selOffset_output),
-        .o_output (o_pc));
+    always_comb
+        unique case (i_op)
+            2'b00: o_pc = i_pc + 4;
+            2'b01: o_pc = i_pc + i_instIMM;
+            2'b10: o_pc = i_regData + 4;
+            2'b11: o_pc = i_regData + i_instIMM;
+        endcase
 
 endmodule

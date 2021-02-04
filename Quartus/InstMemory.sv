@@ -4,14 +4,14 @@ module InstMemory
     InstBus.slave bus);
 
 
-    localparam SIZE = 40;
+    localparam SIZE = 76;
 
 
     Inst data[0:SIZE-1];
 
 
-    always_comb
-        bus.inst = data[bus.addr[$size(bus.addr)-1:2]];
+    assign bus.inst = data[bus.addr[$size(bus.addr)-1:2]];
+    assign bus.busy = 1'b0;
 
 
     initial

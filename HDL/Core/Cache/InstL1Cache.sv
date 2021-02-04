@@ -1,10 +1,10 @@
 module InstL1Cache
     import Config::*, Types::*;
 (
-    input logic         i_clock,   // Clock
-    input logic         i_reset,   // Reset
-    InstCacheBus.master cacheBus,  // Bus d'instruccions cap el cache L2 o la RAM principal
-    InstBus.slave       localBus); // Bus d'instruccions de la CPU
+    input logic       i_clock,  // Clock
+    input logic       i_reset,  // Reset
+    InstBus.master    bus,      // Bus d'instruccions cap el cache L2 o la RAM principal
+    InstCoreBus.slave coreBus); // Bus d'instruccions de la CPU
 
 
     logic cache_busy;
@@ -19,15 +19,16 @@ module InstL1Cache
         .i_clock    (i_clock),
         .i_reset    (i_reset),
 
-        .o_mem_addr (cacheBus.addr),
-        .i_mem_data (cacheBus.inst[0]),
+        .o_mem_addr (bus.addr),
+        .o_mem_re   (bus.re),
+        .i_mem_data (bus.inst),
 
-        .i_addr     (localBus.addr),
-        .i_rd       (localBus.re),
-        .o_inst     (localBus.inst),
+        .i_addr     (coreBus.addr),
+        .i_rd       (coreBus.re),
+        .o_inst     (coreBus.inst),
         .o_busy     (cache_busy),
         .o_hit      (cache_hit));
 
-    assign localBus.busy = cache_busy | ~cache_hit;
+    assign coreBus.busy = cache_busy | ~cache_hit;
 
 endmodule

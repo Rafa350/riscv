@@ -1,4 +1,4 @@
-interface DataBus;
+interface DataCoreBus;
 
     import Types::*;
 

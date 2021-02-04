@@ -45,24 +45,11 @@ module top
     // Procesador
     // -------------------------------------------------------------------
 
-    generate
-        if (RV_ARCH_CPU == "PP") begin
-            ProcessorPP
-            processor (
-                .i_clock (i_clock),
-                .i_reset (i_reset),
-                .instBus (instBus),
-                .dataBus (dataBus));
-        end
-        else if (RV_ARCH_CPU == "SC") begin
-            ProcessorSC
-            processor (
-                .i_clock (i_clock),
-                .i_reset (i_reset),
-                .instBus (instBus),
-                .dataBus (dataBus));
-        end
-    endgenerate
-
+    Processor
+    processor (
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .instBus (instBus),
+        .dataBus (dataBus));
 
 endmodule

@@ -2,25 +2,25 @@ module StageEX
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,       // Senyal clock
-    input  logic       i_reset,       // Senyal reset
+    input  logic     i_clock,       // Senyal clock
+    input  logic     i_reset,       // Senyal reset
 
     // Senyals operatives del stage
-    input  logic       i_isValid,     // Indica opewracio valida
-    input  Data        i_instIMM,     // Valor IMM de la instruccio
-    input  CSRAddr     i_instCSR,     // Valor CSR de la instruccio
-    input  Data        i_dataRS1,     // Valor del registre X[RS1]
-    input  Data        i_dataRS2,     // Valor del registre X[RS2]
-    input  InstAddr    i_pc,          // Adressa de la instruccio
-    input  DataASel    i_operandASel, // Seleccio del operand A
-    input  DataBSel    i_operandBSel, // Seleccio del operand B
-    input  logic [1:0] i_resultSel,   // Seleccio del resultat
-    input  AluOp       i_aluControl,  // Operacio en la unitat ALU
-    input  CsrOp       i_csrControl,  // Operacio en la unitat CSR
-    input  logic       i_instRet,     // Indica instruccio retirada
-    output logic       o_hazard,      // Indica hazard
-    output Data        o_dataR,       // Dades del resultat
-    output Data        o_dataB);      // Dades B
+    input  logic     i_isValid,     // Indica opewracio valida
+    input  Data      i_instIMM,     // Valor IMM de la instruccio
+    input  CSRAddr   i_instCSR,     // Valor CSR de la instruccio
+    input  Data      i_dataRS1,     // Valor del registre X[RS1]
+    input  Data      i_dataRS2,     // Valor del registre X[RS2]
+    input  InstAddr  i_pc,          // Adressa de la instruccio
+    input  DataASel  i_operandASel, // Seleccio del operand A
+    input  DataBSel  i_operandBSel, // Seleccio del operand B
+    input  ResultSel i_resultSel,   // Seleccio del resultat
+    input  AluOp     i_aluControl,  // Operacio en la unitat ALU
+    input  CsrOp     i_csrControl,  // Operacio en la unitat CSR
+    input  logic     i_instRet,     // Indica instruccio retirada
+    output logic     o_hazard,      // Indica hazard
+    output Data      o_dataR,       // Dades del resultat
+    output Data      o_dataB);      // Dades B
 
 
     // -----------------------------------------------------------------------

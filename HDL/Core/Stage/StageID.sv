@@ -12,7 +12,7 @@ module StageID
     input  logic             i_EX_isValid,      // Indica operacio valida en EX
     input  GPRAddr           i_EX_regWrAddr,    // Registre per escriure en EX
     input  logic             i_EX_regWrEnable,  // Habilita l'escriptura en el registre en EX
-    input  logic [1:0]       i_EX_regWrDataSel, // Seleccio de dades en EX
+    input  WrDataSel         i_EX_regWrDataSel, // Seleccio de dades en EX
     input  Data              i_EX_regWrData,    // Dades a escriure en el registre en EX
     input  logic             i_EX_memRdEnable,  // Habilita la lectura de memoria en EX
 
@@ -40,14 +40,14 @@ module StageID
     output logic             o_hazard,          // Indica hazard
     output GPRAddr           o_regWrAddr,       // Registre a escriure X(RD)
     output logic             o_regWrEnable,     // Habilita l'escriptura del registre
-    output logic [1:0]       o_regWrDataSel,    // Seleccio de les dades per escriure en el registre
+    output WrDataSel         o_regWrDataSel,    // Seleccio de les dades per escriure en el registre
     output logic             o_memWrEnable,     // Habilita l'escritura en memoria
     output logic             o_memRdEnable,     // Habilita la lectura de la memoria
     output DataAccess        o_memAccess,       // Tamany d'acces a la memoria
     output logic             o_memUnsigned,     // Lectura de memoria sense signe
     output DataASel          o_operandASel,     // Seleccio del valor A
     output DataBSel          o_operandBSel,     // Seleccio del valor B
-    output logic [1:0]       o_resultSel,       // Seleccio del resultat
+    output ResultSel         o_resultSel,       // Seleccio del resultat
     output AluOp             o_aluControl,      // Selecciona l'operacio de la unitat ALU
     output MduOp             o_mduControl,      // Selecciona l'operacio en la unitat MDU
     output CsrOp             o_csrControl,      // Selecciona l'operacio en la unitat CSR

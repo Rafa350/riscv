@@ -18,6 +18,7 @@ module ICache
 
     // Interficie amb la memoria
     output InstAddr o_mem_addr,  // Adresa de la memoria principal en words
+    output logic    o_mem_re,    // Habilita la lectura
     input  Inst     i_mem_data); // Dades recuperades de la memoria principal
 
 

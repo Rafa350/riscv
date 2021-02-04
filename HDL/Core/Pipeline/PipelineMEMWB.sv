@@ -2,22 +2,22 @@ module PipelineMEMWB
     import Types::*;
 (
     // Senyals de control
-    input  logic      i_clock,          // Clock
-    input  logic      i_reset,          // Reset
-    input  logic      i_flush,          // Retorna l'estat NOP
+    input  logic   i_clock,          // Clock
+    input  logic   i_reset,          // Reset
+    input  logic   i_flush,          // Retorna l'estat NOP
 
     // Senyals d'entrada al pipeline
-    input  logic       i_isValid,      // Indica operacio valida
-    input  GPRAddr     i_regWrAddr,    // Registre per escriure
-    input  logic       i_regWrEnable,  // Autoritzacio per escriure
-    input  Data        i_regWrData,    // Dades per escriure
+    input  logic   i_isValid,      // Indica operacio valida
+    input  GPRAddr i_regWrAddr,    // Registre per escriure
+    input  logic   i_regWrEnable,  // Autoritzacio per escriure
+    input  Data    i_regWrData,    // Dades per escriure
 
     // Senyal de sortida del pipeline
     //
-    output logic       o_isValid,      // Indica operacio valida
-    output GPRAddr     o_regWrAddr,
-    output logic       o_regWrEnable,
-    output Data        o_regWrData);
+    output logic   o_isValid,      // Indica operacio valida
+    output GPRAddr o_regWrAddr,
+    output logic   o_regWrEnable,
+    output Data    o_regWrData);
 
 
     always_ff @(posedge i_clock)

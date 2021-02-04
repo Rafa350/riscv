@@ -55,8 +55,8 @@ module top
     // ------------------------------------------------------------------------
 
     always_ff @(posedge clock)
-        if (dataBus.wrData & dataBus.addr == 10'h0200)
-            LED <= dataBus.wrData[7:0];
+        if (dataBus.wdata & (dataBus.addr == 10'h0200))
+            LED <= dataBus.wdata[7:0];
 
 
     // ------------------------------------------------------------------------
@@ -82,24 +82,11 @@ module top
     // CPU
     // ------------------------------------------------------------------------
 
-    generate
-        if (RV_ARCH_CPU == "PP") begin
-            ProcessorPP
-            processor (
-                .i_clock (clock),
-                .i_reset (reset),
-                .instBus (instBus),
-                .dataBus (dataBus));
-       end
-
-       else if (RV_ARCH_CPU == "SC") begin
-            ProcessorSC
-            processor (
-                .i_clock (clock),
-                .i_reset (reset),
-                .instBus (instBus),
-                .dataBus (dataBus));
-       end
-    endgenerate
+    Processor
+    processor (
+        .i_clock (clock),
+        .i_reset (reset),
+        .instBus (instBus),
+        .dataBus (dataBus));
 
 endmodule
