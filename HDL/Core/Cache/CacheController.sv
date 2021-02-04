@@ -11,7 +11,7 @@
 //            i_clock        : Senyal de rellotge
 //            i_reset        : Senyal de reset
 //            i_hit          : Indicador de coincidencia del cache
-//            i_rd           : Solicitit de lectura
+//            i_rd           : Solicitut de lectura
 //            i_tag          : El tag
 //            i_index        : El index
 //            i_block        : El bloc
@@ -66,8 +66,8 @@ module CacheController
     output logic                   o_busy); // Indica ocupat
 
 
-    localparam CACHE_ELEMENTS = 2**INDEX_WIDTH;
-    localparam CACHE_BLOCKS   = 2**BLOCK_WIDTH;
+    localparam ELEMENTS = 2**INDEX_WIDTH;
+    localparam BLOCKS   = 2**BLOCK_WIDTH;
 
 
     typedef enum logic [1:0] { // Estats de la maquina
@@ -112,7 +112,7 @@ module CacheController
                     o_index = index;
                     o_cl = 1'b1;
                     nextIndex = index + 1;
-                    if (Index'(index) == Index'(CACHE_ELEMENTS-1))
+                    if (Index'(index) == Index'(ELEMENTS-1))
                         nextState = State_IDLE;
                 end
 
@@ -137,7 +137,7 @@ module CacheController
                     nextTag   = tag;
                     nextIndex = index;
                     nextBlock = block + 1;
-                    if (Block'(block) == Block'(CACHE_BLOCKS-1))
+                    if (Block'(block) == Block'(BLOCKS-1))
                         nextState = State_IDLE;
                 end
 

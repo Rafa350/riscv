@@ -21,7 +21,7 @@ module InstMemory
     parameter SIZE      = 1024,
     parameter FILE_NAME = "data.txt")
 (
-    InstMemoryBus.slave bus);
+    InstBus.slave bus);
 
     localparam DATA_WIDTH = $size(Data);
 

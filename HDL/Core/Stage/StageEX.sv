@@ -6,6 +6,7 @@ module StageEX
     input  logic       i_reset,       // Senyal reset
 
     // Senyals operatives del stage
+    input  logic       i_isValid,     // Indica opewracio valida
     input  Data        i_instIMM,     // Valor IMM de la instruccio
     input  CSRAddr     i_instCSR,     // Valor CSR de la instruccio
     input  Data        i_dataRS1,     // Valor del registre X[RS1]
@@ -68,7 +69,7 @@ module StageEX
         .i_clock   (i_clock),
         .i_reset   (i_reset),
         .i_instRet (i_instRet),
-        .i_op      (i_csrControl),
+        .i_op      (i_isValid ? i_csrControl : CsrOp_NOP),
         .i_csr     (i_instCSR),
         .i_data    (operandASelector_output),
         .o_data    (csrUnit_data));
@@ -87,10 +88,10 @@ module StageEX
 
     ALU
     aluUnit (
-        .i_op       (i_aluControl),
-        .i_operandA (operandASelector_output),
-        .i_operandB (operandBSelector_output),
-        .o_result   (aluUnit_result));
+        .i_op     (i_aluControl),
+        .i_dataA  (operandASelector_output),
+        .i_dataB  (operandBSelector_output),
+        .o_result (aluUnit_result));
 
 
     // ------------------------------------------------------------------

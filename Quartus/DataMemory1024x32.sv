@@ -1,8 +1,8 @@
 module DataMemory1024x32
     import Types::*;
 (
-    input               i_clock, // Clock
-    DataMemoryBus.slave bus);    // Bus de memoria de dades
+    input         i_clock, // Clock
+    DataBus.slave bus);    // Bus de memoria de dades
           
     Data data;
     logic [3:0] we;

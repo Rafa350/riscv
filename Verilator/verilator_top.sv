@@ -10,11 +10,11 @@
 module top
     import Config::*, Types::*;
 (
-    input         i_clock,   // Clock
-    input         i_reset);  // Reset
+    input   i_clock,   // Clock
+    input   i_reset);  // Reset
 
-    DataMemoryBus dataBus;      // Interficie amb la memoria de dades
-    InstMemoryBus instBus;      // Interficie amb la memoria d'instruccions
+    DataBus dataBus;      // Interficie amb la memoria de dades
+    InstBus instBus;      // Interficie amb la memoria d'instruccions
 
 
     // -------------------------------------------------------------------

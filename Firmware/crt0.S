@@ -17,7 +17,7 @@ _start:
     // Inicialitza els contadors
     //   MCYCLE=0
     //   MINSTRET=0
-    csrrsi zero, mcountinhibit, 0x5 // Primer els desabilita
+    csrrsi zero, mcountinhibit, 0x5 // Primer els deshabilita
     csrrw zero, mcycle, zero        // Els posa a zero
     csrrw zero, minstret, zero
     csrrci zero, mcountinhibit, 0x5 // Els torna a habilitar

@@ -2,35 +2,43 @@ module CSRUnit
     import Config::*, Types::*;
 (
     // Senyals de control
-    input  logic   i_clock,    // Clock
-    input  logic   i_reset,    // Reset
+    input  logic   i_clock,   // Clock
+    input  logic   i_reset,   // Reset
 
     // Senyals de control dels contadors
     input  logic   i_instRet, // Indica instruccio retirada
 
-    // Senyals operatives
-    input  CsrOp   i_op,       // Operacio a realitzar
-    input  CSRAddr i_csr,      // Identificador del registre
-    input  Data    i_data,     // Entrada de dades
-    output Data    o_data);    // Sortida de dades
+    // Senyals d'acces als registres
+    input  CsrOp   i_op,      // Operacio a realitzar
+    input  CSRAddr i_csr,     // Identificador del registre
+    input  Data    i_data,    // Entrada de dades
+    output Data    o_data);   // Sortida de dades
 
 
-    localparam MISA_XLEN = DATA_WIDTH == 32 ? 2'b01 : 2'b10;
+    localparam MISA_XLEN = DATA_WIDTH == 32 ? 1 : 2;
     localparam Data MISA =
-        (0              <<  0) | // A - Atomic Instructions extension
-        (32'(RV_EXT_C)  <<  2) | // C - Compressed extension
-        (32'(RV_EXT_D)  <<  3) | // D - Double precision floating-point extension
-        (32'(RV_EXT_E)  <<  4) | // E - Reduced register number extension
-        (32'(RV_EXT_F)  <<  5) | // F - Single precision floating-point extension
-        (32'(RV_EXT_I)  <<  8) | // I - Integer extension
-        (32'(RV_EXT_M)  << 12) | // M - Integer Multiply/Divide extension
-        (0              << 13) | // N - User level interrupts supported
-        (0              << 18) | // S - Supervisor mode implemented
-        (32'(RV_EXT_U)  << 20) | // U - User mode implemented
-        (0              << 23) | // X - Non-standard extensions present
-        (32'(MISA_XLEN) << 30);  // M-XLEN 32bit
+        (RV_EXT_A  <<  0) | // A - Atomic Instructions extension
+        (0         <<  1) | // B - Bitfield extension
+        (RV_EXT_C  <<  2) | // C - Compressed extension
+        (RV_EXT_D  <<  3) | // D - Double precision floating-point extension
+        (RV_EXT_E  <<  4) | // E - Reduced register number extension
+        (RV_EXT_F  <<  5) | // F - Single precision floating-point extension
+        (RV_EXT_I  <<  8) | // I - Integer extension
+        (RV_EXT_M  << 12) | // M - Integer Multiply/Divide extension
+        (0         << 13) | // N - User level interrupts supported
+        (0         << 18) | // S - Supervisor mode implemented
+        (RV_EXT_U  << 20) | // U - User mode implemented
+        (0         << 23) | // X - Non-standard extensions present
+        (MISA_XLEN << 30);  // M-XLEN 32bit
+    localparam MVENDORID = 0;
+    localparam MARCHID   = 0;
+    localparam MIMPID    = 0;
+    localparam MHARTID   = 0;
 
-
+    localparam CSR_MVENDORID     = 12'hF11;
+    localparam CSR_MARCHID       = 12'hF12;
+    localparam CSR_MIMPID        = 12'hF13;
+    localparam CSR_MHARTID       = 12'hF14;
     localparam CSR_MSTATUS       = 12'h300;
     localparam CSR_MISA          = 12'h301;
     localparam CSR_MIE           = 12'h304;
@@ -45,6 +53,7 @@ module CSRUnit
     localparam CSR_MCYCLEH       = 12'hB80;
     localparam CSR_MINSTRET      = 12'hB02;
     localparam CSR_MINSTRETH     = 12'hB82;
+
 
     RunMode mode;      // Modus d'execucio
 
@@ -80,207 +89,133 @@ module CSRUnit
     Data hpmcounter30; //
     Data hpmcounter31; //
 
-    Data mtime;        // Contador de temps
-    Data mtimecmp;     // Comparador del contador de temps
-    Data mcause;
-    Data mscratch;
-
-    logic       mstatus_SD;
-    logic       mstatus_TSR;
-    logic       mstatus_TW;
-    logic       mstatus_TVM;
-    logic       mstatus_MXR;
-    logic       mstatus_SUM;
-    logic       mstatus_MPRV;
-    logic [1:0] mstatus_XS;
-    logic [1:0] mstatus_FS;
-    logic [1:0] mstatus_MPP;
-    logic       mstatus_SPP;
-    logic       mstatus_MPIE;
-    logic       mstatus_SPIE;
-    logic       mstatus_UPIE;
-    logic       mstatus_MIE;
-    logic       mstatus_SIE;
-    logic       mstatus_UIE;
-
-    logic [$size(InstAddr)-3:0] mtvec_BASE;
+    Data                        mtime;      // Contador de temps
+    Data                        mtimecmp;   // Comparador del contador de temps
+    Data                        mcause;
+    Data                        mscratch;
+    Data                        mstatus;
     logic [1:0]                 mtvec_MODE;
-
-    logic       mie_MEIE;
-    logic       mie_MTIE;
-    logic       mie_MSIE;
-
-    logic       mip_MEIP;
-    logic       mip_MTIP;
-    logic       mip_MSIP;
-
-    logic       mcounteren_CY;
-    logic       mcounteren_TM;
-    logic       mcounteren_IR;
-
-    logic       mcountinhibit_CY;
-    logic       mcountinhibit_IR;
-
-    Data mstatus;
-    assign mstatus = {mstatus_SD, 8'b0, mstatus_TSR, mstatus_TW,
-        mstatus_TVM, mstatus_MXR, mstatus_SUM, mstatus_MPRV, mstatus_XS,
-        mstatus_FS, mstatus_MPP, 2'b0, mstatus_SPP, mstatus_MPIE, 1'b0,
-        mstatus_SPIE, mstatus_UPIE, mstatus_MIE, 1'b0, mstatus_SIE,
-        mstatus_UIE};
-
-    Data mtvec;
-    assign mtvec = {16'b0, mtvec_BASE, mtvec_MODE};
-
-    Data mip;
-    assign mip = {20'b0, mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0};
-
-    Data mie;
-    assign mie = {20'b0, mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0};
-
-    Data mcounteren;
-    assign mcounteren = {29'b0, mcounteren_IR, mcounteren_TM, mcounteren_CY};
-
-    Data mcountinhibit;
-    assign mcountinhibit = {29'b0, mcountinhibit_IR, 1'b1, mcountinhibit_CY};
+    logic [$size(InstAddr)-3:0] mtvec_BASE;
+    logic                       mip_MEIP;
+    logic                       mip_MTIP;
+    logic                       mip_MSIP;
+    logic                       mie_MEIE;
+    logic                       mie_MTIE;
+    logic                       mie_MSIE;
+    logic                       mcounteren_CY;
+    logic                       mcounteren_IR;
+    logic                       mcountinhibit_CY; // Inhibeix el contador de cicles
+    logic                       mcountinhibit_IR; // Inhibeix el contador d'instruccions
 
 
-    // -------------------------------------------------------------------
-    // Actualitza o escriu en els contadors
-    // -------------------------------------------------------------------
+    Data dataIn;
+    Data dataOut;
+    logic isNOP;
 
-    always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_op})
-           {1'b1, 2'b??}:
-                begin
-                    cycle   <= 0;
-                    instret <= 0;
-                end
 
-            {1'b0, CsrOp_WRITE}:
-                unique case (i_csr)
-                    CSR_MCYCLE  : cycle   <= i_data;
-                    CSR_MINSTRET: instret <= i_data;
-                    default     : ;
-                endcase
+    assign isNOP = i_op == CsrOp_NOP;
 
-            default:
-                begin
-                    if (~mcountinhibit_CY)
-                        cycle <= cycle + 1;
-                    if (~mcountinhibit_IR & i_instRet)
-                        instret <= instret + 1;
-                end
+    always_comb
+        unique case (i_op)
+            CsrOp_SET   : dataIn = dataOut | i_data;
+            CsrOp_CLEAR : dataIn = dataOut & ~i_data;
+            default     : dataIn = i_data;
         endcase
 
-
-    // -------------------------------------------------------------------
-    // Escriu en els registres d'estat i control
-    // -------------------------------------------------------------------
+    always_ff @(posedge i_clock)
+        if (i_reset)
+            cycle <= 0;
+        else if ((i_csr == CSR_MCYCLE) & ~isNOP)
+            cycle <= dataIn;
+        else if (~mcountinhibit_CY)
+            cycle <= cycle + 1;
 
     always_ff @(posedge i_clock)
-        unique casez ({i_reset, i_op})
-            {1'b1, 2'b??}:
-                begin
-                    mcounteren_CY    <= 1'b0;
-                    mcounteren_TM    <= 1'b0;
-                    mcounteren_IR    <= 1'b0;
-                    mcountinhibit_CY <= 1'b1;
-                    mcountinhibit_IR <= 1'b1;
-                    mtvec_MODE       <= 2'b00;
-                    mtvec_BASE       <= 0;
-                    mie_MEIE         <= 1'b0;
-                    mie_MSIE         <= 1'b0;
-                    mie_MTIE         <= 1'b0;
-                    mip_MEIP         <= 1'b0;
-                    mip_MSIP         <= 1'b0;
-                    mip_MTIP         <= 1'b0;
-                    mstatus_SD       <= 1'b0;
-                    mstatus_FS       <= 2'b00;
-                end
+        if (i_reset)
+            instret <= 0;
+        else if ((i_csr == CSR_MINSTRET) & ~isNOP)
+            instret <= dataIn;
+        else if (~mcountinhibit_IR & i_instRet)
+            instret <= instret + 1;
 
-            {1'b0, CsrOp_WRITE}:
-                unique case (i_csr)
-                    CSR_MSTATUS:
-                        begin
-                            mtvec_MODE <= i_data[1:0];
-                            mtvec_BASE <= i_data[15:2];
-                            mstatus_FS <= i_data[14:13];
-                        end
+    always_ff @(posedge i_clock)
+        if (i_reset) begin
+            mcounteren_CY    <= 1'b0;
+            mcounteren_IR    <= 1'b0;
+            mcountinhibit_CY <= 1'b1;
+            mcountinhibit_IR <= 1'b1;
+            mtvec_BASE       <= 0;
+            mtvec_MODE       <= 0;
+        end
+        else
+            unique case (i_csr)
+                CSR_MCAUSE:
+                    mcause <= dataIn;
 
-                    CSR_MCOUNTEREN:
-                        begin
-                            mcounteren_CY <= i_data[0];
-                            mcounteren_TM <= i_data[1];
-                            mcounteren_IR <= i_data[2];
-                        end
+                CSR_MCOUNTEREN:
+                    begin
+                        mcounteren_IR <= dataIn[2];
+                        mcounteren_CY <= dataIn[0];
+                    end
 
-                    CSR_MCOUNTINHIBIT:
-                        begin
-                            mcountinhibit_CY <= i_data[0];
-                            mcountinhibit_IR <= i_data[2];
-                        end
-                    default: ;
-                endcase
+                CSR_MCOUNTINHIBIT:
+                    begin
+                        mcountinhibit_IR <= dataIn[2];
+                        mcountinhibit_CY <= dataIn[0];
+                    end
 
-            {1'b0, CsrOp_SET}:
-                unique case (i_csr)
-                    CSR_MCOUNTEREN:
-                        begin
-                            mcounteren_CY <= i_data[0] ? 1'b1 : mcounteren_CY;
-                            mcounteren_TM <= i_data[1] ? 1'b1 : mcounteren_TM;
-                            mcounteren_IR <= i_data[2] ? 1'b1 : mcounteren_IR;
-                        end
+                CSR_MIE:
+                    begin
+                        mie_MEIE <= dataIn[11];
+                        mie_MTIE <= dataIn[7];
+                        mie_MSIE <= dataIn[3];
+                    end
 
-                    CSR_MCOUNTINHIBIT:
-                        begin
-                            mcountinhibit_CY <= i_data[0] ? 1'b1 : mcountinhibit_CY;
-                            mcountinhibit_IR <= i_data[2] ? 1'b1 : mcountinhibit_IR;
-                        end
-                    default: ;
-                endcase
+                CSR_MIP:
+                    begin
+                        mip_MEIP <= dataIn[11];
+                        mip_MTIP <= dataIn[7];
+                        mip_MSIP <= dataIn[3];
+                    end
 
-            {1'b0, CsrOp_CLEAR}:
-                unique case (i_csr)
-                    CSR_MCOUNTEREN:
-                        begin
-                            mcounteren_CY <= i_data[0] ? 1'b0 : mcounteren_CY;
-                            mcounteren_TM <= i_data[1] ? 1'b0 : mcounteren_TM;
-                            mcounteren_IR <= i_data[2] ? 1'b0 : mcounteren_IR;
-                        end
+                CSR_MSCRATCH:
+                    mscratch <= dataIn;
 
-                    CSR_MCOUNTINHIBIT:
-                        begin
-                            mcountinhibit_CY <= i_data[0] ? 1'b0 : mcountinhibit_CY;
-                            mcountinhibit_IR <= i_data[2] ? 1'b0 : mcountinhibit_IR;
-                        end
-                    default: ;
-                endcase
+                CSR_MSTATUS:
+                    mstatus <= dataIn;
 
-            default:
-                ;
-        endcase
+                CSR_MTVEC:
+                    begin
+                        mtvec_MODE <= dataIn[1:0];
+                        mtvec_BASE <= dataIn[$size(Data)-1:2];
+                    end
 
-
-    // -------------------------------------------------------------------
-    // Llegeix els registres
-    // -------------------------------------------------------------------
+                default:
+                    ;
+            endcase
 
     always_comb begin
-        case (i_csr)
-            CSR_MCAUSE        : o_data = mcause;
-            CSR_MCYCLE        : o_data = cycle;
-            CSR_MCOUNTEREN    : o_data = mcounteren;
-            CSR_MCOUNTINHIBIT : o_data = mcountinhibit;
-            CSR_MIE           : o_data = mie;
-            CSR_MIP           : o_data = mip;
-            CSR_MINSTRET      : o_data = instret;
-            CSR_MISA          : o_data = MISA;
-            CSR_MSCRATCH      : o_data = mscratch;
-            CSR_MSTATUS       : o_data = mstatus;
-            CSR_MTVEC         : o_data = mtvec;
-            default           : o_data = Data'(0);
+        unique case (i_csr)
+            CSR_MVENDORID     : dataOut = MVENDORID;
+            CSR_MARCHID       : dataOut = MARCHID;
+            CSR_MIMPID        : dataOut = MIMPID;
+            CSR_MHARTID       : dataOut = MHARTID;
+            CSR_MCAUSE        : dataOut = mcause;
+            CSR_MCYCLE        : dataOut = cycle;
+            CSR_MCOUNTEREN    : dataOut = Data'({mcounteren_IR, 1'b0, mcounteren_CY});
+            CSR_MCOUNTINHIBIT : dataOut = Data'({mcountinhibit_IR, 1'b0, mcountinhibit_CY});
+            CSR_MIE           : dataOut = Data'({mie_MEIE, 3'b000, mie_MTIE, 3'b000, mie_MSIE, 3'b000});
+            CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b000, mip_MTIP, 3'b000, mip_MSIP, 3'b000});
+            CSR_MINSTRET      : dataOut = instret;
+            CSR_MISA          : dataOut = MISA;
+            CSR_MSCRATCH      : dataOut = mscratch;
+            CSR_MSTATUS       : dataOut = mstatus;
+            CSR_MTVEC         : dataOut = Data'({mtvec_BASE, mtvec_MODE});
+            default           : dataOut = Data'(0);
         endcase
     end
+
+    assign o_data = dataOut;
 
 
 endmodule

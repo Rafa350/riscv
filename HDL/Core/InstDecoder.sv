@@ -7,11 +7,12 @@ module InstDecoder
     output GPRAddr o_instRS2,   // El registre origen 2 (rs2)
     output GPRAddr o_instRD,    // El registre desti (rd)
     output CSRAddr o_instCSR,   // El registre CSR
-    output Data    o_instIMM,   // El valor inmediat
+    output Data    o_instIMM,   // El valor IMM
     output logic   o_isIllegal, // Indica instruccio ilegal
     output logic   o_isALU,     // Indica que es una instruccio ALU
     output logic   o_isECALL,   // Indica instruccio ECALL
     output logic   o_isEBREAK,  // Indica instruccio EBREAK
+    output logic   o_isWFI,     // Indica isntruccio WFI
     output logic   o_isMRET,    // Indica instruccio MRET
     output logic   o_isCSR);    // Indica que es una instruccio CSR
 
@@ -40,13 +41,14 @@ module InstDecoder
         o_instRS1   = i_inst[REG_WIDTH+14:15];
         o_instRS2   = i_inst[REG_WIDTH+19:20];
         o_instRD    = i_inst[REG_WIDTH+6:7];
-        o_instIMM   = 0;
         o_instCSR   = i_inst[31:20];
+        o_instIMM   = 0;
 
         o_isIllegal = 1'b0;
         o_isALU     = 1'b0;
         o_isEBREAK  = 1'b0;
         o_isECALL   = 1'b0;
+        o_isWFI     = 1'b0;
         o_isMRET    = 1'b0;
         o_isCSR     = 1'b0;
 
@@ -136,6 +138,15 @@ module InstDecoder
                         o_isIllegal = 1'b1;
                 endcase
 
+            {10'b0001000_000, OpCode_System}:
+                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                    15'b00101_00000_00000:    // WFI
+                        o_isWFI = 1'b1;
+
+                    default:
+                        o_isIllegal = 1'b1;
+                endcase
+
             {10'b0011000_000, OpCode_System}:
                 case (i_inst[24:20])
                     5'b0010:                  // MRET
@@ -160,6 +171,7 @@ module InstDecoder
 
             default:
                 o_isIllegal = 1'b1;
+                
         endcase
 
     end

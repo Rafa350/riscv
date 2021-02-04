@@ -20,15 +20,15 @@ module PipelineIFID
 
 
     always_ff @(posedge i_clock)
-        case ({i_reset, i_stall})
-            2'b10, // RESET
-            2'b11: // RESET
+        casez ({i_reset, i_stall})
+            2'b1?: // RESET
                 begin
                     o_isValid        <= 1'b0;
                     o_pc             <= InstAddr'(-4);
-                    o_inst           <= Inst'(0);
-                    o_instCompressed <= 1'b0;
                 end
+
+            2'b01: // STALL
+                ;
 
             2'b00: // NORMAL
                 begin
@@ -38,13 +38,6 @@ module PipelineIFID
                     o_instCompressed <= i_instCompressed;
                 end
 
-            2'b01: // STALL
-                begin
-                    o_isValid        <= o_isValid;
-                    o_pc             <= o_pc;
-                    o_inst           <= o_inst;
-                    o_instCompressed <= o_instCompressed;
-                end
         endcase
 
 endmodule

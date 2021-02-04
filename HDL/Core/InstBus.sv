@@ -1,22 +1,22 @@
-interface InstMemoryBus;
+interface InstBus;
 
     import Types::*;
 
     InstAddr addr; // Adressa
     Inst     inst; // Instruccio
-    logic    rd;   // Sol·licitut una operacio de lectura
-    logic    busy; // Indica que no por realitzar l'operacio sol·licitada
+    logic    re;   // Habilita lectura
+    logic    busy; // Indica ocupat, operacio no disponible
 
     modport master(
         output addr,
         input  inst,
-        output rd,
+        output re,
         input  busy);
 
     modport slave(
         input  addr,
         output inst,
-        input  rd,
+        input  re,
         output busy);
 
 endinterface

@@ -22,8 +22,8 @@ module DataMemory
     parameter BASE = 0,
     parameter SIZE = 1024)
 (
-    input  logic        i_clock,
-    DataMemoryBus.slave bus);
+    input  logic  i_clock,
+    DataBus.slave bus);
 
     localparam DATA_WIDTH = $size(Data);
 
@@ -38,10 +38,10 @@ module DataMemory
 
 
     always_ff @(posedge i_clock)
-        if (bus.wr)
-            dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wrData);
+        if (bus.we)
+            dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wdata);
 
-    assign bus.rdData = dpiMemRead(memObj, bus.addr, int'(bus.access));
+    assign bus.rdata = dpiMemRead(memObj, bus.addr, int'(bus.access));
 
 
     initial begin

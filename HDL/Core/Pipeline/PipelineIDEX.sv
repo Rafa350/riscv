@@ -25,6 +25,7 @@ module PipelineIDEX
     input  DataBSel    i_operandBSel,    // Seleccio de l'operand B
     input  logic [1:0] i_resultSel,      // Seleccio del resultat
     input  AluOp       i_aluControl,     // Operacio en la unitat ALU
+    input  MduOp       i_mduControl,     // Operacio en la unitat MDU
     input  CsrOp       i_csrControl,     // Operacio en la unitat CSR
 
     // Senyals de sortida del pipeline
@@ -45,6 +46,7 @@ module PipelineIDEX
     output DataBSel    o_operandBSel,
     output logic [1:0] o_resultSel,
     output AluOp       o_aluControl,
+    output MduOp       o_mduControl,
     output CsrOp       o_csrControl);
 
 
@@ -53,7 +55,6 @@ module PipelineIDEX
             3'b1??, // RESET
             3'b001: // FLUSH
                 o_isValid <= 1'b0;
-
 
             3'b01?: // STALL
                 ;
@@ -74,6 +75,7 @@ module PipelineIDEX
                     o_memAccess    <= i_memAccess;
                     o_memUnsigned  <= i_memUnsigned;
                     o_aluControl   <= i_aluControl;
+                    o_mduControl   <= i_mduControl;
                     o_csrControl   <= i_csrControl;
                     o_operandASel  <= i_operandASel;
                     o_operandBSel  <= i_operandBSel;

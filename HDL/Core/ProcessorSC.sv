@@ -2,11 +2,11 @@
 module ProcessorSC
     import Types::*;
 (
-    input  logic         i_clock,  // Clock
-    input  logic         i_reset,  // Reset
+    input  logic   i_clock,  // Clock
+    input  logic   i_reset,  // Reset
 
-    DataMemoryBus.master dataBus,  // Bus de dades
-    InstMemoryBus.master instBus); // Bus d'instruccions
+    DataBus.master dataBus,  // Bus de dades
+    InstBus.master instBus); // Bus d'instruccions
 
 
     GPRegistersBus regBus();
@@ -41,7 +41,7 @@ module ProcessorSC
         .i_regWrEnable  (dpCtrl_regWrEnable),
         .i_memWrAddr    (dataBus.addr),
         .i_memAccess    (dataBus.access),
-        .i_memWrData    (dataBus.wrData),
+        .i_memWrData    (dataBus.wdata),
         .i_memWrEnable  (dpCtrl_memWrEnable),
         .o_tick         (dbgCtrl_tick));
 
@@ -192,7 +192,7 @@ module ProcessorSC
     sel3 (
         .i_select (dpCtrl_regWrDataSel),
         .i_input0 (alu_result),      // Escriu el resultat de la ALU
-        .i_input1 (dataBus.rdData),  // Escriu el valor lleigit de la memoria
+        .i_input1 (dataBus.rdata),   // Escriu el valor lleigit de la memoria
         .i_input2 (Data'(pcPlus4)),  // Escriu el valor de PC+4
         .o_output (sel3_output));
     // verilator lint_on PINMISSING
@@ -206,10 +206,10 @@ module ProcessorSC
 
     ALU
     alu (
-        .i_op       (dpCtrl_aluControl),
-        .i_operandA (operandASelector_output),
-        .i_operandB (operandBSelector_output),
-        .o_result   (alu_result));
+        .i_op     (dpCtrl_aluControl),
+        .i_dataA  (operandASelector_output),
+        .i_dataB  (operandBSelector_output),
+        .o_result (alu_result));
 
 
     // Evalua PC = PC + 4
@@ -217,9 +217,9 @@ module ProcessorSC
     HalfAdder #(
         .WIDTH ($size(InstAddr)))
     adder1 (
-        .i_operandA (pc),
-        .i_operandB (4),
-        .o_result   (pcPlus4));
+        .i_inputA (pc),
+        .i_inputB (4),
+        .o_output (pcPlus4));
 
 
     // Evalua PC = PC + offset
@@ -229,9 +229,9 @@ module ProcessorSC
     HalfAdder #(
         .WIDTH ($size(InstAddr)))
     Adder2 (
-        .i_operandA (pc),
-        .i_operandB (dec_instIMM[$size(InstAddr)-1:0]),
-        .o_result   (pcPlusOffset));
+        .i_inputA (pc),
+        .i_inputB (dec_instIMM[$size(InstAddr)-1:0]),
+        .o_output (pcPlusOffset));
 
 
     // Evalua PC = [rs1] + offset
@@ -241,9 +241,9 @@ module ProcessorSC
     HalfAdder #(
         .WIDTH ($size(InstAddr)))
     adder3 (
-        .i_operandA (dec_instIMM[$size(InstAddr)-1:0]),
-        .i_operandB (gpr_rdDataA[$size(InstAddr)-1:0]),
-        .o_result   (pcPlusOffsetAndRS1));
+        .i_inputA (dec_instIMM[$size(InstAddr)-1:0]),
+        .i_inputB (gpr_rdDataA[$size(InstAddr)-1:0]),
+        .o_output (pcPlusOffsetAndRS1));
 
 
     // Selecciona el nou valor del contador de programa
@@ -266,17 +266,17 @@ module ProcessorSC
     PCReg (
         .i_clock (i_clock),
         .i_reset (i_reset),
-        .i_wr    (1),
-        .i_data  (pcNext),
-        .o_data  (pc));
+        .i_we    (1),
+        .i_wdata (pcNext),
+        .o_rdata (pc));
 
 
     // Interface amb la memoria RAM
     //
     always_comb begin
-        dataBus.addr   = alu_result[$size(DataAddr)-1:0];
-        dataBus.wr     = dpCtrl_memWrEnable;
-        dataBus.wrData = gpr_rdDataB;
+        dataBus.addr  = alu_result[$size(DataAddr)-1:0];
+        dataBus.we    = dpCtrl_memWrEnable;
+        dataBus.wdata = gpr_rdDataB;
     end
 
 

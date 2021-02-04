@@ -14,11 +14,11 @@
 //       Entrades:
 //           i_clock    : Rellrotge
 //           i_addr     : Adressa per escriptura i/o lectura
-//           i_wre      : Habilita l'escriptura
-//           i_data     : Dades per escriure
+//           i_we       : Habilita l'escriptura
+//           i_wdata    : Dades per escriure
 //
 //       Sortides:
-//           o_data     : Dades lleigides
+//           o_rdata    : Dades lleigides
 //
 // -----------------------------------------------------------------------
 
@@ -27,21 +27,21 @@ module RwMemory
     parameter DATA_WIDTH = 32, // Amplade de dades
     parameter ADDR_WIDTH = 32) // Amplada d'adresses
 (
-    input  logic                  i_clock, // Clock
+    input  logic                  i_clock,  // Clock
 
-    input  logic [ADDR_WIDTH-1:0] i_addr,  // Adressa
-    input  logic                  i_wr,    // Habilita l'escriptura
-    input  logic [DATA_WIDTH-1:0] i_data,  // Dades per escriure
-    output logic [DATA_WIDTH-1:0] o_data); // Dades lleigides
+    input  logic [ADDR_WIDTH-1:0] i_addr,   // Adressa
+    input  logic                  i_we,     // Habilita l'escriptura
+    input  logic [DATA_WIDTH-1:0] i_wdata,  // Dades per escriure
+    output logic [DATA_WIDTH-1:0] o_rdata); // Dades lleigides
 
     localparam SIZE = (2**ADDR_WIDTH)>>2;
 
     logic [DATA_WIDTH-1:0] data [0:SIZE-1];
 
     always_ff @(posedge i_clock)
-        if (i_wr)
-            data[i_addr[ADDR_WIDTH-1:2]] <= i_data;
+        if (i_we)
+            data[i_addr[ADDR_WIDTH-1:2]] <= i_wdata;
 
-    assign o_data = data[i_addr];
+    assign o_rdata = data[i_addr];
 
 endmodule

@@ -38,8 +38,8 @@ module BranchAlu
     HalfAdder #(
         .WIDTH ($size(InstAddr)))
     adder (
-        .i_operandA (selBase_output),
-        .i_operandB (selOffset_output),
-        .o_result   (o_pc));
+        .i_inputA (selBase_output),
+        .i_inputB (selOffset_output),
+        .o_output (o_pc));
 
 endmodule

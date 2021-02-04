@@ -2,14 +2,14 @@ module top
     import Config::*, Types::*;
 (
     input  logic        CLOCK_50,
-    
+
     // Switches i pulsadors
     input  logic [1:0]  KEY,
     input  logic [3:0]  SW,
 
     // Leds
     output logic [7:0]  LED,
-    
+
     // SDRAM
     output logic [12:0] DRAM_ADDR,
     inout  logic [15:0] DRAM_DQ,
@@ -21,23 +21,23 @@ module top
     output logic        DRAM_CLK,
     output logic        DRAM_WE,
     output logic        DRAM_CS,
-    
+
     // GPIO0
     input  logic [1:0]  GPIO_0_IN,
     output logic [33:0] GPIO_0,
-    
+
     // GPIO1
     input  logic [1:0]  GPIO_1_IN,
     inout  logic [33:0] GPIO_1,
-    
+
     // GPIO2
     input  logic [2:0]  GPIO_2_IN,
     inout  logic [12:0] GPIO_2,
-    
+
     // I2C EEPROM/ACCELLEROMETER
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
-       
+
     logic clock;
     logic reset;
     logic [7:0] leds;
@@ -46,13 +46,14 @@ module top
     assign reset = ~KEY[0];
 
 
-    DataMemoryBus dataBus();        
-    InstMemoryBus instBus();
-       
+    DataBus dataBus();
+    InstBus instBus();
+
+
     // ------------------------------------------------------------------------
     // Port IO LEDSA
     // ------------------------------------------------------------------------
-    
+
     always_ff @(posedge clock)
         if (dataBus.wrData & dataBus.addr == 10'h0200)
             LED <= dataBus.wrData[7:0];
@@ -61,17 +62,17 @@ module top
     // ------------------------------------------------------------------------
     // Memoria de dades
     // ------------------------------------------------------------------------
-    
+
     DataMemory1024x32
     DataMem (
         .i_clock (clock),
         .bus     (dataBus));
 
-      
+
     // ------------------------------------------------------------------------
     // Memoria de programa
     // ------------------------------------------------------------------------
-    
+
     InstMemory
     InstMem (
         .bus (instBus));
@@ -80,7 +81,7 @@ module top
     // ------------------------------------------------------------------------
     // CPU
     // ------------------------------------------------------------------------
-    
+
     generate
         if (RV_ARCH_CPU == "PP") begin
             ProcessorPP
@@ -90,7 +91,7 @@ module top
                 .instBus (instBus),
                 .dataBus (dataBus));
        end
-       
+
        else if (RV_ARCH_CPU == "SC") begin
             ProcessorSC
             processor (
@@ -100,5 +101,5 @@ module top
                 .dataBus (dataBus));
        end
     endgenerate
-       
+
 endmodule

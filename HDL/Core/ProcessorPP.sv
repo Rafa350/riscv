@@ -1,19 +1,22 @@
 module ProcessorPP
     import Config::*, Types::*;
 (
-    input  logic         i_clock,  // Clock
-    input  logic         i_reset,  // Reset
-    DataMemoryBus.master dataBus,  // Bus de la memoria de dades
-    InstMemoryBus.master instBus); // Bus de la memoria d'instruccions
+    input  logic   i_clock,  // Clock
+    input  logic   i_reset,  // Reset
+    DataBus.master dataBus,  // Bus de la memoria de dades
+    InstBus.master instBus); // Bus de la memoria d'instruccions
 
 
     GPRegistersBus regBus();
-    InstMemoryBus  instCacheBus();
+    InstBus        instLocalBus(); // Bus d'instruccions CPU/L1
+    InstCacheBus   instCacheBus(); // Bus d'interuccions L1/MEM
+    DataBus        dataLocalBus(); // Bus de dades CPU/L1
+    DataCacheBus   dataCacheBus(); // Bus de dades L1/MEM
 
 
-    // -----------------------------------------------------------------------
-    // Bloc de registres base
-    // -----------------------------------------------------------------------
+    // -------------------------------------------------------------------
+    // Bloc de registres GPR (General Purpouse Registers)
+    // -------------------------------------------------------------------
 
     GPRegisters
     gpr (
@@ -23,25 +26,71 @@ module ProcessorPP
 
 
     // -------------------------------------------------------------------
+    // Bloc de registres FPR (Floating Point Registers)
+    // -------------------------------------------------------------------
+
+
+    // -------------------------------------------------------------------
     // Cache L1 d'instruccions
     // -------------------------------------------------------------------
 
     generate
         if (RV_ICACHE_ON == 1) begin
             InstL1Cache
-            instCache (
+            instL1Cache (
                 .i_clock  (i_clock),       // Clock
                 .i_reset  (i_reset),       // Reset
-                .memBus   (instBus),       // Bus de la memoria d'instruccions
-                .cacheBus (instCacheBus)); // Bus de la memoria cache d'instruccions
+                .cacheBus (instCacheBus),  // Bus d'instruccions L1/L2
+                .localBus (instLocalBus)); // Bus d'instruccions CPU/L1
         end
         else begin
-            assign instBus.addr      = instCacheBus.addr;
-            assign instBus.rd        = instCacheBus.rd;
-            assign instCacheBus.inst = instBus.inst;
-            assign instCacheBus.busy = instBus.busy;
+            assign instCacheBus.addr = instLocalBus.addr;
+            assign instCacheBus.re   = instLocalBus.re;
+            assign instLocalBus.inst = instCacheBus.inst[0];
+            assign instLocalBus.busy = instCacheBus.busy;
         end
     endgenerate
+
+
+    // ----------------------------------------------------------------------
+    // Cache L1 de dades
+    // ----------------------------------------------------------------------
+
+    generate
+        if (RV_DCACHE_ON == 1) begin
+            DataL1Cache
+            dataL1Cache (
+                .i_clock  (i_clock),       // Clock
+                .i_reset  (i_reset),       // Reset
+                .cacheBus (dataCacheBus),  // Bus de dades /L1/L2
+                .localBus (dataLocalBus)); // Bus de dades CPU/L1
+        end
+        else begin
+            assign dataCacheBus.addr     = dataLocalBus.addr;
+            assign dataCacheBus.we       = dataLocalBus.we;
+            assign dataCacheBus.re       = dataLocalBus.re;
+            assign dataCacheBus.wdata[0] = dataLocalBus.wdata;
+            assign dataLocalBus.rdata    = dataCacheBus.rdata[0];
+            assign dataLocalBus.busy     = dataCacheBus.busy;
+        end
+    endgenerate
+
+
+    // -----------------------------------------------------------------------
+    // Cache L2
+    // -----------------------------------------------------------------------
+
+    assign instBus.addr         = instCacheBus.addr;
+    assign instBus.re           = instCacheBus.re;
+    assign instCacheBus.inst[0] = instBus.inst;
+    assign instCacheBus.busy    = instBus.busy;
+
+    assign dataBus.addr          = dataCacheBus.addr;
+    assign dataBus.we            = dataCacheBus.we;
+    assign dataBus.re            = dataCacheBus.re;
+    assign dataBus.wdata         = dataCacheBus.wdata[0];
+    assign dataCacheBus.rdata[0] = dataBus.rdata;
+    assign dataCacheBus.busy     = dataBus.busy;
 
 
     // -----------------------------------------------------------------------
@@ -87,7 +136,7 @@ module ProcessorPP
     stageIF (
         .i_clock           (i_clock),           // Clock
         .i_reset           (i_reset),           // Reset
-        .instBus           (instCacheBus),      // Bus de la memoria cache d'instruccions
+        .instBus           (instLocalBus),      // Bus de la memoria cache d'instruccions
         .i_pcNext          (ID_pcNext),         // Adressa de salt
         .i_MEM_isValid     (EXMEM_isValid),     // Indica operacio valida en MEM
         .i_MEM_memRdEnable (EXMEM_memRdEnable), // Indica operacio de lectura en MEM
@@ -138,6 +187,7 @@ module ProcessorPP
     DataAccess  ID_memAccess;
     logic       ID_memUnsigned;
     AluOp       ID_aluControl;
+    MduOp       ID_mduControl;
     CsrOp       ID_csrControl;
     DataASel    ID_operandASel;
     DataBSel    ID_operandBSel;
@@ -181,6 +231,7 @@ module ProcessorPP
         .o_memAccess       (ID_memAccess),        // Tamany d'acces a la memoria
         .o_memUnsigned     (ID_memUnsigned),      // Lectura en memoria sense signe
         .o_aluControl      (ID_aluControl),
+        .o_mduControl      (ID_mduControl),
         .o_csrControl      (ID_csrControl),
         .o_operandASel     (ID_operandASel),
         .o_operandBSel     (ID_operandBSel),
@@ -206,6 +257,7 @@ module ProcessorPP
     DataAccess  IDEX_memAccess;
     logic       IDEX_memUnsigned;
     AluOp       IDEX_aluControl;
+    MduOp       IDEX_mduControl;
     CsrOp       IDEX_csrControl;
     DataASel    IDEX_operandASel;
     DataBSel    IDEX_operandBSel;
@@ -233,6 +285,7 @@ module ProcessorPP
         .i_operandBSel  (ID_operandBSel),
         .i_resultSel    (ID_resultSel),
         .i_aluControl   (ID_aluControl),
+        .i_mduControl   (ID_mduControl),
         .i_csrControl   (ID_csrControl),
         .i_pc           (IFID_pc),
         .o_isValid      (IDEX_isValid),
@@ -248,6 +301,7 @@ module ProcessorPP
         .o_memAccess    (IDEX_memAccess),
         .o_memUnsigned  (IDEX_memUnsigned),
         .o_aluControl   (IDEX_aluControl),
+        .o_mduControl   (IDEX_mduControl),
         .o_csrControl   (IDEX_csrControl),
         .o_operandASel  (IDEX_operandASel),
         .o_operandBSel  (IDEX_operandBSel),
@@ -267,6 +321,7 @@ module ProcessorPP
     stageEX (
         .i_clock       (i_clock),
         .i_reset       (i_reset),
+        .i_isValid     (IDEX_isValid),
         .i_dataRS1     (IDEX_dataRS1),
         .i_dataRS2     (IDEX_dataRS2),
         .i_instIMM     (IDEX_instIMM),
@@ -468,7 +523,7 @@ module ProcessorPP
                 .i_dbgMemWrAddr   (dataBus.addr),
                 .i_dbgMemWrEnable (EXMEM_memWrEnable),
                 .i_dbgMemAccess   (EXMEM_memAccess),
-                .i_dbgMemWrData   (dataBus.wrData),
+                .i_dbgMemWrData   (dataBus.wdata),
                 .o_dbgTick        (dbgMEMWB_dbgTick),
                 .o_dbgPc          (dbgMEMWB_dbgPc),
                 .o_dbgInst        (dbgMEMWB_dbgInst),

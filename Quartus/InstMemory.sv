@@ -1,7 +1,7 @@
 module InstMemory
     import Types::*;
 (
-    InstMemoryBus.slave bus);
+    InstBus.slave bus);
 
 
     localparam SIZE = 40;
