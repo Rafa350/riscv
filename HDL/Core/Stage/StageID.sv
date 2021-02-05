@@ -65,19 +65,21 @@ module StageID
     // IMM de la instruccio en funcio del seu tipus.
     // ------------------------------------------------------------------------
 
-    GPRAddr dec_instRS1;   // Registre RS1
-    GPRAddr dec_instRS2;   // Registre RS2
-    Data    dec_instIMM;   // Valor inmediat
+    OpCode  dec_instOP;  // Codi d'operacio
+    GPRAddr dec_instRS1; // Registre RS1
+    GPRAddr dec_instRS2; // Registre RS2
+    Data    dec_instIMM; // Valor inmediat
 
     // verilator lint_off PINMISSING
     InstDecoder
     dec (
-        .i_inst      (i_inst),       // La instruccio a decodificar
-        .o_instRS1   (dec_instRS1),  // El parametre RS1
-        .o_instRS2   (dec_instRS2),  // El parametre RS2
-        .o_instRD    (o_regWrAddr),  // El parametre RD
-        .o_instIMM   (dec_instIMM),  // El parametre IMM
-        .o_instCSR   (o_instCSR));   // El parametre CSR
+        .i_inst    (i_inst),      // La instruccio a decodificar
+        .o_instOP  (dec_instOP),  // El codi d'operacio
+        .o_instRS1 (dec_instRS1), // El parametre RS1
+        .o_instRS2 (dec_instRS2), // El parametre RS2
+        .o_instRD  (o_regWrAddr), // El parametre RD
+        .o_instIMM (dec_instIMM), // El parametre IMM
+        .o_instCSR (o_instCSR));  // El parametre CSR
     // verilator lint_on PINMISSING
 
 
@@ -86,8 +88,8 @@ module StageID
     // Genera les senyals de control de les rutes de dades.
     // ------------------------------------------------------------------------
 
-    logic       dpCtrl_cmpUnsigned;  // Comparacio sense signe
-    logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
+    logic       dpCtrl_cmpUnsigned; // Comparacio sense signe
+    logic [1:0] dpCtrl_pcNextSel;   // Selector del seguent valor del PC
 
     DatapathController
     dpCtrl (

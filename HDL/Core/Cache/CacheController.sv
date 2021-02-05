@@ -111,7 +111,7 @@ module CacheController
                 begin
                     o_index = index;
                     o_cl = 1'b1;
-                    nextIndex = index + 1;
+                    nextIndex = index + Index'(1);
                     if (Index'(index) == Index'(ELEMENTS-1))
                         nextState = State_IDLE;
                 end
@@ -136,7 +136,7 @@ module CacheController
                     o_wr      = 1'b1;
                     nextTag   = tag;
                     nextIndex = index;
-                    nextBlock = block + 1;
+                    nextBlock = block + Block'(1);
                     if (Block'(block) == Block'(BLOCKS-1))
                         nextState = State_IDLE;
                 end

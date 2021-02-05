@@ -28,7 +28,8 @@ module StageIF
 
     // ------------------------------------------------------------------------
     // Detecta els hazards deguts a accessos a memoria simultanis amb
-    // la lectura e la instruccio
+    // la lectura de la instruccio. Si s'implementa un cache d'instruccions,
+    // els hazards es resolen a nivell del cache amb la senyal 'busy'
     // ------------------------------------------------------------------------
 
     generate

@@ -1,10 +1,8 @@
-
 module CoreSC
     import Types::*;
 (
     input  logic       i_clock,  // Clock
     input  logic       i_reset,  // Reset
-
     DataCoreBus.master dataBus,  // Bus de dades
     InstCoreBus.master instBus); // Bus d'instruccions
 
@@ -113,7 +111,6 @@ module CoreSC
     logic brComp_isLessSigned;   // Indica A < B amb signe
     logic brComp_isLessUnsigned; // Indica A < B sense signe
 
-    // verilator lint_off PINMISSING
     BranchComparer
     brComp (
         .i_dataRS1        (gpr_rdDataA),
@@ -121,7 +118,6 @@ module CoreSC
         .o_isEqual        (brComp_isEqual),
         .o_isLessSigned   (brComp_isLessSigned),
         .o_isLessUnsigned (brComp_isLessUnsigned));
-    // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
@@ -148,7 +144,7 @@ module CoreSC
     // Selecciona les dades d'entrada A de la alu
     // ------------------------------------------------------------------------
 
-    logic [$size(Data)-1:0] operandASelector_output;
+    Data operandASelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
@@ -157,7 +153,7 @@ module CoreSC
         .i_select (dpCtrl_operandASel),
         .i_input0 (gpr_rdDataA),
         .i_input1 (Data'(pc)),
-        .i_input2 ('d0),
+        .i_input2 (Data'(0)),
         .o_output (operandASelector_output));
     // verilator lint_on PINMISSING
 
@@ -166,7 +162,7 @@ module CoreSC
     // Selecciona les dades d'entrada B de la ALU
     // ------------------------------------------------------------------------
 
-    logic [$size(Data)-1:0] operandBSelector_output;
+    Data operandBSelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
@@ -184,7 +180,7 @@ module CoreSC
     // Selecciona les dades per escriure en el registre
     // ------------------------------------------------------------------------
 
-    logic [$size(Data)-1:0] sel3_output;
+    Data sel3_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
@@ -202,7 +198,7 @@ module CoreSC
     // ALU
     // ------------------------------------------------------------------------
 
-    logic [$size(Data)-1:0] alu_result;
+    Data alu_result;
 
     ALU
     alu (
@@ -218,7 +214,7 @@ module CoreSC
         .WIDTH ($size(InstAddr)))
     adder1 (
         .i_inputA (pc),
-        .i_inputB (4),
+        .i_inputB (InstAddr'(4)),
         .o_output (pcPlus4));
 
 
@@ -236,7 +232,7 @@ module CoreSC
 
     // Evalua PC = [rs1] + offset
     //
-    logic [$size(InstAddr)-1:0] pcPlusOffsetAndRS1;
+    InstAddr pcPlusOffsetAndRS1;
 
     HalfAdder #(
         .WIDTH ($size(InstAddr)))

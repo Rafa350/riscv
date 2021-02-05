@@ -9,6 +9,7 @@ module DataMemory1024x32
     
     always_comb begin
 
+        bus.busy = 1'b0;
         data = bus.wdata;
         we = 4'b0;
 

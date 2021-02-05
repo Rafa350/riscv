@@ -16,9 +16,9 @@ module PipelineEXMEM
     input  logic      i_memRdEnable,  // Habilita la lectura de la memoria
     input  DataAccess i_memAccess,    // Tamany del access a la memoria
     input  logic      i_memUnsigned,  // Lectura de memoria sense signe
-    input  GPRAddr    i_regWrAddr,
-    input  logic      i_regWrEnable,  // Autoritza l'escriptura en els registres
-    input  WrDataSel  i_regWrDataSel,
+    input  GPRAddr    i_regWrAddr,    // Registre per escriure
+    input  logic      i_regWrEnable,  // Autoritza l'escriptura en el registre
+    input  WrDataSel  i_regWrDataSel, // Seleccio de les dades per escriure en el registre
 
     // Senyals de sortida del pipeline
     output logic      o_isValid,      // Indica operacio valida

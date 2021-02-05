@@ -3,8 +3,8 @@ module CorePP
 (
     input      logic   i_clock,  // Clock
     input      logic   i_reset,  // Reset
-    DataCoreBus.master dataBus,  // Bus de la memoria de dades
-    InstCoreBus.master instBus); // Bus de la memoria d'instruccions
+    DataCoreBus.master dataBus,  // Bus de dades
+    InstCoreBus.master instBus); // Bus d'instruccions
 
 
     GPRegistersBus regBus();
@@ -276,17 +276,17 @@ module CorePP
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
 
-    logic       EXMEM_isValid;
-    InstAddr    EXMEM_pc;
-    Data        EXMEM_dataR;
-    Data        EXMEM_dataB;
-    GPRAddr     EXMEM_regWrAddr;
-    logic       EXMEM_regWrEnable;
-    WrDataSel   EXMEM_regWrDataSel;
-    logic       EXMEM_memWrEnable;
-    logic       EXMEM_memRdEnable;
-    DataAccess  EXMEM_memAccess;
-    logic       EXMEM_memUnsigned;
+    logic      EXMEM_isValid;
+    InstAddr   EXMEM_pc;
+    Data       EXMEM_dataR;
+    Data       EXMEM_dataB;
+    GPRAddr    EXMEM_regWrAddr;
+    logic      EXMEM_regWrEnable;
+    WrDataSel  EXMEM_regWrDataSel;
+    logic      EXMEM_memWrEnable;
+    logic      EXMEM_memRdEnable;
+    DataAccess EXMEM_memAccess;
+    logic      EXMEM_memUnsigned;
 
     PipelineEXMEM
     pipelineEXMEM (

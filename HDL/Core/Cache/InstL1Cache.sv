@@ -10,11 +10,10 @@ module InstL1Cache
     logic cache_busy;
     logic cache_hit;
 
-
     ICache #(
-        .SETS        (1),                  // Nombre de vias
-        .BLOCKS      (RV_ICACHE_BLOCKS),   // Nombre de blocs per linia
-        .ELEMENTS    (RV_ICACHE_ELEMENTS)) // Nombre de linies
+        .SETS     (1),                  // Nombre de vias
+        .BLOCKS   (RV_ICACHE_BLOCKS),   // Nombre de blocs per linia
+        .ELEMENTS (RV_ICACHE_ELEMENTS)) // Nombre de linies
     cache (
         .i_clock    (i_clock),
         .i_reset    (i_reset),

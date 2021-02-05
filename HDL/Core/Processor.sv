@@ -45,12 +45,12 @@ module Processor
 
     generate
         if (RV_DCACHE_ON == 1) begin
-            DataL1Cache
+            /*DataL1Cache
             dataL1Cache (
                 .i_clock (i_clock),      // Clock
                 .i_reset (i_reset),      // Reset
                 .bus     (dataBus),      // Bus de dades global
-                .coreBus (coreDataBus)); // Bus de dades local
+                .coreBus (coreDataBus)); // Bus de dades local*/
         end
         else begin
             assign dataBus.addr      = coreDataBus.addr;

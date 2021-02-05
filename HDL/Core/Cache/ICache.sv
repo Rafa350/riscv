@@ -38,15 +38,19 @@ module ICache
     Tag   tag;   // Tag del cache
 
 
-    // Separa els components de l'adressa.
+    // Separa els components de l'adressa. La converteix a direccionament en words
     //
     assign tag   = i_addr[2+BLOCK_WIDTH+INDEX_WIDTH+:TAG_WIDTH];
     assign index = i_addr[2+BLOCK_WIDTH+:INDEX_WIDTH];
     assign block = i_addr[2+:BLOCK_WIDTH];
 
-    // Asignacio de les sortides
+    // Asignacio de l'adressa. La converteix de nou a direccionament en bytes
     //
     assign o_mem_addr = {cacheCtrl_tag, cacheCtrl_index, cacheCtrl_block, 2'b00};
+    assign o_mem_re   = cacheCtrl_wr; // Quant s'escriu en el cache, la memoria esta en lectura
+
+    // Senyals de control
+    //
     assign o_busy     = cacheCtrl_busy;
     assign o_hit      = cacheCtrl_hit & i_rd;
 

@@ -13,8 +13,8 @@ module StageID_ForwardController
     input  logic       i_WB_isValid,
     input  GPRAddr     i_WB_regWrAddr,
     input  logic       i_WB_regWrEnable,
-    output logic [1:0] o_dataRS1Sel,          // Seleccio del valor de RS1
-    output logic [1:0] o_dataRS2Sel);         // Seleccio del valor de RS2
+    output logic [1:0] o_dataRS1Sel,      // Seleccio del valor de RS1
+    output logic [1:0] o_dataRS2Sel);     // Seleccio del valor de RS2
 
 
     always_comb begin

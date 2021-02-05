@@ -364,6 +364,7 @@ set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
 set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Config.sv
@@ -373,9 +374,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CoreSC.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CorePP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstBus.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstCacheBus.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstCoreBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataBus.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataCacheBus.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataCoreBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/GPRegistersBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/GPRegisters.sv
@@ -403,19 +404,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIFID
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineIDEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineEXMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Pipeline/PipelineMEMWB.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/L2Cache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/ICache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/DCache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/DataL1Cache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheSet.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheMem.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheController.sv
 set_global_assignment -name SDC_FILE CPU01.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux4To1.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
 set_global_assignment -name QIP_FILE ram1024x8.qip
 set_global_assignment -name QIP_FILE less32S.qip
