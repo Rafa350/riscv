@@ -1,10 +1,3 @@
-// -----------------------------------------------------------------------
-// Implementa un bloc de registres tipus MIPS
-// -Un port d'entrada per escriptura del registre 1..N
-// -Dos ports independents de lectura dels registres 0 a N
-// -El registre 0 sempre val zero
-// -Durant el reset, tots els registres s'asignen al valor zero.
-//
 module GPRegisters
     import Types::*;
 (
@@ -12,8 +5,13 @@ module GPRegisters
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset
 
-    // Interficie
-    GPRegistersBus bus);     // Interficie
+    input  GPRAddr i_raddrA, // Adressa de lectura del port A
+    input  GPRAddr i_raddrB, // Adressa de lectura del port B
+    input  GPRAddr i_waddr,  // Adressa d'escriptura
+    output Data    o_rdataA, // Dades lleigides del port A
+    output Data    o_rdataB, // Dades lleigides del port B
+    input  logic   i_we,     // Habilita escriptura
+    input  Data    i_wdata); // Dades per escriure
 
 
     localparam SIZE = 2**$size(GPRAddr);
@@ -29,14 +27,14 @@ module GPRegisters
             for (int i = $left(data); i <= $right(data); i++)
                 data[i] <= Data'(0);
         end
-        else if (bus.slaveWriter.wr & (bus.slaveWriter.wrAddr != GPRAddr'(0)))
-            data[bus.slaveWriter.wrAddr] <= bus.slaveWriter.wrData;
+        else if (i_we & (i_waddr != GPRAddr'(0)))
+            data[i_waddr] <= i_wdata;
 
     // Proces de lectura asincrona
     //
     always_comb begin
-        bus.slaveReader.rdDataA = (i_reset | (bus.slaveReader.rdAddrA == GPRAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrA];
-        bus.slaveReader.rdDataB = (i_reset | (bus.slaveReader.rdAddrB == GPRAddr'(0))) ? Data'(0) : data[bus.slaveReader.rdAddrB];
+        o_rdataA = (i_reset | (i_raddrA == GPRAddr'(0))) ? Data'(0) : data[i_raddrA];
+        o_rdataB = (i_reset | (i_raddrB == GPRAddr'(0))) ? Data'(0) : data[i_raddrB];
     end
 
 

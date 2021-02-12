@@ -281,11 +281,6 @@ void Memory::load(
                         }
                         else {
                             data_t d1 = data_t(strtoul(buffer, nullptr, 16));
-                            /*data_t d2 =
-                                ((d1 & 0xFF000000) >> 24) |
-                                ((d1 & 0x00FF0000) >> 8) |
-                                ((d1 & 0x0000FF00) << 8) |
-                                ((d1 & 0x000000FF) << 24);*/
                             write32(addr, d1);
                             addr += 4;
                         }

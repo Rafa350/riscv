@@ -71,31 +71,34 @@ extern "C" int dpiMemLoad(
 /// ----------------------------------------------------------------------
 /// \brief    Escriu en la memoria
 /// \param    memObj: L'objecte Memory
-/// \param    addr: Adressa de memoria
-/// \param    access: Modus d'acces (Byte, Half o Word)
+/// \param    addr: Adressa de memoria en bytes
 /// \param    data: Les dades a escriure
 ///
-extern "C" void dpiMemWrite(
+extern "C" void dpiMemWrite8(
     const long long memObj,
     int addr,
-    int access,
     int data) {
 
     Memory *mem = (Memory*) memObj;
     if (mem != nullptr)
-        switch (access) {
-            case 0: // Byte
-                mem->write8(addr_t(addr), data_t(data));
-                break;
+        mem->write8(addr + 0, data);
+}
 
-            case 1: // Half
-                mem->write16(addr_t(addr), data_t(data));
-                break;
 
-            default: // Word
-                mem->write32(addr_t(addr), data_t(data));
-                break;
-        }
+/// ----------------------------------------------------------------------
+/// \brief    Escriu en la memoria
+/// \param    memObj: L'objecte Memory
+/// \param    addr: Adressa de memoria en bytes
+/// \param    data: Les dades a escriure
+///
+extern "C" void dpiMemWrite32(
+    const long long memObj,
+    int addr,
+    int data) {
+
+    Memory *mem = (Memory*) memObj;
+    if (mem != nullptr)
+        mem->write32(addr_t(addr), data_t(data));
 }
 
 
@@ -103,26 +106,15 @@ extern "C" void dpiMemWrite(
 /// \brief    Llegeix del contingut de la memoria.
 /// \param    memObj: L'object Memory
 /// \param    addr: L'adressa.
-/// \param    access: Modus d'acces
 /// \return   El valor lleigit
 ///
-extern "C" int dpiMemRead(
+extern "C" int dpiMemRead32(
     const long long memObj,
-    int addr,
-    int access) {
+    int addr) {
 
     Memory *mem = (Memory*) memObj;
     if (mem != nullptr)
-        switch (access) {
-            case 0: // Byte
-                return int(mem->read8(addr_t(addr)));
-
-            case 1: // Half
-                return int(mem->read16(addr_t(addr)));
-
-            default: // Word
-                return int(mem->read32(addr_t(addr)));
-        }
+        return int(mem->read32(addr_t(addr)));
     else
         return 0;
 }

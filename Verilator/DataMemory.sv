@@ -29,19 +29,29 @@ module DataMemory
 
     longint memObj;
 
-    // Emula per DPI una memoria de 32 bits, direccionable en bytes
+    // Emula per DPI una memoria de 32 bits, direccionable en words. L'escriptura dels
+    // bytes individuals es realitza per mascara (be)
     //
     import "DPI-C" function int dpiMemCreate(input int base, input int size, output longint memObj);
     import "DPI-C" function int dpiMemDestroy(input longint memObj);
-    import "DPI-C" function void dpiMemWrite(input longint memObj, input int addr, input int access, input int data);
-    import "DPI-C" function int dpiMemRead(input longint memObj, input int addr, input int access);
+    import "DPI-C" function void dpiMemWrite8(input longint memObj, input int addr, input int data);
+    import "DPI-C" function int dpiMemRead32(input longint memObj, input int addr);
 
 
     always_ff @(posedge i_clock)
-        if (bus.we)
-            dpiMemWrite(memObj, bus.addr, int'(bus.access), bus.wdata);
+        if (bus.we) begin
+            if (bus.be[0])
+                dpiMemWrite8(memObj, int'(bus.addr), int'(bus.wdata[7:0]));
+            if (bus.be[1])
+                dpiMemWrite8(memObj, int'(bus.addr + 1), int'(bus.wdata[15:8]));
+            if (bus.be[2])
+                dpiMemWrite8(memObj, int'(bus.addr + 2), int'(bus.wdata[23:16]));
+            if (bus.be[3])
+                dpiMemWrite8(memObj, int'(bus.addr + 3), int'(bus.wdata[31:24]));
+        end
 
-    assign bus.rdata = dpiMemRead(memObj, bus.addr, int'(bus.access));
+    assign bus.rdata = dpiMemRead32(memObj, int'(bus.addr));
+    assign bus.busy = 1'b1;
 
 
     initial begin

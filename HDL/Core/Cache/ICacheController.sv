@@ -20,31 +20,31 @@
 //            o_tag          : El tag
 //            o_index        : El index
 //            o_block        : El bloc
-//            o_wr           : Habilita escriptura en el cache
-//            o_cl           : Habilita inicialitzacio del cache
+//            o_write        : Habilita escriptura en el cache
+//            o_clear        : Habilita inicialitzacio del cache
 //            o_hit          : Indica coincidencia
 //            o_busy         : Indica ocupat. O be per inicialitzacio
 //                             o per escriptura en cache
 //
 //       Notes:
 //            En cas d'activacio de 'i_reset', s'inicia el proces
-//            d'inicialitzacio de la cache, es posa 'o_cl' en 1,
+//            d'inicialitzacio de la cache, es posa 'o_clear' en 1,
 //            i 'o_busy' en 1, durant els cicles necesaris per la
 //            inicialitzacio del cache. En cada cicle 'o_index' indica
 //            la linia de cache que cal inicialitzar. Un cop finalitzat
-//            el process, 'o_cl' passa a 0, 'o_busy' passa a 0,
+//            el process, 'o_clear' passa a 0, 'o_busy' passa a 0,
 //            i 'o_index' s'assigna al valor de 'i_index'.
 //            En cas d'activar 'i_rd', si hi ha coincidentia, perque aixi
 //            ho indica la entrada 'i_hit', el senyal 'o_hit' passa a 1.
 //            Si 'i_hit' es 0, es a dir, no hi ha coincidencia, s'inicia
 //            el proces de lectura de la memoria, aleshores 'o_tag',
 //            'o_index' i 'o_block', indican l'adressa de memoria a
-//            lleigit, i 'o_wr' indica que cal escriure el bloc en el
+//            lleigit, i 'o_write' indica que cal escriure el bloc en el
 //            cache en l'ultim cicle de lectura del bloc.
 //
 // -----------------------------------------------------------------------
 
-module CacheController
+module ICacheController
 #(
     parameter TAG_WIDTH   = 3, // Amplada del tag en bits
     parameter INDEX_WIDTH = 5, // Amplada del index en bits
@@ -60,8 +60,8 @@ module CacheController
     output logic [TAG_WIDTH-1:0]   o_tag,   // Tag
     output logic [INDEX_WIDTH-1:0] o_index, // Index
     output logic [BLOCK_WIDTH-1:0] o_block, // Bloc
-    output logic                   o_wr,    // Habilita escriptura en el cache
-    output logic                   o_cl,    // Habilita neteja en el cache
+    output logic                   o_write, // Habilita escriptura en el cache
+    output logic                   o_clear, // Habilita neteja en el cache
     output logic                   o_hit,   // Indica coincidencia
     output logic                   o_busy); // Indica ocupat
 
@@ -71,8 +71,9 @@ module CacheController
 
 
     typedef enum logic [1:0] { // Estats de la maquina
-        State_INIT,            // -Inicialitzacio
-        State_IDLE,            // -Obte dades de la cache
+        State_RESET,           // -Reset inicial
+        State_CLEAR,           // -Neteja del cache
+        State_LOOKUP,          // -Consulta dades en la cache
         State_READ             // -Actualitzacio del cache
     } State;
 
@@ -87,80 +88,86 @@ module CacheController
     Index nextIndex;  // Seguent valor de 'index'
     Block block;      // Block del cache
     Block nextBlock;  // Seguent valor de 'block'
+
     State state;      // Estat de la maquina
     State nextState;  // Seguent valor de 'state'
 
 
     always_comb begin
 
+        o_tag   = i_tag;
         o_index = i_index;
         o_block = i_block;
-        o_tag   = i_tag;
-        o_wr    = 1'b0;
-        o_cl    = 1'b0;
+        o_write = 1'b0;
+        o_clear = 1'b0;
         o_hit   = 1'b0;
         o_busy  = 1'b1;
 
         nextState = state;
-        nextTag   = Tag'(0);
-        nextIndex = Index'(0);
-        nextBlock = Block'(0);
+        nextTag   = tag;
+        nextIndex = index;
+        nextBlock = block;
 
+        // verilator lint_off CASEINCOMPLETE
         unique case (state)
-            State_INIT:
-                begin
-                    o_index = index;
-                    o_cl = 1'b1;
-                    nextIndex = index + Index'(1);
-                    if (Index'(index) == Index'(ELEMENTS-1))
-                        nextState = State_IDLE;
-                end
+            State_RESET: begin
+                nextIndex = Index'(0);
+                nextState = State_CLEAR;
+            end
 
-            State_IDLE:
-                begin
-                    o_hit  = i_hit;
-                    o_busy = 1'b0;
-                    if (~i_hit & i_rd) begin
-                        nextTag   = i_tag;
-                        nextIndex = i_index;
-                        nextBlock = Block'(0);
-                        nextState = State_READ;
-                    end
-                end
+            State_CLEAR: begin
+                o_index = index;
+                o_clear = 1'b1;
+                nextIndex = index + Index'(1);
+                if (Index'(index) == Index'(ELEMENTS-1))
+                    nextState = State_LOOKUP;
+            end
 
-            State_READ:
-                begin
-                    o_tag     = tag;
-                    o_index   = index;
-                    o_block   = block;
-                    o_wr      = 1'b1;
-                    nextTag   = tag;
-                    nextIndex = index;
-                    nextBlock = block + Block'(1);
-                    if (Block'(block) == Block'(BLOCKS-1))
-                        nextState = State_IDLE;
+            State_LOOKUP: begin
+                o_hit  = i_hit;
+                o_busy = 1'b0;
+                if (~i_hit & i_rd) begin
+                    nextTag   = i_tag;
+                    nextIndex = i_index;
+                    nextBlock = Block'(0);
+                    nextState = State_READ;
                 end
+            end
 
-            default:
-                begin
-                end
-
+            State_READ: begin
+                o_tag     = tag;
+                o_index   = index;
+                o_block   = block;
+                o_write   = 1'b1;
+                nextBlock = block + Block'(1);
+                if (Block'(block) == Block'(BLOCKS-1))
+                    nextState = State_LOOKUP;
+            end
         endcase
+        // verilator lint_on CASEINCOMPLETE
+
     end
 
+    // Actualitza els contadors
+    //
     always_ff @(posedge i_clock)
         if (i_reset) begin
             tag   <= Tag'(0);
             index <= Index'(0);
             block <= Block'(0);
-            state <= State_INIT;
         end
         else begin
             tag   <= nextTag;
             index <= nextIndex;
             block <= nextBlock;
-            state <= nextState;
         end
 
+    // Actualitza l'estat
+    //
+    always_ff @(posedge i_clock)
+        if (i_reset)
+            state <= State_RESET;
+        else
+            state <= nextState;
 
 endmodule

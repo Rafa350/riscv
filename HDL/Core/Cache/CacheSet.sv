@@ -11,8 +11,8 @@
 //       Entrada:
 //            i_clock   : Senyal de rellotge
 //            i_reset   : Senyal de reset
-//            i_we      : Habilita l'escriptura
-//            l_cl      : Habilita la neteja
+//            i_write   : Habilita l'escriptura
+//            l_clear   : Habilita la neteja
 //            i_tag     : Tag
 //            i_index   : Adressa
 //            i_wdata   : Dades per escriure
@@ -32,8 +32,8 @@ module CacheSet
 (
     input  logic                   i_clock, // Clock
     input  logic                   i_reset, // Reset
-    input  logic                   i_we,    // Habilita escriptura
-    input  logic                   i_cl,    // Habilita invalidacio
+    input  logic                   i_write, // Habilita escriptura
+    input  logic                   i_clear, // Habilita invalidacio
     input  logic [INDEX_WIDTH-1:0] i_index, // Index
     input  logic [TAG_WIDTH-1:0]   i_tag,   // Tag
     input  logic [DATA_WIDTH-1:0]  i_wdata, // Dades
@@ -60,16 +60,16 @@ module CacheSet
 
     // Control de la memoria de dades
     //
-    assign md_we    = i_we & ~i_cl;
+    assign md_we    = i_write & ~i_clear;
     assign md_wdata = i_wdata;
     assign o_rdata  = md_rdata;
 
     // Control de la memoria de metadades
     //
-    assign mm_we          = i_we | i_cl;
-    assign mm_wdata.valid = i_cl ? 1'b0 : 1'b1;
-    assign mm_wdata.tag   = i_cl ? Tag'(0) : i_tag;
-    assign o_hit          = (mm_rdata.tag == i_tag) & mm_rdata.valid & ~i_reset & ~i_cl & ~i_we;
+    assign mm_we          = i_write | i_clear;
+    assign mm_wdata.valid = i_clear ? 1'b0 : 1'b1;
+    assign mm_wdata.tag   = i_clear ? Tag'(0) : i_tag;
+    assign o_hit          = (mm_rdata.tag == i_tag) & mm_rdata.valid & ~i_reset & ~i_clear & ~i_write;
 
 
     // -------------------------------------------------------------------

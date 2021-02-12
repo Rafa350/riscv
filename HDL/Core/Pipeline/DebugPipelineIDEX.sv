@@ -21,8 +21,8 @@ module DebugPipelineIDEX
             3'b1??, // RESET
             3'b001: // FLUSH
                 begin
-                    o_dbgTick        <= i_flush ? i_dbgTick : 0;
-                    o_dbgInst        <= Inst'(0);
+                    o_dbgTick <= i_flush ? i_dbgTick : 0;
+                    o_dbgInst <= Inst'(0);
                 end
 
             3'b01?: // STALL
@@ -30,8 +30,8 @@ module DebugPipelineIDEX
 
             3'b000: // NORMAL
                 begin
-                    o_dbgTick        <= i_dbgTick;
-                    o_dbgInst        <= i_dbgInst;
+                    o_dbgTick <= i_dbgTick;
+                    o_dbgInst <= i_dbgInst;
                 end
         endcase
 

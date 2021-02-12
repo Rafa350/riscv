@@ -1,25 +1,26 @@
 module ICache
     import Config::*, Types::*;
 #(
-    parameter SETS     = 1,    // Nombre de vias
-    parameter BLOCKS   = 4,    // Nombre de blocs
-    parameter ELEMENTS = 128)  // Nombre de linies
+    parameter SETS     = 1,   // Nombre de vias
+    parameter BLOCKS   = 4,   // Nombre de blocs
+    parameter ELEMENTS = 128) // Nombre de linies
 (
     // Senyals de control
-    input  logic    i_clock,     // Senyal de rellotge
-    input  logic    i_reset,     // Senyal de reset
+    input  logic    i_clock,      // Senyal de rellotge
+    input  logic    i_reset,      // Senyal de reset
 
     // Interficie amb la cpu
-    input  InstAddr i_addr,      // Adressa en words de la instruccio
-    input  logic    i_rd,        // Autoritza lectura
-    output Inst     o_inst,      // Instruccio trobada
-    output logic    o_busy,      // Indica ocupat
-    output logic    o_hit,       // Indica instruccio disponible
+    input  InstAddr i_addr,       // Adressa en words de la instruccio
+    input  logic    i_rd,         // Autoritza lectura
+    output Inst     o_inst,       // Instruccio trobada
+    output logic    o_busy,       // Indica ocupat
+    output logic    o_hit,        // Indica instruccio disponible
 
     // Interficie amb la memoria
-    output InstAddr o_mem_addr,  // Adresa de la memoria principal en words
-    output logic    o_mem_re,    // Habilita la lectura
-    input  Inst     i_mem_data); // Dades recuperades de la memoria principal
+    output InstAddr o_mem_addr,   // Adressa de la memoria principal en words
+    output logic    o_mem_re,     // Habilita la lectura
+    input  logic    i_mem_busy,   // Indica memoria ocupada
+    input  Inst     i_mem_rdata); // Dades recuperades de la memoria principal
 
 
     localparam DATALINE_WIDTH = $size(Inst) * BLOCKS;
@@ -44,30 +45,30 @@ module ICache
     assign index = i_addr[2+BLOCK_WIDTH+:INDEX_WIDTH];
     assign block = i_addr[2+:BLOCK_WIDTH];
 
-    // Asignacio de l'adressa. La converteix de nou a direccionament en bytes
+    // Senyals de la memoria principal o L2
     //
     assign o_mem_addr = {cacheCtrl_tag, cacheCtrl_index, cacheCtrl_block, 2'b00};
-    assign o_mem_re   = cacheCtrl_wr; // Quant s'escriu en el cache, la memoria esta en lectura
+    assign o_mem_re   = cacheCtrl_write; // La memoria esta en lectura quant s'escriu en el cache
 
     // Senyals de control
     //
-    assign o_busy     = cacheCtrl_busy;
-    assign o_hit      = cacheCtrl_hit & i_rd;
+    assign o_busy = cacheCtrl_busy & i_rd;
+    assign o_hit  = cacheCtrl_hit & i_rd;
 
 
     // -------------------------------------------------------------------
     // Cache controller
     // -------------------------------------------------------------------
 
-    logic cacheCtrl_cl;
-    logic cacheCtrl_wr;
+    logic cacheCtrl_clear;
+    logic cacheCtrl_write;
     logic cacheCtrl_hit;
     logic cacheCtrl_busy;
     Tag   cacheCtrl_tag;
     Index cacheCtrl_index;
     Block cacheCtrl_block;
 
-    CacheController #(
+    ICacheController #(
         .TAG_WIDTH   (TAG_WIDTH),
         .INDEX_WIDTH (INDEX_WIDTH),
         .BLOCK_WIDTH (BLOCK_WIDTH))
@@ -82,8 +83,8 @@ module ICache
         .o_tag   (cacheCtrl_tag),
         .o_index (cacheCtrl_index),
         .o_block (cacheCtrl_block),
-        .o_cl    (cacheCtrl_cl),
-        .o_wr    (cacheCtrl_wr),
+        .o_clear (cacheCtrl_clear),
+        .o_write (cacheCtrl_write),
         .o_hit   (cacheCtrl_hit),
         .o_busy  (cacheCtrl_busy));
 
@@ -104,11 +105,11 @@ module ICache
     cacheSet (
         .i_clock (i_clock),
         .i_reset (i_reset),
-        .i_we    (cacheCtrl_wr & (cacheCtrl_block == 2'b11)),
-        .i_cl    (cacheCtrl_cl),
+        .i_write (cacheCtrl_write & (cacheCtrl_block == 2'b11)),
+        .i_clear (cacheCtrl_clear),
         .i_tag   (cacheCtrl_tag),
         .i_index (cacheCtrl_index),
-        .i_wdata ({i_mem_data, data2, data1, data0}),
+        .i_wdata ({i_mem_rdata, data2, data1, data0}),
         .o_rdata (cacheSet_data),
         .o_hit   (cacheSet_hit));
 
@@ -116,11 +117,11 @@ module ICache
     // una linia
     //
     always_ff @(posedge i_clock)
-        if (cacheCtrl_wr)
+        if (cacheCtrl_write)
             unique case (cacheCtrl_block)
-                2'b00: data0 <= i_mem_data;
-                2'b01: data1 <= i_mem_data;
-                2'b10: data2 <= i_mem_data;
+                2'b00: data0 <= i_mem_rdata;
+                2'b01: data1 <= i_mem_rdata;
+                2'b10: data2 <= i_mem_rdata;
                 2'b11: ;
             endcase
 

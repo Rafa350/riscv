@@ -1,11 +1,11 @@
-module L2Cache
+module MemoryArbiter
     import Types::*;
 (
-    input              logic  i_clock,
-    input              logic  i_reset,
+    input               logic  i_clock,
+    input               logic  i_reset,
 
-    InstCacheBus.slave instBus,
-    DataCacheBus.slave dataBus,
+    InstBus.slave       instBus,
+    DataBus.slave       dataBus,
 
     output logic [31:0] o_mem_addr,
     output logic        o_mem_we,
@@ -19,7 +19,7 @@ module L2Cache
             o_mem_addr   = instBus.addr;
             o_mem_re     = 1'b1;
             o_mem_we     = 1'b0;
-            instBus.inst = i_mem_wdata;
+            instBus.inst = i_mem_rdata;
             instBus.busy = 1'b0;
         end
         else if (dataBus.re) begin
@@ -40,7 +40,7 @@ module L2Cache
         end
         else begin
             instBus.busy  = 1'b0;
-            instBUs.inst  = Inst'(0);
+            instBus.inst  = Inst'(0);
             dataBus.busy  = 1'b0;
             dataBus.rdata = Data'(0);
         end

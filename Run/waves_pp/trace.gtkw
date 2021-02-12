@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Fri Feb 05 12:31:20 2021
+[*] Fri Feb 12 20:30:26 2021
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.fst"
-[dumpfile_mtime] "Fri Feb 05 12:30:50 2021"
-[dumpfile_size] 64596
+[dumpfile_mtime] "Fri Feb 12 20:27:59 2021"
+[dumpfile_size] 72193
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.gtkw"
-[timestart] 8922
+[timestart] 1276
 [size] 1920 1017
 [pos] -1 -1
-*-3.930773 2290 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-3.930773 1295 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
+[treeopen] TOP.top.dataMem.
 [treeopen] TOP.top.processor.
 [treeopen] TOP.top.processor.genblk1.
 [treeopen] TOP.top.processor.genblk1.instL1Cache.
@@ -32,8 +33,6 @@ TOP.top.i_clock
 @200
 -
 -Data Memory
-@22
-TOP.top.dataMem.bus.addr[31:0]
 @28
 TOP.top.dataMem.bus.we
 TOP.top.dataMem.bus.re
@@ -53,21 +52,22 @@ TOP.top.instMem.bus.busy
 TOP.top.instMem.bus.inst[31:0]
 @200
 -
+-Memory arbiter
+-
 -GP Registers
-@24
-TOP.top.processor.genblk4.core.gpr.bus.rdAddrA[4:0]
-@22
-TOP.top.processor.genblk4.core.gpr.bus.rdDataA[31:0]
-@24
-TOP.top.processor.genblk4.core.gpr.bus.rdAddrB[4:0]
-@22
-TOP.top.processor.genblk4.core.gpr.bus.rdDataB[31:0]
-@24
-TOP.top.processor.genblk4.core.gpr.bus.wrAddr[4:0]
+@2024
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
+TOP.top.processor.genblk4.core.gpr.i_raddrA[4:0]
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
+TOP.top.processor.genblk4.core.gpr.i_raddrB[4:0]
+^1 C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\reg_filter.txt
+TOP.top.processor.genblk4.core.gpr.i_waddr[4:0]
 @28
-TOP.top.processor.genblk4.core.gpr.bus.wr
+TOP.top.processor.genblk4.core.gpr.i_we
 @22
-TOP.top.processor.genblk4.core.gpr.bus.wrData[31:0]
+TOP.top.processor.genblk4.core.gpr.o_rdataA[31:0]
+TOP.top.processor.genblk4.core.gpr.o_rdataB[31:0]
+TOP.top.processor.genblk4.core.gpr.i_wdata[31:0]
 @200
 -
 -ICache
@@ -78,6 +78,10 @@ TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_tag[20:0]
 TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_index[6:0]
 @28
 TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_block[1:0]
+TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_write
+@29
+TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_clear
+@28
 TOP.top.processor.genblk1.instL1Cache.cache_busy
 TOP.top.processor.genblk1.instL1Cache.cache_hit
 @200
@@ -116,9 +120,7 @@ TOP.top.processor.genblk4.core.stageID.fwdCtrl_dataRS2Sel[1:0]
 TOP.top.processor.genblk4.core.stageID.dec_instOP[6:0]
 TOP.top.processor.genblk4.core.stageID.o_aluControl[3:0]
 TOP.top.processor.genblk4.core.stageID.o_operandASel[1:0]
-@100000029
 TOP.top.processor.genblk4.core.stageID.o_operandBSel[1:0]
-@100000028
 TOP.top.processor.genblk4.core.stageID.o_resultSel[1:0]
 @22
 TOP.top.processor.genblk4.core.stageID.o_pcNext[31:0]
@@ -142,9 +144,6 @@ TOP.top.processor.genblk4.core.pipelineIDEX.o_isValid
 @28
 [color] 1
 TOP.top.processor.genblk4.core.stageEX.o_hazard
-@22
-TOP.top.processor.genblk4.core.stageEX.o_dataB[31:0]
-TOP.top.processor.genblk4.core.stageEX.o_dataR[31:0]
 @200
 -
 -EXMEM pipeline
@@ -154,6 +153,9 @@ TOP.top.processor.genblk4.core.genblk1.dbgPipelineEXMEM.o_dbgTick[31:0]
 @28
 [color] 3
 TOP.top.processor.genblk4.core.pipelineEXMEM.o_isValid
+@22
+TOP.top.processor.genblk4.core.pipelineEXMEM.o_dataB[31:0]
+TOP.top.processor.genblk4.core.pipelineEXMEM.o_dataR[31:0]
 @200
 -
 -MEM stage
@@ -171,6 +173,11 @@ TOP.top.processor.genblk4.core.genblk1.dbgMPipelineMEMWB.o_dbgTick[31:0]
 @28
 [color] 3
 TOP.top.processor.genblk4.core.pipelineMEMWB.o_isValid
+@22
+TOP.top.processor.genblk4.core.pipelineMEMWB.o_regWrAddr[4:0]
+TOP.top.processor.genblk4.core.pipelineMEMWB.o_regWrData[31:0]
+@28
+TOP.top.processor.genblk4.core.pipelineMEMWB.o_regWrEnable
 @200
 -
 -WB Stage

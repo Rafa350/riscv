@@ -34,17 +34,16 @@ module InstDecoder
     assign shamtValue = {{27{1'b0}}, i_inst[24:20]};
     assign csrValue   = {{27{1'b0}}, i_inst[19:15]};
 
+    assign o_instOP   = OpCode'(i_inst[6:0]);
+    assign o_instRS1  = i_inst[REG_WIDTH+14:15];
+    assign o_instRS2  = i_inst[REG_WIDTH+19:20];
+    assign o_instRD   = i_inst[REG_WIDTH+6:7];
+    assign o_instCSR  = i_inst[31:20];
 
     always_comb begin
 
-        o_instOP    = OpCode'(i_inst[6:0]);
-        o_instRS1   = i_inst[REG_WIDTH+14:15];
-        o_instRS2   = i_inst[REG_WIDTH+19:20];
-        o_instRD    = i_inst[REG_WIDTH+6:7];
-        o_instCSR   = i_inst[31:20];
         o_instIMM   = 0;
-
-        o_isIllegal = 1'b0;
+        o_isIllegal = 1'b1;
         o_isALU     = 1'b0;
         o_isEBREAK  = 1'b0;
         o_isECALL   = 1'b0;
@@ -52,127 +51,185 @@ module InstDecoder
         o_isMRET    = 1'b0;
         o_isCSR     = 1'b0;
 
-        unique casez ({i_inst[31:25], i_inst[14:12], i_inst[6:0]})
-            {10'b???????_???, OpCode_LUI   }, // LUI
-            {10'b???????_???, OpCode_AUIPC }: // AUIPC
-                o_instIMM = immUValue;
+        // verilator lint_off CASEINCOMPLETE
+        unique case (i_inst[6:0])
 
-            {10'b???????_???, OpCode_JAL   }: // JAL
-                o_instIMM = immJValue;
-
-            {10'b???????_000, OpCode_JALR  }: // JALR
-                o_instIMM = immIValue;
-
-            {10'b???????_000, OpCode_Branch}, // BEQ
-            {10'b???????_001, OpCode_Branch}, // BNE
-            {10'b???????_100, OpCode_Branch}, // BLT
-            {10'b???????_101, OpCode_Branch}, // BGE
-            {10'b???????_110, OpCode_Branch}, // BLTU
-            {10'b???????_111, OpCode_Branch}: // BGEU
-                o_instIMM = immBValue;
-
-            {10'b0000000_001, OpCode_OpIMM }, // SLLI
-            {10'b0000000_101, OpCode_OpIMM }, // SRLI
-            {10'b0100000_101, OpCode_OpIMM }: // SRAI
+            OpCode_LUI,   // LUI
+            OpCode_AUIPC: // AUIPC
                 begin
-                    o_instIMM = shamtValue;
-                    o_isALU = 1'b1;
+                    o_instIMM = immUValue;
+                    o_isIllegal = 1'b0;
                 end
 
-            {10'b???????_000, OpCode_Load  }, // LB
-            {10'b???????_001, OpCode_Load  }, // LH
-            {10'b???????_010, OpCode_Load  }, // LW
-            {10'b???????_100, OpCode_Load  }, // LBU
-            {10'b???????_101, OpCode_Load  }: // LHU
-                o_instIMM = immIValue;
+            OpCode_JAL: // JAL
+                begin
+                    o_instIMM = immJValue;
+                    o_isIllegal = 1'b0;
+                end
 
-            {10'b0000000_000, OpCode_Op    }, // ADD
-            {10'b0100000_000, OpCode_Op    }, // SUB
-            {10'b0000000_001, OpCode_Op    }, // SLL
-            {10'b0000000_010, OpCode_Op    }, // SLT
-            {10'b0000000_011, OpCode_Op    }, // SLTU
-            {10'b0000000_100, OpCode_Op    }, // XOR
-            {10'b0000000_101, OpCode_Op    }, // SRL
-            {10'b0100000_101, OpCode_Op    }, // SRA
-            {10'b0000000_110, OpCode_Op    }, // OR
-            {10'b0000000_111, OpCode_Op    }: // AND
-                o_isALU = 1'b1;
-
-            {10'b0000001_???, OpCode_Op    }: // MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU
-                if (RV_EXT_M == 1)
-                    o_isALU = 1'b1;
-                else
-                    o_isIllegal = 1'b1;
-
-            {10'b???????_000, OpCode_OpIMM }, // ADDI
-            {10'b???????_010, OpCode_OpIMM }, // SLTI
-            {10'b???????_011, OpCode_OpIMM }, // SLTIU
-            {10'b???????_100, OpCode_OpIMM }, // XORI
-            {10'b???????_110, OpCode_OpIMM }, // ORI
-            {10'b???????_111, OpCode_OpIMM }: // ANDI
+            OpCode_JALR: //JALR
                 begin
                     o_instIMM = immIValue;
-                    o_isALU = 1'b1;
+                    o_isIllegal = 1'b0;
                 end
 
-            {10'b???????_000, OpCode_Store }, // SB
-            {10'b???????_001, OpCode_Store }, // SH
-            {10'b???????_010, OpCode_Store }: // SW
-                o_instIMM = immSValue;
-
-            {10'b0000???_000, OpCode_Fence }: // FENCE
-                o_isIllegal = 1'b1;
-
-            {10'b0000000_001, OpCode_Fence }: // FENCE.I
-                o_isIllegal = 1'b1;
-
-            {10'b0000000_000, OpCode_System}:
-                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
-                    15'b00000_00000_00000:    // EBREAK
-                        o_isEBREAK = 1'b1;
-
-                    15'b00001_00000_00000:    // ECALL
-                        o_isECALL = 1'b1;
-
-                    default:
-                        o_isIllegal = 1'b1;
+            OpCode_Branch:
+                unique case (i_inst[14:12])
+                    3'b000, // BEQ
+                    3'b001, // BNE
+                    3'b100, // BLT
+                    3'b101, // BGE
+                    3'b110, // BLTU
+                    3'b111: // BGEU
+                        begin
+                            o_instIMM = immBValue;
+                            o_isIllegal = 1'b0;
+                        end
                 endcase
 
-            {10'b0001000_000, OpCode_System}:
-                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
-                    15'b00101_00000_00000:    // WFI
-                        o_isWFI = 1'b1;
+            OpCode_Op:
+                unique casez ({i_inst[31:25], i_inst[14:12]})
+                    10'b0000000_000, // ADD
+                    10'b0100000_000, // SUB
+                    10'b0000000_001, // SLL
+                    10'b0000000_010, // SLT
+                    10'b0000000_011, // SLTU
+                    10'b0000000_100, // XOR
+                    10'b0000000_101, // SRL
+                    10'b0100000_101, // SRA
+                    10'b0000000_110, // OR
+                    10'b0000000_111: // AND
+                        begin
+                            o_isALU = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
 
-                    default:
-                        o_isIllegal = 1'b1;
+                    10'b0000001_???: // MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU
+                        if (RV_EXT_M == 1)
+                            o_isALU = 1'b1;
                 endcase
 
-            {10'b0011000_000, OpCode_System}:
-                case (i_inst[24:20])
-                    5'b0010:                  // MRET
-                        o_isMRET = 1'b1;
+            OpCode_OpIMM:
+                unique case (i_inst[14:12])
+                    3'b000, // ADDI
+                    3'b010, // SLTI
+                    3'b011, // SLTIU
+                    3'b100, // XORI
+                    3'b110, // ORI
+                    3'b111: // ANDI
+                        begin
+                            o_instIMM = immIValue;
+                            o_isALU = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
 
-                    default:
-                        o_isIllegal = 1'b1;
+                    3'b001: // SLLI
+                        if (i_inst[31:25] == 7'b0000000) begin
+                            o_instIMM = shamtValue;
+                            o_isALU = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
+
+                    3'b101: // SRLI, SRAI
+                        if ((i_inst[31:25] == 7'b0000000) |
+                            (i_inst[31:25] == 7'b0100000)) begin
+                            o_instIMM = shamtValue;
+                            o_isALU = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
                 endcase
 
-            {10'b???????_001, OpCode_System}, // CSRRW
-            {10'b???????_010, OpCode_System}, // CRRRS
-            {10'b???????_011, OpCode_System}: // CSRRC
-                o_isCSR = 1'b1;
+            OpCode_Load:
+                unique case (i_inst[14:12])
+                    3'b000, // LB
+                    3'b001, // LH
+                    3'b010, // LW
+                    3'b100, // LBU
+                    3'b101: // LHU
+                        begin
+                            o_instIMM = immIValue;
+                            o_isIllegal = 1'b0;
+                        end
+                endcase
 
-            {10'b???????_101, OpCode_System}, // CSRRWI
-            {10'b???????_110, OpCode_System}, // CSRRSI
-            {10'b???????_111, OpCode_System}: // CSRRCI
-                begin
-                    o_instIMM = csrValue;
-                    o_isCSR = 1'b1;
-                end
+            OpCode_Store:
+                unique case (i_inst[14:12])
+                    3'b000, // SB
+                    3'b001, // SH
+                    3'b010: // SW
+                        begin
+                            o_instIMM = immSValue;
+                            o_isIllegal = 1'b0;
+                        end
+                endcase
 
-            default:
-                o_isIllegal = 1'b1;
-                
+            OpCode_Fence:
+                unique casez ({i_inst[31:25], i_inst[14:12]})
+                    10'b0000???_000: // FENCE
+                        ;
+
+                    10'b0000000_001: // FENCE.I
+                        ;
+                endcase
+
+            OpCode_System:
+                unique case (i_inst[14:12])
+                    3'b000:
+                        unique casez (i_inst[31:25])
+                            7'b0000000:
+                                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                                    15'b00000_00000_00000: // EBREAK
+                                        begin
+                                            o_isEBREAK = 1'b1;
+                                            o_isIllegal = 1'b0;
+                                        end
+
+                                    15'b00001_00000_00000: // ECALL
+                                        begin
+                                            o_isECALL = 1'b1;
+                                            o_isIllegal = 1'b0;
+                                        end
+                                endcase
+
+                            7'b0001000:
+                                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                                    15'b00101_00000_00000: // WFI
+                                        begin
+                                            o_isWFI = 1'b1;
+                                            o_isIllegal = 1'b0;
+                                        end
+                                endcase
+
+                            7'b0011000:
+                                case (i_inst[24:20])
+                                    5'b00010: // MRET
+                                        begin
+                                            o_isMRET = 1'b1;
+                                            o_isIllegal = 1'b0;
+                                        end
+                                endcase
+                        endcase
+
+
+                    3'b001, // CSRRW
+                    3'b010, // CRRRS
+                    3'b011: // CSRRC
+                        begin
+                            o_isCSR = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
+
+                    3'b101, // CSRRWI
+                    3'b110, // CSRRSI
+                    3'b111: // CSRRCI
+                        begin
+                            o_instIMM = csrValue;
+                            o_isCSR = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
+                endcase
         endcase
+        // verilator lint_on CASEINCOMPLETE
 
     end
 

@@ -1,10 +1,30 @@
+
+
+
+/*
+
+    REVISAR ACCESSOS A MEMORIA
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 module CoreSC
     import Types::*;
 (
-    input  logic       i_clock,  // Clock
-    input  logic       i_reset,  // Reset
-    DataCoreBus.master dataBus,  // Bus de dades
-    InstCoreBus.master instBus); // Bus d'instruccions
+    input  logic   i_clock,  // Clock
+    input  logic   i_reset,  // Reset
+    DataBus.master dataBus,  // Bus de dades
+    InstBus.master instBus); // Bus d'instruccions
 
 
     GPRegistersBus regBus();
@@ -38,7 +58,7 @@ module CoreSC
         .i_regWrData    (sel3_output),
         .i_regWrEnable  (dpCtrl_regWrEnable),
         .i_memWrAddr    (dataBus.addr),
-        .i_memAccess    (dataBus.access),
+        .i_memAccess    (dpCtrl_memAccess),
         .i_memWrData    (dataBus.wdata),
         .i_memWrEnable  (dpCtrl_memWrEnable),
         .o_tick         (dbgCtrl_tick));
@@ -113,8 +133,8 @@ module CoreSC
 
     BranchComparer
     brComp (
-        .i_dataRS1        (gpr_rdDataA),
-        .i_dataRS2        (gpr_rdDataB),
+        .i_dataRS1        (gpr_rdataA),
+        .i_dataRS2        (gpr_rdataB),
         .o_isEqual        (brComp_isEqual),
         .o_isLessSigned   (brComp_isLessSigned),
         .o_isLessUnsigned (brComp_isLessUnsigned));
@@ -124,20 +144,20 @@ module CoreSC
     // Bloc de registres
     // ------------------------------------------------------------------------
 
-    Data gpr_rdDataA, // Dades de lectura A
-         gpr_rdDataB; // Dades de lectura B
+    Data gpr_rdataA, // Dades de lectura A
+         gpr_rdataB; // Dades de lectura B
 
     GPRegisters
     gpr (
-        .i_clock (i_clock),
-        .i_reset (i_reset),
-        .bus     (regBus));
-
-    assign gpr_rdDataA                = regBus.masterReader.rdDataA;
-    assign gpr_rdDataB                = regBus.masterReader.rdDataB;
-    assign regBus.masterWriter.wrAddr = dec_instRD;
-    assign regBus.masterWriter.wrData = sel3_output;
-    assign regBus.masterWriter.wr     = dpCtrl_regWrEnable;
+        .i_clock  (i_clock),
+        .i_reset  (i_reset),
+        .i_raddrA (dec_instRS1),
+        .i_raddrB (dec_instRS2),
+        .i_waddr  (dec_instRD),
+        .i_we     (dpCtrl_regWrEnable),
+        .o_rdataA (gpr_rdataA),
+        .o_rdataB (gpr_rdataB),
+        .i_wdata  (sel3_output));
 
 
     // ------------------------------------------------------------------------
@@ -151,7 +171,7 @@ module CoreSC
         .WIDTH ($size(Data)))
     operandASelector (
         .i_select (dpCtrl_operandASel),
-        .i_input0 (gpr_rdDataA),
+        .i_input0 (gpr_rdataA),
         .i_input1 (Data'(pc)),
         .i_input2 (Data'(0)),
         .o_output (operandASelector_output));
@@ -169,7 +189,7 @@ module CoreSC
         .WIDTH ($size(Data)))
     operandBSelector (
         .i_select (dpCtrl_operandBSel),
-        .i_input0 (gpr_rdDataB),
+        .i_input0 (gpr_rdataB),
         .i_input1 (dec_instIMM),
         .i_input2 (Data'(4)),
         .o_output (operandBSelector_output));
@@ -238,7 +258,7 @@ module CoreSC
         .WIDTH ($size(InstAddr)))
     adder3 (
         .i_inputA (dec_instIMM[$size(InstAddr)-1:0]),
-        .i_inputB (gpr_rdDataA[$size(InstAddr)-1:0]),
+        .i_inputB (gpr_rdataA[$size(InstAddr)-1:0]),
         .o_output (pcPlusOffsetAndRS1));
 
 
@@ -272,7 +292,7 @@ module CoreSC
     always_comb begin
         dataBus.addr  = alu_result[$size(DataAddr)-1:0];
         dataBus.we    = dpCtrl_memWrEnable;
-        dataBus.wdata = gpr_rdDataB;
+        dataBus.wdata = gpr_rdataB;
     end
 
 

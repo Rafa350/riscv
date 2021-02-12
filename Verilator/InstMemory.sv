@@ -32,11 +32,11 @@ module InstMemory
     import "DPI-C" function int dpiMemCreate(input int base, input int size, output longint memObj);
     import "DPI-C" function int dpiMemDestroy(input longint memObj);
     import "DPI-C" function int dpiMemLoad(input longint memObj, input string fileName);
-    import "DPI-C" function int dpiMemRead(input longint memObj, input int addr, input int access);
+    import "DPI-C" function int dpiMemRead32(input longint memObj, input int addr);
 
 
-    assign bus.inst = dpiMemRead(memObj, int'(bus.addr), int'(2'b10));
-
+    assign bus.inst = dpiMemRead32(memObj, int'(bus.addr));
+    assign bus.busy = 1'b0;
 
     initial begin
         if (dpiMemCreate(BASE, SIZE, memObj) != 0) begin

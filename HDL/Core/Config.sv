@@ -27,7 +27,6 @@ package Config;
     localparam REG_WIDTH  = 5;
 `endif
 
-
     // Configuracio de les extensions de la cpu
     //
     localparam RV_EXT_A = 0;                      // Operacions atomiques

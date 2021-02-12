@@ -1,10 +1,10 @@
 module DataL1Cache
     import Types::*;
 (
-    input logic       i_clock,
-    input logic       i_reset,
-    DataBus.master    bus,      // Bus de dades cap a la cache L2 o a la memoria principal
-    DataCoreBus.slave coreBus); // Bus de dades de la CPU
+    input logic    i_clock,
+    input logic    i_reset,
+    DataBus.master bus,      // Bus de dades cap a la cache L2 o a la memoria principal
+    DataBus.slave  coreBus); // Bus de dades de la CPU
 
 
     logic cache_busy;
@@ -24,6 +24,7 @@ module DataL1Cache
         .i_addr      (coreBus.addr),
         .i_re        (coreBus.re),
         .i_we        (coreBus.we),
+        .i_be        (coreBus.be),
         .o_rdata     (coreBus.rdata),
         .i_wdata     (coreBus.wdata),
         .o_busy      (cache_busy),

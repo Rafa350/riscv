@@ -44,8 +44,10 @@ extern "C" {
     int dpiMemCreate(int base, int size, long long *memObj);
     int dpiMemDestroy(const long long memObj);
     int dpiMemLoad(const long long memObj, const char* fileName);
-    void dpiMemWrite(const long long memObj, int addr, int access, int data);
-    int dpiMemRead(const long long memObj, int addr, int access);
+
+    void dpiMemWrite8(const long long memObj, int addr, int data);
+    void dpiMemWrite32(const long long memObj, int addr, int data);
+    int dpiMemRead32(const long long memObj, int addr);
 }
 
 

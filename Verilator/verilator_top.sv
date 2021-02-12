@@ -41,6 +41,16 @@ module top
         .bus     (dataBus));
 
 
+    // verilator lint_off PINMISSING
+    /*MemoryArbiter
+    memoryArbiter (
+        .i_clock (i_clock),
+        .i_reset (i_reset),
+        .instBus (instBus),
+        .dataBus (dataBus));*/
+    // verilator lint_on PINMISSING
+
+
     // -------------------------------------------------------------------
     // Procesador
     // -------------------------------------------------------------------

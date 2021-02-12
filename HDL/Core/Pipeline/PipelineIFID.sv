@@ -23,8 +23,8 @@ module PipelineIFID
         casez ({i_reset, i_stall})
             2'b1?: // RESET
                 begin
-                    o_isValid        <= 1'b0;
-                    o_pc             <= InstAddr'(-4);
+                    o_isValid <= 1'b0;
+                    o_pc      <= InstAddr'(-4);
                 end
 
             2'b01: // STALL

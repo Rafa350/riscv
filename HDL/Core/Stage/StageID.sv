@@ -6,7 +6,10 @@ module StageID
     input  logic             i_reset,           // Reset
 
     // Interficie amb el bloc de registres
-    GPRegistersBus.masterReader regBus,            // Bus d'acces als registres per lectura
+    output GPRAddr           o_reg_raddrA,
+    output GPRAddr           o_reg_raddrB,
+    input  Data              i_reg_rdataA,
+    input  Data              i_reg_rdataB,
 
     // Senyals del stage EX per la gestio dels hazards
     input  logic             i_EX_isValid,      // Indica operacio valida en EX
@@ -57,6 +60,9 @@ module StageID
     assign o_instIMM = dec_instIMM;
     assign o_dataRS1 = fwdDataRS1Selector_output;
     assign o_dataRS2 = fwdDataRS2Selector_output;
+
+    assign o_reg_raddrA = dec_instRS1;
+    assign o_reg_raddrB = dec_instRS2;
 
 
     // ------------------------------------------------------------------------
@@ -161,7 +167,7 @@ module StageID
         .WIDTH ($size(Data)))
     fwdDataRS1Selector (
         .i_select (fwdCtrl_dataRS1Sel),
-        .i_input0 (regs_dataA),
+        .i_input0 (i_reg_rdataA),
         .i_input1 (i_EX_regWrData),
         .i_input2 (i_MEM_regWrData),
         .i_input3 (i_WB_regWrData),
@@ -171,7 +177,7 @@ module StageID
         .WIDTH ($size(Data)))
     fwdDataRS2Selector (
         .i_select (fwdCtrl_dataRS2Sel),
-        .i_input0 (regs_dataB),
+        .i_input0 (i_reg_rdataB),
         .i_input1 (i_EX_regWrData),
         .i_input2 (i_MEM_regWrData),
         .i_input3 (i_WB_regWrData),
@@ -207,21 +213,8 @@ module StageID
         .i_op      (dpCtrl_pcNextSel),
         .i_pc      (i_pc),
         .i_instIMM (dec_instIMM),
-        .i_regData (regs_dataA),
+        .i_regData (i_reg_rdataA),
         .o_pc      (o_pcNext));
-
-
-    // ------------------------------------------------------------------------
-    // Interficie amb el bloc de registres.
-    // ------------------------------------------------------------------------
-
-    Data regs_dataA;
-    Data regs_dataB;
-
-    assign regBus.rdAddrA = dec_instRS1;
-    assign regBus.rdAddrB = dec_instRS2;
-    assign regs_dataA     = regBus.rdDataA;
-    assign regs_dataB     = regBus.rdDataB;
 
 
 endmodule

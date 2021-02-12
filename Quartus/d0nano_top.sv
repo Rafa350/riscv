@@ -55,7 +55,7 @@ module top
     // ------------------------------------------------------------------------
 
     always_ff @(posedge clock)
-        if (dataBus.wdata & (dataBus.addr == 10'h0200))
+        if (dataBus.we & (dataBus.addr == DataAddr'('h0200)))
             LED <= dataBus.wdata[7:0];
 
 

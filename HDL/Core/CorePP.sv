@@ -1,24 +1,30 @@
 module CorePP
     import Config::*, Types::*;
 (
-    input      logic   i_clock,  // Clock
-    input      logic   i_reset,  // Reset
-    DataCoreBus.master dataBus,  // Bus de dades
-    InstCoreBus.master instBus); // Bus d'instruccions
-
-
-    GPRegistersBus regBus();
+    input logic    i_clock,  // Clock
+    input logic    i_reset,  // Reset
+    DataBus.master dataBus,  // Bus de dades
+    InstBus.master instBus); // Bus d'instruccions
 
 
     // -------------------------------------------------------------------
     // Bloc de registres GPR (General Purpouse Registers)
     // -------------------------------------------------------------------
 
+    Data gpr_rdataA;
+    Data gpr_rdataB;
+
     GPRegisters
     gpr (
-        .i_clock (i_clock),
-        .i_reset (i_reset),
-        .bus     (regBus));
+        .i_clock  (i_clock),
+        .i_reset  (i_reset),
+        .i_raddrA (ID_reg_raddrA),
+        .i_raddrB (ID_reg_raddrB),
+        .i_waddr  (WB_reg_waddr),
+        .i_we     (WB_reg_we),
+        .o_rdataA (gpr_rdataA),
+        .o_rdataB (gpr_rdataB),
+        .i_wdata  (WB_reg_wdata));
 
 
     // -------------------------------------------------------------------
@@ -109,6 +115,8 @@ module CorePP
     // Stage ID
     // ------------------------------------------------------------------------
 
+    GPRAddr    ID_reg_raddrA;
+    GPRAddr    ID_reg_raddrB;
     Data       ID_dataRS1;
     Data       ID_dataRS2;
     Data       ID_instIMM;
@@ -133,7 +141,10 @@ module CorePP
     stageID (
         .i_clock           (i_clock),
         .i_reset           (i_reset),
-        .regBus            (regBus),              // Interficie amb els registres
+        .o_reg_raddrA      (ID_reg_raddrA),
+        .o_reg_raddrB      (ID_reg_raddrB),
+        .i_reg_rdataA      (gpr_rdataA),
+        .i_reg_rdataB      (gpr_rdataB),
         .i_inst            (IFID_inst),           // Instruccio
         .i_instCompressed  (IFID_instCompressed), // La instruccio es comprimida
         .i_pc              (IFID_pc),             // Adressa de la instruccio
@@ -329,7 +340,7 @@ module CorePP
     stageMEM (
         .i_clock        (i_clock),            // Clock
         .i_reset        (i_reset),            // Reseset
-        .dataBus        (dataBus),            // Interficie amb la memoria de dades ******
+        .dataBus        (dataBus),            // Interficie amb la memoria de dades
         .i_isValid      (EXMEM_isValid),      // Indica operacio valida
         .i_dataR        (EXMEM_dataR),        // Adressa per escriure en memoria
         .i_dataB        (EXMEM_dataB),        // Dades per escriure
@@ -370,14 +381,19 @@ module CorePP
     // Stage WB
     // ------------------------------------------------------------------------
 
-    logic WB_hazard;
-    logic WB_instRet;
+    GPRAddr WB_reg_waddr;
+    Data    WB_reg_wdata;
+    logic   WB_reg_we;
+    logic   WB_hazard;
+    logic   WB_instRet;
 
     StageWB
     stageWB (
         .i_clock       (i_clock),
         .i_reset       (i_reset),
-        .regBus        (regBus),            // Interficie amb el bloc de registres
+        .o_reg_waddr   (WB_reg_waddr),
+        .o_reg_we      (WB_reg_we),
+        .o_reg_wdata   (WB_reg_wdata),
         .i_isValid     (MEMWB_isValid),     // Indica operacio valida
         .i_regWrAddr   (MEMWB_regWrAddr),   // Adressa del registre
         .i_regWrEnable (MEMWB_regWrEnable), // Habilila l'escriptura del registre
@@ -453,10 +469,10 @@ module CorePP
                 .i_dbgTick        (dbgEXMEM_dbgTick),
                 .i_dbgPc          (EXMEM_pc),
                 .i_dbgInst        (dbgEXMEM_dbgInst),
-                .i_dbgMemWrAddr   (dataBus.addr),
+                .i_dbgMemWrAddr   (EXMEM_dataR),
                 .i_dbgMemWrEnable (EXMEM_memWrEnable),
                 .i_dbgMemAccess   (EXMEM_memAccess),
-                .i_dbgMemWrData   (dataBus.wdata),
+                .i_dbgMemWrData   (EXMEM_dataB),
                 .o_dbgTick        (dbgMEMWB_dbgTick),
                 .o_dbgPc          (dbgMEMWB_dbgPc),
                 .o_dbgInst        (dbgMEMWB_dbgInst),

@@ -2,25 +2,25 @@ module StageMEM
     import Types::*;
 (
     // Senyals de control
-    input  logic       i_clock,        // Clock
-    input  logic       i_reset,        // Reset
+    input  logic      i_clock,        // Clock
+    input  logic      i_reset,        // Reset
 
     // Interficie amb la memoria de dades
-    DataCoreBus.master dataBus,        // Bus de la memoria de dades
+    DataBus.master    dataBus,        // Bus de la memoria de dades
 
     // Senyals operatives del stage
-    input  logic       i_isValid,      // Indica operacio valida
-    input  Data        i_dataR,        // Dades del resultst
-    input  Data        i_dataB,        // Dades per escriure
+    input  logic      i_isValid,      // Indica operacio valida
+    input  Data       i_dataR,        // Dades del resultst
+    input  Data       i_dataB,        // Dades per escriure
 
-    input  logic       i_memWrEnable,  // Habilita escriptura en memoria
-    input  logic       i_memRdEnable,  // Habilita la lectura de la memoria
-    input  DataAccess  i_memAccess,    // Tamany d'acces a la memori
-    input  logic       i_memUnsigned,  // Lectura de memoria sense signe
+    input  logic      i_memWrEnable,  // Habilita escriptura en memoria
+    input  logic      i_memRdEnable,  // Habilita la lectura de la memoria
+    input  DataAccess i_memAccess,    // Tamany d'acces a la memori
+    input  logic      i_memUnsigned,  // Lectura de memoria sense signe
 
-    input  WrDataSel   i_regWrDataSel, // Seleccio de dades per escriure en el registre
-    output logic       o_hazard,       // Indica hazard
-    output Data        o_regWrData);   // Dades per escriure en el registre
+    input  WrDataSel  i_regWrDataSel, // Seleccio de dades per escriure en el registre
+    output logic      o_hazard,       // Indica hazard
+    output Data       o_regWrData);   // Dades per escriure en el registre
 
 
     assign o_hazard = 1'b0;

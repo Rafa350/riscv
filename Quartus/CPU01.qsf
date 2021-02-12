@@ -364,6 +364,10 @@ set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
 set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
 set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/ICacheController.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/ICache.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheSet.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/CacheMem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/Cache/InstL1Cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/RV.svh
@@ -374,11 +378,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CoreSC.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CorePP.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstBus.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstCoreBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataBus.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/DataCoreBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/InstExpander.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/GPRegistersBus.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/GPRegisters.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/CSRUnit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Core/ALU/ALU.sv

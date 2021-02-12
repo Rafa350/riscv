@@ -13,8 +13,8 @@ module Processor
     InstBus.master instBus); // Bus de la memoria d'instruccions
 
 
-    InstCoreBus coreInstBus(); // Bus d'instruccions
-    DataCoreBus coreDataBus(); // Bus de dades
+    InstBus coreInstBus(); // Bus d'instruccions
+    DataBus coreDataBus(); // Bus de dades
 
 
     // -------------------------------------------------------------------
@@ -56,7 +56,7 @@ module Processor
             assign dataBus.addr      = coreDataBus.addr;
             assign dataBus.we        = coreDataBus.we;
             assign dataBus.re        = coreDataBus.re;
-            assign dataBus.access    = coreDataBus.access;
+            assign dataBus.be        = coreDataBus.be;
             assign dataBus.wdata     = coreDataBus.wdata;
             assign coreDataBus.rdata = dataBus.rdata;
             assign coreDataBus.busy  = dataBus.busy;
