@@ -175,9 +175,9 @@ module InstDecoder
             OpCode_System:
                 unique case (i_inst[14:12])
                     3'b000:
-                        unique casez (i_inst[31:25])
+                        unique case (i_inst[31:25])
                             7'b0000000:
-                                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                                unique case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
                                     15'b00000_00000_00000: // EBREAK
                                         begin
                                             o_isEBREAK = 1'b1;
@@ -192,7 +192,7 @@ module InstDecoder
                                 endcase
 
                             7'b0001000:
-                                case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
+                                unique case ({i_inst[24:20], i_inst[19:15], i_inst[11:7]})
                                     15'b00101_00000_00000: // WFI
                                         begin
                                             o_isWFI = 1'b1;
@@ -201,7 +201,7 @@ module InstDecoder
                                 endcase
 
                             7'b0011000:
-                                case (i_inst[24:20])
+                                unique case (i_inst[24:20])
                                     5'b00010: // MRET
                                         begin
                                             o_isMRET = 1'b1;

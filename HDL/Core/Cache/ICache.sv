@@ -1,9 +1,9 @@
 module ICache
     import Config::*, Types::*;
 #(
-    parameter SETS     = 1,   // Nombre de vias
-    parameter BLOCKS   = 4,   // Nombre de blocs
-    parameter ELEMENTS = 128) // Nombre de linies
+    parameter SETS       = 1,   // Nombre de vias
+    parameter CACHE_SIZE = 128, // Tamany del cache
+    parameter BLOCK_SIZE = 4)   // Tamany del bloc
 (
     // Senyals de control
     input  logic    i_clock,      // Senyal de rellotge
@@ -23,31 +23,30 @@ module ICache
     input  Inst     i_mem_rdata); // Dades recuperades de la memoria principal
 
 
-    localparam DATALINE_WIDTH = $size(Inst) * BLOCKS;
-    localparam BLOCK_WIDTH    = $clog2(BLOCKS);
-    localparam INDEX_WIDTH    = $clog2(ELEMENTS);
-    localparam TAG_WIDTH      = $size(InstAddr) - 2 - INDEX_WIDTH - BLOCK_WIDTH;
+    localparam INDEX_WIDTH    = $clog2(CACHE_SIZE);
+    localparam OFFSET_WIDTH   = $clog2(BLOCK_SIZE);
+    localparam TAG_WIDTH      = $size(InstAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
 
 
-    typedef logic [BLOCK_WIDTH-1:0] Block;
-    typedef logic [INDEX_WIDTH-1:0] Index;
-    typedef logic [TAG_WIDTH-1:0]   Tag;
+    typedef logic [TAG_WIDTH-1:0]    Tag;
+    typedef logic [INDEX_WIDTH-1:0]  Index;
+    typedef logic [OFFSET_WIDTH-1:0] Offset;
 
 
-    Block block; // Bloc de dades
-    Index index; // Index del cache
-    Tag   tag;   // Tag del cache
+    Tag    tag;   // Tag del cache
+    Index  index; // Index del cache
+    Offset offset; // Bloc de dades
 
 
     // Separa els components de l'adressa. La converteix a direccionament en words
     //
-    assign tag   = i_addr[2+BLOCK_WIDTH+INDEX_WIDTH+:TAG_WIDTH];
-    assign index = i_addr[2+BLOCK_WIDTH+:INDEX_WIDTH];
-    assign block = i_addr[2+:BLOCK_WIDTH];
+    assign tag    = i_addr[2+OFFSET_WIDTH+INDEX_WIDTH+:TAG_WIDTH];
+    assign index  = i_addr[2+OFFSET_WIDTH+:INDEX_WIDTH];
+    assign offset = i_addr[2+:OFFSET_WIDTH];
 
     // Senyals de la memoria principal o L2
     //
-    assign o_mem_addr = {cacheCtrl_tag, cacheCtrl_index, cacheCtrl_block, 2'b00};
+    assign o_mem_addr = {cacheCtrl_tag, cacheCtrl_index, cacheCtrl_offset, 2'b00};
     assign o_mem_re   = cacheCtrl_write; // La memoria esta en lectura quant s'escriu en el cache
 
     // Senyals de control
@@ -60,85 +59,56 @@ module ICache
     // Cache controller
     // -------------------------------------------------------------------
 
-    logic cacheCtrl_clear;
-    logic cacheCtrl_write;
-    logic cacheCtrl_hit;
-    logic cacheCtrl_busy;
-    Tag   cacheCtrl_tag;
-    Index cacheCtrl_index;
-    Block cacheCtrl_block;
+    logic  cacheCtrl_clear;
+    logic  cacheCtrl_write;
+    logic  cacheCtrl_hit;
+    logic  cacheCtrl_busy;
+    Tag    cacheCtrl_tag;
+    Index  cacheCtrl_index;
+    Offset cacheCtrl_offset;
 
     ICacheController #(
-        .TAG_WIDTH   (TAG_WIDTH),
-        .INDEX_WIDTH (INDEX_WIDTH),
-        .BLOCK_WIDTH (BLOCK_WIDTH))
+        .TAG_WIDTH    ($size(Tag)),
+        .INDEX_WIDTH  ($size(Index)),
+        .OFFSET_WIDTH ($size(Offset)))
     cacheCtrl (
-        .i_clock (i_clock),
-        .i_reset (i_reset),
-        .i_tag   (tag),
-        .i_index (index),
-        .i_block (block),
-        .i_hit   (cacheSet_hit),
-        .i_rd    (i_rd),
-        .o_tag   (cacheCtrl_tag),
-        .o_index (cacheCtrl_index),
-        .o_block (cacheCtrl_block),
-        .o_clear (cacheCtrl_clear),
-        .o_write (cacheCtrl_write),
-        .o_hit   (cacheCtrl_hit),
-        .o_busy  (cacheCtrl_busy));
+        .i_clock  (i_clock),
+        .i_reset  (i_reset),
+        .i_tag    (tag),
+        .i_index  (index),
+        .i_offset (offset),
+        .i_hit    (cacheSet_hit),
+        .i_rd     (i_rd),
+        .o_tag    (cacheCtrl_tag),
+        .o_index  (cacheCtrl_index),
+        .o_offset (cacheCtrl_offset),
+        .o_clear  (cacheCtrl_clear),
+        .o_write  (cacheCtrl_write),
+        .o_hit    (cacheCtrl_hit),
+        .o_busy   (cacheCtrl_busy));
 
 
     // -------------------------------------------------------------------
     // Cache sets
     // -------------------------------------------------------------------
 
-    logic                      cacheSet_hit;
-    logic [DATALINE_WIDTH-1:0] cacheSet_data;
-    Inst                       data0, data1, data2;
+    logic cacheSet_hit;
 
     CacheSet #(
-        .DATA_WIDTH  (DATALINE_WIDTH),
-        .TAG_WIDTH   (TAG_WIDTH),
-        .INDEX_WIDTH (INDEX_WIDTH),
-        .BLOCKS      (BLOCKS))
+        .DATA_WIDTH   ($size(Inst)),
+        .TAG_WIDTH    ($size(Tag)),
+        .INDEX_WIDTH  ($size(Index)),
+        .OFFSET_WIDTH ($size(Offset)))
     cacheSet (
-        .i_clock (i_clock),
-        .i_reset (i_reset),
-        .i_write (cacheCtrl_write & (cacheCtrl_block == 2'b11)),
-        .i_clear (cacheCtrl_clear),
-        .i_tag   (cacheCtrl_tag),
-        .i_index (cacheCtrl_index),
-        .i_wdata ({i_mem_rdata, data2, data1, data0}),
-        .o_rdata (cacheSet_data),
-        .o_hit   (cacheSet_hit));
-
-    // Registra les lectures parcials dels blocs fins a completar
-    // una linia
-    //
-    always_ff @(posedge i_clock)
-        if (cacheCtrl_write)
-            unique case (cacheCtrl_block)
-                2'b00: data0 <= i_mem_rdata;
-                2'b01: data1 <= i_mem_rdata;
-                2'b10: data2 <= i_mem_rdata;
-                2'b11: ;
-            endcase
-
-
-    // -------------------------------------------------------------------
-    // Evalua el bloc per lleigir
-    // -------------------------------------------------------------------
-
-    Mux4To1 #(
-        .WIDTH (DATA_WIDTH))
-    mux (
-        .i_select (cacheCtrl_block),
-        .i_input0 (cacheSet_data[0+:32]),
-        .i_input1 (cacheSet_data[32+:32]),
-        .i_input2 (cacheSet_data[64+:32]),
-        .i_input3 (cacheSet_data[96+:32]),
-        .o_output (o_inst));
-
+        .i_clock  (i_clock),
+        .i_reset  (i_reset),
+        .i_write  (cacheCtrl_write),
+        .i_clear  (cacheCtrl_clear),
+        .i_tag    (cacheCtrl_tag),
+        .i_index  (cacheCtrl_index),
+        .i_offset (cacheCtrl_offset),
+        .i_wdata  (i_mem_rdata),
+        .o_rdata  (o_inst),
+        .o_hit    (cacheSet_hit));
 
 endmodule

@@ -1,14 +1,14 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Fri Feb 12 20:30:26 2021
+[*] Sat Feb 13 12:25:18 2021
 [*]
 [dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.fst"
-[dumpfile_mtime] "Fri Feb 12 20:27:59 2021"
-[dumpfile_size] 72193
+[dumpfile_mtime] "Sat Feb 13 12:23:39 2021"
+[dumpfile_size] 69366
 [savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_pp\trace.gtkw"
 [timestart] 1276
 [size] 1920 1017
-[pos] -1 -1
+[pos] -113 -113
 *-3.930773 1295 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top.
@@ -77,11 +77,12 @@ TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.state[1:0]
 TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_tag[20:0]
 TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_index[6:0]
 @28
-TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_block[1:0]
-TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_write
-@29
-TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_clear
+TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_offset[1:0]
+@23
+TOP.top.processor.genblk1.instL1Cache.bus.inst[31:0]
 @28
+TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_write
+TOP.top.processor.genblk1.instL1Cache.cache.cacheCtrl.o_clear
 TOP.top.processor.genblk1.instL1Cache.cache_busy
 TOP.top.processor.genblk1.instL1Cache.cache_hit
 @200

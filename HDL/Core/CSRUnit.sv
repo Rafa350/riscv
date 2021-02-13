@@ -53,6 +53,35 @@ module CSRUnit
     localparam CSR_MCYCLEH       = 12'hB80;
     localparam CSR_MINSTRET      = 12'hB02;
     localparam CSR_MINSTRETH     = 12'hB82;
+    localparam CSR_MHPMCOUNTER3  = 12'hB83;
+    localparam CSR_MHPMCOUNTER4  = 12'hB84;
+    localparam CSR_MHPMCOUNTER5  = 12'hB85;
+    localparam CSR_MHPMCOUNTER6  = 12'hB86;
+    localparam CSR_MHPMCOUNTER7  = 12'hB87;
+    localparam CSR_MHPMCOUNTER8  = 12'hB88;
+    localparam CSR_MHPMCOUNTER9  = 12'hB89;
+    localparam CSR_MHPMCOUNTER10 = 12'hB8A;
+    localparam CSR_MHPMCOUNTER11 = 12'hB8B;
+    localparam CSR_MHPMCOUNTER12 = 12'hB8C;
+    localparam CSR_MHPMCOUNTER13 = 12'hB8D;
+    localparam CSR_MHPMCOUNTER14 = 12'hB8E;
+    localparam CSR_MHPMCOUNTER15 = 12'hB8F;
+    localparam CSR_MHPMCOUNTER16 = 12'hB90;
+    localparam CSR_MHPMCOUNTER17 = 12'hB91;
+    localparam CSR_MHPMCOUNTER18 = 12'hB92;
+    localparam CSR_MHPMCOUNTER19 = 12'hB93;
+    localparam CSR_MHPMCOUNTER20 = 12'hB94;
+    localparam CSR_MHPMCOUNTER21 = 12'hB95;
+    localparam CSR_MHPMCOUNTER22 = 12'hB96;
+    localparam CSR_MHPMCOUNTER23 = 12'hB97;
+    localparam CSR_MHPMCOUNTER24 = 12'hB98;
+    localparam CSR_MHPMCOUNTER25 = 12'hB99;
+    localparam CSR_MHPMCOUNTER26 = 12'hB9A;
+    localparam CSR_MHPMCOUNTER27 = 12'hB9B;
+    localparam CSR_MHPMCOUNTER28 = 12'hB9C;
+    localparam CSR_MHPMCOUNTER29 = 12'hB9D;
+    localparam CSR_MHPMCOUNTER30 = 12'hB9E;
+    localparam CSR_MHPMCOUNTER31 = 12'hB9F;
 
 
     RunMode mode;      // Modus d'execucio
@@ -201,12 +230,17 @@ module CSRUnit
             CSR_MIMPID        : dataOut = MIMPID;
             CSR_MHARTID       : dataOut = MHARTID;
             CSR_MCAUSE        : dataOut = mcause;
-            CSR_MCYCLE        : dataOut = cycle;
             CSR_MCOUNTEREN    : dataOut = Data'({mcounteren_IR, 1'b0, mcounteren_CY});
             CSR_MCOUNTINHIBIT : dataOut = Data'({mcountinhibit_IR, 1'b0, mcountinhibit_CY});
             CSR_MIE           : dataOut = Data'({mie_MEIE, 3'b000, mie_MTIE, 3'b000, mie_MSIE, 3'b000});
             CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b000, mip_MTIP, 3'b000, mip_MSIP, 3'b000});
+            CSR_MCYCLE        : dataOut = cycle;
             CSR_MINSTRET      : dataOut = instret;
+            CSR_MHPMCOUNTER3  : dataOut = mhpmcounter3;
+            CSR_MHPMCOUNTER4  : dataOut = mhpmcounter4;
+            CSR_MHPMCOUNTER5  : dataOut = mhpmcounter5;
+            CSR_MHPMCOUNTER6  : dataOut = mhpmcounter6;
+            CSR_MHPMCOUNTER7  : dataOut = mhpmcounter7;
             CSR_MISA          : dataOut = MISA;
             CSR_MSCRATCH      : dataOut = mscratch;
             CSR_MSTATUS       : dataOut = mstatus;

@@ -46,28 +46,24 @@
 
 module ICacheController
 #(
-    parameter TAG_WIDTH   = 3, // Amplada del tag en bits
-    parameter INDEX_WIDTH = 5, // Amplada del index en bits
-    parameter BLOCK_WIDTH = 2) // Amplada del block en bits
+    parameter TAG_WIDTH    = 3, // Amplada del tag en bits
+    parameter INDEX_WIDTH  = 5, // Amplada del index en bits
+    parameter OFFSET_WIDTH = 2) // Amplada del offset en bits
 (
-    input  logic                   i_clock, // Clock
-    input  logic                   i_reset, // Reset
-    input  logic                   i_hit,   // Indica coincidencia
-    input  logic                   i_rd,    // Solicita lectura
-    input  logic [TAG_WIDTH-1:0]   i_tag,   // Tag
-    input  logic [INDEX_WIDTH-1:0] i_index, // Index
-    input  logic [BLOCK_WIDTH-1:0] i_block, // Bloc
-    output logic [TAG_WIDTH-1:0]   o_tag,   // Tag
-    output logic [INDEX_WIDTH-1:0] o_index, // Index
-    output logic [BLOCK_WIDTH-1:0] o_block, // Bloc
-    output logic                   o_write, // Habilita escriptura en el cache
-    output logic                   o_clear, // Habilita neteja en el cache
-    output logic                   o_hit,   // Indica coincidencia
-    output logic                   o_busy); // Indica ocupat
-
-
-    localparam ELEMENTS = 2**INDEX_WIDTH;
-    localparam BLOCKS   = 2**BLOCK_WIDTH;
+    input  logic                    i_clock,  // Clock
+    input  logic                    i_reset,  // Reset
+    input  logic                    i_hit,    // Indica coincidencia
+    input  logic                    i_rd,     // Solicita lectura
+    input  logic [TAG_WIDTH-1:0]    i_tag,    // Tag
+    input  logic [INDEX_WIDTH-1:0]  i_index,  // Index
+    input  logic [OFFSET_WIDTH-1:0] i_offset, // Offset
+    output logic [TAG_WIDTH-1:0]    o_tag,    // Tag
+    output logic [INDEX_WIDTH-1:0]  o_index,  // Index
+    output logic [OFFSET_WIDTH-1:0] o_offset, // Offset
+    output logic                    o_write,  // Habilita escriptura en el cache
+    output logic                    o_clear,  // Habilita neteja en el cache
+    output logic                    o_hit,    // Indica coincidencia
+    output logic                    o_busy);  // Indica ocupat
 
 
     typedef enum logic [1:0] { // Estats de la maquina
@@ -77,17 +73,17 @@ module ICacheController
         State_READ             // -Actualitzacio del cache
     } State;
 
-    typedef logic [TAG_WIDTH-1:0]   Tag;    // Tag
-    typedef logic [INDEX_WIDTH-1:0] Index;  // Index del cache
-    typedef logic [BLOCK_WIDTH-1:0] Block;  // Bloc de dades
+    typedef logic [TAG_WIDTH-1:0]    Tag;
+    typedef logic [INDEX_WIDTH-1:0]  Index;
+    typedef logic [OFFSET_WIDTH-1:0] Offset;
 
 
-    Tag   tag;        // Tag
-    Tag   nextTag;    // Seguent valor de 'tag'
-    Index index;      // Index del cache
-    Index nextIndex;  // Seguent valor de 'index'
-    Block block;      // Block del cache
-    Block nextBlock;  // Seguent valor de 'block'
+    Tag    tag;        // Tag
+    Tag    nextTag;    // Seguent valor de 'tag'
+    Index  index;      // Index a la linia de cache
+    Index  nextIndex;  // Seguent valor de 'index'
+    Offset offset;     // Offset dins de la linia de cache
+    Offset nextOffset; // Seguent valor de 'offset'
 
     State state;      // Estat de la maquina
     State nextState;  // Seguent valor de 'state'
@@ -95,18 +91,18 @@ module ICacheController
 
     always_comb begin
 
-        o_tag   = i_tag;
-        o_index = i_index;
-        o_block = i_block;
-        o_write = 1'b0;
-        o_clear = 1'b0;
-        o_hit   = 1'b0;
-        o_busy  = 1'b1;
+        o_tag    = i_tag;
+        o_index  = i_index;
+        o_offset = i_offset;
+        o_write  = 1'b0;
+        o_clear  = 1'b0;
+        o_hit    = 1'b0;
+        o_busy   = 1'b1;
 
-        nextState = state;
-        nextTag   = tag;
-        nextIndex = index;
-        nextBlock = block;
+        nextState  = state;
+        nextTag    = tag;
+        nextIndex  = index;
+        nextOffset = offset;
 
         // verilator lint_off CASEINCOMPLETE
         unique case (state)
@@ -119,7 +115,7 @@ module ICacheController
                 o_index = index;
                 o_clear = 1'b1;
                 nextIndex = index + Index'(1);
-                if (Index'(index) == Index'(ELEMENTS-1))
+                if (Index'(index) == Index'((2**$size(index))-1))
                     nextState = State_LOOKUP;
             end
 
@@ -127,20 +123,20 @@ module ICacheController
                 o_hit  = i_hit;
                 o_busy = 1'b0;
                 if (~i_hit & i_rd) begin
-                    nextTag   = i_tag;
-                    nextIndex = i_index;
-                    nextBlock = Block'(0);
-                    nextState = State_READ;
+                    nextTag    = i_tag;
+                    nextIndex  = i_index;
+                    nextOffset = Offset'(0);
+                    nextState  = State_READ;
                 end
             end
 
             State_READ: begin
-                o_tag     = tag;
-                o_index   = index;
-                o_block   = block;
-                o_write   = 1'b1;
-                nextBlock = block + Block'(1);
-                if (Block'(block) == Block'(BLOCKS-1))
+                o_tag      = tag;
+                o_index    = index;
+                o_offset   = offset;
+                o_write    = 1'b1;
+                nextOffset = offset + Offset'(1);
+                if (Offset'(offset) == Offset'((2**$size(offset))-1))
                     nextState = State_LOOKUP;
             end
         endcase
@@ -152,14 +148,14 @@ module ICacheController
     //
     always_ff @(posedge i_clock)
         if (i_reset) begin
-            tag   <= Tag'(0);
-            index <= Index'(0);
-            block <= Block'(0);
+            tag    <= Tag'(0);
+            index  <= Index'(0);
+            offset <= Offset'(0);
         end
         else begin
-            tag   <= nextTag;
-            index <= nextIndex;
-            block <= nextBlock;
+            tag    <= nextTag;
+            index  <= nextIndex;
+            offset <= nextOffset;
         end
 
     // Actualitza l'estat

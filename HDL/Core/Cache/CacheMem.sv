@@ -26,7 +26,7 @@ module CacheMem
             assign o_rdata = data[i_addr];
 
         end
-        
+
         else if (RV_TARGET_COMPILER == "QUARTUS") begin
             altsyncram
             altsyncram_component (
