@@ -1,8 +1,8 @@
 module CacheMem
     import Config::*;
 #(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32)
+    parameter int unsigned DATA_WIDTH = 32,
+    parameter int unsigned ADDR_WIDTH = 32)
 (
     input  logic            i_clock,
     input  logic            i_we,
@@ -11,7 +11,7 @@ module CacheMem
     output [DATA_WIDTH-1:0] o_rdata);
 
 
-    localparam DATA_SIZE = 2**ADDR_WIDTH;
+    localparam int unsigned DATA_SIZE = 2**ADDR_WIDTH;
 
 
     generate

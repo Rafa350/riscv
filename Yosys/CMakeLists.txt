@@ -8,8 +8,9 @@ set(SOURCE_DIR ../../HDL)
 # Llista dels fitxers font
 #
 set(SOURCE_FILE_LIST
-    ProcessorPP.sv
-    ProcessorSC.sv)
+    Processor.sv
+    CoreSC.sv
+    CorePP.sv)
 
 
 # Busca la ubicacio de sv2v

@@ -2,59 +2,59 @@ module StageID
     import Types::*;
 (
     // Senyals de control i sincronitzacio
-    input  logic             i_clock,           // Clock
-    input  logic             i_reset,           // Reset
+    input  logic      i_clock,           // Clock
+    input  logic      i_reset,           // Reset
 
     // Interficie amb el bloc de registres
-    output GPRAddr           o_reg_raddrA,
-    output GPRAddr           o_reg_raddrB,
-    input  Data              i_reg_rdataA,
-    input  Data              i_reg_rdataB,
+    output GPRAddr    o_reg_raddrA,
+    output GPRAddr    o_reg_raddrB,
+    input  Data       i_reg_rdataA,
+    input  Data       i_reg_rdataB,
 
     // Senyals del stage EX per la gestio dels hazards
-    input  logic             i_EX_isValid,      // Indica operacio valida en EX
-    input  GPRAddr           i_EX_regWrAddr,    // Registre per escriure en EX
-    input  logic             i_EX_regWrEnable,  // Habilita l'escriptura en el registre en EX
-    input  WrDataSel         i_EX_regWrDataSel, // Seleccio de dades en EX
-    input  Data              i_EX_regWrData,    // Dades a escriure en el registre en EX
-    input  logic             i_EX_memRdEnable,  // Habilita la lectura de memoria en EX
+    input  logic      i_EX_isValid,      // Indica operacio valida en EX
+    input  GPRAddr    i_EX_regWrAddr,    // Registre per escriure en EX
+    input  logic      i_EX_regWrEnable,  // Habilita l'escriptura en el registre en EX
+    input  WrDataSel  i_EX_regWrDataSel, // Seleccio de dades en EX
+    input  Data       i_EX_regWrData,    // Dades a escriure en el registre en EX
+    input  logic      i_EX_memRdEnable,  // Habilita la lectura de memoria en EX
 
     // Senyals del stage MEM per la gestio dels hazards
-    input  logic             i_MEM_isValid,     // Indica operacio valida
-    input  GPRAddr           i_MEM_regWrAddr,   // Registre per escriure
-    input  logic             i_MEM_regWrEnable, // Habilita l'escriptura
-    input  Data              i_MEM_regWrData,   // Dades a escriure
-    input  logic             i_MEM_memRdEnable, // Habilita la lectura de memoria
+    input  logic      i_MEM_isValid,     // Indica operacio valida
+    input  GPRAddr    i_MEM_regWrAddr,   // Registre per escriure
+    input  logic      i_MEM_regWrEnable, // Habilita l'escriptura
+    input  Data       i_MEM_regWrData,   // Dades a escriure
+    input  logic      i_MEM_memRdEnable, // Habilita la lectura de memoria
 
     // Senyals del stage WB per la gestio dels hazards
-    input  logic             i_WB_isValid,      // Indica operacio valid
-    input  GPRAddr           i_WB_regWrAddr,    // Registre a escriure
-    input  logic             i_WB_regWrEnable,  // Autoritzacio d'escriptura en registre
-    input  Data              i_WB_regWrData,    // El valor a escriure en el registre
+    input  logic      i_WB_isValid,      // Indica operacio valid
+    input  GPRAddr    i_WB_regWrAddr,    // Registre a escriure
+    input  logic      i_WB_regWrEnable,  // Autoritzacio d'escriptura en registre
+    input  Data       i_WB_regWrData,    // El valor a escriure en el registre
 
     // Senyals operatives del stage
-    input  Inst              i_inst,            // Instruccio
-    input  logic             i_instCompressed,  // Indica que es una instruccio comprimida
-    input  InstAddr          i_pc,              // Adressa de la instruccio
-    output Data              o_instIMM,         // Valor IMM de la instruccio
-    output CSRAddr           o_instCSR,         // Valor CSR de la instruccio
-    output Data              o_dataRS1,         // Valor del registre X[RS1]
-    output Data              o_dataRS2,         // Valor del registre X[RS2]
-    output logic             o_hazard,          // Indica hazard
-    output GPRAddr           o_regWrAddr,       // Registre a escriure X(RD)
-    output logic             o_regWrEnable,     // Habilita l'escriptura del registre
-    output WrDataSel         o_regWrDataSel,    // Seleccio de les dades per escriure en el registre
-    output logic             o_memWrEnable,     // Habilita l'escritura en memoria
-    output logic             o_memRdEnable,     // Habilita la lectura de la memoria
-    output DataAccess        o_memAccess,       // Tamany d'acces a la memoria
-    output logic             o_memUnsigned,     // Lectura de memoria sense signe
-    output DataASel          o_operandASel,     // Seleccio del valor A
-    output DataBSel          o_operandBSel,     // Seleccio del valor B
-    output ResultSel         o_resultSel,       // Seleccio del resultat
-    output AluOp             o_aluControl,      // Selecciona l'operacio de la unitat ALU
-    output MduOp             o_mduControl,      // Selecciona l'operacio en la unitat MDU
-    output CsrOp             o_csrControl,      // Selecciona l'operacio en la unitat CSR
-    output InstAddr          o_pcNext);         // Nou valor de PC
+    input  Inst       i_inst,            // Instruccio
+    input  logic      i_instCompressed,  // Indica que es una instruccio comprimida
+    input  InstAddr   i_pc,              // Adressa de la instruccio
+    output Data       o_instIMM,         // Valor IMM de la instruccio
+    output CSRAddr    o_instCSR,         // Valor CSR de la instruccio
+    output Data       o_dataRS1,         // Valor del registre X[RS1]
+    output Data       o_dataRS2,         // Valor del registre X[RS2]
+    output logic      o_hazard,          // Indica hazard
+    output GPRAddr    o_regWrAddr,       // Registre a escriure X(RD)
+    output logic      o_regWrEnable,     // Habilita l'escriptura del registre
+    output WrDataSel  o_regWrDataSel,    // Seleccio de les dades per escriure en el registre
+    output logic      o_memWrEnable,     // Habilita l'escritura en memoria
+    output logic      o_memRdEnable,     // Habilita la lectura de la memoria
+    output DataAccess o_memAccess,       // Tamany d'acces a la memoria
+    output logic      o_memUnsigned,     // Lectura de memoria sense signe
+    output DataASel   o_operandASel,     // Seleccio del valor A
+    output DataBSel   o_operandBSel,     // Seleccio del valor B
+    output ResultSel  o_resultSel,       // Seleccio del resultat
+    output AluOp      o_aluControl,      // Selecciona l'operacio de la unitat ALU
+    output MduOp      o_mduControl,      // Selecciona l'operacio en la unitat MDU
+    output CsrOp      o_csrControl,      // Selecciona l'operacio en la unitat CSR
+    output InstAddr   o_pcNext);         // Nou valor de PC
 
 
     assign o_instIMM = dec_instIMM;

@@ -25,10 +25,10 @@
 
 module CacheSet
 #(
-    parameter DATA_WIDTH   = 32, // Amplada de dades en bits
-    parameter TAG_WIDTH    = 8,  // Amplada del tag en bits
-    parameter INDEX_WIDTH  = 5,  // Amplada del index en bits
-    parameter OFFSET_WIDTH = 2)  // Amplada del offset dins del bloc en bits
+    parameter int unsigned DATA_WIDTH   = 32, // Amplada de dades en bits
+    parameter int unsigned TAG_WIDTH    = 8,  // Amplada del tag en bits
+    parameter int unsigned INDEX_WIDTH  = 5,  // Amplada del index en bits
+    parameter int unsigned OFFSET_WIDTH = 2)  // Amplada del offset dins del bloc en bits
 (
     input  logic                    i_clock,  // Clock
     input  logic                    i_reset,  // Reset
@@ -41,13 +41,13 @@ module CacheSet
     output logic [DATA_WIDTH-1:0]   o_rdata,  // Dades lleigides
     output logic                    o_hit);   // Indica coincidencia i dades recuperades
 
-    localparam BLOCK_SIZE = 2**OFFSET_WIDTH; // Tamany del bloc
+    localparam int unsigned BLOCK_SIZE = 2**OFFSET_WIDTH; // Tamany del bloc
 
     typedef logic [TAG_WIDTH-1:0]  Tag;       // Tag
     typedef logic [DATA_WIDTH-1:0] CacheData; // Dades
-    typedef struct packed { // Metadades
-        logic valid;        // -Indicador d'entrada valida
-        Tag   tag;          // -Tag de la entrada
+    typedef struct packed {                   // Metadades
+        logic valid;                          // -Indicador d'entrada valida
+        Tag   tag;                            // -Tag de la entrada
     } CacheMeta;
 
 

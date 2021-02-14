@@ -11,7 +11,7 @@ module InstL1Cache
     logic cache_hit;
 
     ICache #(
-        .SETS       (1),                  // Nombre de vias
+        .SETS       (RV_ICACHE_SETS),     // Nombre de vias
         .CACHE_SIZE (RV_ICACHE_ELEMENTS), // Nombre de blocs per cache
         .BLOCK_SIZE (RV_ICACHE_BLOCKS))   // Nombre de words per bloc
     cache (

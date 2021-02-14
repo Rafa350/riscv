@@ -1,9 +1,9 @@
 module ICache
-    import Config::*, Types::*;
+    import Types::*;
 #(
-    parameter SETS       = 1,   // Nombre de vias
-    parameter CACHE_SIZE = 128, // Tamany del cache
-    parameter BLOCK_SIZE = 4)   // Tamany del bloc
+    parameter int unsigned SETS       = 1,   // Nombre de vias
+    parameter int unsigned CACHE_SIZE = 128, // Tamany del cache
+    parameter int unsigned BLOCK_SIZE = 4)   // Tamany del bloc
 (
     // Senyals de control
     input  logic    i_clock,      // Senyal de rellotge
@@ -23,9 +23,9 @@ module ICache
     input  Inst     i_mem_rdata); // Dades recuperades de la memoria principal
 
 
-    localparam INDEX_WIDTH    = $clog2(CACHE_SIZE);
-    localparam OFFSET_WIDTH   = $clog2(BLOCK_SIZE);
-    localparam TAG_WIDTH      = $size(InstAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
+    localparam INDEX_WIDTH  = $clog2(CACHE_SIZE);
+    localparam OFFSET_WIDTH = $clog2(BLOCK_SIZE);
+    localparam TAG_WIDTH    = $size(InstAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
 
 
     typedef logic [TAG_WIDTH-1:0]    Tag;

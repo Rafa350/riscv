@@ -2,18 +2,18 @@ module DebugPipelineIDEX
     import Types::*;
 (
     // Senyals de control
-    input  logic   i_clock,           // Clock
-    input  logic   i_reset,           // Reset
-    input  logic   i_stall,           // Retorna el mateix estat. Te prioritat sobre flush
-    input  logic   i_flush,           // Retorna l'estat NOP
+    input  logic i_clock,    // Clock
+    input  logic i_reset,    // Reset
+    input  logic i_stall,    // Retorna el mateix estat. Te prioritat sobre flush
+    input  logic i_flush,    // Retorna l'estat NOP
 
     // Senyals d'entrada del pipeline
-    input  int     i_dbgTick,         // Numero de tick
-    input  Inst    i_dbgInst,         // Instruccio
+    input  int   i_dbgTick,  // Numero de tick
+    input  Inst  i_dbgInst,  // Instruccio
 
     // Senyals de sortidade del pipeline
-    output int     o_dbgTick,         // Numero de tick
-    output Inst    o_dbgInst);        // Instruccio
+    output int   o_dbgTick,  // Numero de tick
+    output Inst  o_dbgInst); // Instruccio
 
 
     always_ff @(posedge i_clock)

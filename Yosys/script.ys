@@ -11,7 +11,7 @@ read_verilog -sv ../HDL/Base/Memory.sv
 
 # Moduls core
 #
-read_verilog -sv ../HDL/ProcessorSC.sv
+read_verilog -sv ../HDL/CorePP.sv
 read_verilog -I../HDL -sv ../Verilator/verilator_top.sv
 
 #hierarchy -check 

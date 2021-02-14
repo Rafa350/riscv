@@ -14,7 +14,7 @@ module GPRegisters
     input  Data    i_wdata); // Dades per escriure
 
 
-    localparam SIZE = 2**$size(GPRAddr);
+    localparam int unsigned SIZE = 2**$size(GPRAddr);
 
 
     Data data[1:SIZE-1];
@@ -24,7 +24,7 @@ module GPRegisters
     //
     always_ff @(posedge i_clock)
         if (i_reset) begin
-            for (int i = $left(data); i <= $right(data); i++)
+            for (int unsigned i = $left(data); i <= $right(data); i++)
                 data[i] <= Data'(0);
         end
         else if (i_we & (i_waddr != GPRAddr'(0)))

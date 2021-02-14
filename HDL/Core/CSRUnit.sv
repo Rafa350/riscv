@@ -15,21 +15,21 @@ module CSRUnit
     output Data    o_data);   // Sortida de dades
 
 
-    localparam MISA_XLEN = DATA_WIDTH == 32 ? 1 : 2;
+    localparam int unsigned MISA_XLEN = DATA_WIDTH == 32 ? 1 : 2;
     localparam Data MISA =
-        (RV_EXT_A  <<  0) | // A - Atomic Instructions extension
-        (0         <<  1) | // B - Bitfield extension
-        (RV_EXT_C  <<  2) | // C - Compressed extension
-        (RV_EXT_D  <<  3) | // D - Double precision floating-point extension
-        (RV_EXT_E  <<  4) | // E - Reduced register number extension
-        (RV_EXT_F  <<  5) | // F - Single precision floating-point extension
-        (RV_EXT_I  <<  8) | // I - Integer extension
-        (RV_EXT_M  << 12) | // M - Integer Multiply/Divide extension
-        (0         << 13) | // N - User level interrupts supported
-        (0         << 18) | // S - Supervisor mode implemented
-        (RV_EXT_U  << 20) | // U - User mode implemented
-        (0         << 23) | // X - Non-standard extensions present
-        (MISA_XLEN << 30);  // M-XLEN 32bit
+        (int'(RV_EXT_A)  <<  0) | // A - Atomic Instructions extension
+        (0               <<  1) | // B - Bitfield extension
+        (int'(RV_EXT_C)  <<  2) | // C - Compressed extension
+        (int'(RV_EXT_D)  <<  3) | // D - Double precision floating-point extension
+        (int'(RV_EXT_E)  <<  4) | // E - Reduced register number extension
+        (int'(RV_EXT_F)  <<  5) | // F - Single precision floating-point extension
+        (int'(RV_EXT_I)  <<  8) | // I - Integer extension
+        (int'(RV_EXT_M)  << 12) | // M - Integer Multiply/Divide extension
+        (0               << 13) | // N - User level interrupts supported
+        (0               << 18) | // S - Supervisor mode implemented
+        (int'(RV_EXT_U)  << 20) | // U - User mode implemented
+        (0               << 23) | // X - Non-standard extensions present
+        (MISA_XLEN       << 30);  // M-XLEN 32bit
     localparam MVENDORID = 0;
     localparam MARCHID   = 0;
     localparam MIMPID    = 0;
@@ -177,7 +177,7 @@ module CSRUnit
             mtvec_MODE       <= 0;
         end
         else
-            unique case (i_csr)
+            case (i_csr)
                 CSR_MCAUSE:
                     mcause <= dataIn;
 
@@ -224,7 +224,7 @@ module CSRUnit
             endcase
 
     always_comb begin
-        unique case (i_csr)
+        case (i_csr)
             CSR_MVENDORID     : dataOut = MVENDORID;
             CSR_MARCHID       : dataOut = MARCHID;
             CSR_MIMPID        : dataOut = MIMPID;
@@ -236,11 +236,35 @@ module CSRUnit
             CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b000, mip_MTIP, 3'b000, mip_MSIP, 3'b000});
             CSR_MCYCLE        : dataOut = cycle;
             CSR_MINSTRET      : dataOut = instret;
-            CSR_MHPMCOUNTER3  : dataOut = mhpmcounter3;
-            CSR_MHPMCOUNTER4  : dataOut = mhpmcounter4;
-            CSR_MHPMCOUNTER5  : dataOut = mhpmcounter5;
-            CSR_MHPMCOUNTER6  : dataOut = mhpmcounter6;
-            CSR_MHPMCOUNTER7  : dataOut = mhpmcounter7;
+            CSR_MHPMCOUNTER3  : dataOut = hpmcounter3;
+            CSR_MHPMCOUNTER4  : dataOut = hpmcounter4;
+            CSR_MHPMCOUNTER5  : dataOut = hpmcounter5;
+            CSR_MHPMCOUNTER6  : dataOut = hpmcounter6;
+            CSR_MHPMCOUNTER7  : dataOut = hpmcounter7;
+            CSR_MHPMCOUNTER8  : dataOut = hpmcounter8;
+            CSR_MHPMCOUNTER9  : dataOut = hpmcounter9;
+            CSR_MHPMCOUNTER10 : dataOut = hpmcounter10;
+            CSR_MHPMCOUNTER11 : dataOut = hpmcounter11;
+            CSR_MHPMCOUNTER12 : dataOut = hpmcounter12;
+            CSR_MHPMCOUNTER13 : dataOut = hpmcounter13;
+            CSR_MHPMCOUNTER14 : dataOut = hpmcounter14;
+            CSR_MHPMCOUNTER15 : dataOut = hpmcounter15;
+            CSR_MHPMCOUNTER16 : dataOut = hpmcounter16;
+            CSR_MHPMCOUNTER17 : dataOut = hpmcounter17;
+            CSR_MHPMCOUNTER18 : dataOut = hpmcounter18;
+            CSR_MHPMCOUNTER19 : dataOut = hpmcounter19;
+            CSR_MHPMCOUNTER20 : dataOut = hpmcounter20;
+            CSR_MHPMCOUNTER21 : dataOut = hpmcounter21;
+            CSR_MHPMCOUNTER22 : dataOut = hpmcounter22;
+            CSR_MHPMCOUNTER23 : dataOut = hpmcounter23;
+            CSR_MHPMCOUNTER24 : dataOut = hpmcounter24;
+            CSR_MHPMCOUNTER25 : dataOut = hpmcounter25;
+            CSR_MHPMCOUNTER26 : dataOut = hpmcounter26;
+            CSR_MHPMCOUNTER27 : dataOut = hpmcounter27;
+            CSR_MHPMCOUNTER28 : dataOut = hpmcounter28;
+            CSR_MHPMCOUNTER29 : dataOut = hpmcounter29;
+            CSR_MHPMCOUNTER30 : dataOut = hpmcounter30;
+            CSR_MHPMCOUNTER31 : dataOut = hpmcounter31;
             CSR_MISA          : dataOut = MISA;
             CSR_MSCRATCH      : dataOut = mscratch;
             CSR_MSTATUS       : dataOut = mstatus;
