@@ -9,7 +9,25 @@ module ALU
     output Data  o_result); // Resultat
 
 
+    /*logic shiftDir;
+    logic shiftSR;
+    Data bs_result;
+
+    BarrelShifter #(
+        .WIDTH ($size(Data)))
+    bs (
+        .i_data (i_dataA),
+        .i_bits (i_dataB[4:0]),
+        .i_dir  (shiftDir),
+        .i_sr   (shiftSR),
+        .o_data (bs_result));*/
+
+
     always_comb begin
+
+        //shiftDir = 0;
+        //shiftSR  = 0;
+
         case (i_op)
             AluOp_ADD:
                 o_result = i_dataA + i_dataB;
@@ -27,7 +45,20 @@ module ALU
                 o_result = i_dataA ^ i_dataB;
 
             AluOp_SLL:
-                o_result = i_dataA << (i_dataB & 32'h1F);
+                o_result = i_dataA << i_dataB[4:0];
+                //o_result = bs_result;
+
+            /*AluOp_SRA: begin
+                shiftDir = 1'b1;
+                shiftSR  = 1'b1;
+                o_result = bs_result;
+            end*/
+
+            AluOp_SRL: begin
+                o_result = i_dataA >> i_dataB[4:0];
+                //shiftDir = 1'b1;
+                //o_result = bs_result;
+            end
 
             AluOp_SLT:
                 o_result = Data'($signed(i_dataA) < $signed(i_dataB) ? 1 : 0);

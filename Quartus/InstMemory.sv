@@ -15,6 +15,6 @@ module InstMemory
 
 
     initial
-        $readmemh("../build/Firmware/firmware.txt", data);
+        $readmemh("../Run/firmware.txt", data);
 
 endmodule

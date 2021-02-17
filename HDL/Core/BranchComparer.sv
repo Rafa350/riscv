@@ -9,31 +9,24 @@ module BranchComparer
     output logic o_isLessUnsigned);
 
 
-    assign o_isEqual = i_dataRS1 == i_dataRS2;
+    localparam bit FAST = 0;
 
     generate
-    if (RV_TARGET_COMPILER == "VERILATOR") begin
-
-        assign o_isLessUnsigned = $unsigned(i_dataRS1) < $unsigned(i_dataRS2);
-        assign o_isLessSigned   = $signed(i_dataRS1) < $signed(i_dataRS2);
-
-    end
-
-    else if (RV_TARGET_COMPILER == "QUARTUS") begin
-
-        less32S
-        less32S (
-            .dataa(i_dataRS1),
-            .datab(i_dataRS2),
-            .alb(o_isLessSigned));
-
-        less32U
-        less32U (
-            .dataa(i_dataRS1),
-            .datab(i_dataRS2),
-            .alb(o_isLessUnsigned));
-
-    end
+        if (FAST == 1) begin
+            FullComparator #(
+                .WIDTH($size(Data)))
+            comparator (
+                .i_inputA         (i_dataRS1),
+                .i_inputB         (i_dataRS2),
+                .o_isEqual        (o_isEqual),
+                .o_isLessUnsigned (o_isLessUnsigned),
+                .o_isLessSigned   (o_isLessSigned));
+        end
+        else begin
+            assign o_isEqual        = i_dataRS1 == i_dataRS2;
+            assign o_isLessUnsigned = $unsigned(i_dataRS1) < $unsigned(i_dataRS2);
+            assign o_isLessSigned   = $signed(i_dataRS1) < $signed(i_dataRS2);
+        end
     endgenerate
 
 endmodule
