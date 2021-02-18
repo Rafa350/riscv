@@ -34,7 +34,7 @@ module Comparator
 
                 // Ultim nivell
                 //
-                else if (level == $clog2(WIDTH)-1) begin
+                else if (level == NUM_LEVELS-1) begin
                     CL cl(
                         .i_isEqualLSB (L[level-1].isEqual[bits*2]),
                         .i_isLessLSB  (L[level-1].isLess[bits*2]),
@@ -76,9 +76,9 @@ module CMP (
         ( i_inputA[1] &  i_inputA[0] &  i_inputB[1] &  i_inputB[0]);
 
     assign o_isLess =
+        (~i_inputA[1] & ~i_inputA[0] & i_inputB[0]) |
         (~i_inputA[1] &  i_inputB[1]) |
-        (~i_inputA[1] &  i_inputA[0] & i_inputB[1]) |
-        (~i_inputA[1] & ~i_inputA[0] & i_inputB[0]);
+        ( i_inputA[1] & ~i_inputA[0] & i_inputB[1] & i_inputB[0]);
 
 endmodule
 

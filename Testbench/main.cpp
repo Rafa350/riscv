@@ -18,7 +18,7 @@
 // de 10, ja que el temp del sistems (clock) es cada 10 ticks del temps
 // de simulacio (simTime)
 //
-#define CLOCK_MAX           50000  // Nombre de ticks a simular
+#define CLOCK_MAX           10000  // Nombre de ticks a simular
 #define CLOCK_START             0  // Tick per iniciar clk
 #define CLOCK_TICKS            10  // Tics per cicle clk
 
@@ -88,24 +88,6 @@ void CPUTestbench::run() {
 }
 
 
-/// ----------------------------------------------------------------------
-/// \brief    Llista un bloc de memoria de dades
-/// \param    addr: Adressa del bloc
-/// \param    length: Longitut del bloc
-///
-void CPUTestbench::dumpDataMemory(
-    RISCV::addr_t addr,
-    unsigned length) {
-
-    Vtop *top = getTop();
-    long long memObj = top->top->dataMem->getMemObj();
-    Memory *mem = (Memory*) memObj;
-
-    printf("Data memory dump:\n");
-    mem->dump(addr, length);
-    printf("\n");
-}
-
 
 /// ----------------------------------------------------------------------
 /// \brief    Entrada a l'aplicacio.
@@ -119,12 +101,11 @@ int main(
     char **argv,
     char **env) {
 
-    printf("RISCV RTL Simulator V1.0\n\n");
+    printf("RISCV Componments testbench V1.0\n\n");
 
     CPUTestbench *tb = new CPUTestbench();
     if (tb) {
         tb->run();
-        tb->dumpDataMemory(RISCV_DMEM_BASE, 128);
         delete tb;
     }
 

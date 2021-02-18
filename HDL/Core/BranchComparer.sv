@@ -9,7 +9,7 @@ module BranchComparer
     output logic o_isLessUnsigned);
 
 
-    localparam bit FAST = 0;
+    localparam bit FAST = 1;
 
     generate
         if (FAST == 1) begin
@@ -20,7 +20,7 @@ module BranchComparer
                 .i_inputB         (i_dataRS2),
                 .o_isEqual        (o_isEqual),
                 .o_isLessUnsigned (o_isLessUnsigned),
-                .o_isLessSigned   (o_isLessSigned));
+                .o_isLessSigned   (o_isLessSigned)); 
         end
         else begin
             assign o_isEqual        = i_dataRS1 == i_dataRS2;

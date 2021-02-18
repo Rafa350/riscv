@@ -14,6 +14,7 @@
 ## Simulation
 - Verilator RTL simulation
 - Custom C++ app for behavioral simulation
+- Verilator testbench for individual modules
 
 ## Implementation
 - Quartus Prime 20.1
@@ -28,7 +29,7 @@
 
 
 ## Future things
--  Unified instruction and data memory 
+-  Unified instruction and data memory
 -  L2 Cache and SDRAM interface
 -  Peripherical bus (Wishbone ?)
 -  UART

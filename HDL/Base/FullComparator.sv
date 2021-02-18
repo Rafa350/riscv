@@ -11,46 +11,23 @@ module FullComparator
 
     // Compara els valors sense tindre en compte el signe
     //
-    logic comparator_isEqual;
-    logic comparator_isLess;
-
     Comparator #(
         .WIDTH (WIDTH))
     comparator (
         .i_inputA  (i_inputA),
         .i_inputB  (i_inputB),
-        .o_isEqual (comparator_isEqual),
-        .o_isLess  (comparator_isLess));
+        .o_isEqual (o_isEqual),
+        .o_isLess  (o_isLessUnsigned));
 
-
-    // Obte els signes (El bit MSB) dels valors
-    logic signA;
-    logic signB;
-    assign signA = i_inputA[WIDTH-1];
-    assign signB = i_inputB[WIDTH-1];
-
-
-    // Evalua els resultats
+    // Evalua els resultats amb signe
     //
     always_comb begin
-
-        o_isLessUnsigned = comparator_isLess;
-
-        if (comparator_isEqual) begin
-            o_isEqual = 1'b1;
+        if (o_isEqual)
             o_isLessSigned = 1'b0;
-        end
-
-        else if (comparator_isLess) begin
-            o_isEqual = 1'b0;
-            o_isLessSigned = ~signB;
-        end
-
-        else begin
-            o_isEqual = 1'b0;
-            o_isLessSigned = ~signA;
-        end
-
+        else if (o_isLessUnsigned)
+            o_isLessSigned = ~i_inputB[WIDTH-1];
+        else
+            o_isLessSigned = i_inputA[WIDTH-1];
     end
 
 endmodule

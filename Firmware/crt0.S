@@ -68,7 +68,7 @@ _start:
     csrr t0, mcycle
     csrr t1, minstret
     lui t2, 0x100
-    addi t2, t2, 0x20
+    addi t2, t2, 0x40
     sw t0, 0(t2)
     sw t1, 4(t2)
 
