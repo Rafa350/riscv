@@ -9,37 +9,37 @@ module Comparator
 
     generate
 
+        genvar i, j;
+
         localparam NUM_LEVELS = $clog2(WIDTH);
 
-        genvar level;
-        for (level = 0; level < NUM_LEVELS; level++) begin: L
+        for (i = 0; i < NUM_LEVELS; i++) begin: BLK1
 
-            localparam NUM_BITS = WIDTH/(2**level)/2;
+            localparam NUM_BITS = WIDTH/(2**i)/2;
 
-            logic isEqual[WIDTH/(2**level)/2];
-            logic isLess[WIDTH/(2**level)/2];
+            logic isEqual[NUM_BITS];
+            logic isLess[NUM_BITS];
 
-            genvar bits;
-            for (bits = 0; bits < NUM_BITS; bits++) begin: C
+            for (j = 0; j < NUM_BITS; j++) begin: BLK2
 
                 // Primer nivell
                 //
-                if (level == 0) begin
-                    CMP cmp (
-                        .i_inputA  (i_inputA[2*bits+1:2*bits]),
-                        .i_inputB  (i_inputB[2*bits+1:2*bits]),
-                        .o_isEqual (L[level].isEqual[bits]),
-                        .o_isLess  (L[level].isLess[bits]));
+                if (i == 0) begin
+                    Comparator_CMP cmp (
+                        .i_inputA  (i_inputA[j+j+1:j+j]),
+                        .i_inputB  (i_inputB[j+j+1:j+j]),
+                        .o_isEqual (BLK1[i].isEqual[j]),
+                        .o_isLess  (BLK1[i].isLess[j]));
                 end
 
                 // Ultim nivell
                 //
-                else if (level == NUM_LEVELS-1) begin
-                    CL cl(
-                        .i_isEqualLSB (L[level-1].isEqual[bits*2]),
-                        .i_isLessLSB  (L[level-1].isLess[bits*2]),
-                        .i_isEqualMSB (L[level-1].isEqual[bits*2+1]),
-                        .i_isLessMSB  (L[level-1].isLess[bits*2+1]),
+                else if (i == NUM_LEVELS-1) begin
+                    Comparator_CL cl(
+                        .i_isEqualLSB (BLK1[i-1].isEqual[j+j]),
+                        .i_isLessLSB  (BLK1[i-1].isLess[j+j]),
+                        .i_isEqualMSB (BLK1[i-1].isEqual[j+j+1]),
+                        .i_isLessMSB  (BLK1[i-1].isLess[j+j+1]),
                         .o_isEqual    (o_isEqual),
                         .o_isLess     (o_isLess));
                 end
@@ -47,13 +47,13 @@ module Comparator
                 // Nivells intermitjos
                 //
                 else begin
-                    CL cl(
-                        .i_isEqualLSB (L[level-1].isEqual[bits*2]),
-                        .i_isLessLSB  (L[level-1].isLess[bits*2]),
-                        .i_isEqualMSB (L[level-1].isEqual[bits*2+1]),
-                        .i_isLessMSB  (L[level-1].isLess[bits*2+1]),
-                        .o_isEqual    (L[level].isEqual[bits]),
-                        .o_isLess     (L[level].isLess[bits]));
+                    Comparator_CL cl(
+                        .i_isEqualLSB (BLK1[i-1].isEqual[j+j]),
+                        .i_isLessLSB  (BLK1[i-1].isLess[j+j]),
+                        .i_isEqualMSB (BLK1[i-1].isEqual[j+j+1]),
+                        .i_isLessMSB  (BLK1[i-1].isLess[j+j+1]),
+                        .o_isEqual    (BLK1[i].isEqual[j]),
+                        .o_isLess     (BLK1[i].isLess[j]));
                 end
             end
         end
@@ -63,7 +63,7 @@ module Comparator
 endmodule
 
 
-module CMP (
+module Comparator_CMP (
     input  logic [1:0] i_inputA,
     input  logic [1:0] i_inputB,
     output logic       o_isEqual,
@@ -83,7 +83,7 @@ module CMP (
 endmodule
 
 
-module CL (
+module Comparator_CL (
     input  logic i_isEqualLSB,
     input  logic i_isLessLSB,
     input  logic i_isEqualMSB,

@@ -2,19 +2,30 @@ module BranchAlu
     import Types::*;
 (
     input  logic [1:0] i_op,      // Operacio
-
     input  InstAddr    i_pc,      // PC
     input  Data        i_instIMM, // Valor inmediat de la instruccio
     input  Data        i_regData, // Valor del registre base
-
     output InstAddr    o_pc);     // El resultat
 
-    always_comb
-        unique case (i_op)
-            2'b00: o_pc = i_pc + 4;
-            2'b01: o_pc = i_pc + i_instIMM;
-            2'b10: o_pc = i_regData + 4;
-            2'b11: o_pc = i_regData + i_instIMM;
-        endcase
 
+    InstAddr operandA;
+    InstAddr operandB;
+
+
+    assign operandA = i_op[1] ? i_regData : i_pc;
+    assign operandB = i_op[0] ? i_instIMM : InstAddr'(4);
+
+    assign o_pc = operandA + operandB;
+
+    /*
+    // verilator lint_off PINMISSING
+    Adder #(
+        .WIDTH ($size(InstAddr)))
+    adder (
+        .i_operandA (operandA),
+        .i_operandB (operandB),
+        .i_carry    (1'b0),
+        .o_result   (o_pc));
+    // verilator lint_on PINMISSING
+    */
 endmodule
