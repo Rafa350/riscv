@@ -1,85 +1,76 @@
-// Patent US5978822A expired 2015.
-// Circuit for Rotating, Left Shifting, or Right Shifting Bits
-
 module BarrelShifter
 #(
     parameter WIDTH = 32)
 (
-    input  logic [WIDTH-1:0]         i_data,  // Dades d'entrada
-    input  logic [$clog2(WIDTH)-1:0] i_bits,  // Nombre de bits a moure
-    input  logic                     i_dir,   // Direccio: 0=Left, 1=Right
-    input  logic                     i_sr,    // 0=Shift, 1=Rotate
-    output logic [WIDTH-1:0]         o_data); // Dasdes de sortida
+    input  logic [WIDTH-1:0]         i_data,   // Dades d'entrada
+    input  logic [$clog2(WIDTH)-1:0] i_bits,   // Nombre de bits a moure
+    input  logic                     i_left,   // Selecciona esquerra
+    input  logic                     i_rotate, // Selecciona rotacio
+    output logic [WIDTH-1:0]         o_data);  // Dasdes de sortida
 
 
-    localparam BITS_WIDTH = $clog2(WIDTH);
+    logic [WIDTH-1:0] d0, dx0;
 
+    BarrelShifter_ROTATOR #(
+        .WIDTH(WIDTH),
+        .BITS(1))
+    rotator0 (
+        .i_data   (i_data),
+        .i_rotate (i_rotate),
+        .o_data   (dx0));
 
-    logic [WIDTH-1:0] datax;
-
-
-    function logic[WIDTH-1:0] reverse(input logic [WIDTH-1:0] inp);
-
-        logic [WIDTH-1:0] out;
-
-        for (int unsigned i = 0; i < WIDTH; i++) begin : L1
-            out[i] = inp[WIDTH-i-1];
-        end
-
-        return out;
-
-    endfunction
-
+    Mux2To1 #(
+        .WIDTH (WIDTH))
+    mux0 (
+        .i_select (i_left),
+        .i_input0 (i_data),
+        .i_input1 (dx0),
+        .o_output (d0));
 
     generate
-
-        // Inversio de i_data si el desplaçament es a l'esquerra
-        //
-        assign datax = i_dir ? reverse(i_data) : i_data;
-
-        // Deplaçament de bits
-        //
         genvar i;
-        for (i = 0; i < BITS_WIDTH; i++) begin : LL
+        for (i = 0; i < $clog2(WIDTH); i++) begin : BLK1
 
-            logic [WIDTH-1:0] data;
+            logic [WIDTH-1:0] d, dx;
 
             if (i == 0) begin
-                SRL #(
-                    .WIDTH (WIDTH),
-                    .BITS (2**i))
-                srl (
-                    .i_enable (i_bits[i] ^ i_dir),
-                    .i_input  (datax),
-                    .i_sr     (i_sr),
-                    .o_output (LL[i].data));
+                BarrelShifter_ROTATOR #(
+                    .WIDTH(WIDTH),
+                    .BITS(2**i))
+                rotator (
+                    .i_data   (d0),
+                    .i_rotate (i_rotate),
+                    .o_data   (BLK1[i].dx));
+
+                Mux2To1 #(
+                    .WIDTH (WIDTH))
+                mux (
+                    .i_select (i_left ^ i_bits[i]),
+                    .i_input0 (d0),
+                    .i_input1 (BLK1[i].dx),
+                    .o_output (BLK1[i].d));
             end
+
             else begin
-                SRL #(
-                    .WIDTH (WIDTH),
-                    .BITS (2**i))
-                srl (
-                    .i_enable (i_bits[i] ^ i_dir),
-                    .i_input  (LL[i-1].data),
-                    .i_sr     (i_sr),
-                    .o_output (LL[i].data));
+                BarrelShifter_ROTATOR #(
+                    .WIDTH(WIDTH),
+                    .BITS(2**i))
+                rotator (
+                    .i_data   (BLK1[i-1].d),
+                    .i_rotate (i_rotate),
+                    .o_data   (BLK1[i].dx));
+
+                Mux2To1 #(
+                    .WIDTH (WIDTH))
+                mux (
+                    .i_select (i_left ^ i_bits[i]),
+                    .i_input0 (BLK1[i-1].d),
+                    .i_input1 (BLK1[i].dx),
+                    .o_output (BLK1[i].d));
             end
 
-
-            if (i == BITS_WIDTH-1) begin
-
-                logic [WIDTH-1:0] srlx_output;
-                SRL #(
-                    .WIDTH (WIDTH),
-                    .BITS (1))
-                srlx (
-                    .i_enable (1'b1),
-                    .i_input  (LL[i].data),
-                    .i_sr     (i_sr),
-                    .o_output (srlx_output));
-
-                assign o_data = i_dir ? reverse(srlx_output) : LL[i].data;
-            end
+            if (i == $clog2(WIDTH)-1)
+                assign o_data = BLK1[i].d;
         end
 
     endgenerate
@@ -87,19 +78,16 @@ module BarrelShifter
 endmodule
 
 
-module SRL
+
+module BarrelShifter_ROTATOR
 #(
     parameter WIDTH = 32,
     parameter BITS = 1)
 (
-    input  logic [WIDTH-1:0] i_input,   // Dades d'entrada
-    input  logic             i_enable,  // Habilita el desplaçament
-    input  logic             i_sr,      // 0=Shift, 1=Rotate
-    output logic [WIDTH-1:0] o_output); // Dades de sortida
+    input  logic [WIDTH-1:0] i_data,  // Dades d'entrada
+    input  logic i_rotate,            // Selecciona rotacio
+    output logic [WIDTH-1:0] o_data); // Dades de sortida
 
-
-    logic [BITS-1:0] fill;
-    assign fill = i_sr ? i_input[BITS-1:0] : {BITS{1'b0}};
-    assign o_output = i_enable ? {i_input[WIDTH-BITS-1:0], fill} : i_input;
+    assign o_data = { i_rotate ? i_data[BITS-1:0] : {BITS{1'b0}},  i_data[WIDTH-1:BITS]};
 
 endmodule

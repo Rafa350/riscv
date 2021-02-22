@@ -16,11 +16,11 @@ module BranchComparer
             FullComparator #(
                 .WIDTH($size(Data)))
             comparator (
-                .i_inputA         (i_dataRS1),
-                .i_inputB         (i_dataRS2),
+                .i_dataA         (i_dataRS1),
+                .i_dataB         (i_dataRS2),
                 .o_isEqual        (o_isEqual),
                 .o_isLessUnsigned (o_isLessUnsigned),
-                .o_isLessSigned   (o_isLessSigned)); 
+                .o_isLessSigned   (o_isLessSigned));
         end
         else begin
             assign o_isEqual        = i_dataRS1 == i_dataRS2;

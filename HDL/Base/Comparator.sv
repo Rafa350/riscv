@@ -2,8 +2,8 @@ module Comparator
 # (
     parameter WIDTH = 32)
 (
-    input  logic [WIDTH-1:0] i_inputA,
-    input  logic [WIDTH-1:0] i_inputB,
+    input  logic [WIDTH-1:0] i_dataA,
+    input  logic [WIDTH-1:0] i_dataB,
     output logic             o_isEqual,
     output logic             o_isLess);
 
@@ -26,8 +26,8 @@ module Comparator
                 //
                 if (i == 0) begin
                     Comparator_CMP cmp (
-                        .i_inputA  (i_inputA[j+j+1:j+j]),
-                        .i_inputB  (i_inputB[j+j+1:j+j]),
+                        .i_dataA  (i_dataA[j+j+1:j+j]),
+                        .i_dataB  (i_dataB[j+j+1:j+j]),
                         .o_isEqual (BLK1[i].isEqual[j]),
                         .o_isLess  (BLK1[i].isLess[j]));
                 end
@@ -64,21 +64,21 @@ endmodule
 
 
 module Comparator_CMP (
-    input  logic [1:0] i_inputA,
-    input  logic [1:0] i_inputB,
+    input  logic [1:0] i_dataA,
+    input  logic [1:0] i_dataB,
     output logic       o_isEqual,
     output logic       o_isLess);
 
     assign o_isEqual =
-        (~i_inputA[1] & ~i_inputA[0] & ~i_inputB[1] & ~i_inputB[0]) |
-        (~i_inputA[1] &  i_inputA[0] & ~i_inputB[1] &  i_inputB[0]) |
-        ( i_inputA[1] & ~i_inputA[0] &  i_inputB[1] & ~i_inputB[0]) |
-        ( i_inputA[1] &  i_inputA[0] &  i_inputB[1] &  i_inputB[0]);
+        (~i_dataA[1] & ~i_dataA[0] & ~i_dataB[1] & ~i_dataB[0]) |
+        (~i_dataA[1] &  i_dataA[0] & ~i_dataB[1] &  i_dataB[0]) |
+        ( i_dataA[1] & ~i_dataA[0] &  i_dataB[1] & ~i_dataB[0]) |
+        ( i_dataA[1] &  i_dataA[0] &  i_dataB[1] &  i_dataB[0]);
 
     assign o_isLess =
-        (~i_inputA[1] & ~i_inputA[0] & i_inputB[0]) |
-        (~i_inputA[1] &  i_inputB[1]) |
-        ( i_inputA[1] & ~i_inputA[0] & i_inputB[1] & i_inputB[0]);
+        (~i_dataA[1] & ~i_dataA[0] & i_dataB[0]) |
+        (~i_dataA[1] &  i_dataB[1]) |
+        ( i_dataA[1] & ~i_dataA[0] & i_dataB[1] & i_dataB[0]);
 
 endmodule
 

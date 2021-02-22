@@ -8,6 +8,7 @@ module ALU
 
 
     Data alu_result;
+    Data shifter_result;
     logic comparator_isLessUnsigned;
     logic comparator_isLessSigned;
 
@@ -27,11 +28,21 @@ module ALU
     FullComparator #(
         .WIDTH ($size(Data)))
     comparator (
-        .i_inputA         (i_dataA),
-        .i_inputB         (i_dataB),
+        .i_dataA          (i_dataA),
+        .i_dataB          (i_dataB),
         .o_isLessUnsigned (comparator_isLessUnsigned),
         .o_isLessSigned   (comparator_isLessSigned));
     // verilator lint_on PINMISSING
+
+
+    BarrelShifter #(
+        .WIDTH ($size(Data)))
+    shifter (
+        .i_data   (i_dataA),
+        .i_bits   (i_dataB[4:0]),
+        .i_left   (0),
+        .i_rotate (0),
+        .o_data   (shifter_result));
 
 
     always_comb begin
@@ -51,6 +62,11 @@ module ALU
 
             AluOp_XOR:
                 o_result = i_dataA ^ i_dataB;
+
+            AluOp_SLL,
+            AluOp_SRA,
+            AluOp_SRL:
+                o_result = shifter_result;
 
             AluOp_SLT:
                 o_result = Data'(comparator_isLessSigned);

@@ -3,15 +3,7 @@
 #include "RISCVMemory.h"
 
 
-#define PIPELINE
-
-
-#ifdef PIPELINE
-    #define TRACE_FILE_NAME "waves_pp/trace.fst"
-#else
-    #define TRACE_FILE_NAME "waves_sc/trace.fst"
-#endif
-
+#define TRACE_FILE_NAME "waves_tb/trace.fst"
 
 // Els temps son en ticks de simulacio (simTime). Per que sigui totalment
 // asincron, els temps d'activacio o desactivacio no poden ser multiples
