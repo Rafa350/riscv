@@ -35,14 +35,15 @@ module ALU
     // verilator lint_on PINMISSING
 
 
-    BarrelShifter #(
+    Shifter #(
         .WIDTH ($size(Data)))
     shifter (
-        .i_data   (i_dataA),
-        .i_bits   (i_dataB[4:0]),
-        .i_left   (0),
-        .i_rotate (0),
-        .o_data   (shifter_result));
+        .i_data       (i_dataA),
+        .i_bits       (i_dataB[4:0]),
+        .i_left       (i_op == AluOp_SLL),
+        .i_rotate     (0),
+        .i_arithmetic (i_op == AluOp_SRA),
+        .o_data       (shifter_result));
 
 
     always_comb begin

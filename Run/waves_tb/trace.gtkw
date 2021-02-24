@@ -1,0 +1,67 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Sun Feb 21 19:27:15 2021
+[*]
+[dumpfile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_tb\trace.fst"
+[dumpfile_mtime] "Sun Feb 21 19:19:30 2021"
+[dumpfile_size] 1475
+[savefile] "C:\Users\Rafael\Documents\Projectes\FPGA\RISCV\Run\waves_tb\trace.gtkw"
+[timestart] 0
+[size] 1920 1017
+[pos] -1 -1
+*-2.672039 6 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.top.
+[treeopen] TOP.top.barrelShifter.
+[treeopen] TOP.top.barrelShifter.BLK1[0].
+[treeopen] TOP.top.barrelShifter.BLK1[0].genblk1.
+[treeopen] TOP.top.barrelShifter.BLK1[1].
+[treeopen] TOP.top.barrelShifter.BLK1[1].genblk1.
+[treeopen] TOP.top.barrelShifter.BLK1[2].
+[treeopen] TOP.top.barrelShifter.BLK1[2].genblk1.
+[treeopen] TOP.top.barrelShifter.BLK1[3].
+[treeopen] TOP.top.barrelShifter.BLK1[3].genblk1.
+[sst_width] 211
+[signals_width] 285
+[sst_expanded] 1
+[sst_vpaned_height] 301
+@28
+TOP.top.i_clock
+TOP.top.i_reset
+@420
+TOP.top.counter
+@200
+-BarrelShifter
+@28
+TOP.top.barrelShifter.i_data[15:0]
+TOP.top.barrelShifter.i_left
+TOP.top.barrelShifter.i_rotate
+TOP.top.barrelShifter.i_bits[3:0]
+TOP.top.barrelShifter.o_data[15:0]
+@200
+-
+@28
+TOP.top.barrelShifter.dx0[15:0]
+TOP.top.barrelShifter.d0[15:0]
+@200
+-L0
+@28
+TOP.top.barrelShifter.BLK1[0].genblk1.mux.i_select
+TOP.top.barrelShifter.BLK1[0].genblk1.mux.o_output[15:0]
+@200
+-L1
+@28
+TOP.top.barrelShifter.BLK1[1].genblk1.mux.i_select
+TOP.top.barrelShifter.BLK1[1].genblk1.mux.o_output[15:0]
+@200
+-L2
+@28
+TOP.top.barrelShifter.BLK1[2].genblk1.mux.i_select
+TOP.top.barrelShifter.BLK1[2].genblk1.mux.o_output[15:0]
+@200
+-L3
+@28
+TOP.top.barrelShifter.BLK1[3].genblk1.mux.i_select
+TOP.top.barrelShifter.BLK1[3].genblk1.mux.o_output[15:0]
+[pattern_trace] 1
+[pattern_trace] 0
