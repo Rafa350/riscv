@@ -24,7 +24,7 @@ module InstL1Cache
         .i_mem_rdata (bus.inst),
 
         .i_addr      (coreBus.addr),
-        .i_rd        (coreBus.re),
+        .i_re        (coreBus.re),
         .o_inst      (coreBus.inst),
 
         .o_busy      (cache_busy),

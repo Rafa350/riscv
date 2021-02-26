@@ -10,7 +10,7 @@
 #define RISCV_DMEM_SIZE        1024
 
 #define RISCV_IMEM_BASE        0x000000
-#define RISCV_IMEM_SIZE        512
+#define RISCV_IMEM_SIZE        1024
 
 
 namespace RISCV {

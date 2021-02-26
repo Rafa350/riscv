@@ -5,6 +5,7 @@
     .section .text
     .option norvc
 
+    // Entrada des del vector RESET
 _reset_handler:
 _start:
     .global _start
@@ -53,6 +54,9 @@ _start:
     mv t5, zero
     mv t6, zero
 
+    // Executa els test
+    //jal ra, test
+
     // Inicialitza el stack pointer
     la sp, _stack_start
 
@@ -77,6 +81,11 @@ _loop:
     j _loop
 
 
+    // Entrada des del vector NMI
+_nmi_handler:
+    j _reset_handler
+
+
 // ***********************************************************************
 //       VECTORS SECTION
 // ***********************************************************************
@@ -86,3 +95,4 @@ _loop:
 
     .org 0x00
     jal zero, _reset_handler
+    jal zero, _nmi_handler

@@ -18,8 +18,8 @@ module ALU
         .WIDTH ($size(Data)))
     adder(
         .i_operandA (i_dataA),
-        .i_operandB (i_op == AluOp_SUB ? ~i_dataB : i_dataB),
-        .i_carry    (i_op == AluOp_SUB ? 1'b1 : 1'b0),
+        .i_operandB (i_dataB ^ {$size(Data){i_op == AluOp_SUB}}),
+        .i_carry    (i_op == AluOp_SUB),
         .o_result   (alu_result));
     // verilator lint_on PINMISSING
 

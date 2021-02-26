@@ -122,7 +122,8 @@ module CSRUnit
     Data                        mtimecmp;   // Comparador del contador de temps
     Data                        mcause;
     Data                        mscratch;
-    Data                        mstatus;
+    logic                       mstatus_MIE;
+    logic                       mstatus_MPRV;
     logic [1:0]                 mtvec_MODE;
     logic [$size(InstAddr)-3:0] mtvec_BASE;
     logic                       mip_MEIP;
@@ -135,96 +136,116 @@ module CSRUnit
     logic                       mcounteren_IR;
     logic                       mcountinhibit_CY; // Inhibeix el contador de cicles
     logic                       mcountinhibit_IR; // Inhibeix el contador d'instruccions
+    logic                       mcountinhibit_3;
+    logic                       mcountinhibit_4;
+    logic                       mcountinhibit_5;
+    logic                       mcountinhibit_6;
+    logic                       mcountinhibit_7;
 
 
     Data dataIn;
     Data dataOut;
-    logic isNOP;
+    logic we;
 
 
-    assign isNOP = i_op == CsrOp_NOP;
-
-    always_comb
-        unique case (i_op)
+    always_comb begin
+        we = i_op != CsrOp_NOP;
+        case (i_op)
             CsrOp_SET   : dataIn = dataOut | i_data;
             CsrOp_CLEAR : dataIn = dataOut & ~i_data;
             default     : dataIn = i_data;
         endcase
+    end
 
-    always_ff @(posedge i_clock)
-        if (i_reset)
-            cycle <= 0;
-        else if ((i_csr == CSR_MCYCLE) & ~isNOP)
-            cycle <= dataIn;
-        else if (~mcountinhibit_CY)
-            cycle <= cycle + 1;
+    always_ff @(posedge i_clock) begin
+        if (i_reset) begin
+            cycle       <= 0;
+            instret     <= 0;
+            hpmcounter3 <= 0;
+            hpmcounter4 <= 0;
+            hpmcounter5 <= 0;
+            hpmcounter6 <= 0;
+            hpmcounter7 <= 0;
+        end
+        else if (we) begin
+            // verilator lint_off CASEINCOMPLETE
+            unique case (i_csr)
+                CSR_MCYCLE  : cycle   <= dataIn;
+                CSR_MINSTRET: instret <= dataIn;
+            endcase
+            // verilator lint_on CASEINCOMPLETE
+        end
+        else begin
+            if (~mcountinhibit_CY) cycle <= cycle + 1;
+            if (~mcountinhibit_IR & i_instRet) instret <= instret + 1;
+            if (~mcountinhibit_3) hpmcounter3 <= hpmcounter3 + 1;
+            if (~mcountinhibit_4) hpmcounter4 <= hpmcounter4 + 1;
+            if (~mcountinhibit_5) hpmcounter5 <= hpmcounter5 + 1;
+            if (~mcountinhibit_6) hpmcounter6 <= hpmcounter6 + 1;
+            if (~mcountinhibit_7) hpmcounter7 <= hpmcounter7 + 1;
+        end
+    end
 
-    always_ff @(posedge i_clock)
-        if (i_reset)
-            instret <= 0;
-        else if ((i_csr == CSR_MINSTRET) & ~isNOP)
-            instret <= dataIn;
-        else if (~mcountinhibit_IR & i_instRet)
-            instret <= instret + 1;
-
-    always_ff @(posedge i_clock)
+    always_ff @(posedge i_clock) begin
         if (i_reset) begin
             mcounteren_CY    <= 1'b0;
             mcounteren_IR    <= 1'b0;
             mcountinhibit_CY <= 1'b1;
             mcountinhibit_IR <= 1'b1;
+            mcountinhibit_3  <= 1'b1;
+            mcountinhibit_4  <= 1'b1;
+            mcountinhibit_5  <= 1'b1;
+            mcountinhibit_6  <= 1'b1;
+            mcountinhibit_7  <= 1'b1;
             mtvec_BASE       <= 0;
             mtvec_MODE       <= 0;
+            mstatus_MIE      <= 1'b0;
+            mstatus_MPRV     <= 1'b0;
         end
-        else
-            case (i_csr)
-                CSR_MCAUSE:
-                    mcause <= dataIn;
+        else if (we)
+            // verilator lint_off CASEINCOMPLETE
+            unique case (i_csr)
+                CSR_MCAUSE: mcause <= dataIn;
 
-                CSR_MCOUNTEREN:
-                    begin
-                        mcounteren_IR <= dataIn[2];
-                        mcounteren_CY <= dataIn[0];
-                    end
+                CSR_MCOUNTEREN: begin
+                    mcounteren_IR <= dataIn[2];
+                    mcounteren_CY <= dataIn[0];
+                end
 
-                CSR_MCOUNTINHIBIT:
-                    begin
-                        mcountinhibit_IR <= dataIn[2];
-                        mcountinhibit_CY <= dataIn[0];
-                    end
+                CSR_MCOUNTINHIBIT: begin
+                    mcountinhibit_IR <= dataIn[2];
+                    mcountinhibit_CY <= dataIn[0];
+                end
 
-                CSR_MIE:
-                    begin
-                        mie_MEIE <= dataIn[11];
-                        mie_MTIE <= dataIn[7];
-                        mie_MSIE <= dataIn[3];
-                    end
+                CSR_MIE: begin
+                    mie_MEIE <= dataIn[11];
+                    mie_MTIE <= dataIn[7];
+                    mie_MSIE <= dataIn[3];
+                end
 
-                CSR_MIP:
-                    begin
-                        mip_MEIP <= dataIn[11];
-                        mip_MTIP <= dataIn[7];
-                        mip_MSIP <= dataIn[3];
-                    end
+                CSR_MIP: begin
+                    mip_MEIP <= dataIn[11];
+                    mip_MTIP <= dataIn[7];
+                    mip_MSIP <= dataIn[3];
+                end
 
-                CSR_MSCRATCH:
-                    mscratch <= dataIn;
+                CSR_MSCRATCH: mscratch <= dataIn;
 
-                CSR_MSTATUS:
-                    mstatus <= dataIn;
+                CSR_MSTATUS: begin
+                    mstatus_MIE  <= dataIn[3];
+                    mstatus_MPRV <= dataIn[17];
+                end
 
-                CSR_MTVEC:
-                    begin
-                        mtvec_MODE <= dataIn[1:0];
-                        mtvec_BASE <= dataIn[$size(Data)-1:2];
-                    end
-
-                default:
-                    ;
+                CSR_MTVEC: begin
+                    mtvec_MODE <= dataIn[1:0];
+                    mtvec_BASE <= dataIn[$size(Data)-1:2];
+                end
             endcase
+            // verilator lint_on CASEINCOMPLETE
+    end
 
     always_comb begin
-        case (i_csr)
+        unique case (i_csr)
             CSR_MVENDORID     : dataOut = MVENDORID;
             CSR_MARCHID       : dataOut = MARCHID;
             CSR_MIMPID        : dataOut = MIMPID;
@@ -232,8 +253,8 @@ module CSRUnit
             CSR_MCAUSE        : dataOut = mcause;
             CSR_MCOUNTEREN    : dataOut = Data'({mcounteren_IR, 1'b0, mcounteren_CY});
             CSR_MCOUNTINHIBIT : dataOut = Data'({mcountinhibit_IR, 1'b0, mcountinhibit_CY});
-            CSR_MIE           : dataOut = Data'({mie_MEIE, 3'b000, mie_MTIE, 3'b000, mie_MSIE, 3'b000});
-            CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b000, mip_MTIP, 3'b000, mip_MSIP, 3'b000});
+            CSR_MIE           : dataOut = Data'({mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0});
+            CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0});
             CSR_MCYCLE        : dataOut = cycle;
             CSR_MINSTRET      : dataOut = instret;
             CSR_MHPMCOUNTER3  : dataOut = hpmcounter3;
@@ -267,7 +288,7 @@ module CSRUnit
             CSR_MHPMCOUNTER31 : dataOut = hpmcounter31;
             CSR_MISA          : dataOut = MISA;
             CSR_MSCRATCH      : dataOut = mscratch;
-            CSR_MSTATUS       : dataOut = mstatus;
+            CSR_MSTATUS       : dataOut = Data'({mstatus_MPRV, 13'b0, mstatus_MIE, 3'b0});
             CSR_MTVEC         : dataOut = Data'({mtvec_BASE, mtvec_MODE});
             default           : dataOut = Data'(0);
         endcase

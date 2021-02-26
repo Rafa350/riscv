@@ -40,18 +40,18 @@ module DataMemory
 
     always_ff @(posedge i_clock)
         if (bus.we) begin
-            if (bus.be[0])
+            if (bus.wb[0])
                 dpiMemWrite8(memObj, int'(bus.addr), int'(bus.wdata[7:0]));
-            if (bus.be[1])
+            if (bus.wb[1])
                 dpiMemWrite8(memObj, int'(bus.addr + 1), int'(bus.wdata[15:8]));
-            if (bus.be[2])
+            if (bus.wb[2])
                 dpiMemWrite8(memObj, int'(bus.addr + 2), int'(bus.wdata[23:16]));
-            if (bus.be[3])
+            if (bus.wb[3])
                 dpiMemWrite8(memObj, int'(bus.addr + 3), int'(bus.wdata[31:24]));
         end
 
     assign bus.rdata = dpiMemRead32(memObj, int'(bus.addr));
-    assign bus.busy = 1'b1;
+    assign bus.busy = 1'b0;
 
 
     initial begin

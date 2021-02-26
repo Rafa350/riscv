@@ -34,7 +34,7 @@ find_program(CMD_SIZE
 
 
 set_source_files_properties(
-    crt0.S PROPERTIES LANGUAGE C)
+    crt0.S test.S PROPERTIES LANGUAGE C)
 
 
 # Mostra la configuracio actual
@@ -59,7 +59,7 @@ add_executable(
     main.elf)
 target_sources(
     main.elf
-    PRIVATE crt0.S main.c)
+    PRIVATE crt0.S test.S main.c)
 target_compile_options(
     main.elf
     PRIVATE -Wall

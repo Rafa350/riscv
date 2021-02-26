@@ -350,6 +350,10 @@ void Processor::executeOpIMM(
             data = r[rs1] ^ imm;
             break;
 
+        case 0b101: // SRLI
+            data = unsigned(r[rs1]) >> (imm & 0x001F);
+            break;
+
         case 0b111: // ANDI
             data = r[rs1] & imm;
             break;

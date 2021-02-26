@@ -137,15 +137,17 @@ module DatapathController
             OpCode_OpIMM:
                 unique case (i_inst[14:12])
                     3'b000, // ADDI
+                    3'b001, // SLLI
                     3'b010, // SLTI
                     3'b011, // SLTIU
                     3'b100, // XORI
+                    3'b101, // SRLI/SRAI
                     3'b110, // ORI
                     3'b111: // ANDI
                         begin
                             o_operandBSel = DataBSel_IMM;
                             o_regWrEnable = 1'b1;
-                            o_aluControl  = AluOp'({1'b0, i_inst[14:12]});
+                            o_aluControl  = AluOp'({i_inst[14:12] == 3'b101 ? i_inst[30] : 1'b0, i_inst[14:12]});
                         end
                 endcase
 

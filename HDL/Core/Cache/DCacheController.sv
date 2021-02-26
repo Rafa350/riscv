@@ -11,7 +11,8 @@
 //            i_clock        : Senyal de rellotge
 //            i_reset        : Senyal de reset
 //            i_hit          : Indicador de coincidencia del cache
-//            i_rd           : Solicitut de lectura
+//            i_re           : Habiolita la lectura
+//            i_we           : Habilita l'escriptura
 //            i_tag          : El tag
 //            i_index        : El index
 //            i_block        : El bloc
@@ -19,7 +20,7 @@
 //       Sortides:
 //            o_tag          : El tag
 //            o_index        : El index
-//            o_block             : El bloc
+//            o_block        : El bloc
 //            o_cacheWrite        : Habilita escriptura en el cache
 //            o_cacheClear        : Habilita inicialitzacio del cache
 //            o_hit          : Indica coincidencia
@@ -27,10 +28,10 @@
 //                             o per escriptura en cache
 //
 //       Notes:
-     //            En cas d'activacio de 'i_reset', s'inicia el proces
+//            En cas d'activacio de 'i_reset', s'inicia el proces
 //            d'inicialitzacio de la cache, es posa 'o_cacheClear' en 1,
 //            i 'o_busy' en 1, durant els cicles necesaris per la
-//            inicialitzacio del cac     he. En cada cicle 'o_index' indica
+//            inicialitzacio del cache. En cada cicle 'o_index' indica
 //            la linia de cache que cal inicialitzar. Un cop finalitzat
 //            el process, 'o_cacheClear' passa a 0, 'o_busy' passa a 0,
 //            i 'o_index' s'assigna al valor de 'i_index'.
@@ -44,7 +45,7 @@
 //
 // -----------------------------------------------------------------------
 
-module ICacheController
+module DCacheController
 #(
     parameter TAG_WIDTH    = 3, // Amplada del tag en bits
     parameter INDEX_WIDTH  = 5, // Amplada del index en bits
@@ -54,6 +55,7 @@ module ICacheController
     input  logic                    i_reset,      // Reset
     input  logic                    i_hit,        // Indica coincidencia
     input  logic                    i_re,         // Habilita la lectura
+    input  logic                    i_we,         // Habilita l'escriptura
     input  logic [TAG_WIDTH-1:0]    i_tag,        // Tag
     input  logic [INDEX_WIDTH-1:0]  i_index,      // Index
     input  logic [OFFSET_WIDTH-1:0] i_offset,     // Offset
@@ -62,7 +64,8 @@ module ICacheController
     output logic [OFFSET_WIDTH-1:0] o_offset,     // Offset
     output logic                    o_cacheWrite, // Habilita escriptura en el cache
     output logic                    o_cacheClear, // Habilita neteja en el cache
-    output logic                    o_memRead,    // Habilita lectura de memoria
+    output logic                    o_memRead,    // Habilita lectura de la ram
+    output logic                    o_memWrite,   // Habilita escriptura en la ram
     output logic                    o_hit,        // Indica coincidencia
     output logic                    o_busy);      // Indica ocupat
 
@@ -97,6 +100,7 @@ module ICacheController
         o_offset     = i_offset;
         o_cacheWrite = 1'b0;
         o_cacheClear = 1'b0;
+        o_memWrite   = 1'b0;
         o_memRead    = 1'b0;
         o_hit        = 1'b0;
         o_busy       = 1'b1;
@@ -113,7 +117,7 @@ module ICacheController
                 nextState = State_CLEAR;
             end
 
-            State_CLEAR:      begin
+            State_CLEAR: begin
                 o_index = index;
                 o_cacheClear = 1'b1;
                 nextIndex = index + Index'(1);
@@ -124,7 +128,12 @@ module ICacheController
             State_LOOKUP: begin
                 o_hit  = i_hit;
                 o_busy = 1'b0;
-                if (~i_hit & i_re) begin
+                o_memRead = i_re;
+                if (i_we) begin
+                    o_cacheWrite = 1'b1;
+                    o_memWrite   = 1'b1;
+                end
+                else if (~i_hit & i_re) begin
                     nextTag    = i_tag;
                     nextIndex  = i_index;
                     nextOffset = Offset'(0);
@@ -138,7 +147,7 @@ module ICacheController
                 o_offset     = offset;
                 o_cacheWrite = 1'b1;
                 o_memRead    = 1'b1;
-                nextOffset   = offset + Offset'(1);
+                nextOffset = offset + Offset'(1);
                 if (Offset'(offset) == Offset'((2**$size(offset))-1))
                     nextState = State_LOOKUP;
             end

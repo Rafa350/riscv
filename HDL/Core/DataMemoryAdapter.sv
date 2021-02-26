@@ -15,20 +15,23 @@ module DataMemoryAdapter
     DataBus.master    bus);         // Interficie amb la memoria
 
 
+    ByteMask wb;
+
+
+    assign bus.addr  = {i_addr[31:2], 2'b00};
+    assign bus.re    = i_rdEnable & ~o_alignError;
+    assign bus.we    = i_wrEnable & ~o_alignError;
+    assign bus.wb    = i_wrEnable & ~o_alignError ? wb : ByteMask'(0);
+
     assign o_busy = bus.busy;
-
-    assign bus.addr = {i_addr[31:2], 2'b00};
-    assign bus.we   = i_wrEnable & ~o_alignError;
-    assign bus.re   = i_rdEnable & ~o_alignError;
-
 
     always_comb begin
 
         o_alignError = 1'b0;
-        o_rdData     = Data'(0);
+        o_rdData = Data'(0);
 
-        bus.wdata    = Data'(0);
-        bus.be       = 4'b0000;
+        bus.wdata = Data'(0);
+        wb = 4'b0000;
 
         // verilator lint_off CASEINCOMPLETE
         unique case (i_access)
@@ -61,19 +64,19 @@ module DataMemoryAdapter
                 unique case (i_addr[1:0])
                     2'b00: begin
                         bus.wdata = {24'b0, i_wrData[7:0]};
-                        bus.be = 4'b0001;
+                        wb = 4'b0001;
                     end
                     2'b01: begin
                         bus.wdata = {16'b0, i_wrData[7:0], 8'b0};
-                        bus.be = 4'b0010;
+                        wb = 4'b0010;
                     end
                     2'b10: begin
                         bus.wdata = {8'b0, i_wrData[7:0], 16'b0};
-                        bus.be = 4'b0100;
+                        wb = 4'b0100;
                     end
                     2'b11: begin
                         bus.wdata = {i_wrData[7:0], 24'b0};
-                        bus.be = 4'b1000;
+                        wb = 4'b1000;
                     end
                 endcase
 
@@ -81,11 +84,11 @@ module DataMemoryAdapter
                 unique case (i_addr[1:0])
                     2'b00: begin
                         bus.wdata = {16'b0, i_wrData[15:0]};
-                        bus.be = 4'b0011;
+                        wb = 4'b0011;
                     end
                     2'b10: begin
                         bus.wdata = {i_wrData[15:0], 16'b0};
-                        bus.be = 4'b1100;
+                        wb = 4'b1100;
                     end
                     default:
                         o_alignError = 1'b1;
@@ -95,7 +98,7 @@ module DataMemoryAdapter
                 unique case (i_addr[1:0])
                     2'b00: begin
                         bus.wdata = i_wrData;
-                        bus.be = 4'b1111;
+                        wb = 4'b1111;
                     end
                     default:
                         o_alignError = 1'b1;

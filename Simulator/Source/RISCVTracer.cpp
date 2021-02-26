@@ -95,6 +95,10 @@ void Tracer::traceInst(
                     name = "xori";
                     break;
 
+                case 0b101:
+                    name = "srli";
+                    break;
+
                 case 0b110:
                     name = "ori";
                     break;
