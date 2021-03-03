@@ -16,14 +16,26 @@ module StageWB
     input  GPRAddr i_regWrAddr,   // Adresa d'escriptura del registre
     input  logic   i_regWrEnable, // Habilita l'escriptuira en el registre
     output logic   o_hazard,      // Indica hazard
-    output logic   o_instRet);    // Indica instruccio retirada
+    output logic   o_evInstRet);  // Indica instruccio retirada
 
 
     assign o_reg_waddr = i_regWrAddr;
     assign o_reg_wdata = i_regWrData;
     assign o_reg_we    = i_regWrEnable & i_isValid;
+
+
+    // -------------------------------------------------------------------
+    // Deteccio de hazards
+    // -------------------------------------------------------------------
+
     assign o_hazard    = 1'b0;
-    assign o_instRet   = i_isValid;
+
+
+    // -------------------------------------------------------------------
+    // Genera events pels contadors de rendiment
+    // -------------------------------------------------------------------
+    
+    assign o_evInstRet = i_isValid;
 
 
 endmodule

@@ -1,4 +1,4 @@
-module Comparator
+module Comparer
 # (
     parameter WIDTH = 32)
 (

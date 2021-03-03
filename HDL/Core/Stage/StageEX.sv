@@ -17,7 +17,9 @@ module StageEX
     input  ResultSel i_resultSel,   // Seleccio del resultat
     input  AluOp     i_aluControl,  // Operacio en la unitat ALU
     input  CsrOp     i_csrControl,  // Operacio en la unitat CSR
-    input  logic     i_instRet,     // Indica instruccio retirada
+    input  logic     i_evInstRet,   // Indicador instruccio retirada
+    input  logic     i_evMemRead,   // Indica memoria lleigida
+    input  logic     i_evMemWrite,  // Indica memoria escrita
     output logic     o_hazard,      // Indica hazard
     output Data      o_dataR,       // Dades del resultat
     output Data      o_dataB);      // Dades B
@@ -66,13 +68,19 @@ module StageEX
 
     CSRUnit
     csrUnit (
-        .i_clock   (i_clock),
-        .i_reset   (i_reset),
-        .i_instRet (i_instRet),
-        .i_op      (i_isValid ? i_csrControl : CsrOp_NOP),
-        .i_csr     (i_instCSR),
-        .i_data    (operandASelector_output),
-        .o_data    (csrUnit_data));
+        .i_clock       (i_clock),
+        .i_reset       (i_reset),
+        .i_evInstRet   (i_evInstRet),
+        .i_evICacheMis (0),
+        .i_evICacheHit (0),
+        .i_evDCacheMis (0),
+        .i_evDCacheHit (0),
+        .i_evMemRead   (i_evMemRead),
+        .i_evMemWrite  (i_evMemWrite),
+        .i_op          (i_isValid ? i_csrControl : CsrOp_NOP),
+        .i_csr         (i_instCSR),
+        .i_data        (operandASelector_output),
+        .o_data        (csrUnit_data));
 
 
     // ------------------------------------------------------------------

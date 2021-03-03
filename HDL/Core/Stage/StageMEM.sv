@@ -19,11 +19,25 @@ module StageMEM
     input  logic      i_memUnsigned,  // Lectura de memoria sense signe
 
     input  WrDataSel  i_regWrDataSel, // Seleccio de dades per escriure en el registre
+    output logic      o_evMemWrite,   // Indica memoria escrita
+    output logic      o_evMemRead,    // Indica memoria lleigida
     output logic      o_hazard,       // Indica hazard
     output Data       o_regWrData);   // Dades per escriure en el registre
 
 
-    assign o_hazard = 1'b0;
+    // ----------------------------------------------------------------------
+    // Genera els events pels contadors de rendiment
+    // ----------------------------------------------------------------------
+
+    assign o_evMemWrite = i_memWrEnable & i_isValid;
+    assign o_evMemRead  = i_memRdEnable & i_isValid;
+
+
+    // -----------------------------------------------------------------------
+    // Detector de hazards deguts als accessos a memoria
+    // -----------------------------------------------------------------------
+
+    assign o_hazard = dataBus.busy;
 
 
     // ------------------------------------------------------------------------

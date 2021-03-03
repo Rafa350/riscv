@@ -21,7 +21,7 @@ module DataMemoryAdapter
     assign bus.addr  = {i_addr[31:2], 2'b00};
     assign bus.re    = i_rdEnable & ~o_alignError;
     assign bus.we    = i_wrEnable & ~o_alignError;
-    assign bus.wb    = i_wrEnable & ~o_alignError ? wb : ByteMask'(0);
+    assign bus.be    = i_wrEnable & ~o_alignError ? wb : ByteMask'(0);
 
     assign o_busy = bus.busy;
 

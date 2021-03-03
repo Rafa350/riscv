@@ -78,9 +78,6 @@ module CorePP
         .i_reset           (i_reset),           // Reset
         .instBus           (instBus),           // Bus de la memoria cache d'instruccions
         .i_pcNext          (ID_pcNext),         // Adressa de salt
-        .i_MEM_isValid     (EXMEM_isValid),     // Indica operacio valida en MEM
-        .i_MEM_memRdEnable (EXMEM_memRdEnable), // Indica operacio de lectura en MEM
-        .i_MEM_memWrEnable (EXMEM_memWrEnable), // Indica operacio d'escriptura en MEM
         .o_hazard          (IF_hazard),         // Indica hazard
         .o_inst            (IF_inst),           // Instruccio
         .o_instCompressed  (IF_instCompressed), // Indica si instruccio es comprimida
@@ -277,7 +274,9 @@ module CorePP
         .i_resultSel   (IDEX_resultSel),
         .i_aluControl  (IDEX_aluControl),
         .i_csrControl  (IDEX_csrControl),
-        .i_instRet     (WB_instRet),
+        .i_evInstRet   (WB_evInstRet),
+        .i_evMemRead   (MEM_evMemRead),
+        .i_evMemWrite  (MEM_evMemWrite),
         .o_hazard      (EX_hazard),         // Indica hazard
         .o_dataR       (EX_dataR),
         .o_dataB       (EX_dataB));
@@ -334,6 +333,8 @@ module CorePP
     // ------------------------------------------------------------------------
 
     Data  MEM_regWrData;
+    logic MEM_evMemRead;
+    logic MEM_evMemWrite;
     logic MEM_hazard;
 
     StageMEM
@@ -350,6 +351,8 @@ module CorePP
         .i_memAccess    (EXMEM_memAccess),    // Tamany d'acces a la memoria
         .i_memUnsigned  (EXMEM_memUnsigned),  // Lectura de memoria sense signe
         .o_hazard       (MEM_hazard),         // Indica hazard
+        .o_evMemRead    (MEM_evMemRead),      // Indica memoria lleigida
+        .o_evMemWrite   (MEM_evMemWrite),     // Indica memoria escrita
         .o_regWrData    (MEM_regWrData));     // Dades per escriure en el registre
 
 
@@ -385,7 +388,7 @@ module CorePP
     Data    WB_reg_wdata;
     logic   WB_reg_we;
     logic   WB_hazard;
-    logic   WB_instRet;
+    logic   WB_evInstRet;
 
     StageWB
     stageWB (
@@ -399,7 +402,7 @@ module CorePP
         .i_regWrEnable (MEMWB_regWrEnable), // Habilila l'escriptura del registre
         .i_regWrData   (MEMWB_regWrData),   // Dades per escriure en el registre
         .o_hazard      (WB_hazard),
-        .o_instRet     (WB_instRet));
+        .o_evInstRet   (WB_evInstRet));
 
 
     // ------------------------------------------------------------------------

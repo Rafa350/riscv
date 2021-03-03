@@ -29,7 +29,7 @@ module DCache
 
     localparam INDEX_WIDTH  = $clog2(CACHE_SIZE);
     localparam OFFSET_WIDTH = $clog2(BLOCK_SIZE);
-    localparam TAG_WIDTH    = $size(InstAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
+    localparam TAG_WIDTH    = $size(DataAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
 
     typedef logic [TAG_WIDTH-1:0]    Tag;
     typedef logic [INDEX_WIDTH-1:0]  Index;
@@ -51,9 +51,9 @@ module DCache
     //
     assign o_mem_addr  = {cacheCtrl_tag, cacheCtrl_index, cacheCtrl_offset, 2'b00};
     assign o_mem_wdata = i_wdata;
-    assign o_mem_re   = cacheCtrl_memRead;
-    assign o_mem_we   = cacheCtrl_memWrite;
-    assign o_mem_be   = i_be;
+    assign o_mem_re    = cacheCtrl_memRead;
+    assign o_mem_we    = cacheCtrl_memWrite;
+    assign o_mem_be    = i_be;
 
     // Senyals de control
     //

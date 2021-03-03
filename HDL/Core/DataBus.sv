@@ -5,7 +5,7 @@ interface DataBus;
     DataAddr addr;  // Addresa en words
     logic    re;    // Habilita la lectura
     logic    we;    // Habilita escriptura de dades
-    ByteMask wb;    // Mascara dels bytes a escriure
+    ByteMask be;    // Mascara dels bytes a escriure
     Data     wdata; // Dades per escriure
     Data     rdata; // Dades lleigides
     logic    busy;  // Indica ocupat, operacio no disponible
@@ -14,7 +14,7 @@ interface DataBus;
         output addr,
         output re,
         output we,
-        output wb,
+        output be,
         input  rdata,
         output wdata,
         input  busy);
@@ -23,7 +23,7 @@ interface DataBus;
         input  addr,
         input  re,
         input  we,
-        input  wb,
+        input  be,
         output rdata,
         input  wdata,
         output busy);

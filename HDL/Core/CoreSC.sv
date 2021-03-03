@@ -1,33 +1,10 @@
-
-
-
-/*
-
-    REVISAR ACCESSOS A MEMORIA
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
 module CoreSC
-    import Types::*;
+    import Config::*, Types::*;
 (
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset
     DataBus.master dataBus,  // Bus de dades
     InstBus.master instBus); // Bus d'instruccions
-
-
-    GPRegistersBus regBus();
 
 
     // ------------------------------------------------------------------------
@@ -55,7 +32,7 @@ module CoreSC
         .i_pc           (instBus.addr),
         .i_inst         (instBus.inst),
         .i_regWrAddr    (dec_instRD),
-        .i_regWrData    (sel3_output),
+        .i_regWrData    (wrDataSelector_output),
         .i_regWrEnable  (dpCtrl_regWrEnable),
         .i_memWrAddr    (dataBus.addr),
         .i_memAccess    (dpCtrl_memAccess),
@@ -77,10 +54,10 @@ module CoreSC
     DataAccess  dpCtrl_memAccess;    // Tipus d'acces a la memoria (byte, half o word)
     logic       dpCtrl_memUnsigned;
     logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
-    logic [1:0] dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
-    logic [1:0] dpCtrl_operandASel;  // Seleccio del operand A
-    logic [1:0] dpCtrl_operandBSel;  // Seleccio del operand B
-    logic [1:0] dpCtrl_resultSel;    // Selñeccio del resultat
+    WrDataSel   dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
+    DataASel    dpCtrl_operandASel;  // Seleccio del operand A
+    DataBSel    dpCtrl_operandBSel;  // Seleccio del operand B
+    ResultSel   dpCtrl_resultSel;    // Seleccio del resultat
 
     DatapathController
     dpCtrl (
@@ -90,7 +67,7 @@ module CoreSC
         .i_isLessUnsigned (brComp_isLessUnsigned),
         .o_aluControl     (dpCtrl_aluControl),
         .o_mduControl     (dpCtrl_mduControl),
-        .o_csrControl     (dpCtrl_aluControl),
+        .o_csrControl     (dpCtrl_csrControl),
         .o_memWrEnable    (dpCtrl_memWrEnable),
         .o_memRdEnable    (dpCtrl_memRdEnable),
         .o_memAccess      (dpCtrl_memAccess),
@@ -157,7 +134,7 @@ module CoreSC
         .i_we     (dpCtrl_regWrEnable),
         .o_rdataA (gpr_rdataA),
         .o_rdataB (gpr_rdataB),
-        .i_wdata  (sel3_output));
+        .i_wdata  (wrDataSelector_output));
 
 
     // ------------------------------------------------------------------------
@@ -166,16 +143,15 @@ module CoreSC
 
     Data operandASelector_output;
 
-    // verilator lint_off PINMISSING
     Mux4To1 #(
         .WIDTH ($size(Data)))
     operandASelector (
         .i_select (dpCtrl_operandASel),
         .i_input0 (gpr_rdataA),
-        .i_input1 (Data'(pc)),
+        .i_input1 (dec_instIMM),
         .i_input2 (Data'(0)),
+        .i_input3 (Data'(pc)),
         .o_output (operandASelector_output));
-    // verilator lint_on PINMISSING
 
 
     // ------------------------------------------------------------------------
@@ -200,23 +176,22 @@ module CoreSC
     // Selecciona les dades per escriure en el registre
     // ------------------------------------------------------------------------
 
-    Data sel3_output;
+    Data wrDataSelector_output;
 
     // verilator lint_off PINMISSING
-    Mux4To1 #(
+    Mux2To1 #(
         .WIDTH ($size(Data)))
-    sel3 (
+    wrDataSelector (
         .i_select (dpCtrl_regWrDataSel),
-        .i_input0 (alu_result),      // Escriu el resultat de la ALU
-        .i_input1 (dataBus.rdata),   // Escriu el valor lleigit de la memoria
-        .i_input2 (Data'(pcPlus4)),  // Escriu el valor de PC+4
-        .o_output (sel3_output));
+        .i_input0 (alu_result),             // Escriu el resultat de la ALU
+        .i_input1 (dataBus.rdata),          // Escriu el valor lleigit de la memoria
+        .o_output (wrDataSelector_output));
     // verilator lint_on PINMISSING
 
 
-    // ------------------------------------------------------------------------
+    // -------------------------------------------------------------------
     // ALU
-    // ------------------------------------------------------------------------
+    // -------------------------------------------------------------------
 
     Data alu_result;
 
@@ -228,51 +203,18 @@ module CoreSC
         .o_result (alu_result));
 
 
-    // Evalua PC = PC + 4
-    //
-    HalfAdder #(
-        .WIDTH ($size(InstAddr)))
-    adder1 (
-        .i_inputA (pc),
-        .i_inputB (InstAddr'(4)),
-        .o_output (pcPlus4));
+    // -------------------------------------------------------------------
+    // ALU de salts
+    // -------------------------------------------------------------------
 
+    BranchAlu
+    branchAlu (
+        .i_op      (dpCtrl_pcNextSel),
+        .i_pc      (pc),
+        .i_instIMM (dec_instIMM[$size(InstAddr)-1:0]),
+        .i_regData (gpr_rdataA[$size(InstAddr)-1:0]),
+        .o_pc      (pcNext));
 
-    // Evalua PC = PC + offset
-    //
-    InstAddr pcPlusOffset;
-
-    HalfAdder #(
-        .WIDTH ($size(InstAddr)))
-    Adder2 (
-        .i_inputA (pc),
-        .i_inputB (dec_instIMM[$size(InstAddr)-1:0]),
-        .o_output (pcPlusOffset));
-
-
-    // Evalua PC = [rs1] + offset
-    //
-    InstAddr pcPlusOffsetAndRS1;
-
-    HalfAdder #(
-        .WIDTH ($size(InstAddr)))
-    adder3 (
-        .i_inputA (dec_instIMM[$size(InstAddr)-1:0]),
-        .i_inputB (gpr_rdataA[$size(InstAddr)-1:0]),
-        .o_output (pcPlusOffsetAndRS1));
-
-
-    // Selecciona el nou valor del contador de programa
-    //
-    Mux4To1 #(
-        .WIDTH ($size(InstAddr)))
-    sel4 (
-        .i_select (dpCtrl_pcNextSel),
-        .i_input0 (pcPlus4),
-        .i_input1 (pcPlusOffset),
-        .i_input2 (pcPlusOffsetAndRS1),
-        .i_input3 (pcPlus4),
-        .o_output (pcNext));
 
     // Registre del contador de programa
     //

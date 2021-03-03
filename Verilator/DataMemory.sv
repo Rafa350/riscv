@@ -40,13 +40,13 @@ module DataMemory
 
     always_ff @(posedge i_clock)
         if (bus.we) begin
-            if (bus.wb[0])
+            if (bus.be[0])
                 dpiMemWrite8(memObj, int'(bus.addr), int'(bus.wdata[7:0]));
-            if (bus.wb[1])
+            if (bus.be[1])
                 dpiMemWrite8(memObj, int'(bus.addr + 1), int'(bus.wdata[15:8]));
-            if (bus.wb[2])
+            if (bus.be[2])
                 dpiMemWrite8(memObj, int'(bus.addr + 2), int'(bus.wdata[23:16]));
-            if (bus.wb[3])
+            if (bus.be[3])
                 dpiMemWrite8(memObj, int'(bus.addr + 3), int'(bus.wdata[31:24]));
         end
 

@@ -74,7 +74,6 @@ package Types;
         CsrOp_CLEAR = 2'b11    // -Clear bits
     } CsrOp;
 
-
     typedef enum logic [1:0] { // Seleccio de dades A
         DataASel_REG = 2'b00,  // -Valor del registre rs1
         DataASel_IMM = 2'b01,  // -Valor immediat

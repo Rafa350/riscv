@@ -8,11 +8,6 @@ module StageIF
     // Interficie amb la memoria/cache d'instruccions
     InstBus.master instBus,           // Bus de la memoria d'instruccions
 
-    // Senyals del stage MEM per la gestio dels hazards
-    input  logic    i_MEM_isValid,     // Indica operacio valida en MEM
-    input  logic    i_MEM_memRdEnable, // Indica operacio de lectura en MEM
-    input  logic    i_MEM_memWrEnable, // Indica operacio d'escriptura en MEM
-
     // Senyals de control d'execucio
     input  InstAddr i_pcNext,          // El nou valor del PC
     output logic    o_hazard,          // Indica hazard
@@ -27,25 +22,10 @@ module StageIF
 
 
     // ------------------------------------------------------------------------
-    // Detecta els hazards deguts a accessos a memoria simultanis amb
-    // la lectura de la instruccio. Si s'implementa un cache d'instruccions,
-    // els hazards es resolen a nivell del cache amb la senyal 'busy'. La
-    // instruccio no es pot lleigit si s'esta accedint a la memoria en el
-    // stage MEM
+    // Detecta els hazards deguts als accessos a la memoria
     // ------------------------------------------------------------------------
 
-    generate
-        if (RV_ICACHE_ON)
-            assign o_hazard = instBus.busy;
-        else begin
-            StageIF_HazardDetector
-            hazardDetector(
-                .i_MEM_isValid     (i_MEM_isValid),
-                .i_MEM_memRdEnable (i_MEM_memRdEnable),
-                .i_MEM_memWrEnable (i_MEM_memWrEnable),
-                .o_hazard          (o_hazard)); // Indica que s'ha detectat un hazard
-        end
-    endgenerate
+    assign o_hazard = instBus.busy;
 
 
     // ------------------------------------------------------------------------

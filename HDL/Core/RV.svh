@@ -2,19 +2,20 @@
 `define __RV_SVH
 
 
-// -----------------------------------------------------------------------
-// Opcions de configuracio
-// -----------------------------------------------------------------------
-
 // Opcions de procesador base
 //
-//`define RV_BASE_RV32E        // Basic enters 32 bits reduccio de registres
-`define RV_BASE_RV32I        // Basic enters 32 bits
-//`define RV_BASE_RV64I        // Basic enters 64 bits
+`define RV_BASE_32              // Base enters 32 bits
+//`define RV_BASE_64            // Base enters 64 bits
 
-
-// Opcions de cache de dades
+// Opcions de les extensions
 //
+//`define RV_EXT_C                // Instruccions comprimides
+//`define RV_EXT_E                // Reduccio de registres
+
+
+// Opcions de cache
+//
+`define RV_ICACHE_ON            // Cache L1 d'instruccions
 //`define RV_DCACHE_ON          // Cache L1 de dades
 
 
@@ -27,13 +28,10 @@
 `define RV_COMPILER_QUARTUS     // Elaboracio per quartus
 `endif
 
-// -----------------------------------------------------------------------
-
 
 // Definicio de parametres de depuracio
 //
 `define FIRMWARE   "firmware.txt"
-
 
 // Adresses dels blocs de memoria
 //

@@ -83,5 +83,4 @@ module PipelineIDEX
                 end
         endcase
 
-
 endmodule

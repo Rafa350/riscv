@@ -37,7 +37,6 @@ module PipelineIFID
                     o_inst           <= i_inst;
                     o_instCompressed <= i_instCompressed;
                 end
-
         endcase
 
 endmodule

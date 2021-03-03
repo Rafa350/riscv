@@ -11,9 +11,9 @@ module FullComparator
 
     // Compara els valors sense tindre en compte el signe
     //
-    Comparator #(
+    Comparer #(
         .WIDTH (WIDTH))
-    comparator (
+    comparer (
         .i_dataA   (i_dataA),
         .i_dataB   (i_dataB),
         .o_isEqual (o_isEqual),

@@ -50,7 +50,7 @@ module Processor
             assign dataBus.addr      = coreDataBus.addr;
             assign dataBus.re        = coreDataBus.re;
             assign dataBus.we        = coreDataBus.we;
-            assign dataBus.wb        = coreDataBus.wb;
+            assign dataBus.be        = coreDataBus.be;
             assign dataBus.wdata     = coreDataBus.wdata;
             assign coreDataBus.rdata = dataBus.rdata;
             assign coreDataBus.busy  = dataBus.busy;
