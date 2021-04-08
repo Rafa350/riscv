@@ -23,7 +23,11 @@ package Config;
 
     localparam bit RV_EXT_A = 0; // Operacions atomiques
 
-    localparam bit RV_EXT_B = 0; // Manipulacio de bits
+`ifdef RV_EXT_B
+    localparam bit RV_EXT_B = 1; // Manipulacio de bits
+`else
+    localparam bit RV_EXT_B = 0;
+`endif
 
 `ifdef RV_EXT_C
     localparam bit RV_EXT_C = 1; // Instruccions comprimides
@@ -49,7 +53,12 @@ package Config;
     localparam bit RV_EXT_M = 0; // Multiplicacio i divisio d'enters
 `endif
 
+    localparam bit RV_EXT_S = 0; // Implementa Supervisor Mode
+
     localparam bit RV_EXT_U = 0; // Implementa User Mode
+
+    localparam bit RV_EXT_Zicsr    = 1; // Implementa les instruccions CSRxxx
+    localparam bit RV_EXT_Zifencei = 0; // Implementa la instruccion FENCE.I
 
 
     // Configuracio dels parametres fundamentals
@@ -79,24 +88,24 @@ package Config;
     //
 `ifdef RV_ICACHE_ON
     localparam bit          RV_ICACHE_ON       = 1;   // Habilita el cache d'instruccions
-    localparam int unsigned RV_ICACHE_SETS     = 1;   // Nombre de vias
-    localparam int unsigned RV_ICACHE_ELEMENTS = 128; // Nombre d'elements
-    localparam int unsigned RV_ICACHE_BLOCKS   = 4;   // Nombre d'instruccions, en cada element del cache
 `else
     localparam bit          RV_ICACHE_ON       = 0;
 `endif
+    localparam int unsigned RV_ICACHE_SETS     = 1;   // Nombre de vias
+    localparam int unsigned RV_ICACHE_ELEMENTS = 128; // Nombre d'elements
+    localparam int unsigned RV_ICACHE_BLOCKS   = 4;   // Nombre d'instruccions, en cada element del cache
 
 
     // Configuracio del cache L1 de dades
     //
 `ifdef RV_DCACHE_ON
     localparam bit          RV_DCACHE_ON       = 1;   // Habilita el cache de dades
-    localparam int unsigned RV_DCACHE_SETS     = 1;   // Nombre de vias
-    localparam int unsigned RV_DCACHE_ELEMENTS = 128; // Nombre d'elements
-    localparam int unsigned RV_DCACHE_BLOCKS   = 4;   // Nombre de words, en cada element del cache
 `else
     localparam bit          RV_DCACHE_ON       = 0;
 `endif
+    localparam int unsigned RV_DCACHE_SETS     = 1;   // Nombre de vias
+    localparam int unsigned RV_DCACHE_ELEMENTS = 128; // Nombre d'elements
+    localparam int unsigned RV_DCACHE_BLOCKS   = 4;   // Nombre de words, en cada element del cache
 
 
     // Configuracio del cache L2

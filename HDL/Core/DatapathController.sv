@@ -183,26 +183,28 @@ module DatapathController
                 endcase
 
             OpCode_System:
-                unique case (i_inst[14:12])
-                    3'b001, // CSRRW
-                    3'b010, // CRRRS
-                    3'b011: // CSRRC
-                        begin
-                            o_regWrEnable = 1'b1;
-                            o_resultSel   = ResultSel_CSR;
-                            o_csrControl  = CsrOp'(i_inst[13:12]);
-                        end
+                if (RV_EXT_Zicsr == 1) begin
+                    unique case (i_inst[14:12])
+                        3'b001, // CSRRW
+                        3'b010, // CRRRS
+                        3'b011: // CSRRC
+                            begin
+                                o_regWrEnable = 1'b1;
+                                o_resultSel   = ResultSel_CSR;
+                                o_csrControl  = CsrOp'(i_inst[13:12]);
+                            end
 
-                    3'b101, // CSRRWI
-                    3'b110, // CSRRSI
-                    3'b111: // CSRRCI
-                        begin
-                            o_operandASel = DataASel_IMM;
-                            o_regWrEnable = 1'b1;
-                            o_resultSel   = ResultSel_CSR;
-                            o_csrControl = CsrOp'(i_inst[13:12]);
-                        end
-                endcase
+                        3'b101, // CSRRWI
+                        3'b110, // CSRRSI
+                        3'b111: // CSRRCI
+                            begin
+                                o_operandASel = DataASel_IMM;
+                                o_regWrEnable = 1'b1;
+                                o_resultSel   = ResultSel_CSR;
+                                o_csrControl = CsrOp'(i_inst[13:12]);
+                            end
+                    endcase
+                end
         endcase
         // verilator lint_on CASEINCOMPLETE
     end

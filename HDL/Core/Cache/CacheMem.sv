@@ -4,27 +4,25 @@ module CacheMem
     parameter int unsigned DATA_WIDTH = 32,
     parameter int unsigned ADDR_WIDTH = 32)
 (
-    input  logic            i_clock,
-    input  logic            i_we,
-    input  [ADDR_WIDTH-1:0] i_addr,
-    input  [DATA_WIDTH-1:0] i_wdata,
-    output [DATA_WIDTH-1:0] o_rdata);
-
-
-    localparam int unsigned DATA_SIZE = 2**ADDR_WIDTH;
+    input  logic            i_clock,  // Clock
+    input  logic            i_we,     // Habilita escriptura
+    input  [ADDR_WIDTH-1:0] i_addr,   // Adressa
+    input  [DATA_WIDTH-1:0] i_wdata,  // Dades per escriptura
+    output [DATA_WIDTH-1:0] o_rdata); // Dades lleigides
 
 
     generate
         if (RV_TARGET_COMPILER == "VERILATOR") begin
 
-            logic [DATA_WIDTH-1:0] data[DATA_SIZE];
-
-            always_ff @(posedge i_clock)
-                if (i_we)
-                    data[i_addr] = i_wdata;
-
-            assign o_rdata = data[i_addr];
-
+            RwMemory #(
+                .DATA_WIDTH (DATA_WIDTH),
+                .ADDR_WIDTH (ADDR_WIDTH))
+            mem (
+                .i_clock (i_clock),
+                .i_we    (i_we),
+                .i_addr  (i_addr),
+                .i_wdata (i_wdata),
+                .o_rdata (o_rdata));
         end
 
         else if (RV_TARGET_COMPILER == "QUARTUS") begin
@@ -60,7 +58,7 @@ module CacheMem
                 altsyncram_component.intended_device_family        = "Cyclone IV E",
                 altsyncram_component.lpm_hint                      = "ENABLE_RUNTIME_MOD=NO",
                 altsyncram_component.lpm_type                      = "altsyncram",
-                altsyncram_component.numwords_a                    = DATA_SIZE,
+                altsyncram_component.numwords_a                    = 2**ADDR_WIDTH,
                 altsyncram_component.operation_mode                = "SINGLE_PORT",
                 altsyncram_component.outdata_aclr_a                = "NONE",
                 altsyncram_component.outdata_reg_a                 = "UNREGISTERED",

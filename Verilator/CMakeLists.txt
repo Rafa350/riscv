@@ -53,6 +53,7 @@ target_sources(
     ${TARGET_NAME}
     PRIVATE ${SOURCE_DIR}/main.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVTracer.cpp
+            ${SIMULATOR_SOURCE_DIR}/RISCVTracerInfo.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVTracerDpi.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVMemory.cpp
             ${SIMULATOR_SOURCE_DIR}/RISCVMemoryDpi.cpp)

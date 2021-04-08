@@ -19,15 +19,15 @@
 //       Sortides:
 //            o_tag          : El tag
 //            o_index        : El index
-//            o_block             : El bloc
-//            o_cacheWrite        : Habilita escriptura en el cache
-//            o_cacheClear        : Habilita inicialitzacio del cache
+//            o_block        : El bloc
+//            o_cacheWrite   : Habilita escriptura en el cache
+//            o_cacheClear   : Habilita inicialitzacio del cache
 //            o_hit          : Indica coincidencia
 //            o_busy         : Indica ocupat. O be per inicialitzacio
 //                             o per escriptura en cache
 //
 //       Notes:
-     //            En cas d'activacio de 'i_reset', s'inicia el proces
+//            En cas d'activacio de 'i_reset', s'inicia el proces
 //            d'inicialitzacio de la cache, es posa 'o_cacheClear' en 1,
 //            i 'o_busy' en 1, durant els cicles necesaris per la
 //            inicialitzacio del cac     he. En cada cicle 'o_index' indica
@@ -113,7 +113,7 @@ module ICacheController
                 nextState = State_CLEAR;
             end
 
-            State_CLEAR:      begin
+            State_CLEAR: begin
                 o_index = index;
                 o_cacheClear = 1'b1;
                 nextIndex = index + Index'(1);

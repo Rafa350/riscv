@@ -1,4 +1,4 @@
-module FullComparator
+module FullComparer
 #(
     parameter WIDTH = 32)
 (

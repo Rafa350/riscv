@@ -5,7 +5,7 @@ module StageID
     input  logic      i_clock,           // Clock
     input  logic      i_reset,           // Reset
 
-    // Interficie amb el bloc de registres
+    // Interficie amb GPR
     output GPRAddr    o_reg_raddrA,
     output GPRAddr    o_reg_raddrB,
     input  Data       i_reg_rdataA,

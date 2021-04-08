@@ -6,38 +6,41 @@ module DCache
     parameter int unsigned BLOCK_SIZE = 4)   // Tamany del bloc
 (
     // Senyals de control
-    input  logic     i_clock,      // Clock
-    input  logic     i_reset,      // Reset
+    input  logic    i_clock,      // Clock
+    input  logic    i_reset,      // Reset
 
     // Interficie amb la cpu
-    input  DataAddr  i_addr,       // Adressa
-    input  logic     i_we,         // Habilita escriptura
-    input  logic     i_re,         // Habilita lectura
-    input  ByteMask  i_be,         // Habilita bytes per escriure
-    input  Data      i_wdata,      // Dades per escriure
-    output Data      o_rdata,      // Dades lleigides
-    output logic     o_busy,       // Indica ocupat
-    output logic     o_hit,        // Indica coincidencia
+    input  DataAddr i_addr,       // Adressa
+    input  logic    i_we,         // Habilita escriptura
+    input  logic    i_re,         // Habilita lectura
+    input  ByteMask i_be,         // Habilita bytes per escriure
+    input  Data     i_wdata,      // Dades per escriure
+    output Data     o_rdata,      // Dades lleigides
+    output logic    o_busy,       // Indica ocupat
+    output logic    o_hit,        // Indica coincidencia
 
     // Interficie amb la memoria
-    output DataAddr  o_mem_addr,   // Adressa
-    output logic     o_mem_we,     // Habilita escriptura
-    output logic     o_mem_re,     // Habilita lectura
-    output ByteMask  o_mem_be,     // Habilita bytes per escriure
-    output Data      o_mem_wdata,  // Dades per escriure
-    input  Data      i_mem_rdata); // Dades lleigides
+    output DataAddr o_mem_addr,   // Adressa
+    output logic    o_mem_we,     // Habilita escriptura
+    output logic    o_mem_re,     // Habilita lectura
+    output ByteMask o_mem_be,     // Seleccio bytes per escriure
+    output Data     o_mem_wdata,  // Dades per escriure
+    input  Data     i_mem_rdata,  // Dades lleigides
+    input  logic    i_mem_busy);  // Memoria ocupada
+
 
     localparam INDEX_WIDTH  = $clog2(CACHE_SIZE);
     localparam OFFSET_WIDTH = $clog2(BLOCK_SIZE);
     localparam TAG_WIDTH    = $size(DataAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
+
 
     typedef logic [TAG_WIDTH-1:0]    Tag;
     typedef logic [INDEX_WIDTH-1:0]  Index;
     typedef logic [OFFSET_WIDTH-1:0] Offset;
 
 
-    Tag    tag;   // Tag del cache
-    Index  index; // Index del cache
+    Tag    tag;    // Tag del cache
+    Index  index;  // Index del cache
     Offset offset; // Bloc de dades
 
 

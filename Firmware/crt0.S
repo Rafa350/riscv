@@ -18,10 +18,17 @@ _start:
     // Inicialitza els contadors
     //   MCYCLE=0
     //   MINSTRET=0
-    csrrsi zero, mcountinhibit, 0x5 // Primer els deshabilita
-    csrrw zero, mcycle, zero        // Els posa a zero
+    //   MHPMCOUNTER3=0 // Contador d'accessos a lectura de memoria
+    //   MHPMCOUNTER4=0 // Contador d'accessos a escriptura en memoria
+    //
+    csrrsi zero, mcountinhibit, 0x1D // Primer els deshabilita
+    csrrw zero, mcycle, zero         // Els posa a zero
     csrrw zero, minstret, zero
-    csrrci zero, mcountinhibit, 0x5 // Els torna a habilitar
+    csrrw zero, mhpmcounter3, zero
+    csrrw zero, mhpmcounter4, zero
+    csrrw zero, mhpmevent3, 5        // Selecciona contador de lectures
+    csrrw zero, mhpmevent4, 6        // Selecciona contador d'escriptures
+    csrrci zero, mcountinhibit, 0x1D // Els torna a habilitar
 
     // Inicialitza els registres a zero
     mv ra, zero
@@ -69,12 +76,17 @@ _start:
     jal ra, main
 
     // Recupera els contadors
-    csrr t0, mcycle
+    csrrsi zero, mcountinhibit, 0x1D // Primer els deshabilita, per no variar el resultat
+    lui t0, 0x100
+    addi t0, t0, 0x40
+    csrr t1, mcycle
+    sw t1, 0x0(t0)
     csrr t1, minstret
-    lui t2, 0x100
-    addi t2, t2, 0x40
-    sw t0, 0(t2)
-    sw t1, 4(t2)
+    sw t1, 0x4(t0)
+    csrr t1, mhpmcounter3
+    sw t1, 0x8(t0)
+    csrr t1, mhpmcounter4
+    sw t1, 0xC(t0)
 
     // Finalitzacio
 _loop:

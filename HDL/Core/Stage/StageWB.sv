@@ -5,7 +5,7 @@ module StageWB
     input  logic   i_clock,       // Clock
     input  logic   i_reset,       // Reset
 
-    // Interficie amb el bloc de registres
+    // Interficie amb GPR
     output GPRAddr o_reg_waddr,
     output Data    o_reg_wdata,
     output logic   o_reg_we,

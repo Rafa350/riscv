@@ -25,7 +25,7 @@ module Comparer
                 // Primer nivell
                 //
                 if (i == 0) begin
-                    Comparator_CMP cmp (
+                    Comparer_CMP cmp (
                         .i_dataA  (i_dataA[j+j+1:j+j]),
                         .i_dataB  (i_dataB[j+j+1:j+j]),
                         .o_isEqual (BLK1[i].isEqual[j]),
@@ -35,7 +35,7 @@ module Comparer
                 // Ultim nivell
                 //
                 else if (i == NUM_LEVELS-1) begin
-                    Comparator_CL cl(
+                    Comparer_CL cl(
                         .i_isEqualLSB (BLK1[i-1].isEqual[j+j]),
                         .i_isLessLSB  (BLK1[i-1].isLess[j+j]),
                         .i_isEqualMSB (BLK1[i-1].isEqual[j+j+1]),
@@ -47,7 +47,7 @@ module Comparer
                 // Nivells intermitjos
                 //
                 else begin
-                    Comparator_CL cl(
+                    Comparer_CL cl(
                         .i_isEqualLSB (BLK1[i-1].isEqual[j+j]),
                         .i_isLessLSB  (BLK1[i-1].isLess[j+j]),
                         .i_isEqualMSB (BLK1[i-1].isEqual[j+j+1]),
@@ -63,7 +63,7 @@ module Comparer
 endmodule
 
 
-module Comparator_CMP (
+module Comparer_CMP (
     input  logic [1:0] i_dataA,
     input  logic [1:0] i_dataB,
     output logic       o_isEqual,
@@ -83,7 +83,7 @@ module Comparator_CMP (
 endmodule
 
 
-module Comparator_CL (
+module Comparer_CL (
     input  logic i_isEqualLSB,
     input  logic i_isLessLSB,
     input  logic i_isEqualMSB,

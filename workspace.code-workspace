@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.svh": "verilog",
+			"random": "cpp",
+			"atomic": "cpp"
+		}
+	}
+}

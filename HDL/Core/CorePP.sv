@@ -274,9 +274,9 @@ module CorePP
         .i_resultSel   (IDEX_resultSel),
         .i_aluControl  (IDEX_aluControl),
         .i_csrControl  (IDEX_csrControl),
-        .i_evInstRet   (WB_evInstRet),
-        .i_evMemRead   (MEM_evMemRead),
-        .i_evMemWrite  (MEM_evMemWrite),
+        .i_evInstRet   (WB_evInstRet),      // Event d'instruccio retirada
+        .i_evMemRead   (MEM_evMemRead),     // Event de lectura de memoria
+        .i_evMemWrite  (MEM_evMemWrite),    // Event d'escriptura en memoria
         .o_hazard      (EX_hazard),         // Indica hazard
         .o_dataR       (EX_dataR),
         .o_dataB       (EX_dataB));

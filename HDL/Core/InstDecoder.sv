@@ -105,8 +105,10 @@ module InstDecoder
                         end
 
                     10'b0000001_???: // MUL, MULH, MULHSU, MULHU, DIV, DIVU, REM, REMU
-                        if (RV_EXT_M == 1)
+                        if (RV_EXT_M == 1) begin
                             o_isALU = 1'b1;
+                            o_isIllegal = 1'b0;
+                        end
                 endcase
 
             OpCode_OpIMM:
@@ -169,7 +171,9 @@ module InstDecoder
                         ;
 
                     10'b0000000_001: // FENCE.I
-                        ;
+                        if (RV_EXT_Zifencei == 1) begin
+                            o_isIllegal = 1'b0;
+                        end
                 endcase
 
             OpCode_System:
@@ -214,7 +218,7 @@ module InstDecoder
                     3'b001, // CSRRW
                     3'b010, // CRRRS
                     3'b011: // CSRRC
-                        begin
+                        if (RV_EXT_Zicsr == 1) begin
                             o_isCSR = 1'b1;
                             o_isIllegal = 1'b0;
                         end
@@ -222,7 +226,7 @@ module InstDecoder
                     3'b101, // CSRRWI
                     3'b110, // CSRRSI
                     3'b111: // CSRRCI
-                        begin
+                        if (RV_EXT_Zicsr == 1) begin
                             o_instIMM = csrValue;
                             o_isCSR = 1'b1;
                             o_isIllegal = 1'b0;

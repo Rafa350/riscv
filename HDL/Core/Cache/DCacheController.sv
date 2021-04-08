@@ -128,12 +128,7 @@ module DCacheController
             State_LOOKUP: begin
                 o_hit  = i_hit;
                 o_busy = 1'b0;
-                o_memRead = i_re;
-                if (i_we) begin
-                    o_cacheWrite = 1'b1;
-                    o_memWrite   = 1'b1;
-                end
-                else if (~i_hit & i_re) begin
+                if (i_re & ~i_hit) begin
                     nextTag    = i_tag;
                     nextIndex  = i_index;
                     nextOffset = Offset'(0);
@@ -147,7 +142,7 @@ module DCacheController
                 o_offset     = offset;
                 o_cacheWrite = 1'b1;
                 o_memRead    = 1'b1;
-                nextOffset = offset + Offset'(1);
+                nextOffset   = offset + Offset'(1);
                 if (Offset'(offset) == Offset'((2**$size(offset))-1))
                     nextState = State_LOOKUP;
             end

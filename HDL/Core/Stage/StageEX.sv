@@ -17,9 +17,9 @@ module StageEX
     input  ResultSel i_resultSel,   // Seleccio del resultat
     input  AluOp     i_aluControl,  // Operacio en la unitat ALU
     input  CsrOp     i_csrControl,  // Operacio en la unitat CSR
-    input  logic     i_evInstRet,   // Indicador instruccio retirada
-    input  logic     i_evMemRead,   // Indica memoria lleigida
-    input  logic     i_evMemWrite,  // Indica memoria escrita
+    input  logic     i_evInstRet,   // Event d'instruccio retirada
+    input  logic     i_evMemRead,   // Event de lectura de memoria
+    input  logic     i_evMemWrite,  // Event d'escriptura en memoria
     output logic     o_hazard,      // Indica hazard
     output Data      o_dataR,       // Dades del resultat
     output Data      o_dataB);      // Dades B

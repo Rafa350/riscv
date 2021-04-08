@@ -2,7 +2,7 @@
 `define __RV_SVH
 
 
-// Opcions de procesador base
+// Opcions de procesador base (Nomes una opcio)
 //
 `define RV_BASE_32              // Base enters 32 bits
 //`define RV_BASE_64            // Base enters 64 bits
@@ -16,7 +16,7 @@
 // Opcions de cache
 //
 `define RV_ICACHE_ON            // Cache L1 d'instruccions
-//`define RV_DCACHE_ON          // Cache L1 de dades
+//`define RV_DCACHE_ON            // Cache L1 de dades
 
 
 // Opcions d'elaboracio

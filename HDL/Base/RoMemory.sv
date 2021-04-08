@@ -1,7 +1,6 @@
 // ------------------------------------------------------------------
 //
 //       Memoria de lectura (RO)
-//       Es direcciona en bytes, pero retorna words de DATA_WIDTH bits
 //
 //       Parametres:
 //           DATA_WIDTH : Amplada del bus de dades.
@@ -26,16 +25,14 @@ module RoMemory
     output logic [DATA_WIDTH-1:0] o_rdata); // Dades lleigides lectura
 
 
-    localparam SIZE = (2**ADDR_WIDTH)>>2;
+    localparam int unsigned SIZE = 2**ADDR_WIDTH;
 
 
     logic [DATA_WIDTH-1:0] data[SIZE];
     logic [DATA_WIDTH-1:0] d;
 
 
-    //assign d = data[i_addr[ADDR_WIDTH-1:2]];
-    //assign o_data = {d[7:0], d[15:8], d[23:16], d[31:24]};
-    assign o_rdata = data[i_addr[ADDR_WIDTH-1:2]];
+    assign o_rdata = data[i_addr[ADDR_WIDTH-1:0]];
 
 
     initial

@@ -7,7 +7,7 @@ module ALU
     output Data  o_result);
 
 
-    Data alu_result;
+    Data adder_result;
     Data shifter_result;
     logic comparator_isLessUnsigned;
     logic comparator_isLessSigned;
@@ -20,12 +20,12 @@ module ALU
         .i_operandA (i_dataA),
         .i_operandB (i_dataB ^ {$size(Data){i_op == AluOp_SUB}}),
         .i_carry    (i_op == AluOp_SUB),
-        .o_result   (alu_result));
+        .o_result   (adder_result));
     // verilator lint_on PINMISSING
 
 
     // verilator lint_off PINMISSING
-    FullComparator #(
+    FullComparer #(
         .WIDTH ($size(Data)))
     comparator (
         .i_dataA          (i_dataA),
@@ -53,7 +53,7 @@ module ALU
 
             AluOp_ADD,
             AluOp_SUB:
-                o_result = alu_result;
+                o_result = adder_result;
 
             AluOp_AND:
                 o_result = i_dataA & i_dataB;

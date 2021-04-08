@@ -1,4 +1,6 @@
 #pragma once
+#ifndef __RISCVProcessor__
+#define __RISCVProcessor__
 
 
 #include "RISCV.h"
@@ -9,7 +11,7 @@ namespace RISCV {
 
     class Memory;
     class Tracer;
-
+    struct TracerInfo;
 
     class Processor {
         private:
@@ -35,11 +37,6 @@ namespace RISCV {
 
             inst_t expand(inst_t inst);
 
-            void traceTick();
-            void traceInst(inst_t inst);
-            void traceReg(gpr_t reg);
-            void traceMem(addr_t addr, int access);
-
         public:
             Processor(Tracer *tracer, Memory *dataMem, Memory *instMem);
 
@@ -49,3 +46,6 @@ namespace RISCV {
             addr_t getPC() const { return pc; }
     };
 }
+
+
+#endif // __RISCVProcessor__

@@ -13,11 +13,11 @@ module BranchComparer
 
     generate
         if (FAST == 1) begin
-            FullComparator #(
+            FullComparer #(
                 .WIDTH($size(Data)))
             comparator (
-                .i_dataA         (i_dataRS1),
-                .i_dataB         (i_dataRS2),
+                .i_dataA          (i_dataRS1),
+                .i_dataB          (i_dataRS2),
                 .o_isEqual        (o_isEqual),
                 .o_isLessUnsigned (o_isLessUnsigned),
                 .o_isLessSigned   (o_isLessSigned));

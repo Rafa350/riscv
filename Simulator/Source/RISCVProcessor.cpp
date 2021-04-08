@@ -52,10 +52,6 @@ void Processor::reset() {
 void Processor::execute(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceTick();
-
     // Expandeix la instruccio si cal
     //
     if ((inst & 0x3) != 0x3)
@@ -123,9 +119,7 @@ void Processor::execute(
 void Processor::executeAUIPC(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -134,13 +128,16 @@ void Processor::executeAUIPC(
 
     // Execucio
     //
-    if (rd)
+    if (rd) {
         r[rd] = pc + imm;
+        info.traceReg(rd, r[rd]);
+    }
+
     pc += 4;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -151,9 +148,7 @@ void Processor::executeAUIPC(
 void Processor::executeLUI(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -162,13 +157,16 @@ void Processor::executeLUI(
 
     // Execucio
     //
-    if (rd)
+    if (rd) {
         r[rd] = imm;
+        info.traceReg(rd, r[rd]);
+    }
+
     pc += 4;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -179,9 +177,7 @@ void Processor::executeLUI(
 void Processor::executeJAL(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -194,13 +190,16 @@ void Processor::executeJAL(
 
     // Execucio
     //
-    if (rd)
+    if (rd) {
         r[rd] = pc + 4;
+        info.traceReg(rd, r[rd]);
+    }
+
     pc += imm;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -210,9 +209,7 @@ void Processor::executeJAL(
 void Processor::executeJALR(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -224,13 +221,17 @@ void Processor::executeJALR(
 
     // Execucio
     //
-    if (rd)
+    if (rd) {
         r[rd] = pc + 4;
+        info.traceReg(rd, r[rd]);
+    }
+
     pc = r[rs1] + imm;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
+
 }
 
 
@@ -243,7 +244,7 @@ void Processor::executeOp(
 
     // Traçat
     //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -304,13 +305,15 @@ void Processor::executeOp(
             break;
     }
 
-    if (rd)
+    if (rd) {
         r[rd] = data;
+        info.traceReg(rd, r[rd]);
+    }
     pc += 4;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -321,9 +324,7 @@ void Processor::executeOp(
 void Processor::executeOpIMM(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -359,13 +360,15 @@ void Processor::executeOpIMM(
             break;
     }
 
-    if (rd)
+    if (rd) {
         r[rd] = data;
+        info.traceReg(rd, r[rd]);
+    }
     pc += 4;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -378,7 +381,7 @@ void Processor::executeLoad(
 
     // Traçat
     //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -418,13 +421,15 @@ void Processor::executeLoad(
             break;
     }
 
-    if (rd)
+    if (rd) {
         r[rd] = data;
+        info.traceReg(rd, r[rd]);
+    }
     pc += 4;
 
     // Traçat
     //
-    traceReg(rd);
+    info.trace(tracer);
 }
 
 
@@ -435,9 +440,7 @@ void Processor::executeLoad(
 void Processor::executeStore(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -467,11 +470,13 @@ void Processor::executeStore(
             break;
     }
 
+    info.traceMem(addr, data, access);
+
     pc += 4;
 
     // Traçat
     //
-    traceMem(addr, access);
+    info.trace(tracer);
 }
 
 
@@ -484,7 +489,7 @@ void Processor::executeBranch(
 
     // Traçat
     //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -527,6 +532,10 @@ void Processor::executeBranch(
     }
 
     pc += br ? offset : 4;
+
+    // Traçat
+    //
+    info.trace(tracer);
 }
 
 
@@ -537,9 +546,7 @@ void Processor::executeBranch(
 void Processor::executeSystem(
     inst_t inst) {
 
-    // Traçat
-    //
-    traceInst(inst);
+    TracerInfo info(tick, pc, inst);
 
     // Decodificacio
     //
@@ -587,8 +594,11 @@ void Processor::executeSystem(
 
     // Traçat
     //
-    if (((inst >> 12) & 0b111) != 0)
-        traceReg(rd);
+    if (((inst >> 12) & 0b111) != 0) {
+        if (rd)
+            info.traceReg(rd, r[rd]);
+        info.trace(tracer);
+    }
 }
 
 
@@ -597,53 +607,8 @@ void Processor::executeSystem(
 /// \param    inst: La instruccio comprimida
 /// \return   La instruccio expandida.
 ///
-uint32_t Processor::expand(
+inst_t Processor::expand(
     inst_t inst) {
 
     return inst;
-}
-
-
-void Processor::traceInst(
-    inst_t inst) {
-
-    if (tracer)
-        tracer->traceInst(pc, inst);
-}
-
-
-void Processor::traceReg(
-    gpr_t reg) {
-
-    if (tracer)
-        tracer->traceReg(reg, r[reg]);
-}
-
-
-void Processor::traceMem(
-    addr_t addr,
-    int access) {
-
-    if (tracer) {
-        switch (access) {
-            case 0: // Byte
-                tracer->traceMem(addr, dataMem->read8(addr), 0);
-                break;
-
-            case 1: // Half
-                tracer->traceMem(addr, dataMem->read16(addr), 1);
-                break;
-
-            case 2: // Word
-                tracer->traceMem(addr, dataMem->read32(addr), 2);
-                break;
-        }
-    }
-}
-
-
-void Processor::traceTick() {
-
-    if (tracer)
-        tracer->traceTick(tick);
 }

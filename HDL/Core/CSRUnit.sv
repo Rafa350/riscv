@@ -59,13 +59,20 @@ module CSRUnit
     localparam CSR_MCYCLEH       = 12'hB80;
     localparam CSR_MINSTRET      = 12'hB02;
     localparam CSR_MINSTRETH     = 12'hB82;
-    localparam CSR_MHPMCOUNTER3  = 12'hB83;
-    localparam CSR_MHPMCOUNTER4  = 12'hB84;
-    localparam CSR_MHPMCOUNTER5  = 12'hB85;
-    localparam CSR_MHPMCOUNTER6  = 12'hB86;
-    localparam CSR_MHPMCOUNTER7  = 12'hB87;
-    localparam CSR_MHPMCOUNTER8  = 12'hB88;
-    localparam CSR_MHPMCOUNTER9  = 12'hB89;
+    localparam CSR_MHPMCOUNTER3  = 12'hB03;
+    localparam CSR_MHPMCOUNTER3H = 12'hB83;
+    localparam CSR_MHPMCOUNTER4  = 12'hB04;
+    localparam CSR_MHPMCOUNTER4H = 12'hB84;
+    localparam CSR_MHPMCOUNTER5  = 12'hB05;
+    localparam CSR_MHPMCOUNTER5H = 12'hB85;
+    localparam CSR_MHPMCOUNTER6  = 12'hB06;
+    localparam CSR_MHPMCOUNTER6H = 12'hB86;
+    localparam CSR_MHPMCOUNTER7  = 12'hB07;
+    localparam CSR_MHPMCOUNTER7H = 12'hB87;
+    localparam CSR_MHPMCOUNTER8  = 12'hB08;
+    localparam CSR_MHPMCOUNTER8H = 12'hB88;
+    localparam CSR_MHPMCOUNTER9  = 12'hB09;
+    localparam CSR_MHPMCOUNTER9H = 12'hB89;
     localparam CSR_MHPMEVENT3    = 12'h323;
     localparam CSR_MHPMEVENT4    = 12'h324;
     localparam CSR_MHPMEVENT5    = 12'h325;
@@ -96,8 +103,8 @@ module CSRUnit
 
     // Contadors de rendiment
     //
-    Data                         hpmData[HPM_NUM_COUNTERS];     // Valor per escriure en el contador
-    Data                         hpmCounter[HPM_NUM_COUNTERS];  // Valor actual del contador
+    logic [31:0]                 hpmData[HPM_NUM_COUNTERS];     // Valor per escriure en el contador
+    logic [32:0]                 hpmCounter[HPM_NUM_COUNTERS];  // Valor actual del contador
     logic [HPM_NUM_COUNTERS-1:0] hpmInhibit;                    // Inhibicio del contador
     logic [HPM_NUM_COUNTERS-1:0] hpmWrite;                      // Habilita la escriptura de dades en el contador
     logic [3:0]                  hpmEvent[HPM_NUM_COUNTERS];    // Events asignats als contadors
@@ -105,13 +112,14 @@ module CSRUnit
 
     // Lectura i escriptura dels registres
     //
-    Data  dataIn;     // Dades procesades per escriure en el registre
-    Data  dataOut;    // Dades lleigides del registre
-    logic illegalCsr; // Indicador de registre il·legal
+    Data  wdata;         // Dades procesades per escriure en el registre
+    Data  rdata;         // Dades lleigides del registre
+    logic illegalCsr;    // Indicador de registre il·legal
+    logic illegalAccess; // Indicador d'acces il·legal
 
 
     // -------------------------------------------------------------------
-    // Gestio dels contadors de rendiment
+    // Actualitzacio dels contadors de rendiment
     // -El contador 0 esta reservet (CYCLE)
     // -El contator 2 esta reservat (INSTRET)
     // -------------------------------------------------------------------
@@ -160,7 +168,7 @@ module CSRUnit
             if (i_reset)
                 hpmCounter[i] <= 0;
             else if (hpmWrite[i])
-                hpmCounter[i] <= hpmData[i];
+                hpmCounter[i] <= {1'b0, hpmData[i]};
             else if (~hpmInhibit[i] & hpmTrigger[i])
                 hpmCounter[i] <= hpmCounter[i] + 1;
         end
@@ -168,19 +176,19 @@ module CSRUnit
 
 
     // -------------------------------------------------------------------
-    // Escriptura dels registres
+    // Escriptura sincrona dels valors dels registres
     // -------------------------------------------------------------------
 
     always_comb begin
         unique case (i_op)
             CsrOp_SET:
-                dataIn = dataOut | i_data;
+                wdata = rdata | i_data;
 
             CsrOp_CLEAR:
-                dataIn = dataOut & ~i_data;
+                wdata = rdata & ~i_data;
 
             default:
-                dataIn = i_data;
+                wdata = i_data;
         endcase
     end
 
@@ -196,91 +204,91 @@ module CSRUnit
             for (int i = 0; i < HPM_NUM_COUNTERS; i++)
                 hpmEvent[i] <= 4'h0;
         end
-        else if ((i_op != CsrOp_NOP) & ~illegalCsr)
+        else if ((i_op != CsrOp_NOP) & ~illegalCsr & ~illegalAccess)
             // verilator lint_off CASEINCOMPLETE
             unique case (i_csr)
-                CSR_MCAUSE: mcause <= dataIn;
+                CSR_MCAUSE: mcause <= wdata;
 
                 CSR_MIE: begin
-                    mie_MEIE <= dataIn[11];
-                    mie_MTIE <= dataIn[7];
-                    mie_MSIE <= dataIn[3];
+                    mie_MEIE <= wdata[11];
+                    mie_MTIE <= wdata[7];
+                    mie_MSIE <= wdata[3];
                 end
 
                 CSR_MIP: begin
-                    mip_MEIP <= dataIn[11];
-                    mip_MTIP <= dataIn[7];
-                    mip_MSIP <= dataIn[3];
+                    mip_MEIP <= wdata[11];
+                    mip_MTIP <= wdata[7];
+                    mip_MSIP <= wdata[3];
                 end
 
-                CSR_MSCRATCH: mscratch <= dataIn;
+                CSR_MSCRATCH: mscratch <= wdata;
 
                 CSR_MSTATUS: begin
-                    mstatus_MIE  <= dataIn[3];
-                    mstatus_MPRV <= dataIn[17];
+                    mstatus_MIE  <= wdata[3];
+                    mstatus_MPRV <= wdata[17];
                 end
 
                 CSR_MTVEC: begin
-                    mtvec_MODE <= dataIn[1:0];
-                    mtvec_BASE <= dataIn[$size(Data)-1:2];
+                    mtvec_MODE <= wdata[1:0];
+                    mtvec_BASE <= wdata[$size(Data)-1:2];
                 end
 
                 CSR_MCOUNTINHIBIT: begin
-                    hpmInhibit <= dataIn[HPM_NUM_COUNTERS-1:0];
+                    hpmInhibit <= wdata[HPM_NUM_COUNTERS-1:0];
                 end
 
                 CSR_MCYCLE: begin
-                    hpmData[0] <= dataIn;
+                    hpmData[0] <= wdata;
                     hpmWrite[0] <= 1'b1;
                 end
 
                 CSR_MINSTRET: begin
-                    hpmData[2] <= dataIn;
+                    hpmData[2] <= wdata;
                     hpmWrite[2] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER3: begin
-                    hpmData[3] <= dataIn;
+                    hpmData[3] <= wdata;
                     hpmWrite[3] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER4: begin
-                    hpmData[4] <= dataIn;
+                    hpmData[4] <= wdata;
                     hpmWrite[4] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER5: begin
-                    hpmData[5] <= dataIn;
+                    hpmData[5] <= wdata;
                     hpmWrite[5] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER6: begin
-                    hpmData[6] <= dataIn;
+                    hpmData[6] <= wdata;
                     hpmWrite[6] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER7: begin
-                    hpmData[7] <= dataIn;
+                    hpmData[7] <= wdata;
                     hpmWrite[7] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER8: begin
-                    hpmData[8] <= dataIn;
+                    hpmData[8] <= wdata;
                     hpmWrite[8] <= 1'b1;
                 end
 
                 CSR_MHPMCOUNTER9: begin
-                    hpmData[9] <= dataIn;
+                    hpmData[9] <= wdata;
                     hpmWrite[9] <= 1'b1;
                 end
 
-                CSR_MHPMEVENT3: hpmEvent[3] <= dataIn[3:0];
-                CSR_MHPMEVENT4: hpmEvent[4] <= dataIn[3:0];
-                CSR_MHPMEVENT5: hpmEvent[5] <= dataIn[3:0];
-                CSR_MHPMEVENT6: hpmEvent[6] <= dataIn[3:0];
-                CSR_MHPMEVENT7: hpmEvent[7] <= dataIn[3:0];
-                CSR_MHPMEVENT8: hpmEvent[8] <= dataIn[3:0];
-                CSR_MHPMEVENT9: hpmEvent[9] <= dataIn[3:0];
+                CSR_MHPMEVENT3: hpmEvent[3] <= wdata[3:0];
+                CSR_MHPMEVENT4: hpmEvent[4] <= wdata[3:0];
+                CSR_MHPMEVENT5: hpmEvent[5] <= wdata[3:0];
+                CSR_MHPMEVENT6: hpmEvent[6] <= wdata[3:0];
+                CSR_MHPMEVENT7: hpmEvent[7] <= wdata[3:0];
+                CSR_MHPMEVENT8: hpmEvent[8] <= wdata[3:0];
+                CSR_MHPMEVENT9: hpmEvent[9] <= wdata[3:0];
             endcase
             // verilator lint_on CASEINCOMPLETE
 
@@ -290,55 +298,64 @@ module CSRUnit
 
 
     // -------------------------------------------------------------------
-    // Lectura dels registres
+    // Lectura asincrona del valor dels registres
     // -------------------------------------------------------------------
 
     always_comb begin
 
+        rdata = Data'(0);
+
         illegalCsr = 1'b0;
+        illegalAccess = i_csr[9:8] != mode;
 
-        unique case (i_csr)
-            CSR_MVENDORID     : dataOut = MVENDORID;
-            CSR_MARCHID       : dataOut = MARCHID;
-            CSR_MIMPID        : dataOut = MIMPID;
-            CSR_MHARTID       : dataOut = MHARTID;
-            CSR_MCAUSE        : dataOut = mcause;
-            CSR_MEPC          : dataOut = mepc;
-            CSR_MIE           : dataOut = Data'({mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0});
-            CSR_MIP           : dataOut = Data'({mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0});
-            CSR_MISA          : dataOut = MISA;
-            CSR_MSCRATCH      : dataOut = mscratch;
-            CSR_MSTATUS       : dataOut = Data'({mstatus_MPRV, 13'b0, mstatus_MIE, 3'b0});
-            CSR_MTVEC         : dataOut = Data'({mtvec_BASE, mtvec_MODE});
+        if (~illegalAccess)
+            unique case (i_csr)
+                CSR_MVENDORID     : rdata = MVENDORID;
+                CSR_MARCHID       : rdata = MARCHID;
+                CSR_MIMPID        : rdata = MIMPID;
+                CSR_MHARTID       : rdata = MHARTID;
+                CSR_MCAUSE        : rdata = mcause;
+                CSR_MEPC          : rdata = mepc;
+                CSR_MIE           : rdata = Data'({mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0});
+                CSR_MIP           : rdata = Data'({mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0});
+                CSR_MISA          : rdata = MISA;
+                CSR_MSCRATCH      : rdata = mscratch;
+                CSR_MSTATUS       : rdata = Data'({mstatus_MPRV, 13'b0, mstatus_MIE, 3'b0});
+                CSR_MTVEC         : rdata = Data'({mtvec_BASE, mtvec_MODE});
 
-            CSR_MCOUNTINHIBIT : dataOut = Data'(hpmInhibit);
-            CSR_MCYCLE        : dataOut = hpmCounter[0];
-            CSR_MINSTRET      : dataOut = hpmCounter[2];
-            CSR_MHPMCOUNTER3  : dataOut = hpmCounter[3];
-            CSR_MHPMCOUNTER4  : dataOut = hpmCounter[4];
-            CSR_MHPMCOUNTER5  : dataOut = hpmCounter[5];
-            CSR_MHPMCOUNTER6  : dataOut = hpmCounter[6];
-            CSR_MHPMCOUNTER7  : dataOut = hpmCounter[7];
-            CSR_MHPMCOUNTER8  : dataOut = hpmCounter[8];
-            CSR_MHPMCOUNTER9  : dataOut = hpmCounter[9];
+                CSR_MCOUNTINHIBIT : rdata = Data'(hpmInhibit);
+                CSR_MCYCLE        : rdata = hpmCounter[0][31:0];
+                CSR_MCYCLEH       : rdata = Data'(hpmCounter[0][32]);
+                CSR_MINSTRET      : rdata = hpmCounter[2][31:0];
+                CSR_MINSTRETH     : rdata = Data'(hpmCounter[2][32]);
+                CSR_MHPMCOUNTER3  : rdata = hpmCounter[3][31:0];
+                CSR_MHPMCOUNTER3H : rdata = Data'(hpmCounter[3][32]);
+                CSR_MHPMCOUNTER4  : rdata = hpmCounter[4][31:0];
+                CSR_MHPMCOUNTER4H : rdata = Data'(hpmCounter[4][32]);
+                CSR_MHPMCOUNTER5  : rdata = hpmCounter[5][31:0];
+                CSR_MHPMCOUNTER5H : rdata = Data'(hpmCounter[5][32]);
+                CSR_MHPMCOUNTER6  : rdata = hpmCounter[6][31:0];
+                CSR_MHPMCOUNTER6H : rdata = Data'(hpmCounter[6][32]);
+                CSR_MHPMCOUNTER7  : rdata = hpmCounter[7][31:0];
+                CSR_MHPMCOUNTER7H : rdata = Data'(hpmCounter[7][32]);
+                CSR_MHPMCOUNTER8  : rdata = hpmCounter[8][31:0];
+                CSR_MHPMCOUNTER8H : rdata = Data'(hpmCounter[8][32]);
+                CSR_MHPMCOUNTER9  : rdata = hpmCounter[9][31:0];
+                CSR_MHPMCOUNTER9H : rdata = Data'(hpmCounter[9][32]);
 
-            CSR_MHPMEVENT3    : dataOut = Data'(hpmEvent[3]);
-            CSR_MHPMEVENT4    : dataOut = Data'(hpmEvent[4]);
-            CSR_MHPMEVENT5    : dataOut = Data'(hpmEvent[5]);
-            CSR_MHPMEVENT6    : dataOut = Data'(hpmEvent[6]);
-            CSR_MHPMEVENT7    : dataOut = Data'(hpmEvent[7]);
-            CSR_MHPMEVENT8    : dataOut = Data'(hpmEvent[8]);
-            CSR_MHPMEVENT9    : dataOut = Data'(hpmEvent[9]);
+                CSR_MHPMEVENT3    : rdata = Data'(hpmEvent[3]);
+                CSR_MHPMEVENT4    : rdata = Data'(hpmEvent[4]);
+                CSR_MHPMEVENT5    : rdata = Data'(hpmEvent[5]);
+                CSR_MHPMEVENT6    : rdata = Data'(hpmEvent[6]);
+                CSR_MHPMEVENT7    : rdata = Data'(hpmEvent[7]);
+                CSR_MHPMEVENT8    : rdata = Data'(hpmEvent[8]);
+                CSR_MHPMEVENT9    : rdata = Data'(hpmEvent[9]);
 
-            default: begin
-                 dataOut = Data'(0);
-                 illegalCsr = 1'b1;
-            end
-
-        endcase
+                default: illegalCsr = 1'b1;
+            endcase
     end
 
-    assign o_data = dataOut;
+    assign o_data = rdata;
 
 
 endmodule

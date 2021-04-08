@@ -44,11 +44,22 @@ module DebugController
                 $finish;
             else begin
                 dpiTraceTick(tracerObj, i_tick);
-                dpiTraceInstruction(tracerObj, int'(i_pc), i_inst);
+
+                $write("      ");
                 if ((i_regWrAddr != 0) & i_regWrEnable)
                     dpiTraceRegister(tracerObj, int'(i_regWrAddr), i_regWrData);
+                else
+                    $write("-------------");
+
+                $write("      ");
                 if (i_memWrEnable)
                     dpiTraceMemory(tracerObj, int'(i_memWrAddr), int'(i_memAccess), i_memWrData);
+                else
+                    $write("------------------");
+
+                $write("      ");
+                dpiTraceInstruction(tracerObj, int'(i_pc), i_inst);
+
                 $display("");
             end
         end

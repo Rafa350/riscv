@@ -20,6 +20,7 @@ module DataL1Cache
         .o_mem_be    (bus.be),
         .o_mem_wdata (bus.wdata),
         .i_mem_rdata (bus.rdata),
+        .i_mem_busy  (bus.busy),
 
         .i_addr      (coreBus.addr),
         .i_re        (coreBus.re),

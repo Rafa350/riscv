@@ -1,7 +1,6 @@
 #include "RISCV.h"
 #include "RISCVTracer.h"
 
-
 #include <stdio.h>
 
 
@@ -22,13 +21,13 @@ Tracer::Tracer() {
 
 
 /// ----------------------------------------------------------------------
-/// \brief    presenta la instruccio desensablada.
+/// \brief    Presenta la instruccio desensablada.
 /// \param    addr: L'adressa.
 /// \param    inst: La instruccio.
 ///
 void Tracer::traceInst(
     addr_t addr,
-    inst_t inst) {
+    inst_t inst) const {
 
     unsigned op  = inst & 0x7F;
     unsigned fn3 = (inst >> 12) & 0x07;
@@ -38,7 +37,7 @@ void Tracer::traceInst(
     const char *rs2 = getGPRegName((inst >> 20) & 0x1F);
     const char *rd  = getGPRegName((inst >> 7) & 0x1F);
 
-    printf("I: %8.8X  %8.8X:  ", addr, inst);
+    printf("%8.8X: %8.8X     ", addr, inst);
 
     switch (OpCode(op)) {
         case OpCode::Op: {
@@ -263,8 +262,6 @@ void Tracer::traceInst(
             break;
         }
     }
-
-    printf("\n");
 }
 
 
@@ -273,47 +270,64 @@ void Tracer::traceInst(
 /// \param    tick: El valor de tick.
 ///
 void Tracer::traceTick(
-    unsigned tick) {
+    unsigned tick) const {
 
-    printf("T: %d\n", tick);
+    printf("%10.10d", tick);
 }
 
 
 /// ----------------------------------------------------------------------
-/// \brief    Presenta un registre i el seu valor.
+/// \brief    Presenta acces a registre.
 /// \param    reg: El registre. Si es zero, no el mostra.
 /// \param    data: El valor del registre
 ///
 void Tracer::traceReg(
     gpr_t reg,
-    data_t data) {
+    data_t data) const {
 
     if (reg) {
         const char *regName = getGPRegName(reg);
 
-        printf("R: %s = %8.8X  (%d)\n", regName, data, data);
+        printf("%-3s: %8.8X", regName, data);
     }
 }
 
 
+/// ----------------------------------------------------------------------
+/// \brief    Presenta un acces a memoria
+/// \param    addr: Adressa de memoria
+/// \param    data: El valor.
+/// \param    access: El tipus d'acces
+///
 void Tracer::traceMem(
     addr_t addr,
     data_t data,
-    int access) {
+    int access) const {
 
     switch (access) {
         case 0: // Byte
-            printf("M: %8.8X = %2.2X  (%d)\n", addr, data & 0xFF, data & 0xFF);
+            printf("%8.8X: %2.2X      ", addr, data & 0xFF);
             break;
 
         case 1: // Half
-            printf("M: %8.8X = %4.4X  (%d)\n", addr, data & 0xFFFF, data & 0xFFFF);
+            printf("%8.8X: %4.4X    ", addr, data & 0xFFFF);
             break;
 
         case 2: // Word
-            printf("M: %8.8X = %8.8X  (%d)\n", addr, data, data);
+            printf("%8.8X: %8.8X", addr, data);
             break;
     }
+}
+
+
+/// ----------------------------------------------------------------------
+/// \brief    Presenta un text lliure
+/// \param    str: El text
+///
+void Tracer::traceString(
+    const char *str) const {
+
+    printf("%s", str);
 }
 
 
@@ -387,6 +401,20 @@ static const char* getCSRegName(
         case 0x344: return "mip";
         case 0xB00: return "mcycle";
         case 0xB02: return "minstret";
+        case 0xB03: return "mhpmcounter3";
+        case 0xB04: return "mhpmcounter4";
+        case 0xB05: return "mhpmcounter5";
+        case 0xB06: return "mhpmcounter6";
+        case 0xB07: return "mhpmcounter7";
+        case 0xB08: return "mhpmcounter8";
+        case 0xB09: return "mhpmcounter9";
+        case 0x323: return "mhpmevent3";
+        case 0x324: return "mhpmevent4";
+        case 0x325: return "mhpmevent5";
+        case 0x326: return "mhpmevent6";
+        case 0x327: return "mhpmevent7";
+        case 0x328: return "mhpmevent8";
+        case 0x329: return "mhpmevent9";
         default   : return "???";
     }
 }

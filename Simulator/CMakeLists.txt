@@ -21,7 +21,8 @@ target_sources(
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
            ${CMAKE_CURRENT_SOURCE_DIR}/Source/RISCVProcessor.cpp
            ${CMAKE_CURRENT_SOURCE_DIR}/Source/RISCVMemory.cpp
-           ${CMAKE_CURRENT_SOURCE_DIR}/Source/RISCVTracer.cpp)
+           ${CMAKE_CURRENT_SOURCE_DIR}/Source/RISCVTracer.cpp
+           ${CMAKE_CURRENT_SOURCE_DIR}/Source/RISCVTracerInfo.cpp)
 
 # Instalacio en la carpeta Run
 install(

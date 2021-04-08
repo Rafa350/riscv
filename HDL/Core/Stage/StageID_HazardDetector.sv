@@ -13,7 +13,7 @@ module StageID_HazardDetector
     output logic   o_hazard);
 
 
-    // Comprova si el valor d'un registre, encara s'ha de carregar
+    // Comprova si el valor d'un registre GPR, encara s'ha de carregar
     // de la memoria.
 
     assign o_hazard =
