@@ -2,7 +2,6 @@ package Types;
 
     import Config::*;
 
-
     typedef logic [DATA_WIDTH-1:0] Data;      // Dades
     typedef logic [31:0]           Inst;      // Instruccions
 

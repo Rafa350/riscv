@@ -59,7 +59,6 @@ module Comparer
         end
     endgenerate
 
-
 endmodule
 
 
