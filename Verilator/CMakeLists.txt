@@ -77,11 +77,14 @@ verilate(${TARGET_NAME}
     INCLUDE_DIRS ${SOURCE_DIR}
                  ${HDL_INCLUDE_DIR}
                  ${HDL_INCLUDE_DIR}/Base
-                 ${HDL_INCLUDE_DIR}/Core
-                 ${HDL_INCLUDE_DIR}/Core/ALU
-                 ${HDL_INCLUDE_DIR}/Core/Cache
-                 ${HDL_INCLUDE_DIR}/Core/Stage
-                 ${HDL_INCLUDE_DIR}/Core/Pipeline
+                 ${HDL_INCLUDE_DIR}/Processor
+                 ${HDL_INCLUDE_DIR}/Processor/Core
+                 ${HDL_INCLUDE_DIR}/Processor/Core/ALU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/FPU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/MDU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/Stage
+                 ${HDL_INCLUDE_DIR}/Processor/Core/Pipeline
+                 ${HDL_INCLUDE_DIR}/Processor/Cache
     VERILATOR_ARGS
     SOURCES verilator_top.sv
 )

@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------
 
 module DataMemory
-    import Types::*;
+    import CoreDefs::*;
 #(
     parameter BASE = 0,
     parameter SIZE = 1024)

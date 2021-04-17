@@ -72,7 +72,8 @@ verilate(${TARGET_NAME}
     INCLUDE_DIRS ${SOURCE_DIR}
                  ${HDL_INCLUDE_DIR}
                  ${HDL_INCLUDE_DIR}/Base
-                 ${HDL_INCLUDE_DIR}/Core
+                 ${HDL_INCLUDE_DIR}/Processor
+                 ${HDL_INCLUDE_DIR}/Processor/Core
     VERILATOR_ARGS
     SOURCES verilator_top.sv
 )

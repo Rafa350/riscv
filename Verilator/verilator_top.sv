@@ -3,12 +3,12 @@
 
 `ifdef VERILATOR
 `include "Config.sv"
-`include "Types.sv"
+`include "CoreDefs.sv"
 `endif
 
 
 module top
-    import Config::*, Types::*;
+    import Config::*, CoreDefs::*;
 (
     input   i_clock,   // Clock
     input   i_reset);  // Reset
