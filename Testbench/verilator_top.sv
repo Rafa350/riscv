@@ -3,7 +3,9 @@
 
 `ifdef VERILATOR
 `include "Config.sv"
+`include "ProcessorDefs.sv"
 `include "CoreDefs.sv"
+`include "CacheDefs.sv"
 `endif
 
 

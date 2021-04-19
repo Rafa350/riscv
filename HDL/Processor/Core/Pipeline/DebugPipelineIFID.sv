@@ -1,5 +1,5 @@
 module DebugPipelineIFID
-    import CoreDefs::*;
+    import ProcessorDefs::*;
 (
     // Senyals de control
     input  logic i_clock,    // Clock

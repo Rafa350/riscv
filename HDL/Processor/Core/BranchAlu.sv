@@ -1,5 +1,5 @@
 module BranchAlu
-    import CoreDefs::*;
+    import ProcessorDefs::*;
 (
     input  logic [1:0] i_op,      // Operacio
     input  InstAddr    i_pc,      // PC

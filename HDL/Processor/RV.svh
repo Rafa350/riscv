@@ -17,6 +17,10 @@
 //
 `define RV_GPR_RESET             // Borra els registres en el reset
 
+// Opcions dels registres FPR
+//
+`define RV_FPR_RESET             // Borra els registres en el reset
+
 
 // Opcions de cache
 //

@@ -1,5 +1,5 @@
 module DatapathController
-    import Config::*, CoreDefs::*;
+    import Config::*, ProcessorDefs::*, CoreDefs::*;
 (
     input  Inst        i_inst,           // La instruccio
 

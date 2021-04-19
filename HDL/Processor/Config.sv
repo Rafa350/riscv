@@ -84,6 +84,15 @@ package Config;
 `endif
 
 
+    // Configuracio dels registres FPR
+    //
+`ifdef RV_FPR_RESET
+    localparam bit RV_FPR_RESET  = 1; // Borrat dels registres durant el reset
+`else
+    localparam bit RV_FPR_RESET  = 0; // No borra els registres durant el reset
+`endif
+
+
     // Configuracio per les extensions de depuracio
     //
 `ifdef RV_COMPILER_VERILATOR

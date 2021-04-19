@@ -1,5 +1,5 @@
 module GPRegisters
-    import Config::*, CoreDefs::*;
+    import Config::*, ProcessorDefs::*;
 (
     // Control
     input  logic   i_clock,  // Clock

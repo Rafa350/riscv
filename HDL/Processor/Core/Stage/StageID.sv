@@ -1,5 +1,7 @@
 module StageID
-    import CoreDefs::*;
+    import
+        ProcessorDefs::*,
+        CoreDefs::*;
 (
     // Senyals de control i sincronitzacio
     input  logic      i_clock,           // Clock

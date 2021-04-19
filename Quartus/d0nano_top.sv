@@ -1,5 +1,7 @@
 module top
-    import Config::*, Types::*;
+    import 
+        Config::*, 
+        ProcessorDefs::*;
 (
     input  logic        CLOCK_50,
 

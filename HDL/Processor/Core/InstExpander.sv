@@ -1,5 +1,5 @@
 module InstExpander
-    import CoreDefs::*;
+    import ProcessorDefs::*, CoreDefs::*;
 (
     input  Inst  i_inst,          // Instruccio comprimida
     output Inst  o_inst,          // Instruccio expandida

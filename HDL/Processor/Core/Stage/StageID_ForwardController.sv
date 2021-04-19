@@ -1,5 +1,6 @@
 module StageID_ForwardController
-    import CoreDefs::*;
+    import ProcessorDefs::*,
+           CoreDefs::*;
 (
     input  GPRAddr     i_instRS1,
     input  GPRAddr     i_instRS2,

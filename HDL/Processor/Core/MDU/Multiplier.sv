@@ -1,5 +1,5 @@
 module Multiplier
-    import CoreDefs::*;
+    import ProcessorDefs::*, CoreDefs::*;
 (
     input  Data i_operandA,
     input  Data i_operandB,

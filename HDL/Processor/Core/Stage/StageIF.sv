@@ -1,5 +1,7 @@
 module StageIF
-    import Config::*, CoreDefs::*;
+    import
+        Config::*,
+        ProcessorDefs::*;
 (
     // Senyals de control i sincronitzacio
     input  logic    i_clock,           // Clock

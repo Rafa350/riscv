@@ -1,5 +1,7 @@
 module InstL1Cache
-    import Config::*, CoreDefs::*;
+    import
+        Config::*,
+        ProcessorDefs::*;
 (
     input logic    i_clock,  // Clock
     input logic    i_reset,  // Reset
@@ -10,10 +12,7 @@ module InstL1Cache
     logic cache_busy;
     logic cache_hit;
 
-    ICache #(
-        .SETS       (RV_ICACHE_SETS),     // Nombre de vias
-        .CACHE_SIZE (RV_ICACHE_ELEMENTS), // Nombre de blocs per cache
-        .BLOCK_SIZE (RV_ICACHE_BLOCKS))   // Nombre de words per bloc
+    ICache
     cache (
         .i_clock     (i_clock),
         .i_reset     (i_reset),

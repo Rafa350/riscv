@@ -1,5 +1,6 @@
 module BranchComparer
-    import Config::*, CoreDefs::*;
+    import Config::*,
+           ProcessorDefs::*;
 (
     input  Data  i_dataRS1,
     input  Data  i_dataRS2,

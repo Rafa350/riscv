@@ -1,6 +1,6 @@
 interface InstBus;
 
-    import CoreDefs::*;
+    import ProcessorDefs::*;
 
     InstAddr addr; // Adressa
     logic    re;   // Habilita la lecture

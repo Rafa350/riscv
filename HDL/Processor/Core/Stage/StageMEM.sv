@@ -1,5 +1,7 @@
 module StageMEM
-    import CoreDefs::*;
+    import
+        ProcessorDefs::*,
+        CoreDefs::*;
 (
     // Senyals de control
     input  logic      i_clock,        // Clock

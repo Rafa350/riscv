@@ -1,5 +1,5 @@
 module InstDecoder
-    import Config::*, CoreDefs::*;
+    import Config::*, ProcessorDefs::*, CoreDefs::*;
  (
     input  Inst    i_inst,      // La instruccio a decodificar
     output OpCode  o_instOP,    // El codi d'operacio

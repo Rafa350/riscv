@@ -1,9 +1,8 @@
 module ICache
-    import CoreDefs::*;
-#(
-    parameter int unsigned SETS       = 1,   // Nombre de vias
-    parameter int unsigned CACHE_SIZE = 128, // Tamany del cache
-    parameter int unsigned BLOCK_SIZE = 4)   // Tamany del bloc
+    import
+        Config::*,
+        ProcessorDefs::*,
+        CacheDefs::*;
 (
     // Senyals de control
     input  logic    i_clock,      // Senyal de rellotge
@@ -23,26 +22,16 @@ module ICache
     input  Inst     i_mem_rdata); // Dades recuperades de la memoria principal
 
 
-    localparam INDEX_WIDTH  = $clog2(CACHE_SIZE);
-    localparam OFFSET_WIDTH = $clog2(BLOCK_SIZE);
-    localparam TAG_WIDTH    = $size(InstAddr) - 2 - INDEX_WIDTH - OFFSET_WIDTH;
-
-
-    typedef logic [TAG_WIDTH-1:0]    Tag;
-    typedef logic [INDEX_WIDTH-1:0]  Index;
-    typedef logic [OFFSET_WIDTH-1:0] Offset;
-
-
-    Tag    tag;   // Tag del cache
-    Index  index; // Index del cache
-    Offset offset; // Bloc de dades
+    ICacheTag    tag;   // Tag del cache
+    ICacheIndex  index; // Index del cache
+    ICacheOffset offset; // Bloc de dades
 
 
     // Separa els components de l'adressa. La converteix a direccionament en words
     //
-    assign tag    = i_addr[2+OFFSET_WIDTH+INDEX_WIDTH+:TAG_WIDTH];
-    assign index  = i_addr[2+OFFSET_WIDTH+:INDEX_WIDTH];
-    assign offset = i_addr[2+:OFFSET_WIDTH];
+    assign tag    = i_addr[2+ICACHE_OFFSET_WIDTH+ICACHE_INDEX_WIDTH+:ICACHE_TAG_WIDTH];
+    assign index  = i_addr[2+ICACHE_OFFSET_WIDTH+:ICACHE_INDEX_WIDTH];
+    assign offset = i_addr[2+:ICACHE_OFFSET_WIDTH];
 
     // Senyals de la memoria principal o L2
     //
@@ -59,19 +48,19 @@ module ICache
     // Cache controller
     // -------------------------------------------------------------------
 
-    logic  cacheCtrl_cacheClear;
-    logic  cacheCtrl_cacheWrite;
-    logic  cacheCtrl_memRead;
-    logic  cacheCtrl_hit;
-    logic  cacheCtrl_busy;
-    Tag    cacheCtrl_tag;
-    Index  cacheCtrl_index;
-    Offset cacheCtrl_offset;
+    logic        cacheCtrl_cacheClear;
+    logic        cacheCtrl_cacheWrite;
+    logic        cacheCtrl_memRead;
+    logic        cacheCtrl_hit;
+    logic        cacheCtrl_busy;
+    ICacheTag    cacheCtrl_tag;
+    ICacheIndex  cacheCtrl_index;
+    ICacheOffset cacheCtrl_offset;
 
     ICacheController #(
-        .TAG_WIDTH    ($size(Tag)),
-        .INDEX_WIDTH  ($size(Index)),
-        .OFFSET_WIDTH ($size(Offset)))
+        .TAG_WIDTH    ($size(ICacheTag)),
+        .INDEX_WIDTH  ($size(ICacheIndex)),
+        .OFFSET_WIDTH ($size(ICacheOffset)))
     cacheCtrl (
         .i_clock      (i_clock),
         .i_reset      (i_reset),
@@ -98,9 +87,9 @@ module ICache
 
     CacheSet #(
         .DATA_WIDTH   ($size(Inst)),
-        .TAG_WIDTH    ($size(Tag)),
-        .INDEX_WIDTH  ($size(Index)),
-        .OFFSET_WIDTH ($size(Offset)))
+        .TAG_WIDTH    ($size(ICacheTag)),
+        .INDEX_WIDTH  ($size(ICacheIndex)),
+        .OFFSET_WIDTH ($size(ICacheOffset)))
     cacheSet (
         .i_clock  (i_clock),
         .i_reset  (i_reset),

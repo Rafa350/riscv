@@ -1,5 +1,5 @@
 module DataMemoryAdapter
-    import CoreDefs::*;
+    import ProcessorDefs::*, CoreDefs::*;
 (
     input  logic      i_clock,      // Clock
     input  logic      i_reset,      // Reset

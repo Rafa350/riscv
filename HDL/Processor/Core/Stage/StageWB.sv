@@ -1,5 +1,6 @@
 module StageWB
-    import CoreDefs::*;
+    import
+        ProcessorDefs::*;
 (
     // Senyals de control i sincronitzacio
     input  logic   i_clock,       // Clock

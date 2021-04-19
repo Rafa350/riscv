@@ -1,5 +1,7 @@
 module InstMemory
-    import Types::*;
+    import 
+        Config::*,
+        ProcessorDefs::*;
 (
     InstBus.slave bus);
 

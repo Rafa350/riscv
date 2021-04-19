@@ -1,5 +1,5 @@
 module ALU
-    import CoreDefs::*;
+    import ProcessorDefs::*, CoreDefs::*;
 (
     input  AluOp i_op,
     input  Data  i_dataA,

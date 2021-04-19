@@ -1,5 +1,5 @@
 module StageID_HazardDetector
-    import CoreDefs::*;
+    import ProcessorDefs::*;
 (
     input  GPRAddr i_instRS1,
     input  GPRAddr i_instRS2,

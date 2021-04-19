@@ -1,5 +1,7 @@
 module CSRUnit
-    import Config::*, CoreDefs::*;
+    import Config::*,
+           ProcessorDefs::*,
+           CoreDefs::*;
 (
     // Senyals de control
     input  logic   i_clock,       // Clock

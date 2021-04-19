@@ -14,7 +14,8 @@
 //            i_write   : Habilita l'escriptura
 //            l_clear   : Habilita la neteja
 //            i_tag     : Tag
-//            i_index   : Adressa
+//            i_index   : Adressa del block
+//            i_offset  : Offset d'ins del bloc
 //            i_wdata   : Dades per escriure
 //
 //       Sortides:
@@ -41,7 +42,9 @@ module CacheSet
     output logic [DATA_WIDTH-1:0]   o_rdata,  // Dades lleigides
     output logic                    o_hit);   // Indica coincidencia i dades recuperades
 
+
     localparam int unsigned BLOCK_SIZE = 2**OFFSET_WIDTH; // Tamany del bloc
+
 
     typedef logic [TAG_WIDTH-1:0]  Tag;       // Tag
     typedef logic [DATA_WIDTH-1:0] CacheData; // Dades

@@ -1,5 +1,7 @@
 module DataMemory1024x32
-    import Types::*;
+    import 
+        Config::*,
+        ProcessorDefs::*;
 (
     input         i_clock, // Clock
     DataBus.slave bus);    // Bus de memoria de dades

@@ -1,5 +1,7 @@
 module Processor
-    import Config::*, CoreDefs::*;
+    import 
+        Config::*, 
+        ProcessorDefs::*;
 (
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset

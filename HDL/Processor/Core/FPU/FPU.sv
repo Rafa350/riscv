@@ -1,5 +1,5 @@
 module FPU
-    import CoreDefs::*;
+    import ProcessorDefs::*, CoreDefs::*;
 (
     );
 
