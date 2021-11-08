@@ -93,7 +93,7 @@ int main(
     char **argv,
     char **env) {
 
-    printf("RISCV Componments testbench V1.0\n\n");
+    printf("RISCV Components testbench V1.0\n\n");
 
     CPUTestbench *tb = new CPUTestbench();
     if (tb) {

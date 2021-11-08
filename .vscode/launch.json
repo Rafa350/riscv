@@ -23,7 +23,7 @@
                     "ignoreFailures": true
                 }
             ]
-        }
+        },
         {
             "name": "(Debug) rv-rtlsim",
             "type": "cppdbg",

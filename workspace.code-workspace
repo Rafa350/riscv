@@ -1,7 +1,19 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": "../../FPGA/RISCV/Firmware"
+		},
+		{
+			"path": "../../FPGA/RISCV/Simulator"
+		},
+		{
+			"path": "../../FPGA/RISCV/Testbench"
+		},
+		{
+			"path": "../RISCV/Verilator"
+		},
+		{
+			"path": "../RISCV/HDL"
 		}
 	],
 	"settings": {
