@@ -384,12 +384,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/ALU/ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/InstL1Cache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/ICacheController.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/ICache.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/CacheSet.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/CacheMem.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Cache/CacheDefs.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Stage/StageWB.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Stage/StageMEM.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Stage/StageIF.sv
