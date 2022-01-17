@@ -367,6 +367,9 @@ set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
 set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 2
 set_global_assignment -name SEARCH_PATH "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base"
 set_global_assignment -name IP_SEARCH_PATHS "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\core;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\cache"
+set_global_assignment -name QIP_FILE less32U.qip
+set_global_assignment -name QIP_FILE less32S.qip
+set_global_assignment -name QIP_FILE ram1024x8.qip
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Shifter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/RwMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/RoMemory.sv
