@@ -59,6 +59,10 @@ package Config;
 
     localparam bit RV_EXT_Zicsr    = 1; // Implementa les instruccions CSRxxx
     localparam bit RV_EXT_Zifencei = 0; // Implementa la instruccion FENCE.I
+    localparam bit RV_EXT_Zba      = 0; // Implementa Zba extension
+    localparam bit RV_EXT_Zbb      = 0; // Implementa basic bit-manipulation extension
+    localparam bit RV_EXT_Zbc      = 0; // Implementa crry-less multiplication extension
+    localparam bit RV_EXT_Zbs      = 0; // Implementa single-bit interuction extension
 
 
     // Configuracio dels parametres fundamentals
