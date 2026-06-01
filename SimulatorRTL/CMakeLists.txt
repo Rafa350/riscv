@@ -1,4 +1,4 @@
-set(TARGET_NAME "rv-rtlsim")
+set(TARGET_NAME "SimulatorRTL")
 
 # Localitza Verilator
 #
@@ -14,14 +14,15 @@ endif()
 
 # Defineix els directoris
 #
+set(SOURCE_DIR            ${CMAKE_CURRENT_SOURCE_DIR})
+
 set(SIMULATOR_DIR         ${CMAKE_SOURCE_DIR}/Simulator)
-set(SIMULATOR_INCLUDE_DIR ${SIMULATOR_DIR}/Include)
+Set(SIMULATOR_INCLUDE_DIR ${SIMULATOR_DIR}/Include)
 set(SIMULATOR_SOURCE_DIR  ${SIMULATOR_DIR}/Source)
 
 set(SIMLIB_DIR            ${CMAKE_SOURCE_DIR}/../Simulation)
 set(SIMLIB_INCLUDE_DIR    ${SIMLIB_DIR}/Include)
-
-set(SOURCE_DIR            ${CMAKE_CURRENT_SOURCE_DIR})
+set(SIMLIB_SOURCE_DIR     ${SIMLIB_DIR}/Source)
 
 set(HDL_DIR               ${CMAKE_SOURCE_DIR}/HDL)
 set(HDL_INCLUDE_DIR       ${HDL_DIR})
@@ -51,7 +52,6 @@ set(COMPILE_OPTIONS
 #
 set(LINK_OPTIONS
     -Wl,--gc-sections 
-    -Wl,--print-gc-sections
 )
 
 
@@ -60,18 +60,20 @@ set(LINK_OPTIONS
 message("* ------------------------------------------------------------------------------------")
 message("* Project '${PROJECT_NAME}/${TARGET_NAME}' configuration.")
 message("*   Toochain:")
-message("*     gcc       : " ${CMAKE_C_COMPILER})
-message("*     g++       : " ${CMAKE_CXX_COMPILER})
-message("*     as        : " ${CMAKE_ASM_COMPILER})
+message("*     gcc         : " ${CMAKE_C_COMPILER})
+message("*     g++         : " ${CMAKE_CXX_COMPILER})
+message("*     as          : " ${CMAKE_ASM_COMPILER})
 message("*")
 message("*   Directories:")
-message("*     Root      : " ${CMAKE_SOURCE_DIR})
-message("*     Current   : " ${CMAKE_CURRENT_SOURCE_DIR})
+message("*     Root        : " ${CMAKE_SOURCE_DIR})
+message("*     Current     : " ${CMAKE_CURRENT_SOURCE_DIR})
 message("*")
-message("*     Source    : " ${SOURCE_DIR})
-message("*     HDL       : " ${HDL_DIR})
-message("*     Simulator : " ${SIMULATOR_DIR})
-message("*     SimLib    : " ${SIMLIB_DIR})
+message("*     HDL Source  : " ${HDL_DIR})
+message("*     C++ Source  : " ${SOURCE_DIR})
+message("*                 : " ${SIMULATOR_SOURCE_DIR})
+message("*                 : " ${SIMLIB_SOURCE_DIR})
+message("*     C++ Include : " ${SIMULATOR_INCLUDE_DIR})
+message("*                 : " ${SIMLIB_INCLUDE_DIR})
 message("*")
 
 
@@ -121,6 +123,6 @@ verilate(${TARGET_NAME}
 )
 
 # Instalacio en la carpeta Run
-install(
-    TARGETS ${TARGET_NAME}
-    DESTINATION ${PROJECT_DIR}/Run)
+#install(
+#    TARGETS ${TARGET_NAME}
+#    DESTINATION ${CMAKE_SOURCE_DIR}/../Run)
