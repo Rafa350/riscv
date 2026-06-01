@@ -1,3 +1,6 @@
+// verilator lint_off GENUNNAMED
+// verilator lint_off VARHIDDEN 
+
 module CacheMem
     import
         Config::*;
@@ -27,7 +30,7 @@ module CacheMem
         end
 
         else if (RV_TARGET_COMPILER == "QUARTUS") begin
-            altsyncram
+            /*altsyncram
             altsyncram_component (
                 .address_a      (i_addr),
                 .clock0         (i_clock),
@@ -69,6 +72,7 @@ module CacheMem
                 altsyncram_component.widthad_a                     = ADDR_WIDTH,
                 altsyncram_component.width_a                       = DATA_WIDTH,
                 altsyncram_component.width_byteena_a               = 1;
+                */
         end
     endgenerate
 

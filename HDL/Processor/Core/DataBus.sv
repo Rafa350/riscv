@@ -1,6 +1,7 @@
 interface DataBus;
 
-    import ProcessorDefs::*;
+    import 
+        ProcessorDefs::*;
 
     DataAddr addr;  // Addresa en words
     logic    re;    // Habilita la lectura

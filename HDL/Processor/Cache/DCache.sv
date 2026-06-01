@@ -1,5 +1,7 @@
 module DCache
-    import ProcessorDefs::*;
+
+    import 
+        ProcessorDefs::*;
 #(
     parameter int unsigned SETS       = 1,   // Nombre de vias
     parameter int unsigned CACHE_SIZE = 128, // Tamany del cache

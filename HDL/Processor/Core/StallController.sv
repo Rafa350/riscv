@@ -4,11 +4,17 @@ module StallController
     input  logic i_ID_hazard,     // Indiza hazard en ID
     input  logic i_EX_hazard,     // Indica hazard en EX
     input  logic i_MEM_hazard,    // Indica hazard en MEM
+    // verilator lint_off UNUSEDSIGNAL    
     input  logic i_WB_hazard,     // Indica hazard en WB
+    // verilator lint_on UNUSEDSIGNAL    
     input  logic i_IFID_isValid,  // Indica valid en IFID
     input  logic i_IDEX_isValid,  // Indica valid en IDEX
+    // verilator lint_off UNUSEDSIGNAL    
     input  logic i_EXMEM_isValid, // Indica valid en EXMEM
+    // verilator lint_on UNUSEDSIGNAL    
+    // verilator lint_off UNUSEDSIGNAL    
     input  logic i_MEMWB_isValid, // Indica valid en MEMWB
+    // verilator lint_on UNUSEDSIGNAL    
 
     output logic o_IFID_stall,
     output logic o_IDEX_stall,

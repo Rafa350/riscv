@@ -1,6 +1,6 @@
 module DebugPipelineEXMEM
     import ProcessorDefs::*;
-(
+( 
     // Senyals de control
     input  logic i_clock,    // Clock
     input  logic i_reset,    // Reset
@@ -14,7 +14,6 @@ module DebugPipelineEXMEM
     // Senyals de sortidade del pipeline
     output int   o_dbgTick,  // Numero de tick
     output Inst  o_dbgInst); // Instruccio
-
 
     always_ff @(posedge i_clock)
         casez ({i_reset, i_stall, i_flush})
@@ -34,6 +33,5 @@ module DebugPipelineEXMEM
                     o_dbgInst <= i_dbgInst;
                 end
         endcase
-
 
 endmodule

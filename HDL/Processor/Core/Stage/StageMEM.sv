@@ -47,8 +47,12 @@ module StageMEM
     // ------------------------------------------------------------------------
 
     Data  memAdapter_rdData;
+    // verilator lint_off UNUSEDSIGNAL 
     logic memAdapter_alignError;
+    // verilator lint_on UNUSEDSIGNAL 
+    // verilator lint_off UNUSEDSIGNAL 
     logic memAdapter_busy;
+    // verilator lint_on UNUSEDSIGNAL 
 
     DataMemoryAdapter
     memAdapter (

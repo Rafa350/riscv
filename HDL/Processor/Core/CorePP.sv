@@ -1,3 +1,5 @@
+// verilator lint_off GENUNNAMED
+
 module CorePP
     import Config::*,
            ProcessorDefs::*,
@@ -201,7 +203,9 @@ module CorePP
     DataAccess IDEX_memAccess;
     logic      IDEX_memUnsigned;
     AluOp      IDEX_aluControl;
+    // verilator lint_off UNUSEDSIGNAL    
     MduOp      IDEX_mduControl;
+    // verilator lint_on UNUSEDSIGNAL    
     CsrOp      IDEX_csrControl;
     DataASel   IDEX_operandASel;
     DataBSel   IDEX_operandBSel;

@@ -1,7 +1,8 @@
-`include "RV.svh"
-
+// verilator lint_off UNUSEDPARAM
 
 package Config;
+
+`include "RV.svh"
 
 
 `ifndef RV_BASE_32

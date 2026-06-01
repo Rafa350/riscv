@@ -1,3 +1,5 @@
+// verilator lint_off DECLFILENAME
+
 `include "RV.svh"
 
 
@@ -10,13 +12,17 @@
 
 
 module top
-    import Config::*, CoreDefs::*;
+
+    import 
+        Config::*, 
+        CoreDefs::*;
+        
 (
     input   i_clock,   // Clock
     input   i_reset);  // Reset
 
-    DataBus dataBus; // Interficie amb la memoria de dades
-    InstBus instBus; // Interficie amb la memoria d'instruccions
+    DataBus dataBus(); // Interficie amb la memoria de dades
+    InstBus instBus(); // Interficie amb la memoria d'instruccions
 
 
     // -------------------------------------------------------------------
@@ -63,6 +69,5 @@ module top
         .i_reset (i_reset),
         .instBus (instBus),
         .dataBus (dataBus));
-
 
 endmodule

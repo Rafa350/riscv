@@ -1,7 +1,12 @@
 module DatapathController
-    import Config::*, ProcessorDefs::*, CoreDefs::*;
+    import 
+        Config::*, 
+        ProcessorDefs::*, 
+        CoreDefs::*;
 (
+    // verilator lint_off UNUSEDSIGNAL 
     input  Inst        i_inst,           // La instruccio
+    // verilator lint_on UNUSEDSIGNAL 
 
     input  logic       i_isEqual,        // Indica A == B
     input  logic       i_isLessSigned,   // Indica A < B amb signe

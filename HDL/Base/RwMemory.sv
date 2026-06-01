@@ -24,7 +24,7 @@
 module RwMemory
 #(
     parameter int unsigned DATA_WIDTH = 32, // Amplade de dades
-    parameter int unsigned ADDR_WIDTH = 32) // Amplada d'adresses
+    parameter int unsigned ADDR_WIDTH = 16) // Amplada d'adresses
 (
     input  logic                  i_clock,  // Clock
     input  logic [ADDR_WIDTH-1:0] i_addr,   // Adressa

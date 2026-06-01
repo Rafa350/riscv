@@ -15,7 +15,6 @@ module DebugPipelineIDEX
     output int   o_dbgTick,  // Numero de tick
     output Inst  o_dbgInst); // Instruccio
 
-
     always_ff @(posedge i_clock)
         casez ({i_reset, i_stall, i_flush})
             3'b1??, // RESET

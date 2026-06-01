@@ -1,9 +1,8 @@
-cmake_minimum_required(VERSION 3.16.3)
-project(rv)
+cmake_minimum_required(VERSION 3.28)
+project("RISCV" LANGUAGES CXX C)
 
-set(PROJECT_DIR ${PROJECT_SOURCE_DIR})
-
-add_subdirectory(Firmware)
 add_subdirectory(Verilator)
 add_subdirectory(Simulator)
-add_subdirectory(Testbench)
+
+#add_subdirectory(Yosys)
+#add_subdirectory(Testbench)

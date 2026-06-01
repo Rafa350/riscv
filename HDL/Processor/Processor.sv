@@ -1,3 +1,5 @@
+// verilator lint_off GENUNNAMED
+
 module Processor
     import 
         Config::*, 
@@ -18,7 +20,7 @@ module Processor
     // -------------------------------------------------------------------
 
     generate
-        if (RV_ICACHE_ON == 1) begin : ICacheBlock
+        if (RV_ICACHE_ON == 1) begin
             InstL1Cache
             instL1Cache (
                 .i_clock (i_clock),      // Clock
@@ -40,7 +42,7 @@ module Processor
     // ----------------------------------------------------------------------
 
     generate
-        if (RV_DCACHE_ON == 1) begin : DCacheBlock
+        if (RV_DCACHE_ON == 1) begin
             DataL1Cache
             dataL1Cache (
                 .i_clock (i_clock),      // Clock

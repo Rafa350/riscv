@@ -18,7 +18,7 @@
 module RoMemory
 #(
     parameter int unsigned DATA_WIDTH = 32,
-    parameter int unsigned ADDR_WIDTH = 32,
+    parameter int unsigned ADDR_WIDTH = 16,
     parameter string FILE_NAME  = "data.txt")
 (
     input  logic [ADDR_WIDTH-1:0] i_addr,   // Adressa en bytes

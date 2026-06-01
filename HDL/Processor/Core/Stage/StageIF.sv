@@ -1,11 +1,17 @@
+// verilator lint_off GENUNNAMED
+
 module StageIF
     import
         Config::*,
         ProcessorDefs::*;
 (
     // Senyals de control i sincronitzacio
+    // verilator lint_off UNUSEDSIGNAL
     input  logic    i_clock,           // Clock
+    // verilator lint_on UNUSEDSIGNAL
+    // verilator lint_off UNUSEDSIGNAL
     input  logic    i_reset,           // Reset
+    // verilator lint_on UNUSEDSIGNAL
 
     // Interficie amb la memoria/cache d'instruccions
     InstBus.master instBus,           // Bus de la memoria d'instruccions

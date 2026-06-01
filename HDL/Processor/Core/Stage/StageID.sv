@@ -4,8 +4,12 @@ module StageID
         CoreDefs::*;
 (
     // Senyals de control i sincronitzacio
+    // verilator lint_off UNUSEDSIGNAL
     input  logic      i_clock,           // Clock
+    // verilator lint_on  UNUSEDSIGNAL
+    // verilator lint_off UNUSEDSIGNAL
     input  logic      i_reset,           // Reset
+    // verilator lint_on UNUSEDSIGNAL
 
     // Interficie amb GPR
     output GPRAddr    o_reg_raddrA,
@@ -36,7 +40,9 @@ module StageID
 
     // Senyals operatives del stage
     input  Inst       i_inst,            // Instruccio
+    // verilator lint_off UNUSEDSIGNAL
     input  logic      i_instCompressed,  // Indica que es una instruccio comprimida
+    // verilator lint_on UNUSEDSIGNAL
     input  InstAddr   i_pc,              // Adressa de la instruccio
     output Data       o_instIMM,         // Valor IMM de la instruccio
     output CSRAddr    o_instCSR,         // Valor CSR de la instruccio
@@ -73,7 +79,9 @@ module StageID
     // IMM de la instruccio en funcio del seu tipus.
     // ------------------------------------------------------------------------
 
+    // verilator lint_off UNUSEDSIGNAL 
     OpCode  dec_instOP;  // Codi d'operacio
+    // verilator lint_on UNUSEDSIGNAL 
     GPRAddr dec_instRS1; // Registre RS1
     GPRAddr dec_instRS2; // Registre RS2
     Data    dec_instIMM; // Valor inmediat
@@ -96,7 +104,9 @@ module StageID
     // Genera les senyals de control de les rutes de dades.
     // ------------------------------------------------------------------------
 
+    // verilator lint_off UNUSEDSIGNAL 
     logic       dpCtrl_cmpUnsigned; // Comparacio sense signe
+    // verilator lint_on UNUSEDSIGNAL 
     logic [1:0] dpCtrl_pcNextSel;   // Selector del seguent valor del PC
 
     DatapathController

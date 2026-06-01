@@ -1,7 +1,8 @@
 module CSRUnit
-    import Config::*,
-           ProcessorDefs::*,
-           CoreDefs::*;
+    import 
+        Config::*,
+        ProcessorDefs::*,
+        CoreDefs::*;
 (
     // Senyals de control
     input  logic   i_clock,       // Clock
@@ -43,11 +44,11 @@ module CSRUnit
     localparam Data MIMPID    = 0;
     localparam Data MHARTID   = 0;
 
-    localparam CSR_CYCLE         = 12'hC00;
-    localparam CSR_TIME          = 12'hC01;
-    localparam CSR_TIMEH         = 12'hC81;
-    localparam CSR_INSTRET       = 12'hC02;
-    localparam CSR_INSTRETH      = 12'hC82;
+    //localparam CSR_CYCLE         = 12'hC00;
+    //localparam CSR_TIME          = 12'hC01;
+    //localparam CSR_TIMEH         = 12'hC81;
+    //localparam CSR_INSTRET       = 12'hC02;
+    //localparam CSR_INSTRETH      = 12'hC82;
 
     localparam CSR_MVENDORID     = 12'hF11;
     localparam CSR_MARCHID       = 12'hF12;
@@ -57,7 +58,7 @@ module CSRUnit
     localparam CSR_MISA          = 12'h301;
     localparam CSR_MIE           = 12'h304;
     localparam CSR_MTVEC         = 12'h305;
-    localparam CSR_MCOUNTEREN    = 12'h306;
+    //localparam CSR_MCOUNTEREN    = 12'h306;
     localparam CSR_MCOUNTINHIBIT = 12'h320;
     localparam CSR_MSCRATCH      = 12'h340;
     localparam CSR_MEPC          = 12'h341;
@@ -95,7 +96,9 @@ module CSRUnit
     RunMode                      mode;             // Modus d'execucio
 
     // Senyals d'estat i control
+    //verilator lint_off UNDRIVEN
     Data                         mepc;             // Salva PC durant les excepcions
+    //verilator lint_on UNDRIVEN
     Data                         mcause;
     Data                         mscratch;
     logic                        mstatus_MIE;

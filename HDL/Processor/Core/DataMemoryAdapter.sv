@@ -1,8 +1,16 @@
 module DataMemoryAdapter
-    import ProcessorDefs::*, CoreDefs::*;
+
+    import 
+        ProcessorDefs::*, 
+        CoreDefs::*;
+        
 (
+    // verilator lint_off UNUSEDSIGNAL    
     input  logic      i_clock,      // Clock
+    // verilator lint_on UNUSEDSIGNAL    
+    // verilator lint_off UNUSEDSIGNAL    
     input  logic      i_reset,      // Reset
+    // verilator lint_on UNUSEDSIGNAL    
     input  DataAddr   i_addr,       // Adressa en bytes
     input  DataAccess i_access,     // Modus d'access (byte, half o word)
     input  logic      i_unsigned,   // Lectura en modus sense signe

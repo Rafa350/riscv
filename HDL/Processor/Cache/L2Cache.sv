@@ -1,5 +1,10 @@
+// verilator lint_off GENUNNAMED
+
 module L2Cache
-    import ProcessorDefs::*, CoreDefs::*;
+    
+    import 
+        ProcessorDefs::*, 
+        CoreDefs::*;
 (
     input              logic  i_clock,
     input              logic  i_reset,

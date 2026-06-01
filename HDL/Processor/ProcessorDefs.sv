@@ -1,6 +1,7 @@
 package ProcessorDefs;
 
-    import Config::*;
+    import 
+        Config::*;
 
     // Definicions basiques del procesador
     //

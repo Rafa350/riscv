@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
+project("syntesis")
 
 
 # Capeta del s fitxers font
@@ -8,9 +9,11 @@ set(SOURCE_DIR ../../HDL)
 # Llista dels fitxers font
 #
 set(SOURCE_FILE_LIST
-    Processor.sv
-    CoreSC.sv
-    CorePP.sv)
+    Processor/Processor.sv
+    Processor/Core/CorePP.sv
+    Processor/Core/CoreSC.sv
+    Processor/Core/CSRUnit.sv)
+
 
 
 # Busca la ubicacio de sv2v
@@ -27,6 +30,16 @@ find_program(
     NAMES yosys
 )
 
+message("* ------------------------------------------------------------------------------------")
+message("* Sub-project '${PROJECT_NAME}' configuration.")
+message("*   Toochain:")
+message("*     sv2v    : " ${SV2V_CMD})
+message("*     yosys   : " ${YOSYS_CMD})
+message("*")
+message("*   Directories:")
+message("*     Root    : " ${PROJECT_DIR})
+message("*     Current : " ${CMAKE_CURRENT_SOURCE_DIR})
+message("*")
 
 # Target
 #    
@@ -45,6 +58,6 @@ foreach(SOURCE_FILE ${SOURCE_FILE_LIST})
     add_custom_command(
         OUTPUT  ${SOURCE_FILE}.v
         SOURCES ${SOURCE_DIR}/${SOURCE_FILE}
-        COMMAND ${SV2V_CMD} ${SOURCE_DIR}/${SOURCE_FILE} > ${SOURCE_FILE}.v
+        COMMAND ${SV2V_CMD} ${SOURCE_DIR}/${SOURCE_FILE} 
     )
 endforeach()

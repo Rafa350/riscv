@@ -24,7 +24,7 @@
 
 // Opcions de cache
 //
-`define RV_ICACHE_ON            // Cache L1 d'instruccions
+//`define RV_ICACHE_ON            // Cache L1 d'instruccions
 //`define RV_DCACHE_ON            // Cache L1 de dades
 
 

@@ -13,7 +13,7 @@ module BranchComparer
     localparam bit FAST = 1;
 
     generate
-        if (FAST == 1) begin
+        if (FAST == 1) begin : FastModeBlock
             FullComparer #(
                 .WIDTH($size(Data)))
             comparator (
@@ -23,7 +23,7 @@ module BranchComparer
                 .o_isLessUnsigned (o_isLessUnsigned),
                 .o_isLessSigned   (o_isLessSigned));
         end
-        else begin
+        else begin : NoFastModeBlock
             assign o_isEqual        = i_dataRS1 == i_dataRS2;
             assign o_isLessUnsigned = $unsigned(i_dataRS1) < $unsigned(i_dataRS2);
             assign o_isLessSigned   = $signed(i_dataRS1) < $signed(i_dataRS2);

@@ -46,6 +46,7 @@ module ALU
         .o_data       (shifter_result));
 
 
+    // verilator lint_off LATCH 
     always_comb begin
 
         // verilator lint_off CASEINCOMPLETE

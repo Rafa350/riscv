@@ -18,7 +18,6 @@ module PipelineIFID
     output Inst     o_inst,            // Instruccio
     output logic    o_instCompressed); // Indica que es una instruccio comprimida
 
-
     always_ff @(posedge i_clock)
         casez ({i_reset, i_stall})
             2'b1?: // RESET

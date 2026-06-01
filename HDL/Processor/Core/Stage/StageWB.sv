@@ -3,8 +3,12 @@ module StageWB
         ProcessorDefs::*;
 (
     // Senyals de control i sincronitzacio
+    // verilator lint_off UNUSEDSIGNAL 
     input  logic   i_clock,       // Clock
+    // verilator lint_on UNUSEDSIGNAL 
+    // verilator lint_off UNUSEDSIGNAL 
     input  logic   i_reset,       // Reset
+    // verilator lint_on UNUSEDSIGNAL 
 
     // Interficie amb GPR
     output GPRAddr o_reg_waddr,

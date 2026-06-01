@@ -16,10 +16,12 @@
 
 module InstMemory
     import ProcessorDefs::*;
+    
 #(
     parameter BASE      = 0,
     parameter SIZE      = 1024,
     parameter FILE_NAME = "data.txt")
+    
 (
     InstBus.slave bus);
 

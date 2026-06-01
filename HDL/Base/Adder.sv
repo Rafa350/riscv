@@ -1,3 +1,6 @@
+// verilator lint_off DECLFILENAME 
+// verilator lint_off GENUNNAMED
+
 // -----------------------------------------------------------------------
 //
 //       Sumador

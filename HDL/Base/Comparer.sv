@@ -1,10 +1,15 @@
+// verilator lint_off DECLFILENAME
+// verilator lint_off GENUNNAMED
+
 module Comparer
 # (
     parameter WIDTH = 32)
 (
     input  logic [WIDTH-1:0] i_dataA,
     input  logic [WIDTH-1:0] i_dataB,
+    // verilator lint_off UNUSEDSIGNAL    
     output logic             o_isEqual,
+    // verilator lint_on UNUSEDSIGNAL    
     output logic             o_isLess);
 
     generate
@@ -17,8 +22,12 @@ module Comparer
 
             localparam NUM_BITS = WIDTH/(2**i)/2;
 
+            // verilator lint_off UNUSEDSIGNAL    
             logic isEqual[NUM_BITS];
+            // verilator lint_on UNUSEDSIGNAL    
+            // verilator lint_off UNUSEDSIGNAL    
             logic isLess[NUM_BITS];
+            // verilator lint_on UNUSEDSIGNAL    
 
             for (j = 0; j < NUM_BITS; j++) begin: BLK2
 

@@ -17,15 +17,17 @@
 // -----------------------------------------------------------------------
 
 module DataMemory
-    import ProcessorDefs::*;
+
+    import 
+        ProcessorDefs::*;
+        
 #(
     parameter BASE = 0,
     parameter SIZE = 1024)
+    
 (
     input  logic  i_clock,
     DataBus.slave bus);
-
-    localparam DATA_WIDTH = $size(Data);
 
     longint memObj;
 
@@ -60,7 +62,7 @@ module DataMemory
             $finish();
         end
 
-        $display("Emulated RAM memory %0d bits:", DATA_WIDTH);
+        $display("Emulated RAM memory %0d bits:", $size(Data));
         $display("    Base addr     : %X", BASE);
         $display("    Size in bytes : %0d", SIZE);
         $display("");
