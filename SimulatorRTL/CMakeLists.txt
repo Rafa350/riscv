@@ -119,7 +119,7 @@ verilate(${TARGET_NAME}
                  ${HDL_INCLUDE_DIR}/Processor/Core/Pipeline
                  ${HDL_INCLUDE_DIR}/Processor/Cache
     VERILATOR_ARGS ${VERILATOR_OPTIONS}
-    SOURCES verilator_top.sv
+    SOURCES top.sv
 )
 
 # Instalacio en la carpeta Run

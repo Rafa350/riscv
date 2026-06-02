@@ -9,10 +9,9 @@
 `endif
 
 
-module top
-(
-    input   i_clock,   // Clock
-    input   i_reset);  // Reset
+module top (
+    input logic i_clock,   // Clock
+    input logic i_reset);  // Reset
 
     localparam DATA = 16'b_1000_0000_1100_0000;
 

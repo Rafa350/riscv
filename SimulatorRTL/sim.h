@@ -8,15 +8,12 @@
 #endif
 #include <stdio.h>
 
-#include "Vverilator_top.h"
-#include "Vverilator_top_top.h"
-#include "Vverilator_top_DataMemory__B100000.h"
+#include "Vtop.h"
+#include "Vtop_top.h"
+#include "Vtop_DataMemory__B100000.h"
 
 
 #include "simTestbench.h"
-
-
-typedef Vverilator_top Vtop;
 
 
 #endif
