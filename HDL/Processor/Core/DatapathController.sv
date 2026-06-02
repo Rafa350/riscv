@@ -1,6 +1,6 @@
 module DatapathController (
     // verilator lint_off UNUSEDSIGNAL 
-    input  ProcessorDefs::Inst i_inst,           // La instruccio
+    input  ProcessorDefs::Inst i_inst,            // La instruccio
     // verilator lint_on UNUSEDSIGNAL 
     input  logic                i_isEqual,        // Indica A == B
     input  logic                i_isLessSigned,   // Indica A < B amb signe

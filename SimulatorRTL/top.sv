@@ -1,5 +1,3 @@
-// verilator lint_off DECLFILENAME
-
 `include "RV.svh"
 
 

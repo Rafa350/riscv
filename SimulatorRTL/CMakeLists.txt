@@ -33,6 +33,8 @@ set(HDL_INCLUDE_DIR       ${HDL_DIR})
 set(VERILATOR_OPTIONS
     -cc 
     -Wall 
+    -Wno-GENUNNAMED
+    -Wno-DECLFILENAME
     --no-timing
     --x-initial unique
     --x-assign unique

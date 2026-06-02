@@ -1,48 +1,46 @@
-module CSRUnit
-    import 
-        Config::*,
-        ProcessorDefs::*,
-        CoreDefs::*;
-(
+module CSRUnit(
+    
     // Senyals de control
-    input  logic   i_clock,       // Clock
-    input  logic   i_reset,       // Reset
+    input logic i_clock, // Clock
+    input logic i_reset, // Reset
 
     // Senyals de control dels contadors HPM
-    input  logic   i_evInstRet,   // Indica instruccio retirada
-    input  logic   i_evICacheMis, // Falla en el cache d'instruccions
-    input  logic   i_evICacheHit, // Encert en el cache d'instruccions
-    input  logic   i_evDCacheMis, // Falla en el cache de dades
-    input  logic   i_evDCacheHit, // Encert en el cache de dades
-    input  logic   i_evMemRead,   // Memeoria lleigida
-    input  logic   i_evMemWrite,  // Memoria escrita
+    input logic i_evInstRet,   // Indica instruccio retirada
+    input logic i_evICacheMis, // Falla en el cache d'instruccions
+    input logic i_evICacheHit, // Encert en el cache d'instruccions
+    input logic i_evDCacheMis, // Falla en el cache de dades
+    input logic i_evDCacheHit, // Encert en el cache de dades
+    input logic i_evMemRead,   // Memeoria lleigida
+    input logic i_evMemWrite,  // Memoria escrita
 
     // Senyals d'acces als registres
-    input  CsrOp   i_op,          // Operacio a realitzar
-    input  CSRAddr i_csr,         // Identificador del registre
-    input  Data    i_data,        // Entrada de dades
-    output Data    o_data);       // Sortida de dades
+    input CoreDefs::CsrOp        i_op,    // Operacio a realitzar
+    input ProcessorDefs::CSRAddr i_csr,   // Identificador del registre
+    input ProcessorDefs::Data    i_data,  // Entrada de dades
+    output ProcessorDefs::Data   o_data); // Sortida de dades
 
 
-    localparam logic [1:0] MISA_XLEN = $size(Data) == 32 ? 2'b01 : 2'b10;
-    localparam Data MISA =
-        (Data'(RV_EXT_A)  <<  0) | // A - Atomic Instructions extension
-        (0                <<  1) | // B - Bitfield extension
-        (Data'(RV_EXT_C)  <<  2) | // C - Compressed extension
-        (Data'(RV_EXT_D)  <<  3) | // D - Double precision floating-point extension
-        (Data'(RV_EXT_E)  <<  4) | // E - Reduced register number extension
-        (Data'(RV_EXT_F)  <<  5) | // F - Single precision floating-point extension
-        (Data'(RV_EXT_I)  <<  8) | // I - Integer extension
-        (Data'(RV_EXT_M)  << 12) | // M - Integer Multiply/Divide extension
-        (0                << 13) | // N - User level interrupts supported
-        (0                << 18) | // S - Supervisor mode implemented
-        (Data'(RV_EXT_U)  << 20) | // U - User mode implemented
-        (0                << 23) | // X - Non-standard extensions present
-        (Data'(MISA_XLEN) << 30);  // M-XLEN 32bit
-    localparam Data MVENDORID = 0;
-    localparam Data MARCHID   = 0;
-    localparam Data MIMPID    = 0;
-    localparam Data MHARTID   = 0;
+    localparam logic [1:0] MISA_XLEN = $size(ProcessorDefs::Data) == 32 ? 2'b01 : 2'b10;
+    
+    localparam ProcessorDefs::Data MISA =
+        (ProcessorDefs::Data'(Config::RV_EXT_A)  <<  0) | // A - Atomic Instructions extension
+        (0                                       <<  1) | // B - Bitfield extension
+        (ProcessorDefs::Data'(Config::RV_EXT_C)  <<  2) | // C - Compressed extension
+        (ProcessorDefs::Data'(Config::RV_EXT_D)  <<  3) | // D - Double precision floating-point extension
+        (ProcessorDefs::Data'(Config::RV_EXT_E)  <<  4) | // E - Reduced register number extension
+        (ProcessorDefs::Data'(Config::RV_EXT_F)  <<  5) | // F - Single precision floating-point extension
+        (ProcessorDefs::Data'(Config::RV_EXT_I)  <<  8) | // I - Integer extension
+        (ProcessorDefs::Data'(Config::RV_EXT_M)  << 12) | // M - Integer Multiply/Divide extension
+        (0                                       << 13) | // N - User level interrupts supported
+        (0                                       << 18) | // S - Supervisor mode implemented
+        (ProcessorDefs::Data'(Config::RV_EXT_U)  << 20) | // U - User mode implemented
+        (0                                       << 23) | // X - Non-standard extensions present
+        (ProcessorDefs::Data'(MISA_XLEN)         << 30);  // M-XLEN 32bit
+        
+    localparam ProcessorDefs::Data MVENDORID = 0;
+    localparam ProcessorDefs::Data MARCHID   = 0;
+    localparam ProcessorDefs::Data MIMPID    = 0;
+    localparam ProcessorDefs::Data MHARTID   = 0;
 
     //localparam CSR_CYCLE         = 12'hC00;
     //localparam CSR_TIME          = 12'hC01;
@@ -90,21 +88,21 @@ module CSRUnit
     localparam CSR_MHPMEVENT8    = 12'h328;
     localparam CSR_MHPMEVENT9    = 12'h329;
 
-    localparam HPM_NUM_COUNTERS  = 10;             // Nombre de contadors de rendiment
+    localparam HPM_NUM_COUNTERS  = 10; // Nombre de contadors de rendiment
 
 
-    RunMode                      mode;             // Modus d'execucio
+    CoreDefs::RunMode mode; // Modus d'execucio
 
     // Senyals d'estat i control
     //verilator lint_off UNDRIVEN
-    Data                         mepc;             // Salva PC durant les excepcions
+    ProcessorDefs::Data mepc;             // Salva PC durant les excepcions
     //verilator lint_on UNDRIVEN
-    Data                         mcause;
-    Data                         mscratch;
+    ProcessorDefs::Data          mcause;
+    ProcessorDefs::Data          mscratch;
     logic                        mstatus_MIE;
     logic                        mstatus_MPRV;
     logic [1:0]                  mtvec_MODE;
-    logic [$size(InstAddr)-3:0]  mtvec_BASE;
+    logic [$size(ProcessorDefs::InstAddr)-3:0]  mtvec_BASE;
     logic                        mip_MEIP;
     logic                        mip_MTIP;
     logic                        mip_MSIP;
@@ -123,10 +121,10 @@ module CSRUnit
 
     // Lectura i escriptura dels registres
     //
-    Data  wdata;         // Dades procesades per escriure en el registre
-    Data  rdata;         // Dades lleigides del registre
-    logic illegalCsr;    // Indicador de registre il·legal
-    logic illegalAccess; // Indicador d'acces il·legal
+    ProcessorDefs::Data wdata; // Dades procesades per escriure en el registre
+    ProcessorDefs::Data rdata; // Dades lleigides del registre
+    logic illegalCsr;          // Indicador de registre il·legal
+    logic illegalAccess;       // Indicador d'acces il·legal
 
 
     // -------------------------------------------------------------------
@@ -142,7 +140,7 @@ module CSRUnit
 
         hpmTrigger[1] = 1'b0;
 
-        // Contador 2 (instret) es dispara quen es retira una instruccio
+        // Contador 2 (instret) es dispara quan es retira una instruccio
         hpmTrigger[2] = i_evInstRet;
 
         // Contador 3
@@ -192,10 +190,10 @@ module CSRUnit
 
     always_comb begin
         unique case (i_op)
-            CsrOp_SET:
+            CoreDefs::CsrOp_SET:
                 wdata = rdata | i_data;
 
-            CsrOp_CLEAR:
+            CoreDefs::CsrOp_CLEAR:
                 wdata = rdata & ~i_data;
 
             default:
@@ -205,7 +203,7 @@ module CSRUnit
 
     always_ff @(posedge i_clock) begin
         if (i_reset) begin
-            mode         <= RunMode_Machine;
+            mode         <= CoreDefs::RunMode_Machine;
             mtvec_BASE   <= 0;
             mtvec_MODE   <= 0;
             mstatus_MIE  <= 1'b0;
@@ -215,7 +213,7 @@ module CSRUnit
             for (int i = 0; i < HPM_NUM_COUNTERS; i++)
                 hpmEvent[i] <= 4'h0;
         end
-        else if ((i_op != CsrOp_NOP) & ~illegalCsr & ~illegalAccess)
+        else if ((i_op != CoreDefs::CsrOp_NOP) & ~illegalCsr & ~illegalAccess)
             // verilator lint_off CASEINCOMPLETE
             unique case (i_csr)
                 CSR_MCAUSE: mcause <= wdata;
@@ -241,7 +239,7 @@ module CSRUnit
 
                 CSR_MTVEC: begin
                     mtvec_MODE <= wdata[1:0];
-                    mtvec_BASE <= wdata[$size(Data)-1:2];
+                    mtvec_BASE <= wdata[$size(ProcessorDefs::Data)-1:2];
                 end
 
                 CSR_MCOUNTINHIBIT: begin
@@ -314,7 +312,7 @@ module CSRUnit
 
     always_comb begin
 
-        rdata = Data'(0);
+        rdata = ProcessorDefs::Data'(0);
 
         illegalCsr = 1'b0;
         illegalAccess = i_csr[9:8] != mode;
@@ -327,40 +325,40 @@ module CSRUnit
                 CSR_MHARTID       : rdata = MHARTID;
                 CSR_MCAUSE        : rdata = mcause;
                 CSR_MEPC          : rdata = mepc;
-                CSR_MIE           : rdata = Data'({mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0});
-                CSR_MIP           : rdata = Data'({mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0});
+                CSR_MIE           : rdata = ProcessorDefs::Data'({mie_MEIE, 3'b0, mie_MTIE, 3'b0, mie_MSIE, 3'b0});
+                CSR_MIP           : rdata = ProcessorDefs::Data'({mip_MEIP, 3'b0, mip_MTIP, 3'b0, mip_MSIP, 3'b0});
                 CSR_MISA          : rdata = MISA;
                 CSR_MSCRATCH      : rdata = mscratch;
-                CSR_MSTATUS       : rdata = Data'({mstatus_MPRV, 13'b0, mstatus_MIE, 3'b0});
-                CSR_MTVEC         : rdata = Data'({mtvec_BASE, mtvec_MODE});
+                CSR_MSTATUS       : rdata = ProcessorDefs::Data'({mstatus_MPRV, 13'b0, mstatus_MIE, 3'b0});
+                CSR_MTVEC         : rdata = ProcessorDefs::Data'({mtvec_BASE, mtvec_MODE});
 
-                CSR_MCOUNTINHIBIT : rdata = Data'(hpmInhibit);
+                CSR_MCOUNTINHIBIT : rdata = ProcessorDefs::Data'(hpmInhibit);
                 CSR_MCYCLE        : rdata = hpmCounter[0][31:0];
-                CSR_MCYCLEH       : rdata = Data'(hpmCounter[0][32]);
+                CSR_MCYCLEH       : rdata = ProcessorDefs::Data'(hpmCounter[0][32]);
                 CSR_MINSTRET      : rdata = hpmCounter[2][31:0];
-                CSR_MINSTRETH     : rdata = Data'(hpmCounter[2][32]);
+                CSR_MINSTRETH     : rdata = ProcessorDefs::Data'(hpmCounter[2][32]);
                 CSR_MHPMCOUNTER3  : rdata = hpmCounter[3][31:0];
-                CSR_MHPMCOUNTER3H : rdata = Data'(hpmCounter[3][32]);
+                CSR_MHPMCOUNTER3H : rdata = ProcessorDefs::Data'(hpmCounter[3][32]);
                 CSR_MHPMCOUNTER4  : rdata = hpmCounter[4][31:0];
-                CSR_MHPMCOUNTER4H : rdata = Data'(hpmCounter[4][32]);
+                CSR_MHPMCOUNTER4H : rdata = ProcessorDefs::Data'(hpmCounter[4][32]);
                 CSR_MHPMCOUNTER5  : rdata = hpmCounter[5][31:0];
-                CSR_MHPMCOUNTER5H : rdata = Data'(hpmCounter[5][32]);
+                CSR_MHPMCOUNTER5H : rdata = ProcessorDefs::Data'(hpmCounter[5][32]);
                 CSR_MHPMCOUNTER6  : rdata = hpmCounter[6][31:0];
-                CSR_MHPMCOUNTER6H : rdata = Data'(hpmCounter[6][32]);
+                CSR_MHPMCOUNTER6H : rdata = ProcessorDefs::Data'(hpmCounter[6][32]);
                 CSR_MHPMCOUNTER7  : rdata = hpmCounter[7][31:0];
-                CSR_MHPMCOUNTER7H : rdata = Data'(hpmCounter[7][32]);
+                CSR_MHPMCOUNTER7H : rdata = ProcessorDefs::Data'(hpmCounter[7][32]);
                 CSR_MHPMCOUNTER8  : rdata = hpmCounter[8][31:0];
-                CSR_MHPMCOUNTER8H : rdata = Data'(hpmCounter[8][32]);
+                CSR_MHPMCOUNTER8H : rdata = ProcessorDefs::Data'(hpmCounter[8][32]);
                 CSR_MHPMCOUNTER9  : rdata = hpmCounter[9][31:0];
-                CSR_MHPMCOUNTER9H : rdata = Data'(hpmCounter[9][32]);
+                CSR_MHPMCOUNTER9H : rdata = ProcessorDefs::Data'(hpmCounter[9][32]);
 
-                CSR_MHPMEVENT3    : rdata = Data'(hpmEvent[3]);
-                CSR_MHPMEVENT4    : rdata = Data'(hpmEvent[4]);
-                CSR_MHPMEVENT5    : rdata = Data'(hpmEvent[5]);
-                CSR_MHPMEVENT6    : rdata = Data'(hpmEvent[6]);
-                CSR_MHPMEVENT7    : rdata = Data'(hpmEvent[7]);
-                CSR_MHPMEVENT8    : rdata = Data'(hpmEvent[8]);
-                CSR_MHPMEVENT9    : rdata = Data'(hpmEvent[9]);
+                CSR_MHPMEVENT3    : rdata = ProcessorDefs::Data'(hpmEvent[3]);
+                CSR_MHPMEVENT4    : rdata = ProcessorDefs::Data'(hpmEvent[4]);
+                CSR_MHPMEVENT5    : rdata = ProcessorDefs::Data'(hpmEvent[5]);
+                CSR_MHPMEVENT6    : rdata = ProcessorDefs::Data'(hpmEvent[6]);
+                CSR_MHPMEVENT7    : rdata = ProcessorDefs::Data'(hpmEvent[7]);
+                CSR_MHPMEVENT8    : rdata = ProcessorDefs::Data'(hpmEvent[8]);
+                CSR_MHPMEVENT9    : rdata = ProcessorDefs::Data'(hpmEvent[9]);
 
                 default: illegalCsr = 1'b1;
             endcase

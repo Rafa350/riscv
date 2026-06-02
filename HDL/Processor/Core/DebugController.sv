@@ -1,26 +1,26 @@
-module DebugController
-    import ProcessorDefs::*, CoreDefs::*;
-(
+module DebugController(
+
     // Senyals de control
-    input  logic       i_clock,       // Clock
-    input  logic       i_reset,       // Reset
+    input  logic                   i_clock,       // Clock
+    input  logic                   i_reset,       // Reset
 
     // Senyals per la generacio del tick
-    input  logic       i_stall,       // Indica stall
-    output int         o_tick,        // Numero de tick
+    input  logic                   i_stall,       // Indica stall
+    output int                     o_tick,        // Numero de tick
 
     // Senyals d'estat de la ultima instruccio executada
-    input  int         i_tick,        // Numero de tick
-    input  logic       i_isValid,     // Indica operacio valida
-    input  InstAddr    i_pc,          // Adressa de la instruccio
-    input  Inst        i_inst,        // Instruccio
-    input  GPRAddr     i_regWrAddr,   // Registre per escriure
-    input  logic       i_regWrEnable, // Autoritzacio d'escritura en el registre
-    input  Data        i_regWrData,   // Dades per escriure en el registre
-    input  DataAddr    i_memWrAddr,   // Adressa de memoria per escriure
-    input  logic       i_memWrEnable, // Autoritzacio d'escriptura en memoria
-    input  DataAccess  i_memAccess,   // Access a memoria (byte, half o word)
-    input  Data        i_memWrData);  // Dades per escriure en memoria
+    input  int                     i_tick,        // Numero de tick
+    input  logic                   i_isValid,     // Indica operacio valida
+    input  ProcessorDefs::InstAddr i_pc,          // Adressa de la instruccio
+    input  ProcessorDefs::Inst     i_inst,        // Instruccio
+    input  ProcessorDefs::GPRAddr  i_regWrAddr,   // Registre per escriure
+    input  logic                   i_regWrEnable, // Autoritzacio d'escritura en el registre
+    input  ProcessorDefs::Data     i_regWrData,   // Dades per escriure en el registre
+    input  ProcessorDefs::DataAddr i_memWrAddr,   // Adressa de memoria per escriure
+    input  logic                   i_memWrEnable, // Autoritzacio d'escriptura en memoria
+    input  CoreDefs::DataAccess    i_memAccess,   // Access a memoria (byte, half o word)
+    input  ProcessorDefs::Data     i_memWrData);  // Dades per escriure en memoria
+
 
     always_ff @(posedge i_clock)
         o_tick <= i_reset ? 0 : (i_stall ? o_tick : o_tick + 1);
@@ -40,7 +40,7 @@ module DebugController
     always_ff @(posedge i_clock)
         if (!i_reset & i_isValid) begin
 
-            if (i_inst == Inst'(32'h0000006F))
+            if (i_inst == ProcessorDefs::Inst'(32'h0000006F))
                 $finish;
             else begin
                 dpiTraceTick(tracerObj, i_tick);

@@ -1,8 +1,8 @@
+// Definicions basiques del procesador, independent de la implementacio
+// dels cores, ram, cache, etc
+//
 package ProcessorDefs;
 
-    // Definicions basiques del procesador, independent de la implementacio
-    // dels cores, ram, cache, etc
-    //
     typedef logic [Config::DATA_WIDTH-1:0]     Data;     // Dades
     typedef logic [31:0]                       Inst;     // Instruccions
 

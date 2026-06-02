@@ -1,10 +1,6 @@
-module MemoryArbiter
-    import
-        ProcessorDefs::*,
-        CoreDefs::*;
-(
-    input               logic  i_clock,
-    input               logic  i_reset,
+module MemoryArbiter (
+    input  logic        i_clock,
+    input  logic        i_reset,
 
     InstBus.slave       instBus,
     DataBus.slave       dataBus,

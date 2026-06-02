@@ -1,6 +1,5 @@
-module DebugPipelineIFID
-    import ProcessorDefs::*;
-(
+module DebugPipelineIFID (
+
     // Senyals de control
     input  logic i_clock,    // Clock
     input  logic i_reset,    // Reset

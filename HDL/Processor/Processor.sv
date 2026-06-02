@@ -1,5 +1,3 @@
-// verilator lint_off GENUNNAMED
-
 module Processor (
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset

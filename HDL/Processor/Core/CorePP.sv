@@ -1,6 +1,5 @@
-// verilator lint_off GENUNNAMED
-
-module CorePP (
+module CorePP 
+(
     input logic    i_clock,  // Clock
     input logic    i_reset,  // Reset
     DataBus.master dataBus,  // Bus de dades

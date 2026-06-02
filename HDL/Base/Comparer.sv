@@ -2,7 +2,7 @@
 // verilator lint_off GENUNNAMED
 
 module Comparer
-# (
+#(
     parameter WIDTH = 32)
 (
     input  logic [WIDTH-1:0] i_dataA,
