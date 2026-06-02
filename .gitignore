@@ -5,7 +5,7 @@
 /Quartus/dse
 /Quartus/greybox_tmp
 /Quartus/.qsys_edit
-/build
+/Build
 *.o
 *.out
 *.exe
