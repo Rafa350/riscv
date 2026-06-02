@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cmake -S .. -B ../Build --install
+cmake --install ../Build

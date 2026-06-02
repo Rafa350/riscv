@@ -13,19 +13,24 @@ using namespace RISCV;
 
 int main() {
 
-    printf("RISCV ISS Simulator V1.0\n\n");
+    printf("RISCV BHV Simulator V1.0\n\n");
 
     Tracer *tracer = new Tracer();
     if (tracer) {
 
         Memory *instMem = new Memory(nullptr, RISCV_IMEM_BASE, RISCV_IMEM_SIZE);
         if (instMem) {
+
+            printf("Emulated ROM memory 32 bits:\n");
+            printf("    Base addr     : %8.8X\n", instMem->getBase());
+            printf("    Size in bytes : %-d\n\n", instMem->getSize());
+
             instMem->load("firmware.txt");
 
             Memory *dataMem = new Memory(nullptr, RISCV_DMEM_BASE, RISCV_DMEM_SIZE);
             if (dataMem) {
 
-                printf("Emulated RAM memory:\n");
+                printf("Emulated RAM memory 32 bits:\n");
                 printf("    Base addr     : %8.8X\n", dataMem->getBase());
                 printf("    Size in bytes : %-d\n\n", dataMem->getSize());
 
