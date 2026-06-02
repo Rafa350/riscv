@@ -123,6 +123,5 @@ verilate(${TARGET_NAME}
 )
 
 # Instalacio en la carpeta Run
-#install(
-#    TARGETS ${TARGET_NAME}
-#    DESTINATION ${CMAKE_SOURCE_DIR}/../Run)
+install(TARGETS ${TARGET_NAME}
+    DESTINATION ${CMAKE_SOURCE_DIR}/Run)

@@ -49,6 +49,9 @@ message("*")
 # Genera l'executable
 add_executable(${TARGET_NAME})
 
+set_target_properties(${TARGET_NAME} PROPERTIES
+    OUTPUT_NAME "rv-bhvsim")
+
 target_compile_options(${TARGET_NAME} PRIVATE 
     ${COMPILE_OPTIONS})
     
@@ -68,6 +71,5 @@ target_sources(${TARGET_NAME} PUBLIC
     ${SIMULATOR_SOURCE_DIR}/RISCVTracerInfo.cpp)
 
 # Instalacio en la carpeta Run
-#install(
-#    TARGETS ${TARGET_NAME}
-#    DESTINATION ${PROJECT_DIR}/Run)
+install(TARGETS ${TARGET_NAME}
+    DESTINATION ${CMAKE_SOURCE_DIR}/Run)
