@@ -1,15 +1,12 @@
 interface DataBus;
 
-    import 
-        ProcessorDefs::*;
-
-    DataAddr addr;  // Addresa en words
-    logic    re;    // Habilita la lectura
-    logic    we;    // Habilita escriptura de dades
-    ByteMask be;    // Mascara dels bytes a escriure
-    Data     wdata; // Dades per escriure
-    Data     rdata; // Dades lleigides
-    logic    busy;  // Indica ocupat, operacio no disponible
+    ProcessorDefs::DataAddr addr;  // Addresa en words
+    logic                   re;    // Habilita la lectura
+    logic                   we;    // Habilita escriptura de dades
+    ProcessorDefs::ByteMask be;    // Mascara dels bytes a escriure
+    ProcessorDefs::Data     wdata; // Dades per escriure
+    ProcessorDefs::Data     rdata; // Dades lleigides
+    logic                   busy;  // Indica ocupat, operacio no disponible
 
     modport master(
         output addr,

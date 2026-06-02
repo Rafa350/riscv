@@ -1,40 +1,44 @@
+// ***********************************************************************
+// OPCIONS DE CONFIGURACIO DEL RISC-V
+//
+
 `ifndef __RV_SVH
 `define __RV_SVH
 
 
 // Opcions de procesador base (Nomes una opcio)
 //
-`define RV_BASE_32              // Base enters 32 bits
-//`define RV_BASE_64            // Base enters 64 bits
+`define RV_BASE_32                // Base enters 32 bits
+//`define RV_BASE_64                // Base enters 64 bits
 
 // Opcions de les extensions
 //
-//`define RV_EXT_C                // Instruccions comprimides
-//`define RV_EXT_E                // Reduccio de registres
+//`define RV_EXT_C                  // Instruccions comprimides
+//`define RV_EXT_E                  // Reduccio de registres
 
 
 // Opcions dels registres GPR
 //
-`define RV_GPR_RESET             // Borra els registres en el reset
+`define RV_GPR_RESET              // Borra els registres en el reset
 
 // Opcions dels registres FPR
 //
-`define RV_FPR_RESET             // Borra els registres en el reset
+`define RV_FPR_RESET              // Borra els registres en el reset
 
 
 // Opcions de cache
 //
-//`define RV_ICACHE_ON            // Cache L1 d'instruccions
-//`define RV_DCACHE_ON            // Cache L1 de dades
+//`define RV_ICACHE_ON              // Cache L1 d'instruccions
+//`define RV_DCACHE_ON              // Cache L1 de dades
 
 
 // Opcions d'elaboracio
 //
 `ifdef VERILATOR
-`define RV_COMPILER_VERILATOR   // Elaboracio per Verilator
+`define RV_COMPILER_VERILATOR     // Elaboracio per Verilator
 `endif
 `ifdef QUARTUS
-`define RV_COMPILER_QUARTUS     // Elaboracio per quartus
+`define RV_COMPILER_QUARTUS       // Elaboracio per quartus
 `endif
 
 

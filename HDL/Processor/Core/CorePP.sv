@@ -1,10 +1,6 @@
 // verilator lint_off GENUNNAMED
 
-module CorePP
-    import Config::*,
-           ProcessorDefs::*,
-           CoreDefs::*;
-(
+module CorePP (
     input logic    i_clock,  // Clock
     input logic    i_reset,  // Reset
     DataBus.master dataBus,  // Bus de dades
@@ -15,8 +11,8 @@ module CorePP
     // Bloc de registres GPR (General Purpouse Registers)
     // -------------------------------------------------------------------
 
-    Data gpr_rdataA;
-    Data gpr_rdataB;
+    ProcessorDefs::Data gpr_rdataA;
+    ProcessorDefs::Data gpr_rdataB;
 
     GPRegisters
     gpr (
@@ -71,10 +67,10 @@ module CorePP
     // Stage IF
     // ------------------------------------------------------------------------
 
-    Inst     IF_inst;
-    InstAddr IF_pc;
-    logic    IF_instCompressed;
-    logic    IF_hazard;
+    ProcessorDefs::Inst     IF_inst;
+    ProcessorDefs::InstAddr IF_pc;
+    logic                   IF_instCompressed;
+    logic                   IF_hazard;
 
     StageIF
     stageIF (
@@ -92,10 +88,10 @@ module CorePP
     // Pipeline IF-ID
     // ------------------------------------------------------------------------
 
-    logic    IFID_isValid;
-    InstAddr IFID_pc;
-    Inst     IFID_inst;
-    logic    IFID_instCompressed;
+    logic                   IFID_isValid;
+    ProcessorDefs::InstAddr IFID_pc;
+    ProcessorDefs::Inst     IFID_inst;
+    logic                   IFID_instCompressed;
 
     PipelineIFID
     pipelineIFID (
@@ -116,27 +112,27 @@ module CorePP
     // Stage ID
     // ------------------------------------------------------------------------
 
-    GPRAddr    ID_reg_raddrA;
-    GPRAddr    ID_reg_raddrB;
-    Data       ID_dataRS1;
-    Data       ID_dataRS2;
-    Data       ID_instIMM;
-    CSRAddr    ID_instCSR;
-    GPRAddr    ID_regWrAddr;
-    logic      ID_regWrEnable;
-    WrDataSel  ID_regWrDataSel;
-    logic      ID_memWrEnable;
-    logic      ID_memRdEnable;
-    DataAccess ID_memAccess;
-    logic      ID_memUnsigned;
-    AluOp      ID_aluControl;
-    MduOp      ID_mduControl;
-    CsrOp      ID_csrControl;
-    DataASel   ID_operandASel;
-    DataBSel   ID_operandBSel;
-    ResultSel  ID_resultSel;
-    InstAddr   ID_pcNext;
-    logic      ID_hazard;
+    ProcessorDefs::GPRAddr  ID_reg_raddrA;
+    ProcessorDefs::GPRAddr  ID_reg_raddrB;
+    ProcessorDefs::Data     ID_dataRS1;
+    ProcessorDefs::Data     ID_dataRS2;
+    ProcessorDefs::Data     ID_instIMM;
+    ProcessorDefs::CSRAddr  ID_instCSR;
+    ProcessorDefs::GPRAddr  ID_regWrAddr;
+    logic                   ID_regWrEnable;
+    CoreDefs::WrDataSel     ID_regWrDataSel;
+    logic                   ID_memWrEnable;
+    logic                   ID_memRdEnable;
+    CoreDefs::DataAccess    ID_memAccess;
+    logic                   ID_memUnsigned;
+    CoreDefs::AluOp         ID_aluControl;
+    CoreDefs::MduOp         ID_mduControl;
+    CoreDefs::CsrOp         ID_csrControl;
+    CoreDefs::DataASel      ID_operandASel;
+    CoreDefs::DataBSel      ID_operandBSel;
+    CoreDefs::ResultSel     ID_resultSel;
+    ProcessorDefs::InstAddr ID_pcNext;
+    logic                   ID_hazard;
 
     StageID
     stageID (
@@ -189,27 +185,27 @@ module CorePP
     // Pipeline ID-EX
     // ------------------------------------------------------------------------
 
-    logic      IDEX_isValid;
-    InstAddr   IDEX_pc;
-    Data       IDEX_dataRS1;
-    Data       IDEX_dataRS2;
-    Data       IDEX_instIMM;
-    CSRAddr    IDEX_instCSR;
-    GPRAddr    IDEX_regWrAddr;
-    logic      IDEX_regWrEnable;
-    WrDataSel  IDEX_regWrDataSel;
-    logic      IDEX_memWrEnable;
-    logic      IDEX_memRdEnable;
-    DataAccess IDEX_memAccess;
-    logic      IDEX_memUnsigned;
-    AluOp      IDEX_aluControl;
+    logic                   IDEX_isValid;
+    ProcessorDefs::InstAddr IDEX_pc;
+    ProcessorDefs::Data     IDEX_dataRS1;
+    ProcessorDefs::Data     IDEX_dataRS2;
+    ProcessorDefs::Data     IDEX_instIMM;
+    ProcessorDefs::CSRAddr  IDEX_instCSR;
+    ProcessorDefs::GPRAddr  IDEX_regWrAddr;
+    logic                   IDEX_regWrEnable;
+    CoreDefs::WrDataSel     IDEX_regWrDataSel;
+    logic                   IDEX_memWrEnable;
+    logic                   IDEX_memRdEnable;
+    CoreDefs::DataAccess    IDEX_memAccess;
+    logic                   IDEX_memUnsigned;
+    CoreDefs::AluOp         IDEX_aluControl;
     // verilator lint_off UNUSEDSIGNAL    
-    MduOp      IDEX_mduControl;
+    CoreDefs::MduOp         IDEX_mduControl;
     // verilator lint_on UNUSEDSIGNAL    
-    CsrOp      IDEX_csrControl;
-    DataASel   IDEX_operandASel;
-    DataBSel   IDEX_operandBSel;
-    ResultSel  IDEX_resultSel;
+    CoreDefs::CsrOp         IDEX_csrControl;
+    CoreDefs::DataASel      IDEX_operandASel;
+    CoreDefs::DataBSel      IDEX_operandBSel;
+    CoreDefs::ResultSel     IDEX_resultSel;
 
     PipelineIDEX
     pipelineIDEX (
@@ -261,9 +257,9 @@ module CorePP
     // Stage EX
     // ------------------------------------------------------------------------
 
-    Data  EX_dataR;
-    Data  EX_dataB;
-    logic EX_hazard;
+    ProcessorDefs::Data EX_dataR;
+    ProcessorDefs::Data EX_dataB;
+    logic               EX_hazard;
 
     StageEX
     stageEX (
@@ -292,17 +288,17 @@ module CorePP
     // Pipeline EX-MEM
     // ------------------------------------------------------------------------
 
-    logic      EXMEM_isValid;
-    InstAddr   EXMEM_pc;
-    Data       EXMEM_dataR;
-    Data       EXMEM_dataB;
-    GPRAddr    EXMEM_regWrAddr;
-    logic      EXMEM_regWrEnable;
-    WrDataSel  EXMEM_regWrDataSel;
-    logic      EXMEM_memWrEnable;
-    logic      EXMEM_memRdEnable;
-    DataAccess EXMEM_memAccess;
-    logic      EXMEM_memUnsigned;
+    logic                   EXMEM_isValid;
+    ProcessorDefs::InstAddr EXMEM_pc;
+    ProcessorDefs::Data     EXMEM_dataR;
+    ProcessorDefs::Data     EXMEM_dataB;
+    ProcessorDefs::GPRAddr  EXMEM_regWrAddr;
+    logic                   EXMEM_regWrEnable;
+    CoreDefs::WrDataSel     EXMEM_regWrDataSel;
+    logic                   EXMEM_memWrEnable;
+    logic                   EXMEM_memRdEnable;
+    CoreDefs::DataAccess    EXMEM_memAccess;
+    logic                   EXMEM_memUnsigned;
 
     PipelineEXMEM
     pipelineEXMEM (
@@ -338,10 +334,10 @@ module CorePP
     // Stage MEM
     // ------------------------------------------------------------------------
 
-    Data  MEM_regWrData;
-    logic MEM_evMemRead;
-    logic MEM_evMemWrite;
-    logic MEM_hazard;
+    ProcessorDefs::Data MEM_regWrData;
+    logic               MEM_evMemRead;
+    logic               MEM_evMemWrite;
+    logic               MEM_hazard;
 
     StageMEM
     stageMEM (
@@ -366,10 +362,10 @@ module CorePP
     // Pipeline MEM-WB
     // ------------------------------------------------------------------------
 
-    logic   MEMWB_isValid;
-    Data    MEMWB_regWrData;
-    GPRAddr MEMWB_regWrAddr;
-    logic   MEMWB_regWrEnable;
+    logic                  MEMWB_isValid;
+    ProcessorDefs::Data    MEMWB_regWrData;
+    ProcessorDefs::GPRAddr MEMWB_regWrAddr;
+    logic                  MEMWB_regWrEnable;
 
     PipelineMEMWB
     pipelineMEMWB (
@@ -390,11 +386,11 @@ module CorePP
     // Stage WB
     // ------------------------------------------------------------------------
 
-    GPRAddr WB_reg_waddr;
-    Data    WB_reg_wdata;
-    logic   WB_reg_we;
-    logic   WB_hazard;
-    logic   WB_evInstRet;
+    ProcessorDefs::GPRAddr WB_reg_waddr;
+    ProcessorDefs::Data    WB_reg_wdata;
+    logic                  WB_reg_we;
+    logic                  WB_hazard;
+    logic                  WB_evInstRet;
 
     StageWB
     stageWB (
@@ -419,7 +415,7 @@ module CorePP
     // ------------------------------------------------------------------------
 
     generate
-        if (RV_DEBUG_ON == 1) begin
+        if (Config::RV_DEBUG_ON == 1) begin
 
             int dbgIFID_dbgTick;
 
@@ -432,8 +428,8 @@ module CorePP
                 .o_dbgTick (dbgIFID_dbgTick));
 
 
-            int  dbgIDEX_dbgTick;
-            Inst dbgIDEX_dbgInst;
+            int                 dbgIDEX_dbgTick;
+            ProcessorDefs::Inst dbgIDEX_dbgInst;
 
             DebugPipelineIDEX
             dbfPipelineIDEX(
@@ -447,8 +443,8 @@ module CorePP
                 .o_dbgInst (dbgIDEX_dbgInst));
 
 
-            int  dbgEXMEM_dbgTick;
-            Inst dbgEXMEM_dbgInst;
+            int                 dbgEXMEM_dbgTick;
+            ProcessorDefs::Inst dbgEXMEM_dbgInst;
 
             DebugPipelineEXMEM
             dbgPipelineEXMEM(
@@ -462,13 +458,13 @@ module CorePP
                 .o_dbgInst (dbgEXMEM_dbgInst));
 
 
-            int        dbgMEMWB_dbgTick;
-            InstAddr   dbgMEMWB_dbgPc;
-            Inst       dbgMEMWB_dbgInst;
-            DataAddr   dbgMEMWB_dbgMemWrAddr;
-            logic      dbgMEMWB_dbgMemWrEnable;
-            Data       dbgMEMWB_dbgMemWrData;
-            DataAccess dbgMEMWB_dbgMemAccess;
+            int                     dbgMEMWB_dbgTick;
+            ProcessorDefs::InstAddr dbgMEMWB_dbgPc;
+            ProcessorDefs::Inst     dbgMEMWB_dbgInst;
+            ProcessorDefs::DataAddr dbgMEMWB_dbgMemWrAddr;
+            logic                   dbgMEMWB_dbgMemWrEnable;
+            ProcessorDefs::Data     dbgMEMWB_dbgMemWrData;
+            CoreDefs::DataAccess    dbgMEMWB_dbgMemAccess;
 
             DebugPipelineMEMWB
             dbgMPipelineMEMWB(

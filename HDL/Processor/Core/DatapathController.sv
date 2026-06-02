@@ -1,33 +1,27 @@
-module DatapathController
-    import 
-        Config::*, 
-        ProcessorDefs::*, 
-        CoreDefs::*;
-(
+module DatapathController (
     // verilator lint_off UNUSEDSIGNAL 
-    input  Inst        i_inst,           // La instruccio
+    input  ProcessorDefs::Inst i_inst,           // La instruccio
     // verilator lint_on UNUSEDSIGNAL 
+    input  logic                i_isEqual,        // Indica A == B
+    input  logic                i_isLessSigned,   // Indica A < B amb signe
+    input  logic                i_isLessUnsigned, // Indica A < B sense signe
 
-    input  logic       i_isEqual,        // Indica A == B
-    input  logic       i_isLessSigned,   // Indica A < B amb signe
-    input  logic       i_isLessUnsigned, // Indica A < B sense signe
+    output logic                o_memWrEnable,    // Habilita l'escriptura en memoria
+    output logic                o_memRdEnable,    // Habilita la lectura de la memoria
+    output CoreDefs::DataAccess o_memAccess,      // Tamany d'acces a la memoria
+    output logic                o_memUnsigned,    // Lectura de memoria sense signe
 
-    output logic       o_memWrEnable,    // Habilita l'escriptura en memoria
-    output logic       o_memRdEnable,    // Habilita la lectura de la memoria
-    output DataAccess  o_memAccess,      // Tamany d'acces a la memoria
-    output logic       o_memUnsigned,    // Lectura de memoria sense signe
+    output logic [1:0]          o_pcNextSel,      // Selecciona el seguent valor del PC
 
-    output logic [1:0] o_pcNextSel,      // Selecciona el seguent valor del PC
+    output CoreDefs::AluOp      o_aluControl,     // Selecciona l'operacio en la unitat ALU
+    output CoreDefs::CsrOp      o_csrControl,     // Selecciona l'operacio en la unitat CSR
+    output CoreDefs::MduOp      o_mduControl,     // Selecciona l'operacio de la unitat MDU
+    output CoreDefs::DataASel   o_operandASel,    // Selecciona l'operand A
+    output CoreDefs::DataBSel   o_operandBSel,    // Selecciona l'operand B
+    output CoreDefs::ResultSel  o_resultSel,      // Selecciona el resultat
 
-    output AluOp       o_aluControl,     // Selecciona l'operacio en la unitat ALU
-    output CsrOp       o_csrControl,     // Selecciona l'operacio en la unitat CSR
-    output MduOp       o_mduControl,     // Selecciona l'operacio de la unitat MDU
-    output DataASel    o_operandASel,    // Selecciona l'operand A
-    output DataBSel    o_operandBSel,    // Selecciona l'operand B
-    output ResultSel   o_resultSel,      // Selecciona el resultat
-
-    output logic       o_regWrEnable,    // Habilita l'escriptura en els registres
-    output WrDataSel   o_regWrDataSel);  // Selecciona les dades per escriure en el registre
+    output logic                o_regWrEnable,    // Habilita l'escriptura en els registres
+    output CoreDefs::WrDataSel  o_regWrDataSel);  // Selecciona les dades per escriure en el registre
 
 
     localparam  pcPP4 = 2'b00;  // PC = PC + 4
@@ -37,53 +31,53 @@ module DatapathController
 
     always_comb begin
 
-        o_aluControl   = AluOp_ADD;
-        o_csrControl   = CsrOp_NOP;
-        o_mduControl   = MduOp_MUL;
-        o_operandASel  = DataASel_REG;
-        o_operandBSel  = DataBSel_REG;
-        o_resultSel    = ResultSel_ALU;
+        o_aluControl   = CoreDefs::AluOp_ADD;
+        o_csrControl   = CoreDefs::CsrOp_NOP;
+        o_mduControl   = CoreDefs::MduOp_MUL;
+        o_operandASel  = CoreDefs::DataASel_REG;
+        o_operandBSel  = CoreDefs::DataBSel_REG;
+        o_resultSel    = CoreDefs::ResultSel_ALU;
         o_pcNextSel    = pcPP4;
         o_memWrEnable  = 1'b0;
         o_memRdEnable  = 1'b0;
-        o_memAccess    = DataAccess_Word;
+        o_memAccess    = CoreDefs::DataAccess_Word;
         o_memUnsigned  = 1'b0;
         o_regWrEnable  = 1'b0;
-        o_regWrDataSel = WrDataSel_CALC;
+        o_regWrDataSel = CoreDefs::WrDataSel_CALC;
 
         // verilator lint_off CASEINCOMPLETE
         unique casez (i_inst[6:0])
-            OpCode_LUI: // LUI
+            CoreDefs::OpCode_LUI: // LUI
                 begin
-                    o_operandASel = DataASel_V0;
-                    o_operandBSel = DataBSel_IMM;
+                    o_operandASel = CoreDefs::DataASel_V0;
+                    o_operandBSel = CoreDefs::DataBSel_IMM;
                     o_regWrEnable = 1'b1;
                 end
 
-            OpCode_AUIPC: // AUIPC
+            CoreDefs::OpCode_AUIPC: // AUIPC
                 begin
-                    o_operandASel = DataASel_PC;
-                    o_operandBSel = DataBSel_IMM;
+                    o_operandASel = CoreDefs::DataASel_PC;
+                    o_operandBSel = CoreDefs::DataBSel_IMM;
                     o_regWrEnable = 1'b1;
                 end
 
-            OpCode_JAL: // JAL
+            CoreDefs::OpCode_JAL: // JAL
                 begin
-                    o_operandASel = DataASel_PC;
-                    o_operandBSel = DataBSel_V4;
+                    o_operandASel = CoreDefs::DataASel_PC;
+                    o_operandBSel = CoreDefs::DataBSel_V4;
                     o_regWrEnable = 1'b1;
                     o_pcNextSel   = pcOFS;
                 end
 
-            OpCode_JALR: // JALR
+            CoreDefs::OpCode_JALR: // JALR
                 if (i_inst[14:12] == 3'b000) begin
-                    o_operandASel = DataASel_PC;
-                    o_operandBSel = DataBSel_V4;
+                    o_operandASel = CoreDefs::DataASel_PC;
+                    o_operandBSel = CoreDefs::DataBSel_V4;
                     o_regWrEnable = 1'b1;
                     o_pcNextSel   = pcIND;
                 end
 
-            OpCode_Branch:
+            CoreDefs::OpCode_Branch:
                 unique case (i_inst[14:12])
                     3'b000: // BEQ
                         if (i_isEqual)
@@ -110,7 +104,7 @@ module DatapathController
                             o_pcNextSel = pcOFS;
                 endcase
 
-            OpCode_Load:
+            CoreDefs::OpCode_Load:
                 unique case (i_inst[14:12])
                     3'b000, // LB
                     3'b001, // LH
@@ -118,28 +112,28 @@ module DatapathController
                     3'b100, // LBU
                     3'b101: // LHU
                         begin
-                            o_operandBSel  = DataBSel_IMM;
-                            o_regWrDataSel = WrDataSel_LOAD;
+                            o_operandBSel  = CoreDefs::DataBSel_IMM;
+                            o_regWrDataSel = CoreDefs::WrDataSel_LOAD;
                             o_regWrEnable  = 1'b1;
                             o_memRdEnable  = 1'b1;
                             o_memUnsigned  = i_inst[14];
-                            o_memAccess    = DataAccess'(i_inst[13:12]);
+                            o_memAccess    = CoreDefs::DataAccess'(i_inst[13:12]);
                         end
                 endcase
 
-            OpCode_Store:
+            CoreDefs::OpCode_Store:
                 unique case (i_inst[14:12])
                     3'b000, // SB
                     3'b001, // SH
                     3'b010: // SW
                         begin
-                            o_operandBSel = DataBSel_IMM;
+                            o_operandBSel = CoreDefs::DataBSel_IMM;
                             o_memWrEnable = 1'b1;
-                            o_memAccess   = DataAccess'(i_inst[13:12]);
+                            o_memAccess   = CoreDefs::DataAccess'(i_inst[13:12]);
                         end
                 endcase
 
-            OpCode_OpIMM:
+            CoreDefs::OpCode_OpIMM:
                 unique case (i_inst[14:12])
                     3'b000, // ADDI
                     3'b001, // SLLI
@@ -150,13 +144,13 @@ module DatapathController
                     3'b110, // ORI
                     3'b111: // ANDI
                         begin
-                            o_operandBSel = DataBSel_IMM;
+                            o_operandBSel = CoreDefs::DataBSel_IMM;
                             o_regWrEnable = 1'b1;
-                            o_aluControl  = AluOp'({i_inst[14:12] == 3'b101 ? i_inst[30] : 1'b0, i_inst[14:12]});
+                            o_aluControl  = CoreDefs::AluOp'({i_inst[14:12] == 3'b101 ? i_inst[30] : 1'b0, i_inst[14:12]});
                         end
                 endcase
 
-            OpCode_Op:
+            CoreDefs::OpCode_Op:
                 unique case ({i_inst[31:25], i_inst[14:12]})
                     10'b0000001_000, // MUL
                     10'b0000001_001, // MULH
@@ -166,9 +160,9 @@ module DatapathController
                     10'b0000001_101, // DIVU
                     10'b0000001_110, // REM
                     10'b0000001_111: // REMU
-                        if (RV_EXT_M == 1) begin
+                        if (Config::RV_EXT_M == 1) begin
                             o_regWrEnable = 1'b1;
-                            o_mduControl = MduOp'(i_inst[14:12]);
+                            o_mduControl = CoreDefs::MduOp'(i_inst[14:12]);
                         end
 
                     10'b0000000_000, // ADD
@@ -183,30 +177,30 @@ module DatapathController
                     10'b0000000_111: // AND
                         begin
                             o_regWrEnable = 1'b1;
-                            o_aluControl  = AluOp'({i_inst[30], i_inst[14:12]});
+                            o_aluControl  = CoreDefs::AluOp'({i_inst[30], i_inst[14:12]});
                         end
                 endcase
 
-            OpCode_System:
-                if (RV_EXT_Zicsr == 1) begin
+            CoreDefs::OpCode_System:
+                if (Config::RV_EXT_Zicsr == 1) begin
                     unique case (i_inst[14:12])
                         3'b001, // CSRRW
                         3'b010, // CRRRS
                         3'b011: // CSRRC
                             begin
                                 o_regWrEnable = 1'b1;
-                                o_resultSel   = ResultSel_CSR;
-                                o_csrControl  = CsrOp'(i_inst[13:12]);
+                                o_resultSel   = CoreDefs::ResultSel_CSR;
+                                o_csrControl  = CoreDefs::CsrOp'(i_inst[13:12]);
                             end
 
                         3'b101, // CSRRWI
                         3'b110, // CSRRSI
                         3'b111: // CSRRCI
                             begin
-                                o_operandASel = DataASel_IMM;
+                                o_operandASel = CoreDefs::DataASel_IMM;
                                 o_regWrEnable = 1'b1;
-                                o_resultSel   = ResultSel_CSR;
-                                o_csrControl = CsrOp'(i_inst[13:12]);
+                                o_resultSel   = CoreDefs::ResultSel_CSR;
+                                o_csrControl = CoreDefs::CsrOp'(i_inst[13:12]);
                             end
                     endcase
                 end

@@ -1,21 +1,17 @@
 package CoreDefs;
 
-    import
-        Config::*,
-        ProcessorDefs::*;
-
-    typedef enum logic [1:0] {       // Modus d'acces a la memoria
-        DataAccess_Byte  = 2'b00,    // -8 bits (BYTE)
-        DataAccess_Half  = 2'b01,    // -16 bits (HALF WORD)
-        DataAccess_Word  = 2'b10,    // -32 bits (WORD)
-        DataAccess_DWord = 2'b11     // -64 bits (DOUBLE WORD)
+    typedef enum logic [1:0] {    // Modus d'acces a la memoria
+        DataAccess_Byte  = 2'b00, // -8 bits (BYTE)
+        DataAccess_Half  = 2'b01, // -16 bits (HALF WORD)
+        DataAccess_Word  = 2'b10, // -32 bits (WORD)
+        DataAccess_DWord = 2'b11  // -64 bits (DOUBLE WORD)
     } DataAccess;
 
-    typedef enum logic [1:0] {       // Modus d'execucio
-        RunMode_User       = 2'b00,  // -Usuari
-        RunMode_Supervisor = 2'b01,  // -Supervisor
-        RunMode_Hipervisor = 2'b10,  // -Hipervisor
-        RunMode_Machine    = 2'b11   // -Maquina
+    typedef enum logic [1:0] {      // Modus d'execucio
+        RunMode_User       = 2'b00, // -Usuari
+        RunMode_Supervisor = 2'b01, // -Supervisor
+        RunMode_Hipervisor = 2'b10, // -Hipervisor
+        RunMode_Machine    = 2'b11  // -Maquina
     } RunMode;
 
     typedef enum logic [6:0] {        // Codis d'operacio de les instruccions

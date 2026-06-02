@@ -1,11 +1,9 @@
 interface InstBus;
 
-    import ProcessorDefs::*;
-
-    InstAddr addr; // Adressa
-    logic    re;   // Habilita la lecture
-    Inst     inst; // Instruccio
-    logic    busy; // Indica ocupat, operacio no disponible
+    ProcessorDefs::InstAddr addr; // Adressa
+    logic                   re;   // Habilita la lecture
+    ProcessorDefs::Inst     inst; // Instruccio
+    logic                   busy; // Indica ocupat, operacio no disponible
 
     modport master(
         output addr,

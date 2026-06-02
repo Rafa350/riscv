@@ -1,10 +1,6 @@
 // verilator lint_off GENUNNAMED
 
-module Processor
-    import 
-        Config::*, 
-        ProcessorDefs::*;
-(
+module Processor (
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset
     InstBus.master instBus,  // Bus de la memoria d'instruccions
@@ -20,7 +16,7 @@ module Processor
     // -------------------------------------------------------------------
 
     generate
-        if (RV_ICACHE_ON == 1) begin
+        if (Config::RV_ICACHE_ON == 1) begin
             InstL1Cache
             instL1Cache (
                 .i_clock (i_clock),      // Clock
@@ -42,7 +38,7 @@ module Processor
     // ----------------------------------------------------------------------
 
     generate
-        if (RV_DCACHE_ON == 1) begin
+        if (Config::RV_DCACHE_ON == 1) begin
             DataL1Cache
             dataL1Cache (
                 .i_clock (i_clock),      // Clock
@@ -67,7 +63,7 @@ module Processor
     // -------------------------------------------------------------------
 
     generate
-        if (RV_ARCH_CPU == "PP") begin
+        if (Config::RV_ARCH_PIPELINE == 1) begin
             CorePP
             core (
                 .i_clock (i_clock),
@@ -75,7 +71,7 @@ module Processor
                 .instBus (coreInstBus),
                 .dataBus (coreDataBus));
         end
-        else if (RV_ARCH_CPU == "SC") begin
+        else begin
             CoreSC
             core (
                 .i_clock (i_clock),

@@ -308,6 +308,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
 set_global_assignment -name QIP_FILE less32U.qip
 set_global_assignment -name QIP_FILE less32S.qip
 set_global_assignment -name QIP_FILE ram1024x8.qip
+set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Adder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Shifter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/RwMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/RoMemory.sv
@@ -317,7 +318,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Mux2To1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/HalfAdder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/FullComparer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Base/Comparer.sv
-set_global_assignment -name VERILOG_FILE ../HDL/Base/Adder.v
 set_global_assignment -name VERILOG_INCLUDE_FILE ../HDL/Processor/RV.svh
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Config.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/ProcessorDefs.sv

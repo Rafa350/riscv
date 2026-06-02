@@ -1,5 +1,4 @@
-module StallController
-(
+module StallController(
     input  logic i_IF_hazard,     // Indica hazard en IF
     input  logic i_ID_hazard,     // Indiza hazard en ID
     input  logic i_EX_hazard,     // Indica hazard en EX

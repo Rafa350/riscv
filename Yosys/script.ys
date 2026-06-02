@@ -6,13 +6,19 @@ read_verilog -sv ../HDL/Base/Mux4To1.sv
 read_verilog -sv ../HDL/Base/Mux8To1.sv
 read_verilog -sv ../HDL/Base/HalfAdder.sv
 read_verilog -sv ../HDL/Base/Comparer.sv
-read_verilog -sv ../HDL/Base/ComparerZero.sv
-read_verilog -sv ../HDL/Base/Memory.sv
+
+# Moduls processor
+#
+read_verilog -sv ../HDL/Processor/Processor.sv
 
 # Moduls core
 #
-read_verilog -sv ../HDL/CorePP.sv
-read_verilog -I../HDL -sv ../Verilator/verilator_top.sv
+read_verilog -sv ../HDL/Processor/Core/CorePP.sv
+read_verilog -sv ../HDL/Processor/Core/CoreSC.sv
+
+# Modul TOP
+#
+read_verilog -I../HDL/Processor -sv ../SimulatorRTL/verilator_top.sv
 
 #hierarchy -check 
 

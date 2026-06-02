@@ -1,8 +1,4 @@
-module CoreSC
-    import Config::*,
-           ProcessorDefs::*,
-           CoreDefs::*;
-(
+module CoreSC (
     input  logic   i_clock,  // Clock
     input  logic   i_reset,  // Reset
     DataBus.master dataBus,  // Bus de dades
@@ -13,9 +9,9 @@ module CoreSC
     // Program counter (PC)
     // ------------------------------------------------------------------------
 
-    InstAddr pc;       // Valor actual del PC
-    InstAddr pcNext;   // Valor per actualitzar PC
-    InstAddr pcPlus4;  // Valor incrementat (+4)
+    ProcessorDefs::InstAddr pc;      // Valor actual del PC
+    ProcessorDefs::InstAddr pcNext;  // Valor per actualitzar PC
+    ProcessorDefs::InstAddr pcPlus4; // Valor incrementat (+4)
 
 
     // ------------------------------------------------------------------------
@@ -47,19 +43,19 @@ module CoreSC
     // Control del datapath. Genera les senyals de control
     // ------------------------------------------------------------------------
 
-    AluOp       dpCtrl_aluControl;   // Operacio de la unitat ALU
-    MduOp       dpCtrl_mduControl;   // Operacio de la unitat MDU
-    CsrOp       dpCtrl_csrControl;   // Operacio en la unitat CSR
-    logic       dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
-    logic       dpCtrl_memWrEnable;  // Autoritza escritura en memoria
-    logic       dpCtrl_memRdEnable;
-    DataAccess  dpCtrl_memAccess;    // Tipus d'acces a la memoria (byte, half o word)
-    logic       dpCtrl_memUnsigned;
-    logic [1:0] dpCtrl_pcNextSel;    // Selector del seguent valor del PC
-    WrDataSel   dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
-    DataASel    dpCtrl_operandASel;  // Seleccio del operand A
-    DataBSel    dpCtrl_operandBSel;  // Seleccio del operand B
-    ResultSel   dpCtrl_resultSel;    // Seleccio del resultat
+    CoreDefs::AluOp      dpCtrl_aluControl;   // Operacio de la unitat ALU
+    CoreDefs::MduOp      dpCtrl_mduControl;   // Operacio de la unitat MDU
+    CoreDefs::CsrOp      dpCtrl_csrControl;   // Operacio en la unitat CSR
+    logic                dpCtrl_regWrEnable;  // Autoritza escriptura del regisres
+    logic                dpCtrl_memWrEnable;  // Autoritza escritura en memoria
+    logic                dpCtrl_memRdEnable;
+    CoreDefs::DataAccess dpCtrl_memAccess;    // Tipus d'acces a la memoria (byte, half o word)
+    logic                dpCtrl_memUnsigned;
+    logic [1:0]          dpCtrl_pcNextSel;    // Selector del seguent valor del PC
+    CoreDefs::WrDataSel  dpCtrl_regWrDataSel; // Selector del les dades d'esacriptura en el registre
+    CoreDefs::DataASel   dpCtrl_operandASel;  // Seleccio del operand A
+    CoreDefs::DataBSel   dpCtrl_operandBSel;  // Seleccio del operand B
+    CoreDefs::ResultSel  dpCtrl_resultSel;    // Seleccio del resultat
 
     DatapathController
     dpCtrl (
@@ -86,10 +82,10 @@ module CoreSC
     // Decodificador d'instruccions. Extreu els parametres de la instruccio
     // ------------------------------------------------------------------------
 
-    Data    dec_instIMM;
-    GPRAddr dec_instRS1;
-    GPRAddr dec_instRS2;
-    GPRAddr dec_instRD;
+    ProcessorDefs::Data    dec_instIMM;
+    ProcessorDefs::GPRAddr dec_instRS1;
+    ProcessorDefs::GPRAddr dec_instRS2;
+    ProcessorDefs::GPRAddr dec_instRD;
 
     // verilator lint_off PINMISSING
     InstDecoder
@@ -123,8 +119,8 @@ module CoreSC
     // Bloc de registres
     // ------------------------------------------------------------------------
 
-    Data gpr_rdataA, // Dades de lectura A
-         gpr_rdataB; // Dades de lectura B
+    ProcessorDefs::Data gpr_rdataA; // Dades de lectura A
+    ProcessorDefs::Data gpr_rdataB; // Dades de lectura B
 
     GPRegisters
     gpr (
@@ -143,16 +139,16 @@ module CoreSC
     // Selecciona les dades d'entrada A de la alu
     // ------------------------------------------------------------------------
 
-    Data operandASelector_output;
+    ProcessorDefs::Data operandASelector_output;
 
     Mux4To1 #(
-        .WIDTH ($size(Data)))
+        .WIDTH ($size(ProcessorDefs::Data)))
     operandASelector (
         .i_select (dpCtrl_operandASel),
         .i_input0 (gpr_rdataA),
         .i_input1 (dec_instIMM),
-        .i_input2 (Data'(0)),
-        .i_input3 (Data'(pc)),
+        .i_input2 (ProcessorDefs::Data'(0)),
+        .i_input3 (ProcessorDefs::Data'(pc)),
         .o_output (operandASelector_output));
 
 
@@ -160,16 +156,16 @@ module CoreSC
     // Selecciona les dades d'entrada B de la ALU
     // ------------------------------------------------------------------------
 
-    Data operandBSelector_output;
+    ProcessorDefs::Data operandBSelector_output;
 
     // verilator lint_off PINMISSING
     Mux4To1 #(
-        .WIDTH ($size(Data)))
+        .WIDTH ($size(ProcessorDefs::Data)))
     operandBSelector (
         .i_select (dpCtrl_operandBSel),
         .i_input0 (gpr_rdataB),
         .i_input1 (dec_instIMM),
-        .i_input2 (Data'(4)),
+        .i_input2 (ProcessorDefs::Data'(4)),
         .o_output (operandBSelector_output));
     // verilator lint_on PINMISSING
 
@@ -178,11 +174,11 @@ module CoreSC
     // Selecciona les dades per escriure en el registre
     // ------------------------------------------------------------------------
 
-    Data wrDataSelector_output;
+    ProcessorDefs::Data wrDataSelector_output;
 
     // verilator lint_off PINMISSING
     Mux2To1 #(
-        .WIDTH ($size(Data)))
+        .WIDTH ($size(ProcessorDefs::Data)))
     wrDataSelector (
         .i_select (dpCtrl_regWrDataSel),
         .i_input0 (alu_result),             // Escriu el resultat de la ALU
@@ -195,7 +191,7 @@ module CoreSC
     // ALU
     // -------------------------------------------------------------------
 
-    Data alu_result;
+    ProcessorDefs::Data alu_result;
 
     ALU
     alu (
@@ -213,16 +209,16 @@ module CoreSC
     branchAlu (
         .i_op      (dpCtrl_pcNextSel),
         .i_pc      (pc),
-        .i_instIMM (dec_instIMM[$size(InstAddr)-1:0]),
-        .i_regData (gpr_rdataA[$size(InstAddr)-1:0]),
+        .i_instIMM (dec_instIMM[$size(ProcessorDefs::InstAddr)-1:0]),
+        .i_regData (gpr_rdataA[$size(ProcessorDefs::InstAddr)-1:0]),
         .o_pc      (pcNext));
 
 
     // Registre del contador de programa
     //
     Register #(
-        .WIDTH ($size(InstAddr)),
-        .INIT  (InstAddr'(0)))
+        .WIDTH ($size(ProcessorDefs::InstAddr)),
+        .INIT  (ProcessorDefs::InstAddr'(0)))
     PCReg (
         .i_clock (i_clock),
         .i_reset (i_reset),
@@ -234,7 +230,7 @@ module CoreSC
     // Interface amb la memoria RAM
     //
     always_comb begin
-        dataBus.addr  = alu_result[$size(DataAddr)-1:0];
+        dataBus.addr  = alu_result[$size(ProcessorDefs::DataAddr)-1:0];
         dataBus.we    = dpCtrl_memWrEnable;
         dataBus.wdata = gpr_rdataB;
     end

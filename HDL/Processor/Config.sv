@@ -77,7 +77,7 @@ package Config;
     // Configuracio de la arquitectura
     //
     localparam int unsigned RV_ARCH_CORES = 1;    // Nombre de cores
-    localparam string       RV_ARCH_CPU   = "PP"; // (PP: Pipeline, SC: Single cycle; MC: Multicicle)
+    localparam int unsigned RV_ARCH_PIPELINE = 1; // 0: Single cycle, 1=Pipeline
 
 
     // Configuracio dels registres GPR

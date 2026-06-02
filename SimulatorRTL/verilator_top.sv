@@ -11,13 +11,7 @@
 `endif
 
 
-module top
-
-    import 
-        Config::*, 
-        CoreDefs::*;
-        
-(
+module top (
     input   i_clock,   // Clock
     input   i_reset);  // Reset
 
