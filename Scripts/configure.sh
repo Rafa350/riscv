@@ -1,6 +1,4 @@
 #!/bin/bash
 
-cd ../Build
-cmake ..
-cd ../Scripts
+cmake -S .. -B ../Build -G Ninja
 
