@@ -1,14 +1,12 @@
-module StageID_HazardDetector
-    import ProcessorDefs::*;
-(
-    input  GPRAddr i_instRS1,
-    input  GPRAddr i_instRS2,
-    input  logic   i_EX_isValid,
-    input  logic   i_EX_memRdEnable,
-    input  GPRAddr i_EX_regAddr,
-    input  logic   i_MEM_isValid,
-    input  logic   i_MEM_memRdEnable,
-    input  GPRAddr i_MEM_regAddr,
+module StageID_HazardDetector (
+    input  ProcessorDefs::GPRAddr i_instRS1,
+    input  ProcessorDefs::GPRAddr i_instRS2,
+    input  logic                  i_EX_isValid,
+    input  logic                  i_EX_memRdEnable,
+    input  ProcessorDefs::GPRAddr i_EX_regAddr,
+    input  logic                  i_MEM_isValid,
+    input  logic                  i_MEM_memRdEnable,
+    input  ProcessorDefs::GPRAddr i_MEM_regAddr,
 
     output logic   o_hazard);
 
@@ -18,9 +16,9 @@ module StageID_HazardDetector
 
     assign o_hazard =
         (i_EX_memRdEnable & i_EX_isValid &
-            ((i_instRS1 != GPRAddr'(0)) & ((i_instRS1 == i_EX_regAddr) | (i_instRS1 == i_MEM_regAddr)))) |
+            ((i_instRS1 != ProcessorDefs::GPRAddr'(0)) & ((i_instRS1 == i_EX_regAddr) | (i_instRS1 == i_MEM_regAddr)))) |
 
         (i_MEM_memRdEnable & i_MEM_isValid &
-            ((i_instRS2 != GPRAddr'(0)) & ((i_instRS2 == i_EX_regAddr) | (i_instRS2 == i_MEM_regAddr))));
+            ((i_instRS2 != ProcessorDefs::GPRAddr'(0)) & ((i_instRS2 == i_EX_regAddr) | (i_instRS2 == i_MEM_regAddr))));
 
 endmodule

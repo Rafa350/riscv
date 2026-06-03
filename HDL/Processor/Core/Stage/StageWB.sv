@@ -1,27 +1,22 @@
-module StageWB
-    import
-        ProcessorDefs::*;
-(
-    // Senyals de control i sincronitzacio
+module StageWB (
+                                  // Senyals de control i sincronitzacio
     // verilator lint_off UNUSEDSIGNAL 
-    input  logic   i_clock,       // Clock
+    input  logic                  i_clock,       // Clock
     // verilator lint_on UNUSEDSIGNAL 
     // verilator lint_off UNUSEDSIGNAL 
-    input  logic   i_reset,       // Reset
+    input  logic                  i_reset,       // Reset
     // verilator lint_on UNUSEDSIGNAL 
-
-    // Interficie amb GPR
-    output GPRAddr o_reg_waddr,
-    output Data    o_reg_wdata,
-    output logic   o_reg_we,
-
-    // Senyals operatives del stage
-    input  logic   i_isValid,     // Indica operacio valida
-    input  Data    i_regWrData,   // Dades per escriure en el registre
-    input  GPRAddr i_regWrAddr,   // Adresa d'escriptura del registre
-    input  logic   i_regWrEnable, // Habilita l'escriptuira en el registre
-    output logic   o_hazard,      // Indica hazard
-    output logic   o_evInstRet);  // Indica instruccio retirada
+                                  // Interficie amb GPR
+    output ProcessorDefs::GPRAddr o_reg_waddr,
+    output ProcessorDefs::Data    o_reg_wdata,
+    output logic                  o_reg_we,
+                                  // Senyals operatives del stage
+    input  logic                  i_isValid,     // Indica operacio valida
+    input  ProcessorDefs::Data    i_regWrData,   // Dades per escriure en el registre
+    input  ProcessorDefs::GPRAddr i_regWrAddr,   // Adresa d'escriptura del registre
+    input  logic                  i_regWrEnable, // Habilita l'escriptuira en el registre
+    output logic                  o_hazard,      // Indica hazard
+    output logic                  o_evInstRet);  // Indica instruccio retirada
 
 
     assign o_reg_waddr = i_regWrAddr;

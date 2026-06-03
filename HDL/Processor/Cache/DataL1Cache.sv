@@ -1,10 +1,4 @@
 module DataL1Cache
-
-    import 
-        Config::*, 
-        ProcessorDefs::*, 
-        CoreDefs::*;
-        
 (
     input logic    i_clock,  // Colck
     input logic    i_reset,  // Reset

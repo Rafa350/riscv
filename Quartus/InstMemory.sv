@@ -1,15 +1,11 @@
-module InstMemory
-    import 
-        Config::*,
-        ProcessorDefs::*;
-(
+module InstMemory (
     InstBus.slave bus);
 
 
     localparam SIZE = 129;
 
 
-    Inst data[0:SIZE-1];
+    ProcessorDefs::Inst data[0:SIZE-1];
 
 
     assign bus.inst = data[bus.addr[$size(bus.addr)-1:2]];

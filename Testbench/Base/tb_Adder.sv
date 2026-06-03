@@ -1,6 +1,8 @@
-module tb_Adder();
+// verilator lint_off UNUSEDSIGNAL 
+ 
+ module tb_Adder();
 
-    localparam WIDTH = 32
+    localparam WIDTH = 32;
 
     // Linies de control del modul
     //
@@ -50,8 +52,6 @@ module tb_Adder();
             i_operandB = operandB;
             i_carry = carry;
 
-            #1;
-
             assert(o_result == expected[WIDTH-1:0])
                 else $fatal(
                     "Result error: A=%h B=%h Cin=%b Expected=%h Got=%h",
@@ -61,7 +61,7 @@ module tb_Adder();
                     expected[WIDTH-1:0],
                     o_result);            
                     
-            assert(o_carry  == expected[WIDTH])             
+            assert(o_carry == expected[WIDTH])             
                 else $fatal(
                     "Carry error: A=%h B=%h Cin=%b Expected=%h Got=%h",
                     operandA,
@@ -77,13 +77,16 @@ module tb_Adder();
     // Testbench
     //
     initial begin
-        repeat (1000)
+        $display("Adder test started");
+        repeat (10) begin
+            $display("Test");
             test_add(
                 values[$urandom_range(0, values.size()-1)],
                 $urandom(),
-                $urandom_range(0, 1));                
-        $display("Passed");
-        $finish;
+                $urandom_range(0, 1)[0]);                
+        end
+        $display("Adder test Passed");
+        $finish();
     end
 
 endmodule

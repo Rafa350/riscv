@@ -1,6 +1,3 @@
-// verilator lint_off DECLFILENAME
-// verilator lint_off GENUNNAMED
-
 module Comparer
 #(
     parameter WIDTH = 32)

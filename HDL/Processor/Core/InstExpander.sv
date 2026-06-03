@@ -1,9 +1,9 @@
 module InstExpander (
-    input   ProcessorDefs::Inst  i_inst,          // Instruccio comprimida
-    output  ProcessorDefs::Inst  o_inst,          // Instruccio expandida
-    output logic o_isCompressed); // Indica si es comprimida
+    input  ProcessorDefs::Inst  i_inst,          // Instruccio comprimida
+    output ProcessorDefs::Inst  o_inst,          // Instruccio expandida
+    output logic                o_isCompressed); // Indica si es comprimida
 
-     ProcessorDefs::Inst inst;
+    ProcessorDefs::Inst inst;
     logic bad;
 
     assign o_inst         = bad ? i_inst : inst;

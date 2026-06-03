@@ -1,16 +1,20 @@
 module Processor (
-    input  logic   i_clock,  // Clock
-    input  logic   i_reset,  // Reset
-    InstBus.master instBus,  // Bus de la memoria d'instruccions
-    DataBus.master dataBus); // Bus de la memoria de dades
+                             // Senyals de control i sincronitzacio
+    input  logic   i_clock,  //   Clock
+    input  logic   i_reset,  //   Reset
+                             // Interficies
+    InstBus.master instBus,  //   Bus de la memoria d'instruccions
+    DataBus.master dataBus); //   Bus de la memoria de dades
 
 
-    InstBus coreInstBus(); // Bus d'instruccions
-    DataBus coreDataBus(); // Bus de dades
+    InstBus coreInstBus(); // Bus d'instruccions del core
+    DataBus coreDataBus(); // Bus de dades del core
 
 
     // -------------------------------------------------------------------
     // Cache L1 d'instruccions
+    // Si esta habilitat el bus extern s'uneix al bus del core
+    // pel cache, en cas contrari s'uneixen directament
     // -------------------------------------------------------------------
 
     generate
@@ -19,8 +23,8 @@ module Processor (
             instL1Cache (
                 .i_clock (i_clock),      // Clock
                 .i_reset (i_reset),      // Reset
-                .bus     (instBus),      // Bus d'instruccions global
-                .coreBus (coreInstBus)); // Bus d'instruccions local
+                .bus     (instBus),      // Bus d'instruccions extern
+                .coreBus (coreInstBus)); // Bus d'instruccions del core
         end
         else begin
             assign instBus.addr     = coreInstBus.addr;
@@ -33,6 +37,8 @@ module Processor (
 
     // ----------------------------------------------------------------------
     // Cache L1 de dades
+    // Si esta habilitat el bus extern s'uneix al bus del core
+    // pel cache, en cas contrari s'uneixen directament
     // ----------------------------------------------------------------------
 
     generate
@@ -42,7 +48,7 @@ module Processor (
                 .i_clock (i_clock),      // Clock
                 .i_reset (i_reset),      // Reset
                 .bus     (dataBus),      // Bus de dades global
-                .coreBus (coreDataBus)); // Bus de dades local
+                .coreBus (coreDataBus)); // Bus de dades del core
         end
         else begin
             assign dataBus.addr      = coreDataBus.addr;

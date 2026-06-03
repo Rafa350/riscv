@@ -1,17 +1,10 @@
 // verilator lint_off GENUNNAMED
 
-module L2Cache
-    
-    import 
-        ProcessorDefs::*, 
-        CoreDefs::*;
-(
+module L2Cache (
     input              logic  i_clock,
     input              logic  i_reset,
-
     InstCacheBus.slave instBus,
     DataCacheBus.slave dataBus,
-
     output logic [31:0] o_mem_addr,
     output logic        o_mem_we,
     output logic        o_mem_re,

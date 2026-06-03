@@ -1,13 +1,7 @@
-module Multiplier
-
-    import 
-        ProcessorDefs::*, 
-        CoreDefs::*;
-(
-    input  Data i_operandA,
-    input  Data i_operandB,
-
-    output Data o_result);
+module Multiplier (
+    input  ProcessorDefs::Data i_operandA,
+    input  ProcessorDefs::Data i_operandB,
+    output ProcessorDefs::Data o_result);
 
     assign o_result = i_operandA * i_operandB;
 

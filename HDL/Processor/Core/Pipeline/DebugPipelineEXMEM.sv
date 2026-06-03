@@ -1,16 +1,13 @@
 module DebugPipelineEXMEM ( 
-    
-    // Senyals de control
+                                            // Senyals de control
     input  logic                i_clock,    // Clock
     input  logic                i_reset,    // Reset
     input  logic                i_stall,    // Retorna el mateix estat. Te prioritat sobre flush
     input  logic                i_flush,    // Retorna l'estat NOP
-
-    // Senyals d'entrada del pipeline
+                                            // Senyals d'entrada del pipeline
     input  int                  i_dbgTick,  // Numero de tick
     input  ProcessorDefs::Inst  i_dbgInst,  // Instruccio
-
-    // Senyals de sortidade del pipeline
+                                            // Senyals de sortidade del pipeline
     output int                  o_dbgTick,  // Numero de tick
     output ProcessorDefs::Inst  o_dbgInst); // Instruccio
 

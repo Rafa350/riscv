@@ -1,12 +1,9 @@
-// verilator lint_off DECLFILENAME 
-// verilator lint_off GENUNNAMED
-
 // -----------------------------------------------------------------------
 //
 //       Sumador
 //
 //       Parametres:
-//	         WIDTH      :   Amplada del canal de dades en bits
+//	         WIDTH      : Amplada de dades en bits
 //
 //       Entrades:
 //           i_operandA : Operand A

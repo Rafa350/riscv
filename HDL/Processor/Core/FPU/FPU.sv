@@ -1,6 +1,4 @@
-module FPU
-    import ProcessorDefs::*, CoreDefs::*;
-(
-    );
+module FPU (
+);
 
 endmodule

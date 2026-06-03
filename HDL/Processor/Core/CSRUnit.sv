@@ -1,23 +1,20 @@
 module CSRUnit(
-    
-    // Senyals de control
-    input logic i_clock, // Clock
-    input logic i_reset, // Reset
-
-    // Senyals de control dels contadors HPM
-    input logic i_evInstRet,   // Indica instruccio retirada
-    input logic i_evICacheMis, // Falla en el cache d'instruccions
-    input logic i_evICacheHit, // Encert en el cache d'instruccions
-    input logic i_evDCacheMis, // Falla en el cache de dades
-    input logic i_evDCacheHit, // Encert en el cache de dades
-    input logic i_evMemRead,   // Memeoria lleigida
-    input logic i_evMemWrite,  // Memoria escrita
-
-    // Senyals d'acces als registres
-    input CoreDefs::CsrOp        i_op,    // Operacio a realitzar
-    input ProcessorDefs::CSRAddr i_csr,   // Identificador del registre
-    input ProcessorDefs::Data    i_data,  // Entrada de dades
-    output ProcessorDefs::Data   o_data); // Sortida de dades
+                                  // Senyals de control
+    input  logic                  i_clock,       // Clock
+    input  logic                  i_reset,       // Reset
+                                  // Senyals de control dels contadors HPM
+    input  logic                  i_evInstRet,   // Indica instruccio retirada
+    input  logic                  i_evICacheMis, // Falla en el cache d'instruccions
+    input  logic                  i_evICacheHit, // Encert en el cache d'instruccions
+    input  logic                  i_evDCacheMis, // Falla en el cache de dades
+    input  logic                  i_evDCacheHit, // Encert en el cache de dades
+    input  logic                  i_evMemRead,   // Memeoria lleigida
+    input  logic                  i_evMemWrite,  // Memoria escrita
+                                  // Senyals d'acces als registres
+    input  CoreDefs::CsrOp        i_op,          // Operacio a realitzar
+    input  ProcessorDefs::CSRAddr i_csr,         // Identificador del registre
+    input  ProcessorDefs::Data    i_data,        // Entrada de dades
+    output ProcessorDefs::Data    o_data);       // Sortida de dades
 
 
     localparam logic [1:0] MISA_XLEN = $size(ProcessorDefs::Data) == 32 ? 2'b01 : 2'b10;

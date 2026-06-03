@@ -1,11 +1,8 @@
-cmake_minimum_required(VERSION 3.16.3)
-project("rv-testbench")
-enable_language(C CXX)
-
+set(TARGET_NAME "Testbench")
 
 # Localitza Verilator
 #
-set(VERILATOR_ROOT /home/rafael/Projectes/verilator)
+set(VERILATOR_ROOT /usr/local/share/verilator)
 find_package(
     verilator
     HINTS $ENV{VERILATOR_ROOT} ${VERILATOR_ROOT}
@@ -15,71 +12,119 @@ if (NOT verilator_FOUND)
 endif()
 
 
-set(TARGET_NAME ${PROJECT_NAME})
-
 # Defineix els directoris
 #
-set(SIMLIB_DIR            ${PROJECT_DIR}/../Simulation)
+set(SOURCE_DIR            ${CMAKE_CURRENT_SOURCE_DIR})
+
+set(SIMULATOR_DIR         ${CMAKE_SOURCE_DIR}/Simulator)
+Set(SIMULATOR_INCLUDE_DIR ${SIMULATOR_DIR}/Include)
+set(SIMULATOR_SOURCE_DIR  ${SIMULATOR_DIR}/Source)
+
+set(SIMLIB_DIR            ${CMAKE_SOURCE_DIR}/../Simulation)
 set(SIMLIB_INCLUDE_DIR    ${SIMLIB_DIR}/Include)
 set(SIMLIB_SOURCE_DIR     ${SIMLIB_DIR}/Source)
 
-set(SIMULATOR_DIR         ${PROJECT_DIR}/Simulator)
-set(SIMULATOR_INCLUDE_DIR ${SIMULATOR_DIR}/Include)
-set(SIMULATOR_SOURCE_DIR  ${SIMULATOR_DIR}/Source)
-
-set(SOURCE_DIR            ${CMAKE_CURRENT_SOURCE_DIR})
+set(HDL_DIR               ${CMAKE_SOURCE_DIR}/HDL)
+set(HDL_INCLUDE_DIR       ${HDL_DIR})
 
 
-set(HDL_INCLUDE_DIR       ${PROJECT_DIR}/HDL)
+# Opcions de verilacio
+#
+set(VERILATOR_OPTIONS
+    -cc 
+    -Wall 
+    -Wno-GENUNNAMED
+    -Wno-DECLFILENAME
+    --timing
+    --x-initial unique
+    --x-assign unique
+    --no-assert
+    --compiler gcc
+)
+
+# Opcions de compilacio
+#
+set(COMPILE_OPTIONS
+    -O3
+    -ffunction-sections 
+    -fdata-sections
+)
+
+# Opcions d'enllaçat
+#
+set(LINK_OPTIONS
+    -Wl,--gc-sections 
+)
 
 
+# Mostra la configuracio
+#
 message("* ------------------------------------------------------------------------------------")
-message("* Sub-project '${PROJECT_NAME}' configuration.")
+message("* Project '${PROJECT_NAME}/${TARGET_NAME}' configuration.")
 message("*   Toochain:")
-message("*     gcc     : " ${CMAKE_C_COMPILER})
-message("*     g++     : " ${CMAKE_CXX_COMPILER})
-message("*     as      : " ${CMAKE_ASM_COMPILER})
+message("*     gcc         : " ${CMAKE_C_COMPILER})
+message("*     g++         : " ${CMAKE_CXX_COMPILER})
+message("*     as          : " ${CMAKE_ASM_COMPILER})
 message("*")
 message("*   Directories:")
-message("*     Root    : " ${PROJECT_DIR})
-message("*     Current : " ${SOURCE_DIR})
+message("*     Root        : " ${CMAKE_SOURCE_DIR})
+message("*     Current     : " ${CMAKE_CURRENT_SOURCE_DIR})
+message("*")
+message("*     HDL Source  : " ${HDL_DIR})
+message("*     C++ Source  : " ${SOURCE_DIR})
+message("*                 : " ${SIMULATOR_SOURCE_DIR})
+message("*                 : " ${SIMLIB_SOURCE_DIR})
+message("*     C++ Include : " ${SIMULATOR_INCLUDE_DIR})
+message("*                 : " ${SIMLIB_INCLUDE_DIR})
 message("*")
 
 
-# Genera l'executable
-add_executable(
-    ${TARGET_NAME})
-target_sources(
-    ${TARGET_NAME}
-    PRIVATE ${SOURCE_DIR}/main.cpp)
-target_compile_options(
-    ${TARGET_NAME}
-    PRIVATE -O3
-            -ffreestanding -ffunction-sections -fdata-sections
-            -Wl,--gc-sections -Wl,--print-gc-sections
-)
-target_include_directories(
-    ${TARGET_NAME}
-    PRIVATE .
-            ${VERILATOR_ROOT}/include
-            ${SIMLIB_INCLUDE_DIR}
-            ${SIMULATOR_INCLUDE_DIR})
+# Genera el executable
+add_executable(${TARGET_NAME})
+
+set_target_properties(${TARGET_NAME} PROPERTIES
+    OUTPUT_NAME "testbench")
+   
+target_sources(${TARGET_NAME} PRIVATE 
+    ${SOURCE_DIR}/main.cpp
+    ${SIMULATOR_SOURCE_DIR}/RISCVTracer.cpp
+    ${SIMULATOR_SOURCE_DIR}/RISCVTracerInfo.cpp
+    ${SIMULATOR_SOURCE_DIR}/RISCVTracerDpi.cpp
+    ${SIMULATOR_SOURCE_DIR}/RISCVMemory.cpp
+    ${SIMULATOR_SOURCE_DIR}/RISCVMemoryDpi.cpp)
+            
+target_compile_options(${TARGET_NAME} PRIVATE 
+    ${COMPILE_OPTIONS})
+
+target_link_options(${TARGET_NAME} PRIVATE 
+    ${LINK_OPTIONS})
+
+target_include_directories(${TARGET_NAME} PRIVATE 
+    .
+    ${VERILATOR_ROOT}/include
+    ${SIMULATOR_INCLUDE_DIR}
+    ${SIMLIB_INCLUDE_DIR})
 
 # Genera els fitxers CPP de la simulacio
 verilate(${TARGET_NAME}
     TOP_MODULE top
     TRACE_FST
     INCLUDE_DIRS ${SOURCE_DIR}
+                 ${SOURCE_DIR}/Base
                  ${HDL_INCLUDE_DIR}
                  ${HDL_INCLUDE_DIR}/Base
                  ${HDL_INCLUDE_DIR}/Processor
                  ${HDL_INCLUDE_DIR}/Processor/Core
+                 ${HDL_INCLUDE_DIR}/Processor/Core/ALU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/FPU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/MDU
+                 ${HDL_INCLUDE_DIR}/Processor/Core/Stage
+                 ${HDL_INCLUDE_DIR}/Processor/Core/Pipeline
                  ${HDL_INCLUDE_DIR}/Processor/Cache
-    VERILATOR_ARGS
-    SOURCES verilator_top.sv
+    VERILATOR_ARGS ${VERILATOR_OPTIONS}
+    SOURCES top.sv
 )
 
 # Instalacio en la carpeta Run
-install(
-    TARGETS ${TARGET_NAME}
-    DESTINATION ${PROJECT_DIR}/Run)
+install(TARGETS ${TARGET_NAME}
+    DESTINATION ${CMAKE_SOURCE_DIR}/Run)

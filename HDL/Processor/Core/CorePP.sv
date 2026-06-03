@@ -1,9 +1,10 @@
-module CorePP 
-(
-    input logic    i_clock,  // Clock
-    input logic    i_reset,  // Reset
-    DataBus.master dataBus,  // Bus de dades
-    InstBus.master instBus); // Bus d'instruccions
+module CorePP (
+                             // Senyals de control i sincronitzacio
+    input logic    i_clock,  //   Clock
+    input logic    i_reset,  //   Reset
+                             // Interficies
+    DataBus.master dataBus,  //   Bus de dades
+    InstBus.master instBus); //   Bus d'instruccions
 
 
     // -------------------------------------------------------------------
@@ -85,6 +86,7 @@ module CorePP
 
     // ------------------------------------------------------------------------
     // Pipeline IF-ID
+    // Enllaça els stages IF amb ID
     // ------------------------------------------------------------------------
 
     logic                   IFID_isValid;
@@ -182,6 +184,7 @@ module CorePP
 
     // ------------------------------------------------------------------------
     // Pipeline ID-EX
+    // Enllaça els stages ID amb EX
     // ------------------------------------------------------------------------
 
     logic                   IDEX_isValid;
@@ -285,6 +288,7 @@ module CorePP
 
     // ------------------------------------------------------------------------
     // Pipeline EX-MEM
+    // Enllaça els stages EX amb MEM
     // ------------------------------------------------------------------------
 
     logic                   EXMEM_isValid;
@@ -359,6 +363,7 @@ module CorePP
 
     // ------------------------------------------------------------------------
     // Pipeline MEM-WB
+    // Enllaça els stages MEM amb WB
     // ------------------------------------------------------------------------
 
     logic                  MEMWB_isValid;

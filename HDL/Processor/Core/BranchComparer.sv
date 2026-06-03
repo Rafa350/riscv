@@ -1,5 +1,3 @@
-// verilator lint_off GENUNNAMED
-
 module BranchComparer(
     input  ProcessorDefs::Data i_dataRS1,
     input  ProcessorDefs::Data i_dataRS2,

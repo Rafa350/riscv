@@ -1,18 +1,11 @@
-module top
-    import 
-        Config::*, 
-        ProcessorDefs::*;
-(
+module top (
     input  logic        CLOCK_50,
-
-    // Switches i pulsadors
+                                   // Switches i pulsadors
     input  logic [1:0]  KEY,
     input  logic [3:0]  SW,
-
-    // Leds
+                                   // Leds
     output logic [7:0]  LED,
-
-    // SDRAM
+                                   // SDRAM
     output logic [12:0] DRAM_ADDR,
     inout  logic [15:0] DRAM_DQ,
     output logic [1:0]  DRAM_BA,
@@ -23,25 +16,22 @@ module top
     output logic        DRAM_CLK,
     output logic        DRAM_WE,
     output logic        DRAM_CS,
-
-    // GPIO0
+                                   // GPIO0
     input  logic [1:0]  GPIO_0_IN,
     output logic [33:0] GPIO_0,
-
-    // GPIO1
+                                   // GPIO1
     input  logic [1:0]  GPIO_1_IN,
     inout  logic [33:0] GPIO_1,
-
-    // GPIO2
+                                   // GPIO2
     input  logic [2:0]  GPIO_2_IN,
     inout  logic [12:0] GPIO_2,
-
-    // I2C EEPROM/ACCELLEROMETER
+                                   // I2C EEPROM/ACCELLEROMETER
     output logic        I2C_SCLK,
     inout  logic        I2C_SDAT);
 
-    logic clock;
-    logic reset;
+
+    logic       clock;
+    logic       reset;
     logic [7:0] leds;
 
     assign clock = CLOCK_50;
@@ -57,7 +47,7 @@ module top
     // ------------------------------------------------------------------------
 
     always_ff @(posedge clock)
-        if (dataBus.we & (dataBus.addr == DataAddr'('h0200)))
+        if (dataBus.we & (dataBus.addr == ProcessorDefs::DataAddr'('h0200)))
             LED[3:0] <= dataBus.wdata[3:0];
 
 

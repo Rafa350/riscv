@@ -1,9 +1,6 @@
-// verilator lint_off GENUNNAMED
 // verilator lint_off VARHIDDEN 
 
 module CacheMem
-    import
-        Config::*;
 #(
     parameter int unsigned DATA_WIDTH = 32,
     parameter int unsigned ADDR_WIDTH = 32)
@@ -16,7 +13,7 @@ module CacheMem
 
 
     generate
-        if (RV_TARGET_COMPILER == "VERILATOR") begin
+        if (Config::RV_TARGET_COMPILER == "VERILATOR") begin
 
             RwMemory #(
                 .DATA_WIDTH (DATA_WIDTH),
@@ -29,7 +26,7 @@ module CacheMem
                 .o_rdata (o_rdata));
         end
 
-        else if (RV_TARGET_COMPILER == "QUARTUS") begin
+        else if (Config::RV_TARGET_COMPILER == "QUARTUS") begin
             /*altsyncram
             altsyncram_component (
                 .address_a      (i_addr),

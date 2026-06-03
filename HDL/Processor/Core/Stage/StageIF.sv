@@ -1,27 +1,19 @@
-// verilator lint_off GENUNNAMED
-
-module StageIF
-    import
-        Config::*,
-        ProcessorDefs::*;
-(
-    // Senyals de control i sincronitzacio
+module StageIF (
+                                   // Senyals de control i sincronitzacio
     // verilator lint_off UNUSEDSIGNAL
-    input  logic    i_clock,           // Clock
+    input  logic                   i_clock,           // Clock
     // verilator lint_on UNUSEDSIGNAL
     // verilator lint_off UNUSEDSIGNAL
-    input  logic    i_reset,           // Reset
+    input  logic                   i_reset,           // Reset
     // verilator lint_on UNUSEDSIGNAL
-
-    // Interficie amb la memoria/cache d'instruccions
-    InstBus.master instBus,           // Bus de la memoria d'instruccions
-
-    // Senyals de control d'execucio
-    input  InstAddr i_pcNext,          // El nou valor del PC
-    output logic    o_hazard,          // Indica hazard
-    output Inst     o_inst,            // Instruccio
-    output logic    o_instCompressed,  // Indica que la instruccio es comprimida
-    output InstAddr o_pc);             // El valor del PC
+                                   // Interficie amb la memoria/cache d'instruccions
+    InstBus.master                 instBus,           // Bus de la memoria d'instruccions
+                                   // Senyals de control d'execucio
+    input  ProcessorDefs::InstAddr i_pcNext,          // El nou valor del PC
+    output logic                   o_hazard,          // Indica hazard
+    output ProcessorDefs::Inst     o_inst,            // Instruccio
+    output logic                   o_instCompressed,  // Indica que la instruccio es comprimida
+    output ProcessorDefs::InstAddr o_pc);             // El valor del PC
 
 
     assign o_pc         = i_pcNext;
@@ -41,7 +33,7 @@ module StageIF
     // ------------------------------------------------------------------------
 
     generate
-        if (RV_EXT_C == 1) begin
+        if (Config::RV_EXT_C == 1) begin
             InstExpander
             exp (
                 .i_inst         (instBus.inst),

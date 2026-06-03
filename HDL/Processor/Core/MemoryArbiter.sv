@@ -1,15 +1,16 @@
-module MemoryArbiter (
-    input  logic        i_clock,
-    input  logic        i_reset,
-
-    InstBus.slave       instBus,
-    DataBus.slave       dataBus,
-
-    output logic [31:0] o_mem_addr,
-    output logic        o_mem_we,
-    output logic        o_mem_re,
-    input  logic [31:0] i_mem_rdata,
-    output logic [31:0] o_mem_wdata);
+module MemoryArbiter (                                        
+                                       // Senyals de sincronitzacio i control
+    input  logic        i_clock,       // Clock 
+    input  logic        i_reset,       // Reset
+                                       // Busos
+    InstBus.slave       instBus,       // Bus d'instruccions
+    DataBus.slave       dataBus,       // Bus de dades
+                                       // Control d'access a la memoria
+    output logic [31:0] o_mem_addr,    // Adressa de memoriaº
+    output logic        o_mem_we,      // Write enable
+    output logic        o_mem_re,      // RTead enable
+    input  logic [31:0] i_mem_rdata,   // Dades per lleigir
+    output logic [31:0] o_mem_wdata);  // Dades per escriure
 
     always_comb begin
         if (instBus.re) begin
@@ -38,9 +39,9 @@ module MemoryArbiter (
         end
         else begin
             instBus.busy  = 1'b0;
-            instBus.inst  = Inst'(0);
+            instBus.inst  = ProcessorDefs::Inst'(0);
             dataBus.busy  = 1'b0;
-            dataBus.rdata = Data'(0);
+            dataBus.rdata = ProcessorDefs::Data'(0);
         end
     end
 

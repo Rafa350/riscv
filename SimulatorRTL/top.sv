@@ -10,9 +10,10 @@
 
 
 module top (
+                       // Senyals de control i sincronitzacio
     input   i_clock,   // Clock
     input   i_reset);  // Reset
-
+                       // Interficies
     DataBus dataBus(); // Interficie amb la memoria de dades
     InstBus instBus(); // Interficie amb la memoria d'instruccions
 

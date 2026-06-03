@@ -1,8 +1,4 @@
-module InstL1Cache
-    import
-        Config::*,
-        ProcessorDefs::*;
-(
+module InstL1Cache (
     input logic    i_clock,  // Clock
     input logic    i_reset,  // Reset
     InstBus.master bus,      // Bus d'instruccions cap el cache L2 o la RAM principal

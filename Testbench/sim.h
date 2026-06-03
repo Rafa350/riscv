@@ -8,13 +8,8 @@
 #endif
 #include <stdio.h>
 
-#include "Vverilator_top.h"
-
-
+#include "Vtop.h"
 #include "simTestbench.h"
-
-
-typedef Vverilator_top Vtop;
 
 
 #endif

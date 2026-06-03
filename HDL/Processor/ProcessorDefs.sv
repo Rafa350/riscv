@@ -12,6 +12,6 @@ package ProcessorDefs;
     typedef logic [4:0]                        FPRAddr;  // Adressa de registre FPR (Floating Point >Register)
     typedef logic [11:0]                       CSRAddr;  // Adressa de registre CSR (Control & Status Register)
 
-    typedef logic [(Config::DATA_WIDTH/8)-1:0] ByteMask; // Mascara de bytes per access a memoria
+    typedef logic [(Config::DATA_WIDTH/8)-1:0] ByteMask; // Mascara per accedir a la memoria fraccionada en bytes
 
 endpackage
