@@ -1,307 +1,54 @@
 # -------------------------------------------------------------------------- #
 #
-# Copyright (C) 1991-2014 Altera Corporation
+# Copyright (C) 2025  Altera Corporation. All rights reserved.
 # Your use of Altera Corporation's design tools, logic functions 
-# and other software and tools, and its AMPP partner logic 
+# and other software and tools, and any partner logic 
 # functions, and any output files from any of the foregoing 
 # (including device programming or simulation files), and any 
 # associated documentation or information are expressly subject 
 # to the terms and conditions of the Altera Program License 
-# Subscription Agreement, Altera MegaCore Function License 
-# Agreement, or other applicable license agreement, including, 
-# without limitation, that your use is for the sole purpose of 
-# programming logic devices manufactured by Altera and sold by 
-# Altera or its authorized distributors.  Please refer to the 
-# applicable agreement for further details.
+# Subscription Agreement, the Altera Quartus Prime License Agreement,
+# the Altera IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Altera and sold by Altera or its authorized distributors.  Please
+# refer to the Altera Software License Subscription Agreements 
+# on the Quartus Prime software download page.
 #
 # -------------------------------------------------------------------------- #
 #
-# Quartus II 32-bit
-# Version 13.1.4 Build 182 03/12/2014 SJ Web Edition
-# Date created = 22:00:54  January 19, 2016
+# Quartus Prime
+# Version 25.1std.0 Build 1129 10/21/2025 SC Lite Edition
+# Date created = 09:31:08  June 04, 2026
 #
 # -------------------------------------------------------------------------- #
 #
 # Notes:
 #
 # 1) The default values for assignments are stored in the file:
-#		CPU01_assignment_defaults.qdf
+#		cpu01_assignment_defaults.qdf
 #    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
 #
-# 2) Altera recommends that you do not modify this file. This
-#    file is updated automatically by the Quartus II software
+# 2) Intel recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
 #    and any changes you make may be lost or overwritten.
 #
 # -------------------------------------------------------------------------- #
 
 
-set_global_assignment -name FAMILY "Cyclone V"
-set_global_assignment -name DEVICE 5CGXFC7C7F23C8
-set_global_assignment -name TOP_LEVEL_ENTITY top
+
+# Project-Wide Assignments
+# ========================
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:00:54  JANUARY 19, 2016"
 set_global_assignment -name LAST_QUARTUS_VERSION "25.1std.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
-set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
-set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
-set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
-set_global_assignment -name EDA_SIMULATION_TOOL "Questa Altera FPGA (SystemVerilog)"
-set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
-set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_id eda_simulation
-set_global_assignment -name EDA_ENABLE_GLITCH_FILTERING OFF -section_id eda_simulation
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
-
-#============================================================
-# CLOCK
-#============================================================
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
-
-#============================================================
-# LED
-#============================================================
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[7]
-
-#============================================================
-# KEY
-#============================================================
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[1]
-
-#============================================================
-# SW
-#============================================================
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[3]
-
-
-
-
 set_global_assignment -name FLOW_ENABLE_RTL_VIEWER ON
-set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name FLOW_ENABLE_IO_ASSIGNMENT_ANALYSIS ON
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
-set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
-set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name NUM_PARALLEL_PROCESSORS 6
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_timing
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
-set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-set_global_assignment -name ASSIGNMENT_GROUP_MEMBER I2C_SCLK -section_id I2C
-set_global_assignment -name ASSIGNMENT_GROUP_MEMBER I2C_SDAT -section_id I2C
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SCLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SDAT
-set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
-set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
-set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION ALWAYS
-set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
-set_global_assignment -name MUX_RESTRUCTURE OFF
-set_global_assignment -name ALLOW_ANY_ROM_SIZE_FOR_RECOGNITION ON
-set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
-set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
-set_global_assignment -name ALLOW_SHIFT_REGISTER_MERGING_ACROSS_HIERARCHIES ALWAYS
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
-set_global_assignment -name AUTO_RAM_RECOGNITION ON
-set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
-set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
-set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION AUTOMATICALLY
-set_global_assignment -name OPTIMIZE_TIMING "NORMAL COMPILATION"
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[33]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[32]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[30]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[29]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[28]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[27]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[26]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[25]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[24]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[23]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[22]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[21]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[20]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[19]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[18]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[17]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[16]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0_IN[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0_IN[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[33]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[32]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[30]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[29]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[28]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[27]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[26]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[25]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[24]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[23]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[22]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[21]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[20]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[19]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[18]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[17]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[16]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1_IN[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1_IN[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[0]
-set_global_assignment -name POWER_USE_INPUT_FILES OFF
-set_global_assignment -name TIMING_ANALYZER_DO_REPORT_TIMING ON
-set_global_assignment -name ENABLE_DRC_SETTINGS ON
-set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
-set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
-set_global_assignment -name QII_AUTO_PACKED_REGISTERS NORMAL
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
-set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
-set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
-set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to CLOCK_50
-set_global_assignment -name STATE_MACHINE_PROCESSING "ONE-HOT"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[0]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[1]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[2]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[3]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[4]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[5]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[6]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[7]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[8]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[9]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[10]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[11]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[12]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[13]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[14]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[15]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[16]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[17]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[18]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[19]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[20]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[21]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[22]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[23]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[24]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[25]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[26]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[27]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[28]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[29]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[30]~reg0"
-set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[31]~reg0"
-set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CAS
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CKE
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CS
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_WE
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_RAS
 set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
-set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE 12.5%
-set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
-set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
-set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 2
-set_global_assignment -name SEARCH_PATH "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base"
-set_global_assignment -name IP_SEARCH_PATHS "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\core;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\cache"
 set_global_assignment -name SYSTEMVERILOG_FILE d0nano_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE InstMemory.sv
 set_global_assignment -name SYSTEMVERILOG_FILE DataMemory1024x32.sv
@@ -357,4 +104,333 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Pipeline/De
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Pipeline/DebugPipelineIFID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Pipeline/DebugPipelineIDEX.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../HDL/Processor/Core/Pipeline/DebugPipelineEXMEM.sv
+
+# Classic Timing Assignments
+# ==========================
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
+set_global_assignment -name TIMING_ANALYZER_DO_REPORT_TIMING ON
+
+# Analysis & Synthesis Assignments
+# ================================
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name TOP_LEVEL_ENTITY top
+set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
+set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION ALWAYS
+set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
+set_global_assignment -name MUX_RESTRUCTURE OFF
+set_global_assignment -name ALLOW_ANY_ROM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_SHIFT_REGISTER_MERGING_ACROSS_HIERARCHIES ALWAYS
+set_global_assignment -name AUTO_RAM_RECOGNITION ON
+set_global_assignment -name STATE_MACHINE_PROCESSING "ONE-HOT"
+set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "EXTRA EFFORT"
+set_global_assignment -name VERILOG_MACRO "QUARTUS=<None>"
+set_global_assignment -name SEARCH_PATH "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base"
+set_global_assignment -name IP_SEARCH_PATHS "c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\base;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\core;c:\\users\\rafael\\documents\\projectes\\fpga\\riscv\\hdl\\processor\\cache"
+
+# Fitter Assignments
+# ==================
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
+set_global_assignment -name FITTER_AGGRESSIVE_ROUTABILITY_OPTIMIZATION AUTOMATICALLY
+set_global_assignment -name OPTIMIZE_TIMING "NORMAL COMPILATION"
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name QII_AUTO_PACKED_REGISTERS NORMAL
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
+set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
+set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 2
+
+# EDA Netlist Writer Assignments
+# ==============================
+set_global_assignment -name EDA_SIMULATION_TOOL "<None>"
+
+# Design Assistant Assignments
+# ============================
+set_global_assignment -name ENABLE_DRC_SETTINGS ON
+
+# Power Estimation Assignments
+# ============================
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name POWER_USE_INPUT_FILES OFF
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE 12.5%
+
+# start EDA_TOOL_SETTINGS(eda_simulation)
+# ---------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT NONE -section_id eda_simulation
+	set_global_assignment -name EDA_ENABLE_GLITCH_FILTERING OFF -section_id eda_simulation
+
+# end EDA_TOOL_SETTINGS(eda_simulation)
+# -------------------------------------
+
+# start EDA_TOOL_SETTINGS(eda_board_design_timing)
+# ------------------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_timing
+
+# end EDA_TOOL_SETTINGS(eda_board_design_timing)
+# ----------------------------------------------
+
+# start EDA_TOOL_SETTINGS(eda_board_design_symbol)
+# ------------------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
+
+# end EDA_TOOL_SETTINGS(eda_board_design_symbol)
+# ----------------------------------------------
+
+# start EDA_TOOL_SETTINGS(eda_board_design_signal_integrity)
+# ----------------------------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
+
+# end EDA_TOOL_SETTINGS(eda_board_design_signal_integrity)
+# --------------------------------------------------------
+
+# start EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# -------------------------------------------------------
+
+	# EDA Netlist Writer Assignments
+	# ==============================
+	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
+
+# end EDA_TOOL_SETTINGS(eda_board_design_boundary_scan)
+# -----------------------------------------------------
+
+# start ASSIGNMENT_GROUP(I2C)
+# ---------------------------
+
+	# Assignment Group Assignments
+	# ============================
+	set_global_assignment -name ASSIGNMENT_GROUP_MEMBER I2C_SCLK -section_id I2C
+	set_global_assignment -name ASSIGNMENT_GROUP_MEMBER I2C_SDAT -section_id I2C
+
+# end ASSIGNMENT_GROUP(I2C)
+# -------------------------
+
+# -----------------
+# start ENTITY(top)
+
+	# Analysis & Synthesis Assignments
+	# ================================
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[0]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[1]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[2]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[3]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[4]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[5]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[6]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[7]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[8]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[9]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[10]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[11]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[12]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[13]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[14]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[15]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[16]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[17]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[18]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[19]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[20]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[21]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[22]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[23]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[24]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[25]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[26]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[27]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[28]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[29]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[30]~reg0"
+	set_instance_assignment -name MAX_FANOUT 25 -to "ProcessorPP:Cpu|PipelineIFID:IFID|o_Inst[31]~reg0"
+
+	# Fitter Assignments
+	# ==================
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SCLK
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SDAT
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[33]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[32]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[31]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[30]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[29]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[28]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[27]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[26]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[25]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[24]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[23]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[22]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[21]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[20]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[19]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[18]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[17]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[16]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[15]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[14]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[13]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[12]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[11]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[10]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[9]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[8]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0_IN[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_0_IN[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[33]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[32]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[31]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[30]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[29]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[28]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[27]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[26]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[25]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[24]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[23]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[22]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[21]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[20]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[19]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[18]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[17]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[16]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[15]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[14]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[13]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[12]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[11]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[10]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[9]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[8]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1_IN[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1_IN[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[12]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[11]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[10]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[9]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[8]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_2_IN[0]
+	set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to CLOCK_50
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[8]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[12]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[11]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[10]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[9]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[8]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CAS
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CKE
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CLK
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CS
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[15]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[14]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[13]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[12]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[11]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[10]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[9]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_WE
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[7]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[6]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[5]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[4]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[3]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[2]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[1]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[0]
+	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_RAS
+
+	# start DESIGN_PARTITION(Top)
+	# ---------------------------
+
+		# Incremental Compilation Assignments
+		# ===================================
+		set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+		set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+		set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+
+	# end DESIGN_PARTITION(Top)
+	# -------------------------
+
+# end ENTITY(top)
+# ---------------
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

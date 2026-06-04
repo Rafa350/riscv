@@ -9,16 +9,19 @@ read_verilog -sv ../HDL/Base/Comparer.sv
 
 # Moduls processor
 #
+read_verilog -sv ../HDL/Processor/Config.sv
+read_verilog -sv ../HDL/Processor/ProcessorDefs.sv
 read_verilog -sv ../HDL/Processor/Processor.sv
 
 # Moduls core
 #
+read_verilog -sv ../HDL/Processor/Core/CoreDefs.sv
 read_verilog -sv ../HDL/Processor/Core/CorePP.sv
 read_verilog -sv ../HDL/Processor/Core/CoreSC.sv
 
 # Modul TOP
 #
-read_verilog -I../HDL/Processor -sv ../SimulatorRTL/verilator_top.sv
+read_verilog -I../HDL/Processor -sv ../SimulatorRTL/top.sv
 
 #hierarchy -check 
 
